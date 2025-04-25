@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-	name: 'Nazmul Hassan Portfolio',
+	name: 'Nazmul Hassan',
 	description: 'Portfolio Website of Nazmul Hassan',
 	navItems: [
 		{
@@ -11,10 +11,6 @@ export const siteConfig = {
 		{
 			label: 'Docs',
 			href: '/docs',
-		},
-		{
-			label: 'Pricing',
-			href: '/pricing',
 		},
 		{
 			label: 'Blog',

@@ -5,7 +5,7 @@ import { button as buttonStyles } from '@heroui/theme';
 
 import { GithubIcon } from '@/components/icons';
 import { siteConfig } from '@/config/site';
-import { subtitle, title } from '@/lib/primitives';
+import { subtitle, title } from '@/styles/primitives';
 
 export default function Home() {
 	return (
@@ -23,7 +23,7 @@ export default function Home() {
 			</div>
 
 			<div className="flex gap-3">
-				<Link
+				{/* <Link
 					isExternal
 					className={buttonStyles({
 						color: 'primary',
@@ -33,7 +33,7 @@ export default function Home() {
 					href={siteConfig.links.docs}
 				>
 					Documentation
-				</Link>
+				</Link> */}
 				<Link
 					isExternal
 					className={buttonStyles({ variant: 'bordered', radius: 'full' })}
