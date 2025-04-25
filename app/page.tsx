@@ -1,95 +1,56 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { Code } from '@heroui/code';
+import { Link } from '@heroui/link';
+import { Snippet } from '@heroui/snippet';
+import { button as buttonStyles } from '@heroui/theme';
+
+import { GithubIcon } from '@/components/icons';
+import { siteConfig } from '@/config/site';
+import { subtitle, title } from '@/lib/primitives';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+	return (
+		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+			<div className="inline-block max-w-xl text-center justify-center">
+				<span className={title()}>Make&nbsp;</span>
+				<span className={title({ color: 'violet' })}>beautiful&nbsp;</span>
+				<br />
+				<span className={title()}>
+					websites regardless of your design experience.
+				</span>
+				<div className={subtitle({ class: 'mt-4' })}>
+					Beautiful, fast and modern React UI library.
+				</div>
+			</div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+			<div className="flex gap-3">
+				<Link
+					isExternal
+					className={buttonStyles({
+						color: 'primary',
+						radius: 'full',
+						variant: 'shadow',
+					})}
+					href={siteConfig.links.docs}
+				>
+					Documentation
+				</Link>
+				<Link
+					isExternal
+					className={buttonStyles({ variant: 'bordered', radius: 'full' })}
+					href={siteConfig.links.github}
+				>
+					<GithubIcon size={20} />
+					GitHub
+				</Link>
+			</div>
+
+			<div className="mt-8">
+				<Snippet hideCopyButton hideSymbol variant="bordered">
+					<span>
+						Get started by editing <Code color="primary">app/page.tsx</Code>
+					</span>
+				</Snippet>
+			</div>
+		</section>
+	);
 }
