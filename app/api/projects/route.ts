@@ -6,7 +6,7 @@ import { connectDB } from '@/lib/db';
 import { Project } from '@/models/Project';
 
 /**
- * GET all projects
+ * * GET all projects
  */
 export async function GET(): Promise<NextResponse> {
 	await connectDB();
@@ -16,7 +16,7 @@ export async function GET(): Promise<NextResponse> {
 }
 
 /**
- * POST a new project
+ * * POST a new project
  */
 export async function POST(req: Request): Promise<NextResponse> {
 	await connectDB();
