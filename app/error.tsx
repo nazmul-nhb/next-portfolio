@@ -9,7 +9,6 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
 	useEffect(() => console.error(error), [error]);
-	const _m = 6;
 
 	return (
 		<div>
