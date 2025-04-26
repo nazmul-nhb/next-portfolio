@@ -17,3 +17,5 @@ export const STATUS_CODES = {
 	BAD_GATEWAY: 502,
 	SERVICE_UNAVAILABLE: 503,
 } as const;
+
+export const JWT_SECRET = process.env.JWT_SECRET as string;

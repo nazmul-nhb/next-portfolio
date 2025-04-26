@@ -5,13 +5,10 @@ import { formatQueryParams } from 'nhb-toolbox';
 
 import { siteConfig } from '@/config/site';
 
-interface options<TBody = unknown> {
+interface Options<Body = unknown> extends Omit<RequestInit, 'body'> {
 	method?: TMethod;
-	body?: TBody;
+	body?: Body;
 	query?: QueryObject;
-	headers?: HeadersInit;
-	cache?: RequestCache;
-	next?: NextFetchRequestConfig;
 }
 
 /**
@@ -22,9 +19,9 @@ interface options<TBody = unknown> {
  */
 export async function httpRequest<R = void, B = void>(
 	endpoint: string,
-	options: options<B> = {}
+	options: Options<B> = {}
 ): Promise<ServerResponse<R>> {
-	const { method = 'GET', body, query, headers, cache = 'default', next } = options;
+	const { method = 'GET', body, query, headers, ...restOptions } = options;
 
 	const queryString = formatQueryParams(query);
 
@@ -40,8 +37,7 @@ export async function httpRequest<R = void, B = void>(
 			'Content-Type': 'application/json',
 			...(headers || {}),
 		},
-		cache,
-		next,
+		...restOptions,
 		...(body && { body: JSON.stringify(body) }),
 	});
 

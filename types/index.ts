@@ -7,6 +7,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export type TCollection =
 	| 'N/A'
+	| 'User'
 	| 'Project'
 	| 'Skill'
 	| 'Bio'

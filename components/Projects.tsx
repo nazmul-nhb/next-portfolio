@@ -1,9 +1,7 @@
-import { fetchProjects } from '@/lib/actions';
+import { fetchProjects } from '@/lib/api.projects';
 
 export default async function Projects() {
 	const projects = await fetchProjects();
-
-	console.log(projects);
 
 	return <div>Hello Projects {projects?.length}</div>;
 }

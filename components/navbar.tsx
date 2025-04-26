@@ -1,3 +1,5 @@
+'use client';
+
 import { Input } from '@heroui/input';
 import { Kbd } from '@heroui/kbd';
 import { Link } from '@heroui/link';
@@ -10,9 +12,13 @@ import {
 	NavbarMenuItem,
 	NavbarMenuToggle,
 } from '@heroui/navbar';
+import { useDisclosure } from '@heroui/react';
 import { link as linkStyles } from '@heroui/theme';
 import clsx from 'clsx';
 import NextLink from 'next/link';
+
+import LoginRegister from './LoginRegister';
+import PortfolioModal from './ui/modal';
 
 import { DiscordIcon, GithubIcon, Logo, SearchIcon } from '@/components/icons';
 import { ThemeSwitch } from '@/components/theme-switch';
@@ -40,14 +46,18 @@ export const Navbar = () => {
 		/>
 	);
 
+	const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
+
 	return (
 		<HeroUINavbar maxWidth="xl" position="sticky">
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
 				<NavbarBrand as="li" className="gap-3 max-w-fit">
-					<NextLink className="flex justify-start items-center gap-1" href="/">
-						<Logo />
-						<h1 className="font-bold text-inherit">Nazmul Hassan</h1>
-					</NextLink>
+					<div className="flex justify-start items-center gap-1">
+						<Logo className="cursor-pointer" onClick={onOpen} />
+						<NextLink href="/">
+							<h1 className="font-bold text-inherit">Nazmul Hassan</h1>
+						</NextLink>
+					</div>
 				</NavbarBrand>
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
 					{siteConfig.navItems.map((item) => (
@@ -125,6 +135,14 @@ export const Navbar = () => {
 					))}
 				</div>
 			</NavbarMenu>
+			<PortfolioModal
+				content={<LoginRegister closeModal={onClose} />}
+				isOpen={isOpen}
+				placement="center"
+				title="Login/Register"
+				onClose={onClose}
+				onOpenChange={onOpenChange}
+			/>
 		</HeroUINavbar>
 	);
 };
