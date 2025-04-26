@@ -1,3 +1,5 @@
+'use server';
+
 import type { TCollection, TMethod, TResponseDetails } from '@/types';
 
 import { NextResponse } from 'next/server';
@@ -10,12 +12,12 @@ import { NextResponse } from 'next/server';
  * @param data Optional data to include in the response.
  * @param customMessage Optional custom message if needed.
  */
-export function sendResponse<T>(
+export async function sendResponse<T>(
 	collection: TCollection,
 	method: TMethod,
 	data?: T,
 	customMessage?: string
-): NextResponse {
+): Promise<NextResponse> {
 	const { message, statusCode } = generateResponse(collection, method, data);
 
 	const response = {

@@ -32,6 +32,9 @@ importers:
       '@heroui/snippet':
         specifier: 2.2.18
         version: 2.2.18(@heroui/system@2.4.13(@heroui/theme@2.4.13(tailwindcss@3.4.17))(framer-motion@12.9.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@heroui/theme@2.4.13(tailwindcss@3.4.17))(framer-motion@12.9.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@heroui/spinner':
+        specifier: ^2.2.14
+        version: 2.2.14(@heroui/theme@2.4.13(tailwindcss@3.4.17))(framer-motion@12.9.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@heroui/switch':
         specifier: 2.2.15
         version: 2.2.15(@heroui/system@2.4.13(@heroui/theme@2.4.13(tailwindcss@3.4.17))(framer-motion@12.9.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@heroui/theme@2.4.13(tailwindcss@3.4.17))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -66,8 +69,8 @@ importers:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nhb-toolbox:
-        specifier: ^4.1.6
-        version: 4.1.6
+        specifier: ^4.2.1
+        version: 4.2.1
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -2178,8 +2181,8 @@ packages:
       sass:
         optional: true
 
-  nhb-toolbox@4.1.6:
-    resolution: {integrity: sha512-A5IZrsr1bfLVQSrgTD9IgjZA19b8EOUKQQJzXzUahdv7tqifCQ/oCi9kPPWk6EJeqPjvIjyDtf4PBFicTdpDAg==}
+  nhb-toolbox@4.2.1:
+    resolution: {integrity: sha512-B+6Qn4TCJ/q9fefvkIne3i0IkzYZu7h0aYGWcxSgidIldQe0/BoYUHhJHdvdv34pxBFb9fiNL6U6XawxKh5DrA==}
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
@@ -5250,7 +5253,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-toolbox@4.1.6: {}
+  nhb-toolbox@4.2.1: {}
 
   node-releases@2.0.19: {}
 

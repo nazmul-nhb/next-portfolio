@@ -3,6 +3,7 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
 	name: 'Nazmul Hassan',
 	description: 'Portfolio Website of Nazmul Hassan',
+	baseUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 	navItems: [
 		{
 			label: 'Home',

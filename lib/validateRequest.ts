@@ -1,3 +1,5 @@
+'use server';
+
 import type { ZodSchema } from 'zod';
 
 import { NextResponse } from 'next/server';
