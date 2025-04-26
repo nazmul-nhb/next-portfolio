@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@heroui/button';
 import { useEffect } from 'react';
 
 interface ErrorProps {
@@ -13,14 +14,14 @@ export default function Error({ error, reset }: ErrorProps) {
 	return (
 		<div>
 			<h2>Something went wrong!</h2>
-			<button
-				onClick={
+			<Button
+				onPress={
 					// Attempt to recover by trying to re-render the segment
 					() => reset()
 				}
 			>
 				Try again
-			</button>
+			</Button>
 		</div>
 	);
 }

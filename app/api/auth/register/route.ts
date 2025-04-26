@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
+import sendResponse from '@/lib/actions/sendResponse';
 import { hashPassword } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
-import sendResponse from '@/lib/sendResponse';
 import { User } from '@/models/User';
 
 /**
@@ -23,7 +23,6 @@ export async function POST(req: Request) {
 	const user = await User.create({
 		email,
 		password: hashed,
-		role: 'visitor',
 	});
 
 	return sendResponse('User', 'POST', user, 'User created successfully!');

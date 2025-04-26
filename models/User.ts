@@ -6,7 +6,7 @@ const UserSchema = new Schema(
 		password: { type: String, required: true },
 		role: { type: String, enum: ['admin', 'visitor'], default: 'visitor' },
 	},
-	{ timestamps: true }
+	{ timestamps: true, versionKey: false }
 );
 
 export const User = models.User || model('User', UserSchema);

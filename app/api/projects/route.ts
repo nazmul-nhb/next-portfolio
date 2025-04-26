@@ -1,9 +1,9 @@
 import type { TProjectData, TProjectDoc } from '@/types/project.types';
 import type { NextResponse } from 'next/server';
 
+import { sendResponse } from '@/lib/actions/sendResponse';
+import { validateRequest } from '@/lib/actions/validateRequest';
 import { connectDB } from '@/lib/db';
-import { sendResponse } from '@/lib/sendResponse';
-import { validateRequest } from '@/lib/validateRequest';
 import { Project } from '@/models/Project';
 import { ProjectCreationSchema } from '@/schema/project.schema';
 

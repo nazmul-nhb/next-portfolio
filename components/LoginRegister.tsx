@@ -3,7 +3,7 @@
 import { Button, Input, Tab, Tabs } from '@heroui/react';
 import { useState } from 'react';
 
-import { loginUser, registerUser } from '@/lib/api.auth';
+import { loginUser, registerUser } from '@/lib/actions/api.auth';
 import { useAuthStore } from '@/lib/store/authStore';
 
 interface Props {
@@ -26,13 +26,15 @@ export default function LoginRegister({ closeModal }: Props) {
 		setIsLoading(true);
 		try {
 			await loginUser(email, password);
+
 			await syncUser();
+
 			setEmail('');
 			setPassword('');
 			setError(null);
 			closeModal();
-		} catch (err: any) {
-			setError(err.message || 'Login failed');
+		} catch (err) {
+			setError((err as Error).message || 'Login failed');
 		} finally {
 			setIsLoading(false);
 		}
@@ -48,8 +50,8 @@ export default function LoginRegister({ closeModal }: Props) {
 			setPassword('');
 			setError(null);
 			closeModal();
-		} catch (err: any) {
-			setError(err.message || 'Registration failed');
+		} catch (err) {
+			setError((err as Error).message || 'Registration failed');
 		} finally {
 			setIsLoading(false);
 		}
@@ -136,7 +138,7 @@ function FormFields({
 			<Button
 				className="w-full bg-primary hover:bg-primary-dark"
 				isLoading={isLoading}
-				onClick={onSubmit}
+				onPress={onSubmit}
 			>
 				{buttonLabel}
 			</Button>

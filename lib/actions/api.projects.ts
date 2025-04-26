@@ -1,5 +1,3 @@
-'use server';
-
 import type { TProject, TProjectData } from '@/types/project.types';
 
 import { revalidateTag } from 'next/cache';

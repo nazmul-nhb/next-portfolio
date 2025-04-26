@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+import sendResponse from '@/lib/actions/sendResponse';
 import { verifyPassword } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { signJwt } from '@/lib/jwt';
@@ -26,18 +27,21 @@ export async function POST(req: Request) {
 		return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
 	}
 
-	const token = signJwt({
-		id: user._id,
-		email: user.email,
-		role: user.role,
-	});
+	const userData = user.toObject();
 
-	(await cookies()).set('token', token, {
+	delete userData.password;
+
+	const token = signJwt(userData);
+
+	const cookieStore = await cookies();
+
+	cookieStore.set('token', token, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',
 		path: '/',
 		maxAge: 60 * 60 * 24 * 7, // 7 days
+		sameSite: 'lax',
 	});
 
-	return NextResponse.json({ message: 'Login success' });
+	return sendResponse('User', 'POST', userData, 'Login successful!');
 }
