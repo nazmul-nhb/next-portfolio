@@ -1,18 +1,20 @@
-import type { IProject } from '@/types/Project';
-
-import { NextResponse } from 'next/server';
+import type { TProjectData, TProjectDoc } from '@/types/project.types';
+import type { NextResponse } from 'next/server';
 
 import { connectDB } from '@/lib/db';
+import { sendResponse } from '@/lib/sendResponse';
+import { validateRequest } from '@/lib/validateRequest';
 import { Project } from '@/models/Project';
+import { ProjectCreationSchema } from '@/schema/project.schema';
 
 /**
  * * GET all projects
  */
 export async function GET(): Promise<NextResponse> {
 	await connectDB();
-	const projects: IProject[] = await Project.find().sort('-createdAt');
+	const projects: TProjectDoc[] = await Project.find().sort('-createdAt');
 
-	return NextResponse.json(projects);
+	return sendResponse('Project', 'GET', projects);
 }
 
 /**
@@ -20,8 +22,16 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(req: Request): Promise<NextResponse> {
 	await connectDB();
-	const data: IProject = await req.json();
-	const project: IProject = await Project.create(data);
 
-	return NextResponse.json(project, { status: 201 });
+	const data: TProjectData = await req.json();
+
+	const parsed = await validateRequest(ProjectCreationSchema, data);
+
+	if (!parsed.success) {
+		return parsed.response;
+	}
+
+	const project: TProjectDoc = await Project.create(parsed.data);
+
+	return sendResponse('Project', 'POST', project);
 }
