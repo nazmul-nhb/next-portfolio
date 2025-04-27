@@ -1,6 +1,8 @@
 import type { TProjectDoc } from '@/types/project.types';
 
-import { Schema, model, models } from 'mongoose';
+import { Schema } from 'mongoose';
+
+import { createModel } from '@/lib/db';
 
 const ProjectSchema = new Schema<TProjectDoc>(
 	{
@@ -31,4 +33,4 @@ const ProjectSchema = new Schema<TProjectDoc>(
 	{ timestamps: true, versionKey: false }
 );
 
-export const Project = models.Project || model('Project', ProjectSchema);
+export const Project = createModel('Project', ProjectSchema);

@@ -1,17 +1,14 @@
-import type { User } from '../store/authStore';
+import type { TCredentials, TRegisterUser, TUser } from '@/types/user.types';
 
 import { httpRequest } from '@/lib/actions/baseRequest';
 
-export async function loginUser(email: string, password: string) {
+export async function loginUser(credentials: TCredentials) {
 	try {
-		const res = await httpRequest<User, { email: string; password: string }>(
-			'/api/auth/login',
-			{
-				method: 'POST',
-				body: { email, password },
-				credentials: 'include',
-			}
-		);
+		const res = await httpRequest<TUser, TCredentials>('/api/auth/login', {
+			method: 'POST',
+			body: credentials,
+			credentials: 'include',
+		});
 
 		return res.data;
 	} catch (error) {
@@ -20,15 +17,12 @@ export async function loginUser(email: string, password: string) {
 	}
 }
 
-export async function registerUser(email: string, password: string) {
+export async function registerUser(userData: TRegisterUser) {
 	try {
-		const res = await httpRequest<void, { email: string; password: string }>(
-			'/api/auth/register',
-			{
-				method: 'POST',
-				body: { email, password },
-			}
-		);
+		const res = await httpRequest<void, TRegisterUser>('/api/auth/register', {
+			method: 'POST',
+			body: userData,
+		});
 
 		return res;
 	} catch (error) {

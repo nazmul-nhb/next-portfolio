@@ -1,6 +1,6 @@
 'use server';
 
-import type { User } from '../store/authStore';
+import type { TUser } from '@/types/user.types';
 
 import { cookies } from 'next/headers';
 
@@ -9,7 +9,7 @@ import { verifyJwt } from '@/lib/jwt';
 /**
  * Get the currently logged in user from cookie
  */
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<TUser | null> {
 	const cookieStore = await cookies();
 
 	const token = cookieStore.get('token')?.value;
@@ -21,7 +21,7 @@ export async function getCurrentUser(): Promise<User | null> {
 	try {
 		const user = verifyJwt(token);
 
-		return user as User;
+		return user as TUser;
 	} catch {
 		return null;
 	}

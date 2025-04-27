@@ -19,3 +19,14 @@ export const STATUS_CODES = {
 } as const;
 
 export const JWT_SECRET = process.env.JWT_SECRET as string;
+
+export const cloudinaryConfig = {
+	cloud_name: process.env.NEXT_PUBLIC_CLOUD_NAME!,
+	api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!,
+	api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET!,
+};
+
+export const cloudinaryUrls = {
+	base_url: process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_BASE_URL!,
+	upload_url: process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_UPLOAD_URL!,
+};

@@ -1,5 +1,6 @@
-import type { TProjectData, TProjectDoc } from '@/types/project.types';
-import type { NextResponse } from 'next/server';
+import type { TProjectData } from '@/types/project.types';
+
+import { NextResponse } from 'next/server';
 
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -10,28 +11,42 @@ import { ProjectCreationSchema } from '@/schema/project.schema';
 /**
  * * GET all projects
  */
-export async function GET(): Promise<NextResponse> {
-	await connectDB();
-	const projects: TProjectDoc[] = await Project.find().sort('-createdAt');
+export async function GET() {
+	try {
+		await connectDB();
+		const projects = await Project.find().sort('-createdAt');
 
-	return sendResponse('Project', 'GET', projects);
+		return sendResponse('Project', 'GET', projects);
+	} catch (error) {
+		console.error(error);
+
+		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+	}
 }
 
 /**
  * * POST a new project
  */
-export async function POST(req: Request): Promise<NextResponse> {
-	await connectDB();
+export async function POST(req: Request) {
+	try {
+		await connectDB();
 
-	const data: TProjectData = await req.json();
+		const data: TProjectData = await req.json();
 
-	const parsed = await validateRequest(ProjectCreationSchema, data);
+		const parsed = await validateRequest(ProjectCreationSchema, data);
 
-	if (!parsed.success) {
-		return parsed.response;
+		if (!parsed.success) {
+			return parsed.response;
+		}
+
+		const project = await Project.create(parsed.data);
+
+		if (project?._id) {
+			return sendResponse('Project', 'POST', project);
+		}
+	} catch (error) {
+		console.error(error);
+
+		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
 	}
-
-	const project: TProjectDoc = await Project.create(parsed.data);
-
-	return sendResponse('Project', 'POST', project);
 }

@@ -48,7 +48,7 @@ const searchInput = (
 );
 
 export const Navbar = () => {
-	const { user, isLoading } = useAuthStore();
+	const { user, isLoading, logout } = useAuthStore();
 
 	const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
 
@@ -71,10 +71,10 @@ export const Navbar = () => {
 								<div
 									className="text-white size-8 rounded-full border border-white shadow-md shadow-gray-300 justify-center items-center flex"
 									style={{
-										backgroundColor: getColorForInitial(user.email),
+										backgroundColor: getColorForInitial(user.name),
 									}}
 								>
-									{user.email.charAt(0).toUpperCase()}
+									{user.name.charAt(0).toUpperCase()}
 								</div>
 							) : (
 								<Logo />
@@ -162,7 +162,21 @@ export const Navbar = () => {
 				</div>
 			</NavbarMenu>
 			<PortfolioModal
-				content={<LoginRegister closeModal={onClose} />}
+				content={
+					user ? (
+						<Button
+							isLoading={isLoading}
+							onPress={async () => {
+								await logout();
+								onClose();
+							}}
+						>
+							Logout
+						</Button>
+					) : (
+						<LoginRegister closeModal={onClose} />
+					)
+				}
 				isOpen={isOpen}
 				placement="center"
 				title="Welcome Back"

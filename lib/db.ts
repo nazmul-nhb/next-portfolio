@@ -1,6 +1,7 @@
+import type { TCollection } from '@/types';
 import type { Connection } from 'mongoose';
 
-import mongoose from 'mongoose';
+import mongoose, { model, models, type Model, type Schema } from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -44,4 +45,11 @@ export async function connectDB(): Promise<Connection> {
 	}
 
 	return cached.conn;
+}
+
+/**
+ * Create or get an existing mongoose model safely
+ */
+export function createModel<T>(name: TCollection, schema: Schema<T>): Model<T> {
+	return (models[name] as Model<T>) ?? model<T>(name, schema);
 }

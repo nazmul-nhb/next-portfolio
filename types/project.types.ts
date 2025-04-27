@@ -5,6 +5,6 @@ import type { DBItem } from './index';
 
 export type TProjectData = z.infer<typeof ProjectCreationSchema>;
 
-export type TProjectDoc = TProjectData & Document;
-
 export type TProject = DBItem & TProjectData;
+
+export type TProjectDoc = TProject & Document;
