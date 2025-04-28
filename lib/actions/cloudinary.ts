@@ -1,15 +1,22 @@
 import type { UploadApiResponse } from 'cloudinary';
 
 import axios from 'axios';
-import { generateRandomID } from 'nhb-toolbox';
+import { createFormData, generateRandomID } from 'nhb-toolbox';
 
 import { httpRequest } from './baseRequest';
 
-import { cloudinaryUrls } from '@/constants';
+import { cloudinaryConfig, cloudinaryUrls } from '@/constants';
 
+/** - Response from `Cloudinary` after uploading a file successfully. */
 export interface CloudinaryResponse {
 	url: string;
 	publicId: string;
+}
+
+/** - Signed data from server before uploading file to `Cloudinary`. */
+export interface SignedData {
+	signature: string;
+	timestamp: number;
 }
 
 /**
@@ -31,14 +38,25 @@ export async function uploadToCloudinary(
 		timeStamp: true,
 	});
 
-	const formData = new FormData();
-
-	formData.append('file', file);
-	formData.append('upload_preset', 'portfolio');
-	formData.append('folder', 'portfolio');
-	formData.append('public_id', filename);
-
 	try {
+		const { data } = await httpRequest<SignedData, { filename: string }>(
+			'/api/upload',
+			{
+				method: 'POST',
+				body: { filename },
+			}
+		);
+
+		const formData = createFormData({
+			file: file,
+			upload_preset: 'portfolio',
+			folder: 'portfolio',
+			api_key: cloudinaryConfig.api_key,
+			public_id: filename,
+			timestamp: data?.timestamp,
+			signature: data?.signature,
+		});
+
 		const response = await axios.post<UploadApiResponse>(
 			cloudinaryUrls.upload_url,
 			formData,
@@ -66,13 +84,10 @@ export async function uploadToCloudinary(
  */
 export async function deleteFromCloudinary(publicId: string): Promise<void> {
 	try {
-		const res = await httpRequest<void, { publicId: string }>(
-			'/api/delete-cloudinary',
-			{
-				method: 'POST',
-				body: { publicId },
-			}
-		);
+		const res = await httpRequest<void, { publicId: string }>('/api/upload', {
+			method: 'PUT',
+			body: { publicId },
+		});
 
 		return res.data;
 	} catch (error) {

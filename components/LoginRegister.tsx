@@ -139,7 +139,7 @@ function RegisterForm({ closeModal }: Props) {
 		try {
 			setCatchError(null);
 
-			const res = await uploadToCloudinary(data.image.item(0)!, 'user');
+			const res = await uploadToCloudinary(data.image, 'user');
 
 			if (isEmptyObject(res)) {
 				return console.error('Image upload failed!');
