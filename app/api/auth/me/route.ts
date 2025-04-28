@@ -1,25 +1,26 @@
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import type { IUser } from '@/types/user.types';
 
-import { verifyJwt } from '@/lib/jwt';
+import { NextResponse, type NextRequest } from 'next/server';
 
-/**
- * Get current user
- */
-export async function GET() {
-	const cookieStore = await cookies();
+import { authorizeUser } from '@/lib/api/middlewares';
+import sendResponse from '@/lib/actions/sendResponse';
 
-	const token = cookieStore.get('token')?.value;
-
-	if (!token) {
-		return NextResponse.json({ user: null });
-	}
-
-	try {
-		const user = verifyJwt(token);
-
-		return NextResponse.json({ user });
-	} catch {
-		return NextResponse.json({ user: null });
-	}
+export interface UserRequest extends NextRequest {
+	user: IUser;
 }
+
+/** * Get current user */
+export const GET = authorizeUser(['admin', 'visitor'], async (req: UserRequest) => {
+	try {
+		const user = req.user;
+
+		return sendResponse('User', 'GET', user);
+	} catch {
+		return NextResponse.json(
+			{ message: 'No user found with the provided email!' },
+			{
+				status: 404,
+			}
+		);
+	}
+});

@@ -3,6 +3,8 @@ import type { QueryObject } from 'nhb-toolbox/object/types';
 
 import { formatQueryParams } from 'nhb-toolbox';
 
+import { buildHeaders } from './buildHeaders';
+
 import { siteConfig } from '@/config/site';
 
 interface Options<Body = unknown> extends Omit<RequestInit, 'body'> {
@@ -25,12 +27,6 @@ export async function httpRequest<R = void, B = void>(
 
 	const queryString = formatQueryParams(query);
 
-	// const isAbsoluteUrl = /^https?:\/\//i.test(endpoint);
-
-	// const fullEndpoint = isAbsoluteUrl ? endpoint : siteConfig.baseUrl.concat(endpoint);
-
-	// const url = queryString ? fullEndpoint.concat(queryString) : fullEndpoint;
-
 	const url = buildUrl(endpoint, queryString);
 
 	const response = await fetch(url, {
@@ -39,7 +35,7 @@ export async function httpRequest<R = void, B = void>(
 		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/json',
-			...(headers || {}),
+			...(await buildHeaders(headers)),
 		},
 		...(body && { body: JSON.stringify(body) }),
 	});

@@ -1,4 +1,4 @@
-import type { TCredentials, TUser } from '@/types/user.types';
+import type { TCredentials, IUser } from '@/types/user.types';
 
 import { create } from 'zustand';
 
@@ -6,7 +6,7 @@ import { loginUser } from '../actions/api.auth';
 import { getCurrentUser, logoutUser } from '../actions/manageUser';
 
 interface AuthState {
-	user?: TUser | null;
+	user?: IUser | null;
 	isLoading: boolean;
 	login: (credentials: TCredentials) => Promise<void>;
 	logout: () => Promise<void>;

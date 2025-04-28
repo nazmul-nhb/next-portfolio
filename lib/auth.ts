@@ -1,25 +1,30 @@
 import bcrypt from 'bcryptjs';
 
 /**
- * Hash a plain password
+ * * Utility function to hash password using `bcrypt`.
+ * @param password Password to hash.
+ * @returns Hashed password.
  */
 export async function hashPassword(password: string): Promise<string> {
 	try {
-		return bcrypt.hash(password, 10);
+		return await bcrypt.hash(password, 10);
 	} catch (error) {
 		throw error;
 	}
 }
 
 /**
- * Compare plain password with hashed password
+ * * Utility function to compare incoming password with hashed password.
+ * @param rawPassword Incoming password from client.
+ * @param hashedPassword Password from DB to be compared with.
+ * @returns `true` if password is matched, otherwise `false`.
  */
 export async function verifyPassword(
-	password: string,
+	rawPassword: string,
 	hashedPassword: string
 ): Promise<boolean> {
 	try {
-		return bcrypt.compare(password, hashedPassword);
+		return await bcrypt.compare(rawPassword, hashedPassword);
 	} catch (error) {
 		console.error(error);
 

@@ -1,27 +1,21 @@
 'use server';
 
-import type { TUser } from '@/types/user.types';
+import type { IUser } from '@/types/user.types';
 
 import { cookies } from 'next/headers';
 
-import { verifyJwt } from '@/lib/jwt';
+import { httpRequest } from './baseRequest';
 
-/**
- * Get the currently logged in user from cookie
- */
-export async function getCurrentUser(): Promise<TUser | null> {
-	const cookieStore = await cookies();
-
-	const token = cookieStore.get('token')?.value;
-
-	if (!token) {
-		return null;
-	}
-
+/** * Get the currently logged in user by decoding token from cookies */
+export async function getCurrentUser() {
 	try {
-		const user = verifyJwt(token);
+		const user = await httpRequest<IUser>(`/api/auth/me`);
 
-		return user as TUser;
+		if (!user?.data) {
+			return null;
+		}
+
+		return user.data;
 	} catch {
 		return null;
 	}
