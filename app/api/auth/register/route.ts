@@ -6,25 +6,32 @@ import sendResponse from '@/lib/actions/sendResponse';
 import { hashPassword } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
+import { UserRegistrationSchema } from '@/schema/user.schema';
+import { validateRequest } from '@/lib/actions/validateRequest';
 
-/**
- * Register Route
- */
+/** * User Registration Route */
 export async function POST(req: Request) {
 	try {
 		await connectDB();
+
 		const userData: TRegisterUser = await req.json();
 
-		const exists = await User.findOne({ email: userData.email });
+		const validated = await validateRequest(UserRegistrationSchema, userData);
+
+		if (!validated.success) {
+			return validated.response;
+		}
+
+		const exists = await User.findOne({ email: validated.data.email });
 
 		if (exists) {
 			return NextResponse.json({ message: 'Email already exists' }, { status: 400 });
 		}
 
-		const hashed = await hashPassword(userData.password);
+		const hashed = await hashPassword(validated.data.password);
 
 		const user = await User.create({
-			...userData,
+			...validated.data,
 			password: hashed,
 		});
 
