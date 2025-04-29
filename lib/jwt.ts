@@ -18,11 +18,11 @@ export function signJwt(payload: Record<string, unknown>): string {
 }
 
 /**
- * * Utility function to check if token is valid.
+ * * Utility function to decode `jsonwebtoken`.
  * @param token Token from client.
  * @returns Decoded token payload.
  */
-export function verifyJwt(token: string): DecodedUser {
+export function decodeJwt(token: string): DecodedUser {
 	try {
 		return jwt.verify(token, JWT_SECRET) as DecodedUser;
 	} catch (error) {

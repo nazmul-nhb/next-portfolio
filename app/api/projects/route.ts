@@ -1,16 +1,13 @@
 import type { TProjectData } from '@/types/project.types';
 
-import { NextResponse } from 'next/server';
-
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { connectDB } from '@/lib/db';
 import { Project } from '@/models/Project';
 import { ProjectCreationSchema } from '@/schema/project.schema';
+import { sendErrorResponse } from '@/lib/actions/errorResponse';
 
-/**
- * * GET all projects
- */
+/** * GET all projects */
 export async function GET() {
 	try {
 		await connectDB();
@@ -20,13 +17,11 @@ export async function GET() {
 	} catch (error) {
 		console.error(error);
 
-		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+		return sendErrorResponse();
 	}
 }
 
-/**
- * * POST a new project
- */
+/** * POST a new project */
 export async function POST(req: Request) {
 	try {
 		await connectDB();
@@ -47,6 +42,6 @@ export async function POST(req: Request) {
 	} catch (error) {
 		console.error(error);
 
-		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+		return sendErrorResponse();
 	}
 }

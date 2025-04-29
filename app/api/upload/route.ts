@@ -1,8 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { type NextRequest, NextResponse } from 'next/server';
+import { type NextRequest } from 'next/server';
 
 import { cloudinaryConfig } from '@/constants';
 import sendResponse from '@/lib/actions/sendResponse';
+import { sendErrorResponse } from '@/lib/actions/errorResponse';
 
 cloudinary.config(cloudinaryConfig);
 
@@ -42,7 +43,7 @@ export async function PUT(req: NextRequest) {
 		const { publicId } = (await req.json()) as { publicId: string };
 
 		if (!publicId) {
-			return NextResponse.json({ error: 'Public ID is required' }, { status: 400 });
+			return sendErrorResponse('Public ID is required!', 400);
 		}
 
 		const res: { result: string } = await cloudinary.uploader.destroy(publicId);
@@ -56,8 +57,8 @@ export async function PUT(req: NextRequest) {
 			);
 		}
 
-		return NextResponse.json({ error: 'Internal Server Error!' }, { status: 500 });
+		return sendErrorResponse();
 	} catch (error) {
-		return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+		return sendErrorResponse((error as Error)?.message, 500, error as Error);
 	}
 }

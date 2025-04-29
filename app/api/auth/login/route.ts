@@ -1,17 +1,15 @@
 import type { TCredentials, TUser } from '@/types/user.types';
 
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 
-import sendResponse from '@/lib/actions/sendResponse';
+import { sendErrorResponse } from '@/lib/actions/errorResponse';
+import { sendResponse } from '@/lib/actions/sendResponse';
 import { verifyPassword } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { signJwt } from '@/lib/jwt';
 import { User } from '@/models/User';
 
-/**
- * Login Route
- */
+/** * Login Route */
 export async function POST(req: Request) {
 	try {
 		await connectDB();
@@ -21,13 +19,13 @@ export async function POST(req: Request) {
 		const user = await User.findOne({ email });
 
 		if (!user) {
-			return NextResponse.json({ message: 'User not found' }, { status: 404 });
+			return sendErrorResponse('Invalid Credentials!', 401);
 		}
 
 		const isValid = await verifyPassword(password, user.password);
 
 		if (!isValid) {
-			return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+			return sendErrorResponse('Invalid Credentials!', 401);
 		}
 
 		const userData: TUser = user.toObject();
@@ -52,6 +50,6 @@ export async function POST(req: Request) {
 	} catch (error) {
 		console.error(error);
 
-		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+		return sendErrorResponse();
 	}
 }

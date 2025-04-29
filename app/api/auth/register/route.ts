@@ -1,13 +1,12 @@
 import type { TRegisterUser } from '@/types/user.types';
 
-import { NextResponse } from 'next/server';
-
-import sendResponse from '@/lib/actions/sendResponse';
+import { sendResponse } from '@/lib/actions/sendResponse';
 import { hashPassword } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { UserRegistrationSchema } from '@/schema/user.schema';
 import { validateRequest } from '@/lib/actions/validateRequest';
+import { sendErrorResponse } from '@/lib/actions/errorResponse';
 
 /** * User Registration Route */
 export async function POST(req: Request) {
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
 		const exists = await User.findOne({ email: validated.data.email });
 
 		if (exists) {
-			return NextResponse.json({ message: 'Email already exists' }, { status: 400 });
+			return sendErrorResponse('User already exists with this email!', 409);
 		}
 
 		const hashed = await hashPassword(validated.data.password);
@@ -41,6 +40,6 @@ export async function POST(req: Request) {
 	} catch (error) {
 		console.error(error);
 
-		return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+		return sendErrorResponse();
 	}
 }

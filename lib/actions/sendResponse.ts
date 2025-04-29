@@ -17,8 +17,8 @@ export async function sendResponse<T>(
 	method: TMethod,
 	data?: T,
 	customMessage?: string
-): Promise<NextResponse> {
-	const { message, statusCode } = generateResponse(collection, method, data);
+) {
+	const { message, statusCode } = buildResponseMeta(collection, method, data);
 
 	const response = {
 		success: true,
@@ -38,7 +38,7 @@ export async function sendResponse<T>(
  * @param data The data being operated upon.
  * @returns An object containing the formatted message and HTTP status code.
  */
-const generateResponse = <T>(
+const buildResponseMeta = <T>(
 	collection: TCollection,
 	method: TMethod,
 	data?: T

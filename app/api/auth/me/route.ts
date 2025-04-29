@@ -1,9 +1,10 @@
 import type { IUser } from '@/types/user.types';
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 
+import { sendErrorResponse } from '@/lib/actions/errorResponse';
+import { sendResponse } from '@/lib/actions/sendResponse';
 import { authorizeUser } from '@/lib/api/middlewares';
-import sendResponse from '@/lib/actions/sendResponse';
 
 export interface UserRequest extends NextRequest {
 	user: IUser;
@@ -16,11 +17,6 @@ export const GET = authorizeUser(['admin', 'visitor'], async (req: UserRequest) 
 
 		return sendResponse('User', 'GET', user);
 	} catch {
-		return NextResponse.json(
-			{ message: 'No user found with the provided email!' },
-			{
-				status: 404,
-			}
-		);
+		return sendErrorResponse('No user found with the provided email!', 404);
 	}
 });
