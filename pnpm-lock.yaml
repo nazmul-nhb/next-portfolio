@@ -89,9 +89,12 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nhb-hooks:
+        specifier: ^0.1.3
+        version: 0.1.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nhb-toolbox:
-        specifier: ^4.3.2
-        version: 4.3.2
+        specifier: ^4.10.4
+        version: 4.10.4
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -2978,8 +2981,14 @@ packages:
       sass:
         optional: true
 
-  nhb-toolbox@4.3.2:
-    resolution: {integrity: sha512-VFoZYviUD/tvbh8SBZ3tS3+aCqWEnAW8ZgKcbcBGrTHB1KdsycKSwqGL1faUJxL5waHCSE0NQiUCFXNDQYw41w==}
+  nhb-hooks@0.1.3:
+    resolution: {integrity: sha512-DuNluvC0kdyd8pZEi0el//XB2Yn0eshyuPct/qz8K0G9cNBMD8uWmj1BdwapULmTvgJroPeIAQU1oGlioXkxpA==}
+    peerDependencies:
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  nhb-toolbox@4.10.4:
+    resolution: {integrity: sha512-6oDHZvB0o5X0NVMVrglLR9UFRpcUEHT8HaBI543aoucn4i3DWTnTyXgBNGdSLg8BLn1drSwRCGTxjcQgk/xHyQ==}
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
@@ -7541,7 +7550,13 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-toolbox@4.3.2: {}
+  nhb-hooks@0.1.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      nhb-toolbox: 4.10.4
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  nhb-toolbox@4.10.4: {}
 
   node-releases@2.0.19: {}
 

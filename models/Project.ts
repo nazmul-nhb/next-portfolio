@@ -1,7 +1,6 @@
 import type { TProjectDoc } from '@/types/project.types';
 
 import { Schema } from 'mongoose';
-
 import { createModel } from '@/lib/db';
 
 const ProjectSchema = new Schema<TProjectDoc>(
