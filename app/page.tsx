@@ -2,16 +2,19 @@ import { Code } from '@heroui/code';
 import { Link } from '@heroui/link';
 import { Snippet } from '@heroui/snippet';
 import { button as buttonStyles } from '@heroui/theme';
+import { fetchProjects } from '@/lib/actions/api.projects';
 
 import { GithubIcon } from '@/components/icons';
 import { siteConfig } from '@/config/site';
 import Projects from '@/components/Projects';
 import { subtitle, title } from '@/styles/primitives';
 
-export default function Home() {
+export default async function Home() {
+	const projects = await fetchProjects();
+
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-			<Projects />
+			<Projects projects={projects} />
 			<div className="inline-block max-w-xl text-center justify-center">
 				<span className={title()}>Make&nbsp;</span>
 				<span className={title({ color: 'violet' })}>beautiful&nbsp;</span>

@@ -1,4 +1,4 @@
-import type { TCredentials, IUser } from '@/types/user.types';
+import type { IUser, TCredentials } from '@/types/user.types';
 
 import { create } from 'zustand';
 
