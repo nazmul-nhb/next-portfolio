@@ -18,7 +18,7 @@ import clsx from 'clsx';
 import NextLink from 'next/link';
 import { getColorForInitial } from 'nhb-toolbox';
 
-import LoginRegister from './LoginRegister';
+import LoginRegister from './auth';
 import PortfolioModal from './ui/modal';
 
 import { DiscordIcon, GithubIcon, Logo, SearchIcon } from '@/components/icons';

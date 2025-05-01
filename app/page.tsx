@@ -1,20 +1,17 @@
-import { Code } from '@heroui/code';
+export const dynamic = 'force-dynamic';
+
 import { Link } from '@heroui/link';
-import { Snippet } from '@heroui/snippet';
 import { button as buttonStyles } from '@heroui/theme';
-import { fetchProjects } from '@/lib/actions/api.projects';
 
 import { GithubIcon } from '@/components/icons';
 import { siteConfig } from '@/config/site';
-import Projects from '@/components/Projects';
 import { subtitle, title } from '@/styles/primitives';
+import HomePage from '../components/home/HomePage';
 
-export default async function Home() {
-	const projects = await fetchProjects();
-
+export default function Home() {
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-			<Projects projects={projects} />
+			<HomePage />
 			<div className="inline-block max-w-xl text-center justify-center">
 				<span className={title()}>Make&nbsp;</span>
 				<span className={title({ color: 'violet' })}>beautiful&nbsp;</span>
@@ -28,17 +25,6 @@ export default async function Home() {
 			</div>
 
 			<div className="flex gap-3">
-				{/* <Link
-					isExternal
-					className={buttonStyles({
-						color: 'primary',
-						radius: 'full',
-						variant: 'shadow',
-					})}
-					href={siteConfig.links.docs}
-				>
-					Documentation
-				</Link> */}
 				<Link
 					isExternal
 					className={buttonStyles({ variant: 'bordered', radius: 'full' })}
@@ -47,14 +33,6 @@ export default async function Home() {
 					<GithubIcon size={20} />
 					GitHub
 				</Link>
-			</div>
-
-			<div className="mt-8">
-				<Snippet hideCopyButton hideSymbol variant="bordered">
-					<span>
-						Get started by editing <Code color="primary">app/page.tsx</Code>
-					</span>
-				</Snippet>
 			</div>
 		</section>
 	);

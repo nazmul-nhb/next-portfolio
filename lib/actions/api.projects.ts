@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 
 import { httpRequest } from './baseRequest';
 
+/** Fetch all projects from server. */
 export async function fetchProjects() {
 	try {
 		const res = await httpRequest<TProject[]>('/api/projects', {
@@ -13,12 +14,16 @@ export async function fetchProjects() {
 			},
 		});
 
-		return res.data;
+		return res?.data || [];
 	} catch (error) {
 		console.error(error);
 	}
 }
 
+/**
+ * Create a new project data to store in DB.
+ * @param data Project data to post
+ */
 export async function createProject(data: TProjectData) {
 	try {
 		const res = await httpRequest<TProject, TProjectData>('api/projects', {
