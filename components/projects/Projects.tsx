@@ -4,7 +4,7 @@ import { Image } from '@heroui/react';
 import NextImage from 'next/image';
 import { useValidImage } from 'nhb-hooks';
 import type { TProject } from '../../types/project.types';
-import Test from './test';
+import Test from '../home/test';
 
 interface Props {
 	projects: TProject[] | undefined;

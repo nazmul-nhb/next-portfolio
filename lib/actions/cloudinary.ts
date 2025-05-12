@@ -26,7 +26,7 @@ export interface SignedData {
  * @returns An object containing the secure URL and public ID of the uploaded image.
  */
 export async function uploadToCloudinary(
-	file: File,
+	file: File | FileList,
 	suffix: string
 ): Promise<CloudinaryResponse> {
 	const filename = generateRandomID({

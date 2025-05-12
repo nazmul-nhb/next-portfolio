@@ -48,7 +48,11 @@ export async function connectDB(): Promise<Connection> {
 }
 
 /**
- * Create or get an existing mongoose model safely
+ * * Create or get an existing mongoose model safely
+ *
+ * @param name Collection/Model name.
+ * @param schema Mongoose Schema.
+ * @returns New model based on the collection name and schema.
  */
 export function createModel<T>(name: TCollection, schema: Schema<T>): Model<T> {
 	return (models[name] as Model<T>) ?? model<T>(name, schema);
