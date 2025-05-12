@@ -4,7 +4,6 @@ import { Button, Form, Input, Textarea } from '@heroui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import type { z } from 'zod';
 import type { TProjectFields } from '../../types/project.types';
 import { ProjectCreationFields } from '../../schema/project.schema';
 
@@ -15,7 +14,7 @@ interface Props {
 /**
  * Project Creation/Update Form Component
  */
-export function ProjectForm({ closeModal }: Props) {
+export default function ProjectForm({ closeModal }: Props) {
 	const [error, setError] = useState<string | null>(null);
 
 	const {

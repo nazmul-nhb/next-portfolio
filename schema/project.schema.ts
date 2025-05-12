@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createImageFileListSchema, ImageSchema } from './files.schema';
+import { ScreenshotsSchema, ImageSchema } from './files.schema';
 
 export const ProjectCreationSchema = z
 	.object({
@@ -29,5 +29,5 @@ export const ProjectCreationFields = ProjectCreationSchema.omit({
 	screenshots: true,
 }).extend({
 	favicon: ImageSchema,
-	screenshots: createImageFileListSchema({ exactCount: 3 }),
+	screenshots: ScreenshotsSchema,
 });
