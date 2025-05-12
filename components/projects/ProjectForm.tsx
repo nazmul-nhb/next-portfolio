@@ -84,7 +84,7 @@ export default function ProjectForm({ closeModal }: Props) {
 			<Input
 				label="Favicon"
 				type="file"
-				accept="image/*"
+				accept="image/gif, image/svg+xml, image/png,"
 				errorMessage={errors.favicon?.message?.toString()}
 				isInvalid={!!errors.favicon}
 				{...register('favicon')}
@@ -94,7 +94,7 @@ export default function ProjectForm({ closeModal }: Props) {
 				label="Screenshots (3)"
 				type="file"
 				multiple
-				accept="image/*"
+				accept="image/jpeg, image/jpg, image/png"
 				errorMessage={errors.screenshots?.message?.toString()}
 				isInvalid={!!errors.screenshots}
 				{...register('screenshots')}

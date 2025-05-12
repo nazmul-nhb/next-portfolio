@@ -36,11 +36,11 @@ export default function PortfolioModal({
 }: Props) {
 	return (
 		<Modal isOpen={isOpen} onOpenChange={onOpenChange} {...rest}>
-			<ModalContent>
+			<ModalContent className="max-h-[80vh] overflow-hidden">
 				{(onClose) => (
 					<>
 						<ModalHeader>{title}</ModalHeader>
-						<ModalBody>{content}</ModalBody>
+						<ModalBody className="max-h-[70vh] overflow-y-auto">{content}</ModalBody>
 						<ModalFooter>
 							<Button color="danger" variant="light" onPress={onClose}>
 								{closeButtonLabel}
