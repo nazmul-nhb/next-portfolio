@@ -7,6 +7,13 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ProjectCreationFields } from '../../schema/project.schema';
 import type { TProjectFields } from '../../types/project.types';
+import {
+	deleteFromCloudinary,
+	uploadMultipleToCloudinary,
+	uploadToCloudinary,
+} from '../../lib/actions/cloudinary';
+import { isEmptyObject } from 'nhb-toolbox';
+import { createProject } from '../../lib/actions/api.projects';
 
 interface Props {
 	closeModal: () => void;
@@ -28,14 +35,58 @@ export default function ProjectForm({ closeModal }: Props) {
 	});
 
 	const onSubmit = async (data: TProjectFields) => {
+		console.log(data);
 		try {
 			setError(null);
 
-			// TODO: Add image uploads + form submission logic
-			console.log('Submitted Project:', data);
+			// Upload favicon (single)
+			const faviconRes = await uploadToCloudinary(data.favicon, 'favicon');
 
-			closeModal();
+			if (isEmptyObject(faviconRes)) {
+				return console.error('Favicon upload failed!');
+			}
+
+			// Upload screenshots (multiple)
+			const screenshotsRes = await uploadMultipleToCloudinary(
+				data.screenshots,
+				'screenshot'
+			);
+
+			if (!screenshotsRes.length) {
+				// Clean up favicon if screenshots fail
+				await deleteFromCloudinary(faviconRes.publicId);
+				throw new Error('Screenshots upload failed!');
+			}
+
+			// Now all uploads succeeded
+			const payload = {
+				...data,
+				favicon: faviconRes.url,
+				screenshots: screenshotsRes.map((s) => s.url) as [string, string, string],
+			};
+
+			try {
+				// TODO: Submit `payload` to backend
+				console.log('Submitted Project:', payload);
+
+				await createProject(payload);
+
+				closeModal();
+			} catch (error) {
+				if (faviconRes?.publicId) {
+					await deleteFromCloudinary(faviconRes.publicId);
+				}
+
+				if (screenshotsRes.length > 0) {
+					await Promise.allSettled(
+						screenshotsRes.map((ss) => deleteFromCloudinary(ss.publicId))
+					);
+				}
+
+				throw error;
+			}
 		} catch (err) {
+			console.error(err);
 			setError((err as Error)?.message || 'Something went wrong');
 		}
 	};

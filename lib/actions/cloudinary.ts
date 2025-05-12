@@ -78,6 +78,23 @@ export async function uploadToCloudinary(
 }
 
 /**
+ * * Uploads multiple files to Cloudinary and returns their URLs and public IDs.
+ * @param files A FileList or array of Files.
+ * @param suffix Optional suffix for each filename.
+ * @returns Array of CloudinaryResponse for each uploaded file.
+ */
+export async function uploadMultipleToCloudinary(
+	files: FileList | File[],
+	suffix: string
+): Promise<CloudinaryResponse[]> {
+	const filesArray = Array.from(files);
+
+	const uploads = filesArray.map((file) => uploadToCloudinary(file, suffix));
+
+	return Promise.all(uploads);
+}
+
+/**
  * Deletes a file from Cloudinary by public ID.
  * @param publicId The public ID of the image to delete.
  * @returns A promise that resolves when the image is deleted.
