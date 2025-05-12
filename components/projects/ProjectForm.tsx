@@ -111,6 +111,7 @@ export default function ProjectForm({ closeModal }: Props) {
 						value={field.value}
 						onChange={field.onChange}
 						error={fieldState.error?.message}
+						isInvalid={!!errors.technologies}
 					/>
 				)}
 			/>
@@ -124,6 +125,7 @@ export default function ProjectForm({ closeModal }: Props) {
 						value={field.value}
 						onChange={field.onChange}
 						error={fieldState.error?.message}
+						isInvalid={!!errors.features}
 					/>
 				)}
 			/>

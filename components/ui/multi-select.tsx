@@ -60,7 +60,7 @@ const CreatableSelectInput: FC<CreatableSelectInputProps> = ({
 }) => {
 	const { resolvedTheme } = useTheme();
 
-	const options = value.map((v) => ({ label: v, value: v }));
+	const options = value ? value?.map((v) => ({ label: v, value: v })) : [];
 
 	return (
 		<div className="space-y-1">
@@ -77,7 +77,7 @@ const CreatableSelectInput: FC<CreatableSelectInputProps> = ({
 				isMulti
 				isDisabled={isDisabled}
 				value={options}
-				onChange={(vals) => onChange(vals.map((v) => v.value))}
+				onChange={(vals) => onChange(vals?.map((v) => v.value))}
 				placeholder={placeholder}
 				classNames={{
 					control: () =>
