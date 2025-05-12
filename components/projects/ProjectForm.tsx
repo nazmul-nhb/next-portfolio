@@ -3,17 +3,13 @@
 import CreatableMultiSelect from '@/components/ui/multi-select';
 import { Button, Form, Input, Textarea } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isEmptyObject } from 'nhb-toolbox';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { createProject } from '../../lib/actions/api.projects';
+import { deleteFromCloudinary, uploadToCloudinary } from '../../lib/actions/cloudinary';
 import { ProjectCreationFields } from '../../schema/project.schema';
 import type { TProjectFields } from '../../types/project.types';
-import {
-	deleteFromCloudinary,
-	uploadMultipleToCloudinary,
-	uploadToCloudinary,
-} from '../../lib/actions/cloudinary';
-import { isEmptyObject } from 'nhb-toolbox';
-import { createProject } from '../../lib/actions/api.projects';
 
 interface Props {
 	closeModal: () => void;
@@ -47,9 +43,8 @@ export default function ProjectForm({ closeModal }: Props) {
 			}
 
 			// Upload screenshots (multiple)
-			const screenshotsRes = await uploadMultipleToCloudinary(
-				data.screenshots,
-				'screenshot'
+			const screenshotsRes = await Promise.all(
+				[...data.screenshots].map((ss) => uploadToCloudinary(ss, 'screenshot'))
 			);
 
 			if (!screenshotsRes.length) {
@@ -77,7 +72,7 @@ export default function ProjectForm({ closeModal }: Props) {
 					await deleteFromCloudinary(faviconRes.publicId);
 				}
 
-				if (screenshotsRes.length > 0) {
+				if (screenshotsRes.length > 0 && screenshotsRes[0]?.publicId) {
 					await Promise.allSettled(
 						screenshotsRes.map((ss) => deleteFromCloudinary(ss.publicId))
 					);
