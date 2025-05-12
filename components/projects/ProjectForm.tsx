@@ -1,11 +1,12 @@
 'use client';
 
+import CreatableMultiSelect from '@/components/ui/multi-select';
 import { Button, Form, Input, Textarea } from '@heroui/react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import type { TProjectFields } from '../../types/project.types';
+import { Controller, useForm } from 'react-hook-form';
 import { ProjectCreationFields } from '../../schema/project.schema';
+import type { TProjectFields } from '../../types/project.types';
 
 interface Props {
 	closeModal: () => void;
@@ -19,6 +20,7 @@ export default function ProjectForm({ closeModal }: Props) {
 
 	const {
 		register,
+		control,
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<TProjectFields>({
@@ -100,22 +102,31 @@ export default function ProjectForm({ closeModal }: Props) {
 				{...register('screenshots')}
 			/>
 
-			<Textarea
-				label="Technologies (comma separated)"
-				placeholder="React, Node.js, Tailwind"
-				errorMessage={errors.technologies?.message}
-				isInvalid={!!errors.technologies}
-				{...register('technologies')}
+			<Controller
+				name="technologies"
+				control={control}
+				render={({ field, fieldState }) => (
+					<CreatableMultiSelect
+						label="Technologies"
+						value={field.value}
+						onChange={field.onChange}
+						error={fieldState.error?.message}
+					/>
+				)}
 			/>
 
-			<Textarea
-				label="Features (comma separated)"
-				placeholder="Authentication, Realtime Chat, Offline Support"
-				errorMessage={errors.features?.message}
-				isInvalid={!!errors.features}
-				{...register('features')}
+			<Controller
+				name="features"
+				control={control}
+				render={({ field, fieldState }) => (
+					<CreatableMultiSelect
+						label="Features"
+						value={field.value}
+						onChange={field.onChange}
+						error={fieldState.error?.message}
+					/>
+				)}
 			/>
-
 			<Input
 				label="Last Updated"
 				type="date"
