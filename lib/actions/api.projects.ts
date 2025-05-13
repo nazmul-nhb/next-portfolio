@@ -28,7 +28,7 @@ export async function fetchProjects() {
  */
 export async function createProject(data: TProjectData) {
 	try {
-		const res = await httpRequest<TProject, TProjectData>('api/projects', {
+		const res = await httpRequest<TProject, TProjectData>('/api/projects', {
 			method: 'POST',
 			body: data,
 			next: {

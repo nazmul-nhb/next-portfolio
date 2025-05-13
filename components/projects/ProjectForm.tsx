@@ -1,7 +1,7 @@
 'use client';
 
 import CreatableMultiSelect from '@/components/ui/multi-select';
-import { Button, Form, Input, Textarea } from '@heroui/react';
+import { Button, DatePicker, Form, Input, Textarea } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isEmptyObject } from 'nhb-toolbox';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { createProject } from '../../lib/actions/api.projects';
 import { deleteFromCloudinary, uploadToCloudinary } from '../../lib/actions/cloudinary';
 import { ProjectCreationFields } from '../../schema/project.schema';
 import type { TProjectFields } from '../../types/project.types';
+import { parseDate, today } from '@internationalized/date'; // required for DateValue utils
 
 interface Props {
 	closeModal: () => void;
@@ -24,6 +25,8 @@ export default function ProjectForm({ closeModal }: Props) {
 	const {
 		register,
 		control,
+		watch,
+		setValue,
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<TProjectFields>({
@@ -44,7 +47,9 @@ export default function ProjectForm({ closeModal }: Props) {
 
 			// Upload screenshots (multiple)
 			const screenshotsRes = await Promise.all(
-				[...data.screenshots].map((ss) => uploadToCloudinary(ss, 'screenshot'))
+				Array.from(data.screenshots).map((ss) =>
+					uploadToCloudinary(ss, 'screenshot')
+				)
 			);
 
 			if (!screenshotsRes.length) {
@@ -148,6 +153,15 @@ export default function ProjectForm({ closeModal }: Props) {
 				{...register('screenshots')}
 			/>
 
+			{/* Display screenshot file names */}
+			{watch('screenshots') && (
+				<ul className="text-xs text-gray-600 mt-1">
+					{Array.from(watch('screenshots') ?? []).map((file, i) => (
+						<li key={i}>{file.name}</li>
+					))}
+				</ul>
+			)}
+
 			<Controller
 				name="technologies"
 				control={control}
@@ -175,13 +189,31 @@ export default function ProjectForm({ closeModal }: Props) {
 					/>
 				)}
 			/>
-			<Input
+
+			<Controller
+				name="lastUpdated"
+				control={control}
+				render={({ field, fieldState }) => (
+					<DatePicker
+						isRequired
+						label="Last Updated"
+						maxValue={today('UTC')} // disables future dates
+						value={field.value ? parseDate(field.value) : null} // string → DateValue
+						onChange={
+							(date) => field.onChange(date?.toString() ?? '') // DateValue → string
+						}
+						errorMessage={fieldState.error?.message}
+						isInvalid={!!fieldState.error}
+					/>
+				)}
+			/>
+			{/* <Input
 				label="Last Updated"
 				type="date"
 				errorMessage={errors.lastUpdated?.message}
 				isInvalid={!!errors.lastUpdated}
 				{...register('lastUpdated')}
-			/>
+			/> */}
 
 			{error && <p className="text-sm text-red-500 text-center mt-2">{error}</p>}
 

@@ -24,6 +24,7 @@
     "@heroui/system": "2.4.13",
     "@heroui/theme": "2.4.13",
     "@hookform/resolvers": "^5.0.1",
+    "@internationalized/date": "^3.8.0",
     "@react-aria/ssr": "3.9.7",
     "@react-aria/visually-hidden": "3.8.21",
     "axios": "^1.9.0",

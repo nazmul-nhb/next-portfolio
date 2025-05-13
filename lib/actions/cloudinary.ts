@@ -1,7 +1,7 @@
 import type { UploadApiResponse } from 'cloudinary';
 
 import axios from 'axios';
-import { createFormData, generateRandomID } from 'nhb-toolbox';
+import { generateRandomID } from 'nhb-toolbox';
 
 import { httpRequest } from './baseRequest';
 
@@ -20,7 +20,7 @@ export interface SignedData {
 }
 
 /**
- * Uploads a file to Cloudinary and returns the uploaded file's URL and public ID.
+ * * Uploads a file to Cloudinary and returns the uploaded file's URL and public ID.
  * @param file The file to upload.
  * @param suffix The suffix to append to the file name.
  * @returns An object containing the secure URL and public ID of the uploaded image.
@@ -47,15 +47,15 @@ export async function uploadToCloudinary(
 			}
 		);
 
-		const formData = createFormData({
-			file: file,
-			upload_preset: 'portfolio',
-			folder: 'portfolio',
-			api_key: cloudinaryConfig.api_key,
-			public_id: filename,
-			timestamp: data?.timestamp,
-			signature: data?.signature,
-		});
+		const formData = new FormData();
+
+		formData.append('file', file instanceof File ? file : (file.item(0) as File));
+		formData.append('upload_preset', 'portfolio');
+		formData.append('folder', 'portfolio');
+		formData.append('api_key', cloudinaryConfig.api_key);
+		formData.append('public_id', filename);
+		formData.append('timestamp', String(data?.timestamp));
+		formData.append('signature', String(data?.signature));
 
 		const response = await axios.post<UploadApiResponse>(
 			cloudinaryUrls.upload_url,

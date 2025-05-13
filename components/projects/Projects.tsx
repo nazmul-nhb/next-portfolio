@@ -3,6 +3,7 @@
 import { Image } from '@heroui/react';
 import NextImage from 'next/image';
 import { useValidImage } from 'nhb-hooks';
+import { cloudinaryUrls } from '../../constants';
 import type { TProject } from '../../types/project.types';
 import Test from '../home/test';
 
@@ -11,7 +12,10 @@ interface Props {
 }
 
 export default function Projects({ projects }: Props) {
-	const imgUrls = useValidImage(projects?.map((p) => p?.favicon));
+	const imgUrls = useValidImage(
+		projects?.map((p) => p?.favicon),
+		{ imgHostLink: cloudinaryUrls.base_url }
+	);
 
 	return (
 		<div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">

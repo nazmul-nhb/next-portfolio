@@ -53,6 +53,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.0.1
         version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+      '@internationalized/date':
+        specifier: ^3.8.0
+        version: 3.8.0
       '@react-aria/ssr':
         specifier: 3.9.7
         version: 3.9.7(react@19.1.0)
@@ -6111,7 +6114,7 @@ snapshots:
 
   '@react-aria/i18n@3.12.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@internationalized/date': 3.7.0
+      '@internationalized/date': 3.8.0
       '@internationalized/message': 3.1.7
       '@internationalized/number': 3.6.1
       '@internationalized/string': 3.2.6
@@ -6837,7 +6840,7 @@ snapshots:
 
   '@react-types/datepicker@3.11.0(react@19.1.0)':
     dependencies:
-      '@internationalized/date': 3.7.0
+      '@internationalized/date': 3.8.0
       '@react-types/calendar': 3.7.0(react@19.1.0)
       '@react-types/overlays': 3.8.14(react@19.1.0)
       '@react-types/shared': 3.29.0(react@19.1.0)

@@ -14,7 +14,7 @@ cloudinary.config(cloudinaryConfig);
 export async function POST(req: NextRequest) {
 	const { filename } = (await req.json()) as { filename: string };
 
-	const timestamp = Math.round(Date.now() / 1000);
+	const timestamp = Math.floor(Date.now() / 1000);
 
 	const signature = cloudinary.utils.api_sign_request(
 		{
