@@ -1,5 +1,5 @@
 import type { ServerResponse, TMethod } from '@/types';
-import type { QueryObject } from 'nhb-toolbox/object/types';
+import type { QueryObject } from 'nhb-toolbox';
 
 import { formatQueryParams } from 'nhb-toolbox';
 

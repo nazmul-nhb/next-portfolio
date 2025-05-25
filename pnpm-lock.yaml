@@ -93,11 +93,11 @@ importers:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nhb-hooks:
-        specifier: ^1.2.3
-        version: 1.2.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: ^1.10.10
+        version: 1.10.10(nhb-toolbox@4.10.96)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       nhb-toolbox:
-        specifier: ^4.10.44
-        version: 4.10.44
+        specifier: ^4.10.96
+        version: 4.10.96
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -3343,14 +3343,15 @@ packages:
       sass:
         optional: true
 
-  nhb-hooks@1.2.3:
-    resolution: {integrity: sha512-Gs5IeWMSh4kyxZ05QzHS7yP64uzMGgoMlwNUsLJuxIRCAJbuMBUNLSruCvodT5Y9cYrIQg40hFrnhviJb1x2RQ==}
+  nhb-hooks@1.10.10:
+    resolution: {integrity: sha512-ukmOhS3ld3r9wSKXd4GwfGYyup8Ga7rimaW0zFNVe7u09Ftkt3G5TbQgX3T0/NZ9DLEnZ3+TUn1k/B0kwGXjYg==}
     peerDependencies:
+      nhb-toolbox: '>=4.10.96'
       react: ^18 || ^19
       react-dom: ^18 || ^19
 
-  nhb-toolbox@4.10.44:
-    resolution: {integrity: sha512-2n2rM7rk5kc1aDh0SWPHSdIxDL40hn3CVIW/HACVKnAyrmTYeB+Y8UuB6JkRJCp8KV31ls9kPg+HYsmsXtmFpA==}
+  nhb-toolbox@4.10.96:
+    resolution: {integrity: sha512-W3CgrWMH7G7pyMevdIAVyxaTbHtGjlu3S0uEjw5g4pdner0j/8XJGjB1OVQCaQifNwLb+F6xeqVkDCelEwlEjw==}
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
@@ -8556,12 +8557,13 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-hooks@1.2.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  nhb-hooks@1.10.10(nhb-toolbox@4.10.96)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
+      nhb-toolbox: 4.10.96
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  nhb-toolbox@4.10.44: {}
+  nhb-toolbox@4.10.96: {}
 
   node-releases@2.0.19: {}
 

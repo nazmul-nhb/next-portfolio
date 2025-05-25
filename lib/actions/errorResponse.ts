@@ -1,7 +1,7 @@
 'use server';
 
 import type { TStatusCode } from '@/types';
-import type { GenericObject } from 'nhb-toolbox/object/types';
+import type { GenericObject } from 'nhb-toolbox';
 
 import { NextResponse } from 'next/server';
 

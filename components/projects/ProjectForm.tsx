@@ -3,6 +3,7 @@
 import CreatableMultiSelect from '@/components/ui/multi-select';
 import { Button, DatePicker, Form, Input, Textarea } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { parseDate, today } from '@internationalized/date';
 import { isEmptyObject } from 'nhb-toolbox';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,23 +11,21 @@ import { createProject } from '../../lib/actions/api.projects';
 import { deleteFromCloudinary, uploadToCloudinary } from '../../lib/actions/cloudinary';
 import { ProjectCreationFields } from '../../schema/project.schema';
 import type { TProjectFields } from '../../types/project.types';
-import { parseDate, today } from '@internationalized/date'; // required for DateValue utils
 
 interface Props {
-	closeModal: () => void;
+	closeModalAction: () => void;
 }
 
 /**
  * Project Creation/Update Form Component
  */
-export default function ProjectForm({ closeModal }: Props) {
+export default function ProjectForm({ closeModalAction }: Props) {
 	const [error, setError] = useState<string | null>(null);
 
 	const {
 		register,
 		control,
 		watch,
-		setValue,
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<TProjectFields>({
@@ -71,7 +70,7 @@ export default function ProjectForm({ closeModal }: Props) {
 
 				await createProject(payload);
 
-				closeModal();
+				closeModalAction();
 			} catch (error) {
 				if (faviconRes?.publicId) {
 					await deleteFromCloudinary(faviconRes.publicId);
