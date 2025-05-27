@@ -1,11 +1,11 @@
 import type { ServerResponse, TMethod } from '@/types';
-import type { QueryObject } from 'nhb-toolbox';
 
 import { formatQueryParams } from 'nhb-toolbox';
 
 import { buildHeaders } from './buildHeaders';
 
 import { siteConfig } from '@/config/site';
+import type { QueryObject } from 'nhb-toolbox/object/types';
 
 interface Options<Body = unknown> extends Omit<RequestInit, 'body'> {
 	method?: TMethod;
