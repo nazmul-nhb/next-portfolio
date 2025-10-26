@@ -1,19 +1,8 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	logging: {
-		fetches: {
-			hmrRefreshes: true,
-		},
-	},
-	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: '**',
-			},
-		],
-	},
+  /* config options here */
+  reactCompiler: true,
 };
 
 export default nextConfig;
