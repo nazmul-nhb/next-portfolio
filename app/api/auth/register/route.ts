@@ -1,45 +1,84 @@
-import type { TRegisterUser } from '@/types/user.types';
+import { getUserByEmail, createUser } from "@/lib/db-utils"
+import { registerSchema } from "@/lib/validations"
+import { signToken } from "@/lib/auth"
+import { hashPassword } from "@/lib/password"
+import type { ApiResponse, AuthResponse } from "@/lib/types"
 
-import { sendResponse } from '@/lib/actions/sendResponse';
-import { hashPassword } from '@/lib/auth';
-import { connectDB } from '@/lib/db';
-import { User } from '@/models/User';
-import { UserRegistrationSchema } from '@/schema/user.schema';
-import { validateRequest } from '@/lib/actions/validateRequest';
-import { sendErrorResponse } from '@/lib/actions/errorResponse';
+export async function POST(req: Request): Promise<Response> {
+  try {
+    const body = await req.json()
+    const validation = registerSchema.safeParse(body)
 
-/** * User Registration Route */
-export async function POST(req: Request) {
-	try {
-		await connectDB();
+    if (!validation.success) {
+      return Response.json(
+        {
+          success: false,
+          error: validation.error.errors[0].message,
+        } as ApiResponse<AuthResponse>,
+        { status: 400 },
+      )
+    }
 
-		const userData: TRegisterUser = await req.json();
+    const { email, password, name } = validation.data
 
-		const validated = await validateRequest(UserRegistrationSchema, userData);
+    // Check if user exists
+    const existingUser = await getUserByEmail(email)
 
-		if (!validated.success) {
-			return validated.response;
-		}
+    if (existingUser) {
+      return Response.json(
+        {
+          success: false,
+          error: "User already exists",
+        } as ApiResponse<AuthResponse>,
+        { status: 400 },
+      )
+    }
 
-		const exists = await User.findOne({ email: validated.data.email });
+    // Hash password
+    const hashedPassword = await hashPassword(password)
 
-		if (exists) {
-			return sendErrorResponse('User already exists with this email!', 409);
-		}
+    // Create user with default 'user' role
+    const user = await createUser({
+      email,
+      passwordHash: hashedPassword,
+      name,
+    })
 
-		const hashed = await hashPassword(validated.data.password);
+    const token = await signToken({ userId: user.id, email: user.email, role: user.role })
 
-		const user = await User.create({
-			...validated.data,
-			password: hashed,
-		});
+    const response = Response.json(
+      {
+        success: true,
+        data: {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          },
+          token,
+        },
+      } as ApiResponse<AuthResponse>,
+      { status: 201 },
+    )
 
-		if (user?._id) {
-			return sendResponse('User', 'POST', undefined, 'User created successfully!');
-		}
-	} catch (error) {
-		console.error(error);
+    response.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    })
 
-		return sendErrorResponse();
-	}
+    return response
+  } catch (error) {
+    console.error("[v0] Registration error:", error)
+    return Response.json(
+      {
+        success: false,
+        error: "Internal server error",
+      } as ApiResponse<AuthResponse>,
+      { status: 500 },
+    )
+  }
 }

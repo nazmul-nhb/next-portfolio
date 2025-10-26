@@ -1,33 +1,28 @@
-import bcrypt from 'bcryptjs';
+import { jwtVerify, SignJWT } from "jose"
 
-/**
- * * Utility function to hash password using `bcrypt`.
- * @param password Password to hash.
- * @returns Hashed password.
- */
-export async function hashPassword(password: string): Promise<string> {
-	try {
-		return await bcrypt.hash(password, 10);
-	} catch (error) {
-		throw error;
-	}
+const secret = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key-change-in-production")
+
+export async function signToken(payload: Record<string, unknown>) {
+  return new SignJWT(payload).setProtectedHeader({ alg: "HS256" }).setExpirationTime("7d").sign(secret)
 }
 
-/**
- * * Utility function to compare incoming password with hashed password.
- * @param rawPassword Incoming password from client.
- * @param hashedPassword Password from DB to be compared with.
- * @returns `true` if password is matched, otherwise `false`.
- */
-export async function verifyPassword(
-	rawPassword: string,
-	hashedPassword: string
-): Promise<boolean> {
-	try {
-		return await bcrypt.compare(rawPassword, hashedPassword);
-	} catch (error) {
-		console.error(error);
+export async function verifyToken(token: string) {
+  try {
+    const verified = await jwtVerify(token, secret)
+    return verified.payload
+  } catch {
+    return null
+  }
+}
 
-		return false;
-	}
+export function getTokenFromCookie(cookieString: string) {
+  const cookies = cookieString.split(";").reduce(
+    (acc, cookie) => {
+      const [key, value] = cookie.trim().split("=")
+      acc[key] = value
+      return acc
+    },
+    {} as Record<string, string>,
+  )
+  return cookies.auth_token
 }

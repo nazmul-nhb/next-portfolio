@@ -1,55 +1,88 @@
-import type { TCredentials, TUser } from '@/types/user.types';
+import { getUserByEmail } from '@/lib/db-utils';
+import { loginSchema } from '@/lib/validations';
+import { signToken } from '@/lib/auth';
+import { verifyPassword } from '@/lib/password';
+import type { ApiResponse, AuthResponse } from '@/lib/types';
 
-import { cookies } from 'next/headers';
-
-import { sendErrorResponse } from '@/lib/actions/errorResponse';
-import { sendResponse } from '@/lib/actions/sendResponse';
-import { verifyPassword } from '@/lib/auth';
-import { connectDB } from '@/lib/db';
-import { signJwt } from '@/lib/jwt';
-import { User } from '@/models/User';
-
-/** * Login Route */
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
 	try {
-		await connectDB();
+		const body = await req.json();
+		const validation = loginSchema.safeParse(body);
 
-		const { email, password } = (await req.json()) as TCredentials;
+		if (!validation.success) {
+			return Response.json(
+				{
+					success: false,
+					error: validation.error.errors[0].message,
+				} as ApiResponse<AuthResponse>,
+				{ status: 400 }
+			);
+		}
 
-		const user = await User.findOne({ email });
+		const { email, password } = validation.data;
+
+		// Find user
+		const user = await getUserByEmail(email);
 
 		if (!user) {
-			return sendErrorResponse('Invalid Credentials!', 401);
+			return Response.json(
+				{
+					success: false,
+					error: 'Invalid credentials',
+				} as ApiResponse<AuthResponse>,
+				{ status: 401 }
+			);
 		}
 
-		const isValid = await verifyPassword(password, user.password);
+		// Verify password
+		const isPasswordValid = await verifyPassword(password, user.passwordHash);
 
-		if (!isValid) {
-			return sendErrorResponse('Invalid Credentials!', 401);
+		if (!isPasswordValid) {
+			return Response.json(
+				{
+					success: false,
+					error: 'Invalid credentials',
+				} as ApiResponse<AuthResponse>,
+				{ status: 401 }
+			);
 		}
 
-		const userData: TUser = user.toObject();
-
-		const { password: _, ...userWithoutPassword } = userData;
-
-		const token = signJwt(userWithoutPassword);
-
-		const cookieStore = await cookies();
-
-		cookieStore.set('token', token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			path: '/',
-			maxAge: 60 * 60 * 24 * 7, // 7 days
-			sameSite: 'lax',
+		const token = await signToken({
+			userId: user.id,
+			email: user.email,
+			role: user.role,
 		});
 
-		if (userData?._id) {
-			return sendResponse('User', 'POST', userData, 'Login successful!');
-		}
-	} catch (error) {
-		console.error(error);
+		const response = Response.json({
+			success: true,
+			data: {
+				success: true,
+				user: {
+					id: user.id,
+					email: user.email,
+					name: user.name,
+					role: user.role,
+				},
+				token,
+			},
+		} as ApiResponse<AuthResponse>);
 
-		return sendErrorResponse();
+		// response.cookies.set('auth_token', token, {
+		// 	httpOnly: true,
+		// 	secure: process.env.NODE_ENV === 'production',
+		// 	sameSite: 'lax',
+		// 	maxAge: 7 * 24 * 60 * 60, // 7 days
+		// });
+
+		return response;
+	} catch (error) {
+		console.error('[v0] Login error:', error);
+		return Response.json(
+			{
+				success: false,
+				error: 'Internal server error',
+			} as ApiResponse<AuthResponse>,
+			{ status: 500 }
+		);
 	}
 }

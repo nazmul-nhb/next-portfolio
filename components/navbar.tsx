@@ -1,188 +1,79 @@
-'use client';
+"use client"
 
-import { Input } from '@heroui/input';
-import { Kbd } from '@heroui/kbd';
-import { Link } from '@heroui/link';
-import {
-	Navbar as HeroUINavbar,
-	NavbarBrand,
-	NavbarContent,
-	NavbarItem,
-	NavbarMenu,
-	NavbarMenuItem,
-	NavbarMenuToggle,
-} from '@heroui/navbar';
-import { Button, Spinner, useDisclosure } from '@heroui/react';
-import { link as linkStyles } from '@heroui/theme';
-import clsx from 'clsx';
-import NextLink from 'next/link';
-import { getColorForInitial } from 'nhb-toolbox';
+import Link from "next/link"
+import { useAuthStore } from "@/lib/store"
+import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes"
+import { Moon, Sun } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { apiCall } from "@/lib/fetch"
 
-import LoginRegister from './auth';
-import PortfolioModal from './ui/modal';
+export function Navbar() {
+  const { user, logout } = useAuthStore()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
-import { DiscordIcon, GithubIcon, Logo, SearchIcon } from '@/components/icons';
-import { ThemeSwitch } from '@/components/theme-switch';
-import { siteConfig } from '@/config/site';
-import { useAuthStore } from '@/lib/store/authStore';
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-const searchInput = (
-	<Input
-		aria-label="Search"
-		classNames={{
-			inputWrapper: 'bg-default-100',
-			input: 'text-sm',
-		}}
-		endContent={
-			<Kbd className="hidden lg:inline-block" keys={['command']}>
-				K
-			</Kbd>
-		}
-		labelPlacement="outside"
-		placeholder="Search..."
-		startContent={
-			<SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-		}
-		type="search"
-	/>
-);
+  const handleLogout = async () => {
+    await apiCall("/auth/logout", { method: "POST" })
+    logout()
+    router.push("/")
+  }
 
-export const Navbar = () => {
-	const { user, isLoading, logout } = useAuthStore();
+  if (!mounted) return null
 
-	const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
+  return (
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+            Portfolio
+          </Link>
 
-	return (
-		<HeroUINavbar maxWidth="xl" position="sticky">
-			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-				<NavbarBrand as="li" className="gap-3 max-w-fit">
-					<div className="flex justify-start items-center gap-2">
-						<Button
-							isIconOnly
-							className="size-10 rounded-full"
-							onPress={onOpen}
-						>
-							{isLoading ? (
-								<Spinner
-									classNames={{ label: 'text-foreground mt-4' }}
-									variant="spinner"
-								/>
-							) : user ? (
-								<div
-									className="text-white size-8 rounded-full border border-white shadow-md shadow-gray-300 justify-center items-center flex"
-									style={{
-										backgroundColor: getColorForInitial(user.name),
-									}}
-								>
-									{user.name.charAt(0).toUpperCase()}
-								</div>
-							) : (
-								<Logo />
-							)}
-						</Button>
-						<NextLink href="/">
-							<h1 className="font-bold text-inherit">Nazmul Hassan</h1>
-						</NextLink>
-					</div>
-				</NavbarBrand>
-				<ul className="hidden lg:flex gap-4 justify-start ml-2">
-					{siteConfig.navItems.map((item) => (
-						<NavbarItem key={item.href}>
-							<NextLink
-								className={clsx(
-									linkStyles({ color: 'foreground' }),
-									'data-[active=true]:text-primary data-[active=true]:font-medium'
-								)}
-								color="foreground"
-								href={item.href}
-							>
-								{item.label}
-							</NextLink>
-						</NavbarItem>
-					))}
-				</ul>
-			</NavbarContent>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm hover:text-primary">
+              Home
+            </Link>
+            <Link href="/blog" className="text-sm hover:text-primary">
+              Blog
+            </Link>
+            {user?.role === "admin" && (
+              <Link href="/admin" className="text-sm hover:text-primary">
+                Admin
+              </Link>
+            )}
 
-			<NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
-				<NavbarItem className="hidden sm:flex gap-2">
-					{/* <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-						<TwitterIcon className="text-default-500" />
-					</Link> */}
-					<Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
-						<DiscordIcon className="text-default-500" />
-					</Link>
-					<Link isExternal aria-label="Github" href={siteConfig.links.github}>
-						<GithubIcon className="text-default-500" />
-					</Link>
-					<ThemeSwitch />
-				</NavbarItem>
-				<NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-				{/* <NavbarItem className="hidden md:flex">
-					<Button
-						isExternal
-						as={Link}
-						className="text-sm font-normal text-default-600 bg-default-100"
-						href={siteConfig.links.sponsor}
-						startContent={<HeartFilledIcon className="text-danger" />}
-						variant="flat"
-					>
-						Sponsor
-					</Button>
-				</NavbarItem> */}
-			</NavbarContent>
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
 
-			<NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-				<Link isExternal aria-label="Github" href={siteConfig.links.github}>
-					<GithubIcon className="text-default-500" />
-				</Link>
-				<ThemeSwitch />
-				<NavbarMenuToggle />
-			</NavbarContent>
-
-			<NavbarMenu>
-				{searchInput}
-				<div className="mx-4 mt-2 flex flex-col gap-2">
-					{siteConfig.navMenuItems.map((item, index) => (
-						<NavbarMenuItem key={`${item.href}-${index}`}>
-							<Link
-								color={
-									index === 2
-										? 'primary'
-										: index === siteConfig.navMenuItems.length - 1
-										? 'danger'
-										: 'foreground'
-								}
-								href={item.href}
-								size="lg"
-							>
-								{item.label}
-							</Link>
-						</NavbarMenuItem>
-					))}
-				</div>
-			</NavbarMenu>
-			<PortfolioModal
-				content={
-					user ? (
-						<Button
-							isLoading={isLoading}
-							onPress={async () => {
-								await logout();
-								onClose();
-							}}
-						>
-							Logout
-						</Button>
-					) : (
-						<LoginRegister closeModal={onClose} />
-					)
-				}
-				isOpen={isOpen}
-				placement="center"
-				title="Welcome Back"
-				onClose={onClose}
-				onOpenChange={onOpenChange}
-			/>
-		</HeroUINavbar>
-	);
-};
+            {user ? (
+              <>
+                <span className="text-sm">{user.name}</span>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}

@@ -1,64 +1,63 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { type NextRequest } from 'next/server';
+import { uploadToCloudinary } from "@/lib/cloudinary"
+import { verifyToken } from "@/lib/auth"
+import type { ApiResponse } from "@/lib/types"
+import { cookies } from "next/headers"
 
-import { cloudinaryConfig } from '@/constants';
-import sendResponse from '@/lib/actions/sendResponse';
-import { sendErrorResponse } from '@/lib/actions/errorResponse';
+async function checkAdminAuth() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
 
-cloudinary.config(cloudinaryConfig);
+  if (!token) {
+    return null
+  }
 
-/**
- * * Sign file before uploading to cloudinary.
- * @returns Timestamp and signature string.
- */
-export async function POST(req: NextRequest) {
-	const { filename } = (await req.json()) as { filename: string };
+  const payload = await verifyToken(token)
+  if (!payload || payload.role !== "admin") {
+    return null
+  }
 
-	const timestamp = Math.floor(Date.now() / 1000);
-
-	const signature = cloudinary.utils.api_sign_request(
-		{
-			timestamp,
-			upload_preset: 'portfolio',
-			folder: 'portfolio',
-			public_id: filename,
-		},
-		cloudinaryConfig.api_secret
-	);
-
-	return sendResponse(
-		'N/A',
-		'GET',
-		{ signature, timestamp },
-		'File successfully signed by Cloudinary!'
-	);
+  return payload
 }
 
-/**
- * * Deletes an image from Cloudinary.
- * @param req The Next.js request object containing publicId in body.
- */
-export async function PUT(req: NextRequest) {
-	try {
-		const { publicId } = (await req.json()) as { publicId: string };
+export async function POST(req: Request): Promise<Response> {
+  try {
+    const auth = await checkAdminAuth()
+    if (!auth) {
+      return Response.json({ success: false, error: "Unauthorized" } as ApiResponse<null>, { status: 401 })
+    }
 
-		if (!publicId) {
-			return sendErrorResponse('Public ID is required!', 400);
-		}
+    const formData = await req.formData()
+    const file = formData.get("file") as File
 
-		const res: { result: string } = await cloudinary.uploader.destroy(publicId);
+    if (!file) {
+      return Response.json({ success: false, error: "No file provided" } as ApiResponse<null>, { status: 400 })
+    }
 
-		if (res.result === 'ok') {
-			return sendResponse(
-				'N/A',
-				'DELETE',
-				{ deletedId: publicId },
-				'File successfully deleted from Cloudinary!'
-			);
-		}
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+    if (!allowedTypes.includes(file.type)) {
+      return Response.json({ success: false, error: "Invalid file type" } as ApiResponse<null>, { status: 400 })
+    }
 
-		return sendErrorResponse();
-	} catch (error) {
-		return sendErrorResponse((error as Error)?.message, 500, error as Error);
-	}
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return Response.json({ success: false, error: "File too large" } as ApiResponse<null>, { status: 400 })
+    }
+
+    const buffer = await file.arrayBuffer()
+    const filename = `${Date.now()}-${file.name}`
+    const url = await uploadToCloudinary(Buffer.from(buffer), filename)
+
+    return Response.json(
+      {
+        success: true,
+        data: { url },
+        message: "Image uploaded successfully",
+      } as ApiResponse<any>,
+      { status: 201 },
+    )
+  } catch (error) {
+    console.error("[v0] Upload error:", error)
+    return Response.json({ success: false, error: "Upload failed" } as ApiResponse<null>, { status: 500 })
+  }
 }
