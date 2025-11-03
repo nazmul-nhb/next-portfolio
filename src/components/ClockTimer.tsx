@@ -1,65 +1,44 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { useClock, useTimer } from "nhb-hooks";
-import { Chronos } from "nhb-toolbox";
-import { pluralizer } from "nhb-toolbox/pluralizer";
-import { useEffect, useState } from "react";
+import { Button } from '@/components/ui/button';
+import { formatTimerUnit } from '@/lib/utils';
+import { Clock } from 'lucide-react';
+import { useClock, useTimer } from 'nhb-hooks';
+import { Chronos } from 'nhb-toolbox';
+import { pluralizer } from 'nhb-toolbox/pluralizer';
+import { useEffect, useState } from 'react';
 
 export default function ClockTimer() {
-    const [mounted, setMounted] = useState(false);
-    const { formatted, pause, isPaused, resume } = useClock({
-        interval: "frame",
-        format: "dd, mmm DD, yyyy - hh:mm:ss a",
-    });
+	const [mounted, setMounted] = useState(false);
+	const { formatted, pause, isPaused, resume } = useClock({
+		interval: 'frame',
+		format: 'dd, mmm DD, yyyy - hh:mm:ss a',
+	});
 
-    const { days, hours, minutes, seconds } = useTimer(
-        new Chronos().endOf("day"),
-    );
+	const duration = useTimer(new Chronos('2025-11-11').endOf('day'));
 
-    useEffect(() => setMounted(true), []);
+	useEffect(() => setMounted(true), []);
 
-    if (!mounted) return null;
+	if (!mounted) return null;
 
-    return (
-        <span className="flex flex-col gap-4 font-semibold">
-            <span>
-                Today is{" "}
-                <span className="text-green-700 animate-bounce">
-                    {formatted}
-                </span>
-            </span>
-            <span>
-                Deadline Ends in{" "}
-                <span className="text-red-600 animate-pulse">
-                    {pluralizer.pluralize("day", {
-                        count: days,
-                        inclusive: true,
-                    })}
-                    ,{" "}
-                    {pluralizer.pluralize("hour", {
-                        count: hours,
-                        inclusive: true,
-                    })}
-                    ,{" "}
-                    {pluralizer.pluralize("minute", {
-                        count: minutes,
-                        inclusive: true,
-                    })}
-                    ,{" "}
-                    {pluralizer.pluralize("second", {
-                        count: seconds,
-                        inclusive: true,
-                    })}
-                </span>
-            </span>
-            <Button
-                variant="destructive"
-                className=""
-                onClick={isPaused ? resume : pause}
-            >
-                {isPaused ? "Resume " : "Pause "} Clock
-            </Button>
-        </span>
-    );
+	return (
+		<span className="w-full flex flex-col gap-4 font-semibold items-start">
+			<span>
+				Today is <span className="text-green-700 animate-bounce">{formatted}</span>
+			</span>
+			<span>
+				Deadline Ends in{' '}
+				<span className="text-red-600 animate-pulse">
+					{formatTimerUnit(duration, { separator: ' · ', maxUnits: 6 })}
+				</span>
+			</span>
+			<Button
+				variant={isPaused ? 'default' : 'destructive'}
+				className="font-bold"
+				onClick={isPaused ? resume : pause}
+			>
+				{isPaused ? 'Resume ' : 'Pause '} Clock <Clock fontWeight={900} />
+			</Button>
+		</span>
+	);
 }
