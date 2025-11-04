@@ -49,7 +49,11 @@
                 }
             },
             "correctness": {
-                "useExhaustiveDependencies": "warn"
+                "recommended": true,
+                "useExhaustiveDependencies": "warn",
+                "noUnusedFunctionParameters": "warn",
+                "noUnusedImports": "warn",
+                "noUnusedVariables": "warn"
             }
         },
         "domains": {
