@@ -31,7 +31,9 @@ export default function ClockTimer() {
 			</span>
 			<span>
 				Deadline Ends in{' '}
-				<span className="text-red-600 animate-pulse">{formatTimer(duration)}</span>
+				<span className="text-red-600 animate-pulse">
+					{formatTimer(duration, { style: 'short' })}
+				</span>
 			</span>
 			<Button
 				variant={isPaused ? 'default' : 'destructive'}

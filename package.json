@@ -1,6 +1,6 @@
 {
   "name": "next-portfolio",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,7 +16,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.552.0",
     "next": "16.0.1",
-    "nhb-hooks": "^1.21.0",
+    "nhb-hooks": "^1.21.1",
     "nhb-toolbox": "^4.25.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
