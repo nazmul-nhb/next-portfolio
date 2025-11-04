@@ -1,4 +1,4 @@
-import ClockTimer from '@/components/ClockTimer';
+import ClockTimer from '@/components/timer-clock';
 
 export default function Home() {
 	return (
