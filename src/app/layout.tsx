@@ -1,10 +1,10 @@
+import './globals.css';
+
+import Navbar from '@/components/navbar';
+import ThemeToggler from '@/components/theme-toggler';
+import { NextThemesProvider } from '@/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import Navbar from '@/components/navbar';
-import FloatingButton from '@/components/ui/floating-button';
-import { Settings } from 'lucide-react';
-
 const geistSans = Geist({
 	variable: '--font-geist-sans',
 	subsets: ['latin'],
@@ -26,11 +26,17 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<Navbar />
-				{children}
-				<FloatingButton icon={Settings} />
+				<NextThemesProvider
+					themes={['dark', 'light']}
+					attribute="class"
+					defaultTheme="dark"
+				>
+					<Navbar />
+					{children}
+					<ThemeToggler />
+				</NextThemesProvider>
 			</body>
 		</html>
 	);

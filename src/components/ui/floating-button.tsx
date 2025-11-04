@@ -92,7 +92,7 @@ export default function FloatingButton({
 	const ariaLabel = label ?? (Icon ? 'floating action' : 'button');
 
 	return (
-		<div className={baseWrapper} style={{ pointerEvents: 'auto' }}>
+		<div suppressHydrationWarning className={baseWrapper} style={{ pointerEvents: 'auto' }}>
 			<Button
 				variant={variant}
 				onClick={onClick}
