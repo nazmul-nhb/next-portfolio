@@ -1,13 +1,14 @@
 {
   "name": "next-portfolio",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write",
+    "lint": "biome lint --diagnostic-level=error",
+    "fix": "biome lint --write --diagnostic-level=error",
+    "format": "biome format --write --diagnostic-level=error",
     "commit": "nhb-commit"
   },
   "dependencies": {
@@ -18,7 +19,7 @@
     "lucide-react": "^0.552.0",
     "next": "16.0.1",
     "next-themes": "^0.4.6",
-    "nhb-hooks": "^1.21.1",
+    "nhb-hooks": "^1.30.0",
     "nhb-toolbox": "^4.25.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",

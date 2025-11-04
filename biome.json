@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.3.3/schema.json",
     "vcs": {
         "enabled": true,
         "clientKind": "git",
@@ -13,20 +13,43 @@
             "!.next",
             "!dist",
             "!build",
-            "!**/*.css"
+            "!src/components/ui",
+            "!**/*.css",
+            "!**/*.json"
         ]
     },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
-        "indentWidth": 4
+        "indentWidth": 4,
+        "lineWidth": 96
     },
     "linter": {
         "enabled": true,
         "rules": {
             "recommended": true,
+            "a11y": {
+                "useButtonType": "info"
+            },
             "suspicious": {
-                "noUnknownAtRules": "off"
+                "noUnknownAtRules": "warn",
+                "noArrayIndexKey": "info",
+                "noConsole": {
+                    "fix": "none",
+                    "level": "warn",
+                    "options": {
+                        "allow": [
+                            "warn",
+                            "table",
+                            "error",
+                            "info",
+                            "dir"
+                        ]
+                    }
+                }
+            },
+            "correctness": {
+                "useExhaustiveDependencies": "warn"
             }
         },
         "domains": {
@@ -37,8 +60,19 @@
     "assist": {
         "actions": {
             "source": {
-                "organizeImports": "on"
+                "organizeImports": "on",
+                "useSortedAttributes": "on"
             }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "enabled": true,
+            "arrowParentheses": "always",
+            "quoteStyle": "single",
+            "semicolons": "always",
+            "trailingCommas": "es5",
+            "jsxQuoteStyle": "double"
         }
     }
 }
