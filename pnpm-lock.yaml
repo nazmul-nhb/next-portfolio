@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@radix-ui/react-slot':
-        specifier: ^1.2.3
-        version: 1.2.3(@types/react@19.2.2)(react@19.2.0)
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react@19.2.2)(react@19.2.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -30,11 +30,11 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-hooks:
-        specifier: ^1.30.0
-        version: 1.30.0(nhb-toolbox@4.25.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^1.30.11
+        version: 1.30.11(nhb-toolbox@4.25.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-toolbox:
-        specifier: ^4.25.0
-        version: 4.25.0
+        specifier: ^4.25.4
+        version: 4.25.4
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -382,8 +382,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@radix-ui/react-slot@1.2.3':
-    resolution: {integrity: sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==}
+  '@radix-ui/react-slot@1.2.4':
+    resolution: {integrity: sha512-Jl+bCv8HxKnlTLVrcDE8zTMJ09R9/ukw4qBs/oZClOfoQk/cOTbDn+NceXfV7j09YPVQUryJPHurafcSg6EVKA==}
     peerDependencies:
       '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
@@ -867,8 +867,8 @@ packages:
       sass:
         optional: true
 
-  nhb-hooks@1.30.0:
-    resolution: {integrity: sha512-ynYvRYVBGNnnRAfN7w1DkMPN2FuBlMePeIcSTuS5LY4vHb/aC0jh2WCJg6+KRRPAY/0mGmGRQ+0IPgUGo13pPQ==}
+  nhb-hooks@1.30.11:
+    resolution: {integrity: sha512-KQ2bvVv2mUtd718bJAd4NaZVcT4Sw5WGBSm6unNiVuZvv4cHd4xdXAQ1024CjdBnWsXS1AktkoDO5mW7TEpEhw==}
     peerDependencies:
       nhb-toolbox: '>=4.12.67'
       react: ^18 || ^19
@@ -879,8 +879,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  nhb-toolbox@4.25.0:
-    resolution: {integrity: sha512-qjrNfWfKAojJjcNMr829KkcJV6j1iLpXMMQg/HMaV6nZ7Rk7OYrYMIpledDjaVyeI68kl/+BP7sGEGxzpmbLRQ==}
+  nhb-toolbox@4.25.4:
+    resolution: {integrity: sha512-k3Zj+svVYt2dC+mXuEbkBOpTb7Fl0NNRgXPPK4ELXuAPspVa7+5HgAWaxzvwKTF3J6SefQElKGpYrWGIr5yV5g==}
 
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
@@ -1338,7 +1338,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.2
 
-  '@radix-ui/react-slot@1.2.3(@types/react@19.2.2)(react@19.2.0)':
+  '@radix-ui/react-slot@1.2.4(@types/react@19.2.2)(react@19.2.0)':
     dependencies:
       '@radix-ui/react-compose-refs': 1.1.2(@types/react@19.2.2)(react@19.2.0)
       react: 19.2.0
@@ -1750,9 +1750,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-hooks@1.30.0(nhb-toolbox@4.25.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  nhb-hooks@1.30.11(nhb-toolbox@4.25.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      nhb-toolbox: 4.25.0
+      nhb-toolbox: 4.25.4
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -1763,14 +1763,14 @@ snapshots:
       execa: 9.6.0
       globby: 15.0.0
       minimist: 1.2.8
-      nhb-toolbox: 4.25.0
+      nhb-toolbox: 4.25.4
       progress-estimator: 0.3.1
       rimraf: 6.1.0
       semver: 7.7.3
       type-fest: 5.2.0
       typescript: 5.9.3
 
-  nhb-toolbox@4.25.0: {}
+  nhb-toolbox@4.25.4: {}
 
   npm-run-path@6.0.0:
     dependencies:

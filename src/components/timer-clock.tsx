@@ -2,6 +2,7 @@
 
 import { Clock, Copy, CopyCheck } from 'lucide-react';
 import { formatTimer, useClock, useCopyText, useMount, useTimer } from 'nhb-hooks';
+import { Chronos } from 'nhb-toolbox';
 import { Button } from '@/components/ui/button';
 
 export default function ClockTimer() {
@@ -16,7 +17,7 @@ export default function ClockTimer() {
         },
     });
 
-    const duration = useTimer('2025-11-11T23:59:59.999+06:00');
+    const duration = useTimer(new Chronos('2025-11-11').endOf('day'));
 
     return useMount(
         <span className="w-full flex flex-col gap-4 font-semibold items-start">
