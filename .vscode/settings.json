@@ -5,12 +5,11 @@
 	"biome.enabled": true,
 	"editor.codeActionsOnSave": {
 		"source.fixAll.biome": "explicit",
-		"source.fixAll.markdownlint": "explicit",
 		"source.addMissingImports.ts": "explicit",
 		"source.removeUnusedImports": "explicit",
 		"source.fixAll.ts": "explicit",
 		"source.sortImports": "never",
-		"source.organizeImports": "never"
+		"source.organizeImports.biome": "explicit"
 	},
 	"[javascript]": {
 		"editor.defaultFormatter": "biomejs.biome"
@@ -29,9 +28,9 @@
 		"editor.defaultFormatter": "vscode.json-language-features"
 	},
 	"[json]": {
-		"editor.defaultFormatter": "vscode.json-language-features"
+		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"[html]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	},
+	}
 }

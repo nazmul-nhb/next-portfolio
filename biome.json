@@ -38,13 +38,7 @@
                     "fix": "none",
                     "level": "warn",
                     "options": {
-                        "allow": [
-                            "warn",
-                            "table",
-                            "error",
-                            "info",
-                            "dir"
-                        ]
+                        "allow": ["warn", "table", "error", "info", "dir"]
                     }
                 }
             },
