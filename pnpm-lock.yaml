@@ -30,8 +30,8 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-hooks:
-        specifier: ^1.40.1
-        version: 1.40.1(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^1.40.10
+        version: 1.40.10(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-toolbox:
         specifier: ^4.26.71
         version: 4.26.71
@@ -833,8 +833,8 @@ packages:
       sass:
         optional: true
 
-  nhb-hooks@1.40.1:
-    resolution: {integrity: sha512-anz8TBeNl6Nfy8dpGWbx83arYa71cGKiSgx01YSh+h4YLYWweWoID7EZoNO3oP+lm1wO3VRpWzd89ndZIT/HfQ==}
+  nhb-hooks@1.40.10:
+    resolution: {integrity: sha512-C2eIMQa0K48yCrrs7+R/wBB+V8kW8kntTFlImHv0EvpEle2zAUpzN81wXOdTcsGneZmizsele1Pb4A92aZP9DQ==}
     peerDependencies:
       nhb-toolbox: '>=4.26.50'
       react: '>=18.3.1 || ^19.0.0'
@@ -1657,7 +1657,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-hooks@1.40.1(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  nhb-hooks@1.40.10(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       nhb-toolbox: 4.26.71
       react: 19.2.0

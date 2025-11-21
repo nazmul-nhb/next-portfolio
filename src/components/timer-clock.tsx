@@ -17,7 +17,7 @@ export default function ClockTimer() {
         },
     });
 
-    const duration = useTimer(new Chronos('2025-11-11').endOf('day'));
+    const duration = useTimer(new Chronos('2026-11-11').endOf('day'));
 
     return useMount(
         <span className="w-full flex flex-col gap-4 font-semibold items-start">
