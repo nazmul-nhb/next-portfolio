@@ -1,6 +1,6 @@
 {
   "name": "next-portfolio",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,7 @@
     "next": "16.0.3",
     "next-themes": "^0.4.6",
     "nhb-hooks": "^1.40.14",
-    "nhb-toolbox": "^4.26.71",
+    "nhb-toolbox": "^4.26.73",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "tailwind-merge": "^3.4.0"

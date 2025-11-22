@@ -31,10 +31,10 @@ importers:
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-hooks:
         specifier: ^1.40.14
-        version: 1.40.14(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.40.14(nhb-toolbox@4.26.73)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-toolbox:
-        specifier: ^4.26.71
-        version: 4.26.71
+        specifier: ^4.26.73
+        version: 4.26.73
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -845,8 +845,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  nhb-toolbox@4.26.71:
-    resolution: {integrity: sha512-eyC1hhpEDyMZVQ4SPuOH1MaOXNeDs0DtRUq4jTsK535t1l3W/1nmRj8J8QiBv7M34d6grjqGrolfrBzdN1cFvw==}
+  nhb-toolbox@4.26.73:
+    resolution: {integrity: sha512-5sS+MHlMhukSPPbOcdQPyh+4hlV47zhWA5ITXJD2h47qpMckuOtDQge6yVwZA4jvKs8pkfJ3Sw0Irii28SBqBA==}
 
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
@@ -1657,9 +1657,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-hooks@1.40.14(nhb-toolbox@4.26.71)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  nhb-hooks@1.40.14(nhb-toolbox@4.26.73)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      nhb-toolbox: 4.26.71
+      nhb-toolbox: 4.26.73
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -1670,14 +1670,14 @@ snapshots:
       execa: 9.6.0
       globby: 16.0.0
       minimist: 1.2.8
-      nhb-toolbox: 4.26.71
+      nhb-toolbox: 4.26.73
       progress-estimator: 0.3.1
       rimraf: 6.1.2
       semver: 7.7.3
       type-fest: 5.2.0
       typescript: 5.9.3
 
-  nhb-toolbox@4.26.71: {}
+  nhb-toolbox@4.26.73: {}
 
   npm-run-path@6.0.0:
     dependencies:
