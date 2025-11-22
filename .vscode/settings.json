@@ -8,7 +8,9 @@
 		"source.addMissingImports.ts": "explicit",
 		"source.removeUnusedImports": "explicit",
 		"source.fixAll.ts": "explicit",
+		"source.biome": "explicit",
 		"source.sortImports": "never",
+		"source.organizeImports": "never",
 		"source.organizeImports.biome": "explicit"
 	},
 	"[javascript]": {
