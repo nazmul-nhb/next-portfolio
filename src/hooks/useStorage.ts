@@ -6,9 +6,9 @@ export interface StorageOptions<T, Key extends string> {
     /**
      * Allowed keys for this storage instance.
      */
-    keys: Readonly<Array<Key>>;
+    key?: Key;
 
-    initialValue: T;
+    initialValue?: T;
 
     /**
      * Storage type to use.
@@ -18,12 +18,12 @@ export interface StorageOptions<T, Key extends string> {
     /**
      * Value serializer.
      */
-    serialize?: (value: T) => string;
+    serialize?: (value: T) => string | undefined;
 
     /**
      * Value deserializer.
      */
-    deserialize?: (value: string) => T;
+    deserialize?: (value: string) => T | undefined;
 }
 
 /**
@@ -31,15 +31,12 @@ export interface StorageOptions<T, Key extends string> {
  */
 export function useStorage<T, Key extends string>(options: StorageOptions<T, Key>) {
     const {
-        keys = [],
+        key = 'nhb-hooks-use-storage',
         initialValue = null,
         type = 'local',
         serialize = JSON.stringify,
         deserialize = JSON.parse,
-    } = options;
-
-    /** Track key safely */
-    const [key, setKey] = useState(keys[0] ?? '');
+    } = options ?? {};
 
     /** Track value */
     const [value, setValue] = useState<T | null>(initialValue);
@@ -49,12 +46,14 @@ export function useStorage<T, Key extends string>(options: StorageOptions<T, Key
 
     const getStorage = useCallback(() => {
         if (!isReady) return null;
-        return window[`${type ?? 'local'}Storage`];
+        return window[`${type}Storage`];
     }, [isReady, type]);
 
     /** Mark hook as client-ready */
     useEffect(() => {
-        setIsReady(true);
+        setTimeout(() => {
+            setIsReady(true);
+        }, 0);
     }, []);
 
     /** Load the value once key or client readiness changes */
@@ -65,38 +64,50 @@ export function useStorage<T, Key extends string>(options: StorageOptions<T, Key
         if (!storage) return;
 
         const item = storage.getItem(key);
-        setValue(item ? deserialize(item) : null);
+        setTimeout(() => {
+            setValue(item ? deserialize(item) : null);
+        }, 0);
     }, [isReady, key, deserialize, getStorage]);
 
     /** Set item */
     const setItem = useCallback(
-        (newKey: Key, newValue: T) => {
+        (newValue: T) => {
             const storage = getStorage();
             if (!storage) return;
 
-            storage.setItem(newKey, serialize(newValue));
-            setKey(newKey);
+            storage.setItem(key, serialize(newValue) ?? '');
             setValue(newValue);
         },
-        [getStorage, serialize]
+        [getStorage, serialize, key]
     );
+
+    const clearItem = useCallback(() => {
+        const storage = getStorage();
+        if (!storage) return;
+
+        storage.clear();
+    }, [getStorage]);
 
     /** Remove item */
-    const removeItem = useCallback(
-        (removeKey: Key) => {
-            const storage = getStorage();
-            if (!storage) return;
-            storage.removeItem(removeKey);
-            setValue(null);
-        },
-        [getStorage]
-    );
+    const removeItem = useCallback(() => {
+        const storage = getStorage();
+        if (!storage) return;
+        storage.removeItem(key);
+        setValue(null);
+    }, [getStorage, key]);
+
+    const getItem = (): T | null => {
+        const storage = getStorage();
+        if (!storage) return null;
+        const item = storage.getItem(key);
+        return item ? deserialize(item) : null;
+    };
 
     return {
-        isReady,
-        key,
         value,
+        get: getItem,
         set: setItem,
         remove: removeItem,
+        clear: clearItem,
     };
 }

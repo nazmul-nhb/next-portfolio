@@ -29,17 +29,16 @@ export default function ClockTimer() {
     // const timerStorage = new WebStorage().set(formatTimer(duration), 'timer');
 
     const storage = useStorage({
-        keys: ['timer', 'time'],
+        key: 'time',
         initialValue: time,
-        // serialize: (value: Date) => {
-        //     try {
-        //         return value.toISOString();
-        //     } catch {
-        //         console.warn(`Cannot serialize data`);
-        //         return '';
-        //     }
-        // },
-        deserialize: (value: string) => {
+        serialize: (value) => {
+            try {
+                return value.toISOString();
+            } catch {
+                console.warn(`Cannot serialize data`);
+            }
+        },
+        deserialize: (value) => {
             try {
                 return new Chronos(value);
             } catch {
@@ -53,7 +52,7 @@ export default function ClockTimer() {
             <span>
                 Today is <span className="text-green-700 animate-bounce">{formatted}</span>
             </span>
-            <span>{time.season({ preset: 'india' })}</span>
+            <span>{time.season({ preset: 'vedic' })}</span>
             <span>
                 Deadline Ends in{' '}
                 <span className="text-red-600 animate-pulse">
@@ -85,7 +84,7 @@ export default function ClockTimer() {
 
             <Button
                 className="font-bold"
-                onClick={() => storage.set('timer', time.timeZone('Asia/Karachi'))}
+                onClick={() => storage.set(time.timeZone('Asia/Karachi'))}
                 variant={'default'}
             >
                 Set Time to LS : {time.toLocalISOString()}
@@ -93,7 +92,7 @@ export default function ClockTimer() {
 
             <Button
                 className="font-bold"
-                onClick={() => storage.remove('timer')}
+                onClick={() => storage.remove()}
                 variant={'destructive'}
             >
                 Remove Time from LS : {storage.value?.toLocalISOString()}
