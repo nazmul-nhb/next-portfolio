@@ -1,12 +1,11 @@
 'use client';
 
 import { Clock, Copy, CopyCheck } from 'lucide-react';
-import { formatTimer, useClock, useCopyText, useMount, useTimer } from 'nhb-hooks';
-import { Chronos } from 'nhb-toolbox';
+import { formatTimer, useClock, useCopyText, useMount, useStorage, useTimer } from 'nhb-hooks';
+import { Chronos, isArray } from 'nhb-toolbox';
 import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
 import { timeZonePlugin } from 'nhb-toolbox/plugins/timeZonePlugin';
 import { Button } from '@/components/ui/button';
-import { useStorage } from '@/hooks/useStorage';
 
 Chronos.register(timeZonePlugin);
 Chronos.register(seasonPlugin);
@@ -14,6 +13,7 @@ Chronos.register(seasonPlugin);
 export default function ClockTimer() {
     const { formatted, pause, isPaused, resume, time } = useClock({
         interval: 'frame',
+        timeZone: 'UTC+06:00',
         format: 'dd, mmm DD, yyyy · hh:mm:ss a',
     });
 
@@ -28,22 +28,13 @@ export default function ClockTimer() {
     // const timeStorage = new WebStorage().set({ time: time.toDate() }, 'time');
     // const timerStorage = new WebStorage().set(formatTimer(duration), 'timer');
 
-    const storage = useStorage({
+    const ts = useStorage<Chronos>({
         key: 'time',
-        initialValue: time,
         serialize: (value) => {
-            try {
-                return value.toISOString();
-            } catch {
-                console.warn(`Cannot serialize data`);
-            }
+            return value.toISOString();
         },
         deserialize: (value) => {
-            try {
-                return new Chronos(value);
-            } catch {
-                console.warn(`Cannot deserialize date`);
-            }
+            return new Chronos(value).timeZone('Asia/Dhaka');
         },
     });
 
@@ -82,20 +73,18 @@ export default function ClockTimer() {
                 )}
             </Button>
 
-            <Button
-                className="font-bold"
-                onClick={() => storage.set(time.timeZone('Asia/Karachi'))}
-                variant={'default'}
-            >
-                Set Time to LS : {time.toLocalISOString()}
+            <Button className="font-bold" onClick={() => ts.set(time)} variant={'default'}>
+                Set Time to LS : {time.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')} (
+                {isArray(time.timeZoneId) ? time.timeZoneId.join(', ') : time.timeZoneId})
             </Button>
 
-            <Button
-                className="font-bold"
-                onClick={() => storage.remove()}
-                variant={'destructive'}
-            >
-                Remove Time from LS : {storage.value?.toLocalISOString()}
+            <Button className="font-bold" onClick={() => ts.remove()} variant={'destructive'}>
+                Remove Time from LS : {ts.value?.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')}{' '}
+                (
+                {isArray(ts.value?.timeZoneId)
+                    ? ts.value?.timeZoneId.join(', ')
+                    : ts.value?.timeZoneId}
+                )
             </Button>
 
             {/* <Button

@@ -30,11 +30,11 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-hooks:
-        specifier: ^1.40.14
-        version: 1.40.14(nhb-toolbox@4.26.73)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^1.40.21
+        version: 1.40.21(nhb-toolbox@4.26.74)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nhb-toolbox:
-        specifier: ^4.26.73
-        version: 4.26.73
+        specifier: ^4.26.74
+        version: 4.26.74
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -833,8 +833,8 @@ packages:
       sass:
         optional: true
 
-  nhb-hooks@1.40.14:
-    resolution: {integrity: sha512-BDdpM6Ygk8z3tQg8gSGE6V39fuHwz9W//qziSkkDjYOzb1grWuENe0zEnJsGCGOcPaCAZBhPKt1hOTBHJLDbKg==}
+  nhb-hooks@1.40.21:
+    resolution: {integrity: sha512-tlX6GqzZ+mChFM7GUiXMfgsnrEv/RgLcpymtyhkWsweAsDf2pIlZEAko/qzskTKqOSstKhYZLwiPGkSQN7K3Cw==}
     peerDependencies:
       nhb-toolbox: '>=4.26.50'
       react: '>=18.3.1 || ^19.0.0'
@@ -845,8 +845,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  nhb-toolbox@4.26.73:
-    resolution: {integrity: sha512-5sS+MHlMhukSPPbOcdQPyh+4hlV47zhWA5ITXJD2h47qpMckuOtDQge6yVwZA4jvKs8pkfJ3Sw0Irii28SBqBA==}
+  nhb-toolbox@4.26.74:
+    resolution: {integrity: sha512-T+X6mnDffQtf9dfmgaoxsC1UwUMrzFiwXl3BAu4acTGd50ixty7S7hf+7veZeqMaFLpRLOQ69vMf+cbfjVPX6w==}
 
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
@@ -1657,9 +1657,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nhb-hooks@1.40.14(nhb-toolbox@4.26.73)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  nhb-hooks@1.40.21(nhb-toolbox@4.26.74)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      nhb-toolbox: 4.26.73
+      nhb-toolbox: 4.26.74
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -1670,14 +1670,14 @@ snapshots:
       execa: 9.6.0
       globby: 16.0.0
       minimist: 1.2.8
-      nhb-toolbox: 4.26.73
+      nhb-toolbox: 4.26.74
       progress-estimator: 0.3.1
       rimraf: 6.1.2
       semver: 7.7.3
       type-fest: 5.2.0
       typescript: 5.9.3
 
-  nhb-toolbox@4.26.73: {}
+  nhb-toolbox@4.26.74: {}
 
   npm-run-path@6.0.0:
     dependencies:
