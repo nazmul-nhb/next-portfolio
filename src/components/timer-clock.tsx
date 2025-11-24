@@ -4,16 +4,16 @@ import { Clock, Copy, CopyCheck } from 'lucide-react';
 import { formatTimer, useClock, useCopyText, useMount, useStorage, useTimer } from 'nhb-hooks';
 import { Chronos, isArray } from 'nhb-toolbox';
 import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
-import { timeZonePlugin } from 'nhb-toolbox/plugins/timeZonePlugin';
+// import { timeZonePlugin } from 'nhb-toolbox/plugins/timeZonePlugin';
 import { Button } from '@/components/ui/button';
 
-Chronos.register(timeZonePlugin);
+// Chronos.register(timeZonePlugin);
 Chronos.register(seasonPlugin);
 
 export default function ClockTimer() {
     const { formatted, pause, isPaused, resume, time } = useClock({
         interval: 'frame',
-        timeZone: 'UTC+06:00',
+        // timeZone: 'UTC+06:00',
         format: 'dd, mmm DD, yyyy · hh:mm:ss a',
     });
 
@@ -22,7 +22,7 @@ export default function ClockTimer() {
             console.log(msg);
         },
     });
-
+    console.log(time);
     const duration = useTimer(new Chronos().endOf('month'));
 
     // const timeStorage = new WebStorage().set({ time: time.toDate() }, 'time');
@@ -34,7 +34,7 @@ export default function ClockTimer() {
             return value.toISOString();
         },
         deserialize: (value) => {
-            return new Chronos(value).timeZone('Asia/Dhaka');
+            return new Chronos(value);
         },
     });
 
@@ -74,17 +74,17 @@ export default function ClockTimer() {
             </Button>
 
             <Button className="font-bold" onClick={() => ts.set(time)} variant={'default'}>
-                Set Time to LS : {time.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')} (
-                {isArray(time.timeZoneId) ? time.timeZoneId.join(', ') : time.timeZoneId})
+                Set Time to LS : (
+                {isArray(time.timeZoneId) ? time.timeZoneId.join(', ') : time.timeZoneId}){' '}
+                {time.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')}
             </Button>
 
             <Button className="font-bold" onClick={() => ts.remove()} variant={'destructive'}>
-                Remove Time from LS : {ts.value?.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')}{' '}
-                (
+                Remove Time from LS : (
                 {isArray(ts.value?.timeZoneId)
                     ? ts.value?.timeZoneId.join(', ')
                     : ts.value?.timeZoneId}
-                )
+                ) {ts.value?.formatStrict('dd, mmm D, yyyy - HH:mm:ss:mss')}
             </Button>
 
             {/* <Button

@@ -8,11 +8,11 @@ export default function Navbar() {
         <nav className="sticky top-0 flex items-center justify-center">
             <DocTabs
                 tabs={[
-                    { title: 'Home', icon: Home },
-                    { title: 'Contact', icon: Contact },
-                    { title: 'Blog', icon: PenTool },
+                    { title: 'Home', path: '/', icon: Home },
+                    { title: 'Contact', path: '/contact', icon: Contact },
+                    { title: 'Blog', path: '/blogs', icon: PenTool },
                     { type: 'separator' },
-                    { title: 'Settings', icon: Settings },
+                    { title: 'Settings', path: '/settings', icon: Settings },
                 ]}
             />
         </nav>

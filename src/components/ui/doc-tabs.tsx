@@ -1,6 +1,8 @@
 'use client';
 
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
 import { useClickOutside } from 'nhb-hooks';
 import type React from 'react';
 import { useState } from 'react';
@@ -8,6 +10,7 @@ import { useState } from 'react';
 interface Tab {
     title: string;
     icon: React.ComponentType<{ className?: string }>;
+    path: Route;
     type?: never;
 }
 
@@ -15,6 +18,7 @@ interface Separator {
     type: 'separator';
     title?: never;
     icon?: never;
+    path?: never;
 }
 
 type TabItem = Tab | Separator;
@@ -22,7 +26,6 @@ type TabItem = Tab | Separator;
 interface DocTabsProps {
     tabs: TabItem[];
     className?: string;
-    onChange?: (index: number | null) => void;
 }
 
 const spanVariants: Variants = {
@@ -30,25 +33,23 @@ const spanVariants: Variants = {
     animate: {
         width: 'auto',
         opacity: 1,
-        transition: { delay: 0.05, duration: 0.2, ease: 'easeOut' as const },
+        transition: { delay: 0.05, duration: 0.2, ease: 'easeOut' },
     },
     exit: {
         width: 0,
         opacity: 0,
-        transition: { duration: 0.1, ease: 'easeIn' as const },
+        transition: { duration: 0.1, ease: 'easeIn' },
     },
 };
 
-export default function DocTabs({ tabs, className, onChange }: DocTabsProps) {
-    const [selected, setSelected] = useState<number | null>(0);
+export default function DocTabs({ tabs, className }: DocTabsProps) {
+    const [selected, setSelected] = useState<Route>('/');
+    const router = useRouter();
 
-    const containerRef = useClickOutside<HTMLDivElement>(() => {
-        setSelected(null);
-    });
 
-    const handleSelect = (index: number) => {
-        setSelected(index);
-        if (onChange) onChange(index);
+    const handleSelect = (path: Route) => {
+        setSelected(path);
+        router.push(path)
     };
 
     const SeparatorComponent = () => (
@@ -60,7 +61,6 @@ export default function DocTabs({ tabs, className, onChange }: DocTabsProps) {
             className={`flex items-center gap-1 rounded-full border border-slate-200 bg-white/70 dark:bg-black dark:border-slate-700 p-1 shadow-md backdrop-blur-sm ${
                 className || ''
             }`}
-            ref={containerRef}
         >
             {tabs.map((tab, index) => {
                 if (tab.type === 'separator') {
@@ -68,7 +68,7 @@ export default function DocTabs({ tabs, className, onChange }: DocTabsProps) {
                 }
 
                 const Icon = tab.icon;
-                const isSelected = selected === index;
+                const isSelected = selected === tab.path;
 
                 return (
                     <button
@@ -80,7 +80,7 @@ export default function DocTabs({ tabs, className, onChange }: DocTabsProps) {
               }
             `}
                         key={tab.title}
-                        onClick={() => handleSelect(index)}
+                        onClick={() => handleSelect(tab.path)}
                     >
                         {isSelected && (
                             <motion.div
@@ -90,7 +90,7 @@ export default function DocTabs({ tabs, className, onChange }: DocTabsProps) {
                             />
                         )}
 
-                        <span className="relative z-10 flex items-center gap-2">
+                        <span title={tab.title} className="relative z-10 flex items-center gap-2">
                             <Icon className="h-5 w-5 shrink-0" />
                             <AnimatePresence initial={false}>
                                 {isSelected && (
