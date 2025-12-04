@@ -2,6 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import { isArrayOfType, isObject, isObjectWithKeys, isString } from 'nhb-toolbox';
+import { toTitleCase } from 'nhb-toolbox/change-case';
 import { type ZodType, z } from 'zod';
 
 type ZodResponse<T> = Promise<
@@ -37,7 +38,9 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
                     isObjectWithKeys(errObject, ['errors']) &&
                     isArrayOfType(errObject.errors, isString)
                 ) {
-                    errorMsg = errObject.errors.map((msg) => `${path}: ${msg}`).join('; ');
+                    errorMsg = errObject.errors
+                        .map((msg) => `${toTitleCase(path)}: ${msg}`)
+                        .join('; ');
                 }
             });
         }

@@ -3,7 +3,7 @@ import sendResponse from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { ProjectCreationSchema } from '@/lib/schema/projects';
+import { ProjectCreationSchema } from '@/lib/zod-schema/projects';
 import type { InsertProject } from '@/types/projects';
 
 /** Get all projects */
