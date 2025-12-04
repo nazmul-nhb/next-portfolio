@@ -8,7 +8,6 @@ import type { InsertProject } from '@/types/projects';
 
 /** Get all projects */
 export async function GET() {
-    // return Response.json({ message: 'hello World!' });
     try {
         const result = await db.select().from(projects);
         return sendResponse('Project', 'GET', result);

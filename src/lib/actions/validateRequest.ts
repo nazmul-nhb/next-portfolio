@@ -1,7 +1,7 @@
 'use server';
 
 import { NextResponse } from 'next/server';
-import { isObject, isObjectWithKeys, isValidArray } from 'nhb-toolbox';
+import { isArrayOfType, isObject, isObjectWithKeys, isString } from 'nhb-toolbox';
 import { type ZodType, z } from 'zod';
 
 type ZodResponse<T> = Promise<
@@ -30,12 +30,14 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
             const paths = Object.keys(error);
 
             paths.forEach((path) => {
+                const errObject = error[path];
+
                 if (
-                    isObject(error[path]) &&
-                    isObjectWithKeys(error[path], ['errors']) &&
-                    isValidArray<string>(error[path].errors)
+                    isObject(errObject) &&
+                    isObjectWithKeys(errObject, ['errors']) &&
+                    isArrayOfType(errObject.errors, isString)
                 ) {
-                    errorMsg = error[path].errors.map((msg) => `${path}: ${msg}`).join('; ');
+                    errorMsg = errObject.errors.map((msg) => `${path}: ${msg}`).join('; ');
                 }
             });
         }

@@ -1,8 +1,9 @@
 'use server';
 
 import { NextResponse } from 'next/server';
-import { isString } from 'nhb-toolbox';
+import { isObjectWithKeys, isString } from 'nhb-toolbox';
 import type { ErrorCode } from '@/types';
+import { DrizzleQueryError } from 'drizzle-orm';
 
 /**
  * Sends a standardized error JSON response.
@@ -14,15 +15,19 @@ import type { ErrorCode } from '@/types';
 export async function sendErrorResponse(error?: unknown, code: ErrorCode = 500) {
     const errorMsg = isString(error)
         ? error
-        : error instanceof Error
-          ? error.message
-          : 'Something Went Wrong!';
+        : error instanceof DrizzleQueryError
+          ? isObjectWithKeys(error.cause, ['detail']) && isString(error.cause.detail)
+              ? error.cause.detail
+              : (error.cause?.message ?? error.message)
+          : error instanceof Error
+            ? error.message
+            : 'Something Went Wrong!';
 
     return NextResponse.json(
         {
             success: false,
             message: errorMsg,
-            // errors: [],
+            details: error,
             status: code,
         },
         { status: code }
