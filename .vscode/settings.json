@@ -14,6 +14,7 @@
 		"source.organizeImports": "never",
 		"source.organizeImports.biome": "explicit"
 	},
+	// "editor.defaultFormatter": "biomejs.biome",
 	"[javascript]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
@@ -35,5 +36,10 @@
 	},
 	"[html]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	}
+	},
+	"biome.lsp.trace.server": "messages",
+	"biome.configurationPath": "biome.json",
+	"cSpell.words": [
+		"neondatabase"
+	]
 }

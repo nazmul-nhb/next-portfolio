@@ -3,7 +3,6 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
-import { useClickOutside } from 'nhb-hooks';
 import type React from 'react';
 import { useState } from 'react';
 
