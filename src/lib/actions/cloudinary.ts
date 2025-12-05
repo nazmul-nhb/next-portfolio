@@ -19,12 +19,12 @@ export interface SignedData {
 /**
  * * Uploads a file to Cloudinary and returns the uploaded file's URL and public ID.
  * @param file The file to upload.
- * @param suffix The suffix to append to the file name.
+ * @param suffix The suffix to append to the file name. Defaults to `'nhb'`.
  * @returns An object containing the secure URL and public ID of the uploaded image.
  */
 export async function uploadToCloudinary(
     file: File | FileList,
-    suffix: string
+    suffix = 'nhb'
 ): Promise<CloudinaryResponse> {
     const filename = generateRandomID({
         caseOption: 'lower',
@@ -74,12 +74,12 @@ export async function uploadToCloudinary(
 /**
  * * Uploads multiple files to Cloudinary and returns their URLs and public IDs.
  * @param files A FileList or array of Files.
- * @param suffix Optional suffix for each filename.
+ * @param suffix Optional suffix for each filename. Defaults to `'nhb'`.
  * @returns Array of CloudinaryResponse for each uploaded file.
  */
 export async function uploadMultipleToCloudinary(
     files: FileList | File[],
-    suffix: string
+    suffix?: string
 ): Promise<CloudinaryResponse[]> {
     const filesArray = Array.from(files);
 
