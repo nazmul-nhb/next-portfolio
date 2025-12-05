@@ -14,7 +14,7 @@ export const ProjectCreationSchema = createInsertSchema(projects)
         features: true,
     })
     .extend({
-        repo_links: z.tuple([z.string('First GitHub link is required'), z.string().optional()]),
+        repo_links: z.tuple([z.url('First GitHub link is required'), z.url().optional()]),
         screenshots: z.tuple([
             z.string('Screenshot 1 is required'),
             z.string('Screenshot 2 is required'),
@@ -27,7 +27,7 @@ export const ProjectCreationSchema = createInsertSchema(projects)
 
 export const ProjectUpdateSchema = ProjectCreationSchema.partial();
 
-export const ProjectCreationFields = ProjectCreationSchema.omit({
+export const ProjectFormSchema = ProjectCreationSchema.omit({
     favicon: true,
     screenshots: true,
 })
@@ -37,4 +37,6 @@ export const ProjectCreationFields = ProjectCreationSchema.omit({
     })
     .strict();
 
-export const ProjectUpdateFields = ProjectCreationFields.partial();
+export const ProjectFormUpdateSchema = ProjectFormSchema.partial();
+
+export type ProjectFormData = z.infer<typeof ProjectFormSchema>;

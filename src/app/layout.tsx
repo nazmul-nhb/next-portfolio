@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ThemeToggler from '@/components/theme-toggler';
+import { siteConfig } from '@/configs/site';
 import { NextThemesProvider } from '@/providers/theme-provider';
 
 const geistSans = Geist({
@@ -17,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Nazmul Hassan',
-    description: "Nazmul Hassan's Personal Website",
+    title: siteConfig.name,
+    description: siteConfig.description,
 };
 
 export default function RootLayout({
@@ -29,7 +30,10 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <link href="favicon.png" rel="shortcut icon" type="image/png" />
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                suppressHydrationWarning
+            >
                 <NextThemesProvider
                     attribute="class"
                     defaultTheme="dark"

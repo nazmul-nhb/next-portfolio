@@ -19,4 +19,4 @@ export const siteConfig = {
         discord: 'https://discord.com/users/831030314528538664',
     },
     tokenName: 'nhb-token',
-};
+} as const;
