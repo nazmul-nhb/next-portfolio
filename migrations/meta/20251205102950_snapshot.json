@@ -1,5 +1,5 @@
 {
-  "id": "1c176d0a-3807-47bf-b7cb-e606bdf64bbf",
+  "id": "0f40ce18-e4dc-4f3b-9cb3-3b10373f91a7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,15 +26,33 @@
           "primaryKey": false,
           "notNull": true
         },
+        "favicon": {
+          "name": "favicon",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "repo_links": {
           "name": "repo_links",
-          "type": "varchar(256)[2]",
+          "type": "varchar(256)[]",
           "primaryKey": false,
           "notNull": true
         },
         "tech_stack": {
           "name": "tech_stack",
-          "type": "varchar(64)",
+          "type": "varchar(64)[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "screenshots": {
+          "name": "screenshots",
+          "type": "varchar(256)[3]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "features": {
+          "name": "features",
+          "type": "varchar(512)[]",
           "primaryKey": false,
           "notNull": true
         },

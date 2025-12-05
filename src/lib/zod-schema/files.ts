@@ -83,3 +83,5 @@ export const createImageFileListSchema = (options: IFileListOptions) => {
         }
     );
 };
+
+export const ScreenShotsSchema = createImageFileListSchema({ exactCount: 3 });

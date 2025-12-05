@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "screenshots" SET DATA TYPE varchar(256)[];

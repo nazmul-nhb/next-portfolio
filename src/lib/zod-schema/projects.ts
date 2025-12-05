@@ -1,7 +1,7 @@
 import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { createImageFileListSchema, ImageSchema } from '@/lib/zod-schema/files';
+import { ImageSchema, ScreenShotsSchema } from '@/lib/zod-schema/files';
 
 export const ProjectCreationSchema = createInsertSchema(projects)
     .omit({
@@ -33,7 +33,7 @@ export const ProjectCreationFields = ProjectCreationSchema.omit({
 })
     .extend({
         favicon: ImageSchema,
-        screenshots: createImageFileListSchema({ exactCount: 3 }),
+        screenshots: ScreenShotsSchema,
     })
     .strict();
 
