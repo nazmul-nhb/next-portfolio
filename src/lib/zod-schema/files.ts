@@ -10,23 +10,20 @@ const VALID_TYPES = [
     'image/gif',
 ] as const;
 
-const validTypeSet = new Set<string>(VALID_TYPES);
-
 /** Image upload validation schema */
 export const ImageSchema = z.custom<FileList>().refine(
     (fileList) => {
-        if (typeof window === 'undefined') {
-            // Server side: skip validation
-            return true;
-        }
-        if (!(fileList instanceof FileList)) {
-            return false;
-        }
+        if (typeof window === 'undefined') return true;
+
+        if (!(fileList instanceof FileList)) return false;
+
         if (fileList.length === 0) return false;
 
         const file = fileList.item(0);
 
         if (!file) return false;
+
+        const validTypeSet = new Set<string>(VALID_TYPES);
 
         return validTypeSet.has(file.type) && file.size <= 2 * 1024 * 1024;
     },
@@ -35,7 +32,7 @@ export const ImageSchema = z.custom<FileList>().refine(
     }
 );
 
-export interface IFileListSchema {
+export interface IFileListOptions {
     exactCount?: number;
     min?: number;
     max?: number;
@@ -48,13 +45,13 @@ export interface IFileListSchema {
  *
  * @param options Options for validation like min/max/exact count and maxSize.
  */
-export const createImageFileListSchema = (options: IFileListSchema) => {
+export const createImageFileListSchema = (options: IFileListOptions) => {
     const {
         exactCount,
         min,
         max,
         maxSizeMB = 2,
-        allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'],
+        allowedTypes = VALID_TYPES.slice(0, 3),
     } = options ?? {};
 
     const typeSet = new Set<string>(allowedTypes);

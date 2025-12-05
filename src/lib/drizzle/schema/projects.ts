@@ -9,7 +9,7 @@ export const projects = pgTable(
         favicon: varchar({ length: 256 }).notNull(),
         repo_links: varchar({ length: 256 }).array().notNull(),
         tech_stack: varchar({ length: 64 }).array().notNull(),
-        screenshots: varchar({ length: 256 }).array().notNull(),
+        screenshots: varchar({ length: 256 }).array(3).notNull(),
         features: varchar({ length: 512 }).array().notNull(),
         description: varchar().notNull(),
         created_at: timestamp().defaultNow().notNull(),

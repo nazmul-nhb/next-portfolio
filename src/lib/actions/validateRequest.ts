@@ -15,7 +15,7 @@ type ZodResponse<T> = Promise<
  * @param data - Data to validate.
  * @returns Success status with data or error response.
  */
-export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodResponse<T> {
+export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodResponse<D> {
     const parsed = schema.safeParse(data);
 
     if (!parsed.success) {
@@ -59,5 +59,5 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
         };
     }
 
-    return { success: true, data: parsed.data };
+    return { success: true, data: parsed.data as unknown as D };
 }
