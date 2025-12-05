@@ -20,7 +20,7 @@ interface Separator {
     path?: never;
 }
 
-type TabItem = Tab | Separator;
+export type TabItem = Tab | Separator;
 
 interface DocTabsProps {
     tabs: TabItem[];

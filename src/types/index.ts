@@ -26,9 +26,9 @@ export type ErrorCode = HttpStatusCode<'clientError' | 'serverError'>;
 export type SuccessCode = HttpStatusCode<'informational' | 'success'>;
 
 export interface DBItem {
-    _id: string;
-    createdAt: string;
-    updatedAt: string;
+    id: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface ServerResponse<T> {

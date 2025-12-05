@@ -28,6 +28,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <link href="favicon.png" rel="shortcut icon" type="image/png" />
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <NextThemesProvider
                     attribute="class"

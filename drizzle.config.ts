@@ -1,5 +1,5 @@
 import { defineConfig } from 'drizzle-kit';
-import { env } from '@/configs/env';
+import { ENV } from '@/configs/env';
 
 export default defineConfig({
     dialect: 'postgresql',
@@ -7,7 +7,7 @@ export default defineConfig({
     out: './migrations',
     // driver: 'aws-data-api',
     dbCredentials: {
-        url: env.dbUrl,
+        url: ENV.dbUrl,
     },
     migrations: {
         schema: 'public',

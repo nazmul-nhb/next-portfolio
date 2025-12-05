@@ -38,7 +38,7 @@
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"biome.lsp.trace.server": "messages",
-	"biome.configurationPath": "biome.json",
+	// "biome.configurationPath": "biome.json",
 	"cSpell.words": [
 		"neondatabase",
 		"treeify"

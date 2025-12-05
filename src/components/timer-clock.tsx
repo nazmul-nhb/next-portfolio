@@ -22,7 +22,6 @@ export default function ClockTimer() {
             console.log(msg);
         },
     });
-    console.log(time);
     const duration = useTimer(new Chronos().endOf('month'));
 
     // const timeStorage = new WebStorage().set({ time: time.toDate() }, 'time');
@@ -43,7 +42,7 @@ export default function ClockTimer() {
             <span>
                 Today is <span className="text-green-700 animate-bounce">{formatted}</span>
             </span>
-            <span>{time.season({ preset: 'vedic' })}</span>
+            <span>{time.season({ preset: 'bangladesh' })}</span>
             <span>
                 Deadline Ends in{' '}
                 <span className="text-red-600 animate-pulse">
