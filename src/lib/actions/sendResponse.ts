@@ -70,10 +70,9 @@ const buildResponseMeta = <T>(
             message = `${collection} deleted successfully!`;
             break;
         default:
+            statusCode = HTTP_CODES.OK;
             break;
     }
 
     return { message, statusCode };
 };
-
-export default sendResponse;

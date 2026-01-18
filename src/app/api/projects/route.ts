@@ -1,5 +1,5 @@
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
-import sendResponse from '@/lib/actions/sendResponse';
+import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';

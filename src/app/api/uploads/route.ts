@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { STATUS_CODES } from 'nhb-toolbox/constants';
 import { ENV } from '@/configs/env';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
-import sendResponse from '@/lib/actions/sendResponse';
+import { sendResponse } from '@/lib/actions/sendResponse';
 
 const configs = ENV.cloudinary.config;
 
