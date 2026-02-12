@@ -14,6 +14,7 @@ export type TCollection =
     | 'Education'
     | 'Package'
     | 'Experience'
+    | 'Testimonial'
     | 'Link'
     | 'Email'
     | 'Blog'

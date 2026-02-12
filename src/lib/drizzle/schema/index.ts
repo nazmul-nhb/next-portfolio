@@ -4,4 +4,5 @@ export * from './career';
 export * from './messages';
 export * from './projects';
 export * from './skills';
+export * from './testimonials';
 export * from './users';

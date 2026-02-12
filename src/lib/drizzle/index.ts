@@ -18,6 +18,7 @@ import {
 } from '@/lib/drizzle/schema/messages';
 import { projects } from '@/lib/drizzle/schema/projects';
 import { skills } from '@/lib/drizzle/schema/skills';
+import { testimonials } from '@/lib/drizzle/schema/testimonials';
 import { users } from '@/lib/drizzle/schema/users';
 
 const sql = neon(ENV.dbUrl);
@@ -29,6 +30,7 @@ export const db = drizzle(sql, {
         skills,
         experiences,
         education,
+        testimonials,
         blogs,
         tags,
         categories,
