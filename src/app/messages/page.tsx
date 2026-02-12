@@ -61,7 +61,7 @@ export default function MessagesPage() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/auth/login' as '/');
+            router.push('/auth/login');
         } else if (status === 'authenticated') {
             fetchConversations();
         }

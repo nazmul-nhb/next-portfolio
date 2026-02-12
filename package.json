@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "clean": "rm -rf .next",
     "build": "next build",
     "start": "next start",
+    "typegen": "next typegen",
+    "typecheck": "tsc --noEmit",
     "lint": "biome lint --diagnostic-level=error",
     "fix": "biome check --write --diagnostic-level=error",
     "format": "biome format --write --diagnostic-level=error",

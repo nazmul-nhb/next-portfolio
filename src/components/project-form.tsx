@@ -30,12 +30,12 @@ import {
     ProjectFormSchema,
     ProjectFormUpdateSchema,
 } from '@/lib/zod-schema/projects';
-import type { InsertProject } from '@/types/projects';
+import type { InsertProject, UpdateProject } from '@/types/projects';
 
 type ProjectData = Partial<ProjectFormData>;
 
 interface Props {
-    onSubmit: ((data: InsertProject) => void) | ((data: Partial<InsertProject>) => void);
+    onSubmit: ((data: InsertProject) => void) | ((data: UpdateProject) => void);
     defaultValues?: ProjectData;
     isLoading?: boolean;
 }

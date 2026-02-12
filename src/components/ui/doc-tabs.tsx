@@ -47,7 +47,7 @@ export default function DocTabs({ tabs, className }: DocTabsProps) {
 
     const handleSelect = (path: string) => {
         setSelected(path);
-        router.push(path as '/')
+        router.push(path as '/');
     };
 
     const SeparatorComponent = () => (
