@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ENV } from '@/configs/env';
@@ -33,7 +34,7 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
             router.refresh();
         } catch (error) {
             console.error('Failed to delete skill:', error);
-            alert('Failed to delete skill. Please try again.');
+            toast.error('Failed to delete skill. Please try again.');
         } finally {
             setDeletingId(null);
         }
@@ -58,7 +59,7 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No skills yet</p>
-                        <Link href={"/admin/skills/new" }>
+                        <Link href={'/admin/skills/new'}>
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Your First Skill
@@ -80,13 +81,15 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                                             src={ENV.cloudinary.urls.base_url + skill.icon}
                                             width={40}
                                         />
-                                        <CardTitle className="text-base">{skill.title}</CardTitle>
+                                        <CardTitle className="text-base">
+                                            {skill.title}
+                                        </CardTitle>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-0">
                                 <div className="flex gap-2">
-                                    <Link className="flex-1" href={`/admin/skills/${skill.id}` }>
+                                    <Link className="flex-1" href={`/admin/skills/${skill.id}`}>
                                         <Button className="w-full" size="sm" variant="outline">
                                             <Pencil className="mr-2 h-3 w-3" />
                                             Edit

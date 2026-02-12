@@ -3,28 +3,29 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SkillForm } from '@/components/skill-form';
+import { ExperienceForm } from '@/components/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import type { InsertSkill, UpdateSkill } from '@/types/skills';
+import type { InsertExperience, UpdateExperience } from '@/types/career';
 
-export default function NewSkillPage() {
+export default function NewExperiencePage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertSkill | UpdateSkill) => {
+    const handleSubmit = async (data: InsertExperience | UpdateExperience) => {
         setIsLoading(true);
         try {
-            await httpRequest('/api/skills', {
+            await httpRequest('/api/experiences', {
                 method: 'POST',
                 body: data,
             });
 
-            router.push('/admin/skills');
+            toast.success('Experience created successfully');
+            router.push('/admin/experience' as '/');
             router.refresh();
         } catch (error) {
-            console.error('Failed to create skill:', error);
-            toast.error('Failed to create skill. Please try again.');
+            console.error('Failed to create experience:', error);
+            toast.error('Failed to create experience. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -33,16 +34,16 @@ export default function NewSkillPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Add New Skill</h1>
-                <p className="text-muted-foreground">Add a new skill to your profile</p>
+                <h1 className="text-3xl font-bold">Add New Experience</h1>
+                <p className="text-muted-foreground">Add a new work experience entry</p>
             </div>
 
             <Card className="mx-auto max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Skill Details</CardTitle>
+                    <CardTitle>Experience Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SkillForm isLoading={isLoading} onSubmit={handleSubmit} />
+                    <ExperienceForm isLoading={isLoading} onSubmit={handleSubmit} />
                 </CardContent>
             </Card>
         </div>

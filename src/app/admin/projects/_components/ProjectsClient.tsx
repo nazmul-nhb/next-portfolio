@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ENV } from '@/configs/env';
@@ -33,7 +34,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
             router.refresh();
         } catch (error) {
             console.error('Failed to delete project:', error);
-            alert('Failed to delete project. Please try again.');
+            toast.error('Failed to delete project. Please try again.');
         } finally {
             setDeletingId(null);
         }

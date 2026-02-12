@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { ProjectForm } from '@/components/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
@@ -23,11 +24,11 @@ export function EditProjectClient({ project }: EditProjectClientProps) {
                 body: data,
             });
 
-            router.push('/admin/projects' );
+            router.push('/admin/projects');
             router.refresh();
         } catch (error) {
             console.error('Failed to update project:', error);
-            alert('Failed to update project. Please try again.');
+            toast.error('Failed to update project. Please try again.');
         } finally {
             setIsLoading(false);
         }

@@ -3,32 +3,33 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SkillForm } from '@/components/skill-form';
+import { EducationForm } from '@/components/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import type { InsertSkill, SelectSkill, UpdateSkill } from '@/types/skills';
+import type { SelectEducation, UpdateEducation } from '@/types/career';
 
-interface EditSkillClientProps {
-    skill: SelectSkill;
+interface EditEducationClientProps {
+    education: SelectEducation;
 }
 
-export function EditSkillClient({ skill }: EditSkillClientProps) {
+export function EditEducationClient({ education }: EditEducationClientProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertSkill | UpdateSkill) => {
+    const handleSubmit = async (data: UpdateEducation) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/skills?id=${skill.id}`, {
+            await httpRequest(`/api/education?id=${education.id}`, {
                 method: 'PATCH',
                 body: data,
             });
 
-            router.push('/admin/skills');
+            toast.success('Education updated successfully');
+            router.push('/admin/education' as '/');
             router.refresh();
         } catch (error) {
-            console.error('Failed to update skill:', error);
-            toast.error('Failed to update skill. Please try again.');
+            console.error('Failed to update education:', error);
+            toast.error('Failed to update education. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -37,17 +38,17 @@ export function EditSkillClient({ skill }: EditSkillClientProps) {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Edit Skill</h1>
-                <p className="text-muted-foreground">Update skill details</p>
+                <h1 className="text-3xl font-bold">Edit Education</h1>
+                <p className="text-muted-foreground">Update education details</p>
             </div>
 
             <Card className="mx-auto max-w-2xl">
                 <CardHeader>
-                    <CardTitle>{skill.title}</CardTitle>
+                    <CardTitle>{education.degree}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SkillForm
-                        defaultValues={skill}
+                    <EducationForm
+                        defaultValues={education}
                         isLoading={isLoading}
                         onSubmit={handleSubmit}
                     />

@@ -3,28 +3,29 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SkillForm } from '@/components/skill-form';
+import { EducationForm } from '@/components/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import type { InsertSkill, UpdateSkill } from '@/types/skills';
+import type { InsertEducation, UpdateEducation } from '@/types/career';
 
-export default function NewSkillPage() {
+export default function NewEducationPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertSkill | UpdateSkill) => {
+    const handleSubmit = async (data: InsertEducation | UpdateEducation) => {
         setIsLoading(true);
         try {
-            await httpRequest('/api/skills', {
+            await httpRequest('/api/education', {
                 method: 'POST',
                 body: data,
             });
 
-            router.push('/admin/skills');
+            toast.success('Education created successfully');
+            router.push('/admin/education' as '/');
             router.refresh();
         } catch (error) {
-            console.error('Failed to create skill:', error);
-            toast.error('Failed to create skill. Please try again.');
+            console.error('Failed to create education:', error);
+            toast.error('Failed to create education. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -33,16 +34,16 @@ export default function NewSkillPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Add New Skill</h1>
-                <p className="text-muted-foreground">Add a new skill to your profile</p>
+                <h1 className="text-3xl font-bold">Add New Education</h1>
+                <p className="text-muted-foreground">Add a new education entry</p>
             </div>
 
             <Card className="mx-auto max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Skill Details</CardTitle>
+                    <CardTitle>Education Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SkillForm isLoading={isLoading} onSubmit={handleSubmit} />
+                    <EducationForm isLoading={isLoading} onSubmit={handleSubmit} />
                 </CardContent>
             </Card>
         </div>

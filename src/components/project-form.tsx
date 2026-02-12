@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { httpRequest } from '@/lib/actions/baseRequest';
 import {
     type CloudinaryResponse,
     deleteFromCloudinary,
@@ -31,6 +32,7 @@ import {
     ProjectFormUpdateSchema,
 } from '@/lib/zod-schema/projects';
 import type { InsertProject, UpdateProject } from '@/types/projects';
+import type { SelectSkill } from '@/types/skills';
 
 type ProjectData = Partial<ProjectFormData>;
 
@@ -43,6 +45,8 @@ interface Props {
 export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Props) {
     const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || []);
     const [techStackInput, setTechStackInput] = useState('');
+    const [skills, setSkills] = useState<SelectSkill[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>(Array(3).fill(null));
@@ -89,14 +93,38 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     };
 
     // Tech stack handlers
-    const handleAddTechStack = () => {
-        if (techStackInput.trim() && !techStackItems.includes(techStackInput.trim())) {
-            const newItems = [...techStackItems, techStackInput.trim()];
+    const handleAddTechStack = (skill?: string) => {
+        const techToAdd = skill || techStackInput.trim();
+        if (techToAdd && !techStackItems.includes(techToAdd)) {
+            const newItems = [...techStackItems, techToAdd];
             setTechStackItems(newItems);
             form.setValue('tech_stack', newItems);
             setTechStackInput('');
+            setShowSuggestions(false);
         }
     };
+
+    const filteredSkills = skills.filter(
+        (skill) =>
+            techStackInput &&
+            skill.title.toLowerCase().includes(techStackInput.toLowerCase()) &&
+            !techStackItems.includes(skill.title)
+    );
+
+    // Fetch skills on mount
+    useEffect(() => {
+        const fetchSkills = async () => {
+            try {
+                const response = await httpRequest<{ data: SelectSkill[] }>('/api/skills');
+                if (response.data && 'data' in response.data) {
+                    setSkills(response.data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch skills:', error);
+            }
+        };
+        fetchSkills();
+    }, []);
 
     const handleRemoveTechStack = (index: number) => {
         const newItems = techStackItems.filter((_, i) => i !== index);
@@ -265,15 +293,38 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                 <div className="space-y-4">
                     <FormLabel>Tech Stack *</FormLabel>
                     <div className="space-y-2">
-                        <div className="flex gap-2">
-                            <Input
-                                onChange={(e) => setTechStackInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Add technology (e.g., React, Node.js)"
-                                value={techStackInput}
-                            />
+                        <div className="relative flex gap-2">
+                            <div className="relative flex-1">
+                                <Input
+                                    onBlur={() =>
+                                        setTimeout(() => setShowSuggestions(false), 200)
+                                    }
+                                    onChange={(e) => {
+                                        setTechStackInput(e.target.value);
+                                        setShowSuggestions(true);
+                                    }}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Add technology (e.g., React, Node.js)"
+                                    value={techStackInput}
+                                />
+                                {showSuggestions && filteredSkills.length > 0 && (
+                                    <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 shadow-lg">
+                                        {filteredSkills.map((skill) => (
+                                            <button
+                                                className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                                                key={skill.id}
+                                                onClick={() => handleAddTechStack(skill.title)}
+                                                type="button"
+                                            >
+                                                {skill.title}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             <Button
-                                onClick={handleAddTechStack}
+                                onClick={() => handleAddTechStack()}
                                 type="button"
                                 variant="outline"
                             >
@@ -281,7 +332,8 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                             </Button>
                         </div>
                         <FormDescription>
-                            Press Enter or click + to add technology
+                            Press Enter or click + to add technology. Start typing to see
+                            suggestions from your skills.
                         </FormDescription>
                         <FormField
                             control={form.control}

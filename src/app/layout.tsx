@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import ThemeToggler from '@/components/theme-toggler';
+import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/configs/site';
 import { AuthProvider } from '@/providers/auth-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
@@ -63,6 +64,7 @@ export default function RootLayout({
                         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                         <Footer />
                         <ThemeToggler />
+                        <Toaster />
                     </NextThemesProvider>
                 </AuthProvider>
             </body>
