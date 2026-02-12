@@ -1,14 +1,16 @@
 import { desc } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
-import { ENV } from '@/configs/env';
+import {
+    getContactAutoResponseTemplate,
+    getContactEmailTemplate,
+    sendEmail,
+} from '@/lib/actions/email';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema/messages';
-import { sendEmail } from '@/lib/email/sendEmail';
-import { contactAutoReplyTemplate, contactEmailTemplate } from '@/lib/email/templates';
 import { ContactFormSchema } from '@/lib/zod-schema/messages';
 
 /**
@@ -37,16 +39,16 @@ export async function POST(req: NextRequest) {
 
         // Send notification email to admin (non-blocking)
         sendEmail({
-            to: ENV.adminEmail,
-            subject: `New Contact Message: ${subject || 'No Subject'}`,
-            html: contactEmailTemplate(name, email, subject || '', message),
+            to: process.env.SMTP_USER as string,
+            subject: `New Contact Message from ${name}`,
+            html: getContactEmailTemplate({ name, email, message }),
         }).catch(console.error);
 
         // Send auto-response to sender (non-blocking)
         sendEmail({
             to: email,
             subject: 'Thanks for reaching out!',
-            html: contactAutoReplyTemplate(name),
+            html: getContactAutoResponseTemplate(name),
         }).catch(console.error);
 
         return sendResponse('Message', 'POST', {

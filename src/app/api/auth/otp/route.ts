@@ -1,13 +1,12 @@
 import { and, eq, gt } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { getOTPEmailTemplate, sendEmail } from '@/lib/actions/email';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { db } from '@/lib/drizzle';
 import { otpCodes } from '@/lib/drizzle/schema/messages';
 import { users } from '@/lib/drizzle/schema/users';
-import { sendEmail } from '@/lib/email/sendEmail';
-import { otpEmailTemplate } from '@/lib/email/templates';
 import { OTPSchema, RequestOTPSchema } from '@/lib/zod-schema/users';
 
 /**
@@ -52,7 +51,7 @@ export async function POST(req: NextRequest) {
         await sendEmail({
             to: email,
             subject: 'Verify Your Email - OTP Code',
-            html: otpEmailTemplate(user.name, code),
+            html: getOTPEmailTemplate(code, user.name),
         });
 
         return sendResponse('OTP', 'POST', { message: 'OTP sent to your email' });

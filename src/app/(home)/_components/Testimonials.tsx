@@ -1,36 +1,24 @@
-'use client';
-
-import { Quote } from 'lucide-react';
+import { Star } from 'lucide-react';
+import Image from 'next/image';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
-
-const testimonials = [
-    {
-        name: 'Alex Chen',
-        role: 'Senior Developer at TechCorp',
-        content:
-            'Nazmul is an exceptional developer who consistently delivers high-quality code. His attention to detail and passion for clean architecture is remarkable.',
-        avatar: '🧑‍💼',
-    },
-    {
-        name: 'Sarah Johnson',
-        role: 'Product Manager at StartupXYZ',
-        content:
-            'Working with Nazmul was a pleasure. He understood our requirements perfectly and built a solution that exceeded our expectations.',
-        avatar: '👩‍💻',
-    },
-    {
-        name: 'Michael Park',
-        role: 'CTO at InnovateLab',
-        content:
-            'Nazmul brings both technical expertise and creative problem-solving to every project. Highly recommended for any web development work.',
-        avatar: '👨‍🔬',
-    },
-];
+import { ENV } from '@/configs/env';
+import { db } from '@/lib/drizzle';
+import { testimonials } from '@/lib/drizzle/schema';
 
 /**
  * Testimonials section displaying client feedback.
  */
-export function TestimonialsSection() {
+export async function TestimonialsSection() {
+    let allTestimonials: (typeof testimonials.$inferSelect)[] = [];
+
+    try {
+        allTestimonials = await db.select().from(testimonials).limit(6);
+    } catch (error) {
+        console.error('Failed to fetch testimonials:', error);
+    }
+
+    if (!allTestimonials.length) return null;
+
     return (
         <section className="py-20">
             <div className="mx-auto max-w-6xl px-4">
@@ -46,22 +34,48 @@ export function TestimonialsSection() {
                 </FadeInUp>
 
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {testimonials.map((t) => (
-                        <ScaleInItem key={t.name}>
+                    {allTestimonials.map((t) => (
+                        <ScaleInItem key={t.id}>
                             <div className="flex h-full flex-col rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
-                                <Quote className="mb-4 h-8 w-8 text-primary/30" />
-                                <p className="mb-6 flex-1 text-sm leading-relaxed text-muted-foreground">
+                                <div className="mb-4 flex gap-1">
+                                    {Array.from({ length: 5 }).map((_, idx) => (
+                                        <Star
+                                            key={idx}
+                                            className={`h-4 w-4 ${
+                                                idx < t.rating
+                                                    ? 'fill-yellow-400 text-yellow-400'
+                                                    : 'text-muted-foreground'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                                <p className="mb-6 flex-1 text-sm leading-relaxed italic text-muted-foreground">
                                     &ldquo;{t.content}&rdquo;
                                 </p>
-                                <div className="flex items-center gap-3">
-                                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-lg">
-                                        {t.avatar}
-                                    </span>
+                                <div className="flex items-center gap-3 border-t border-border pt-4">
+                                    {t.client_avatar ? (
+                                        <div className="h-10 w-10 overflow-hidden rounded-full border">
+                                            <Image
+                                                alt={t.client_name}
+                                                className="object-cover"
+                                                height={40}
+                                                src={`${ENV.cloudinary.urls.base_url}${t.client_avatar}`}
+                                                width={40}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium">
+                                            {t.client_name.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
                                     <div>
-                                        <p className="text-sm font-medium">{t.name}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {t.role}
-                                        </p>
+                                        <p className="text-sm font-medium">{t.client_name}</p>
+                                        {t.client_role && (
+                                            <p className="text-xs text-muted-foreground">
+                                                {t.client_role}
+                                                {t.client_company && ` at ${t.client_company}`}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

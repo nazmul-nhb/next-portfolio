@@ -1,28 +1,23 @@
 'use client';
 
-import { ArrowLeft, Eye, Save, Upload } from 'lucide-react';
+import { ArrowLeft, Save, Upload } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import Markdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/animations';
+import { BlogEditor } from '@/components/blog-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { uploadToCloudinary } from '@/lib/actions/cloudinary';
 
 /**
- * Blog post editor with markdown preview.
+ * Blog post editor with rich text editor.
  */
 export default function NewBlogPage() {
     const { data: session, status } = useSession();
@@ -32,7 +27,6 @@ export default function NewBlogPage() {
     const [excerpt, setExcerpt] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [uploadingCover, setUploadingCover] = useState(false);
-    const [isPreview, setIsPreview] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
@@ -114,16 +108,6 @@ export default function NewBlogPage() {
                         </Button>
                         <h1 className="text-2xl font-bold">Write a New Post</h1>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            onClick={() => setIsPreview(!isPreview)}
-                            size="sm"
-                            variant="outline"
-                        >
-                            <Eye className="mr-2 h-4 w-4" />
-                            {isPreview ? 'Edit' : 'Preview'}
-                        </Button>
-                    </div>
                 </div>
             </FadeInUp>
 
@@ -182,43 +166,14 @@ export default function NewBlogPage() {
                     </div>
 
                     <div>
-                        <div className="mb-1.5 flex items-center justify-between">
-                            <Label htmlFor="content">
-                                Content {isPreview ? '(Preview)' : '(Markdown supported)'}
-                            </Label>
-                            <span className="text-xs text-muted-foreground">
-                                Supports GitHub Flavored Markdown
-                            </span>
+                        <div className="mb-1.5">
+                            <Label htmlFor="content">Content</Label>
                         </div>
-
-                        {isPreview ? (
-                            <div className="min-h-100 rounded-md border border-border bg-card p-6 prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5">
-                                {content ? (
-                                    <Markdown
-                                        rehypePlugins={[
-                                            rehypeRaw,
-                                            rehypeSanitize,
-                                            rehypeHighlight,
-                                        ]}
-                                        remarkPlugins={[remarkGfm]}
-                                    >
-                                        {content}
-                                    </Markdown>
-                                ) : (
-                                    <p className="text-muted-foreground">
-                                        Nothing to preview yet...
-                                    </p>
-                                )}
-                            </div>
-                        ) : (
-                            <Textarea
-                                className="mt-1.5 min-h-100 resize-y font-mono text-sm"
-                                id="content"
-                                onChange={(e) => setContent(e.target.value)}
-                                placeholder="Write your blog post in markdown..."
-                                value={content}
-                            />
-                        )}
+                        <BlogEditor
+                            content={content}
+                            onChange={setContent}
+                            placeholder="Start writing your blog post..."
+                        />
                     </div>
 
                     <div className="flex items-center justify-between border-t border-border pt-6">
