@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
@@ -52,6 +53,9 @@ export async function POST(
         }
 
         await db.update(blogs).set({ reactions }).where(eq(blogs.id, blog.id));
+
+        revalidatePath('/blogs');
+        revalidatePath('/(home)', 'page');
 
         return sendResponse('Blog', 'PATCH', { reactions });
     } catch (error) {

@@ -91,6 +91,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
             .innerJoin(users, eq(comments.author_id, users.id))
             .where(eq(comments.blog_id, blog.id));
 
+        revalidatePath('/blogs');
+        revalidatePath('/(home)', 'page');
+
         return sendResponse('Blog', 'GET', {
             ...blog,
             tags: blogTagList,
