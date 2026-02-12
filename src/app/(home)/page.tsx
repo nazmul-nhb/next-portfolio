@@ -1,20 +1,26 @@
-import CreateProject from '@/app/(home)/_components/CreateProject';
-import ClockTimer from '@/components/timer-clock';
+import type { Metadata } from 'next';
+import { HeroSection } from './_components/HeroSection';
+import { RecentBlogsSection } from './_components/RecentBlogs';
+import { RecentProjectsSection } from './_components/RecentProjects';
+import { SkillsSection } from './_components/SkillsSection';
+import { TestimonialsSection } from './_components/Testimonials';
 
-export default function Home() {
+export const revalidate = 3600; // ISR: revalidate every hour
+
+export const metadata: Metadata = {
+    title: 'Nazmul Hassan | Full-Stack Web Developer',
+    description:
+        'Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
+};
+
+export default function HomePage() {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-            <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-                <CreateProject />
-                <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-                    <h1 className="max-w-full text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-                        Demo Current Time & Timer
-                    </h1>
-                    <p className="text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-                        <ClockTimer />
-                    </p>
-                </div>
-            </main>
+        <div className="flex flex-col">
+            <HeroSection />
+            <SkillsSection />
+            <RecentProjectsSection />
+            <RecentBlogsSection />
+            <TestimonialsSection />
         </div>
     );
 }

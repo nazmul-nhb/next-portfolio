@@ -1,7 +1,6 @@
 'use client';
 
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
@@ -9,7 +8,7 @@ import { useState } from 'react';
 interface Tab {
     title: string;
     icon: React.ComponentType<{ className?: string }>;
-    path: Route;
+    path: string;
     type?: never;
 }
 
@@ -42,13 +41,13 @@ const spanVariants: Variants = {
 };
 
 export default function DocTabs({ tabs, className }: DocTabsProps) {
-    const [selected, setSelected] = useState<Route>('/');
+    const [selected, setSelected] = useState<string>('/');
     const router = useRouter();
 
 
-    const handleSelect = (path: Route) => {
+    const handleSelect = (path: string) => {
         setSelected(path);
-        router.push(path)
+        router.push(path as '/')
     };
 
     const SeparatorComponent = () => (

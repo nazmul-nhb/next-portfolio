@@ -15,7 +15,14 @@ export type TCollection =
     | 'Package'
     | 'Experience'
     | 'Link'
-    | 'Email';
+    | 'Email'
+    | 'Blog'
+    | 'Comment'
+    | 'Tag'
+    | 'Category'
+    | 'Message'
+    | 'Conversation'
+    | 'OTP';
 
 export type TMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'OK';
 

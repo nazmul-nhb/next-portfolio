@@ -40,7 +40,12 @@
 	"biome.lsp.trace.server": "messages",
 	// "biome.configurationPath": "biome.json",
 	"cSpell.words": [
+		"conv",
+		"ILIKE",
 		"neondatabase",
-		"treeify"
+		"Segoe",
+		"Tahoma",
+		"treeify",
+		"Verdana"
 	]
 }
