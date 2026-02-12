@@ -17,25 +17,40 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsPage() {
-    const allBlogs = await db
-        .select({
-            id: blogs.id,
-            title: blogs.title,
-            slug: blogs.slug,
-            excerpt: blogs.excerpt,
-            cover_image: blogs.cover_image,
-            views: blogs.views,
-            published_date: blogs.published_date,
-            author: {
-                id: users.id,
-                name: users.name,
-                profile_image: users.profile_image,
-            },
-        })
-        .from(blogs)
-        .innerJoin(users, eq(blogs.author_id, users.id))
-        .where(eq(blogs.is_published, true))
-        .orderBy(desc(blogs.published_date));
+    let allBlogs: {
+        id: number;
+        title: string;
+        slug: string;
+        excerpt: string | null;
+        cover_image: string | null;
+        views: number;
+        published_date: Date | null;
+        author: { id: number; name: string; profile_image: string | null };
+    }[] = [];
+
+    try {
+        allBlogs = await db
+            .select({
+                id: blogs.id,
+                title: blogs.title,
+                slug: blogs.slug,
+                excerpt: blogs.excerpt,
+                cover_image: blogs.cover_image,
+                views: blogs.views,
+                published_date: blogs.published_date,
+                author: {
+                    id: users.id,
+                    name: users.name,
+                    profile_image: users.profile_image,
+                },
+            })
+            .from(blogs)
+            .innerJoin(users, eq(blogs.author_id, users.id))
+            .where(eq(blogs.is_published, true))
+            .orderBy(desc(blogs.published_date));
+    } catch (error) {
+        console.error('Failed to fetch blogs:', error);
+    }
 
     return (
         <div className="mx-auto max-w-6xl px-4 py-12">

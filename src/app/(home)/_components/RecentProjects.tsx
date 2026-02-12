@@ -11,11 +11,17 @@ import { projects } from '@/lib/drizzle/schema/projects';
  * Recent projects section on the homepage.
  */
 export async function RecentProjectsSection() {
-    const recentProjects = await db
-        .select()
-        .from(projects)
-        .orderBy(desc(projects.created_at))
-        .limit(6);
+    let recentProjects: (typeof projects.$inferSelect)[] = [];
+
+    try {
+        recentProjects = await db
+            .select()
+            .from(projects)
+            .orderBy(desc(projects.created_at))
+            .limit(6);
+    } catch (error) {
+        console.error('Failed to fetch recent projects:', error);
+    }
 
     if (!recentProjects.length) return null;
 

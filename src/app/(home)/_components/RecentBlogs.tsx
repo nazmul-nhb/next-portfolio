@@ -12,25 +12,40 @@ import { users } from '@/lib/drizzle/schema/users';
  * Recent blog posts section on the homepage.
  */
 export async function RecentBlogsSection() {
-    const recentBlogs = await db
-        .select({
-            id: blogs.id,
-            title: blogs.title,
-            slug: blogs.slug,
-            excerpt: blogs.excerpt,
-            cover_image: blogs.cover_image,
-            views: blogs.views,
-            published_date: blogs.published_date,
-            author: {
-                name: users.name,
-                profile_image: users.profile_image,
-            },
-        })
-        .from(blogs)
-        .innerJoin(users, eq(blogs.author_id, users.id))
-        .where(eq(blogs.is_published, true))
-        .orderBy(desc(blogs.published_date))
-        .limit(3);
+    let recentBlogs: {
+        id: number;
+        title: string;
+        slug: string;
+        excerpt: string | null;
+        cover_image: string | null;
+        views: number;
+        published_date: Date | null;
+        author: { name: string; profile_image: string | null };
+    }[] = [];
+
+    try {
+        recentBlogs = await db
+            .select({
+                id: blogs.id,
+                title: blogs.title,
+                slug: blogs.slug,
+                excerpt: blogs.excerpt,
+                cover_image: blogs.cover_image,
+                views: blogs.views,
+                published_date: blogs.published_date,
+                author: {
+                    name: users.name,
+                    profile_image: users.profile_image,
+                },
+            })
+            .from(blogs)
+            .innerJoin(users, eq(blogs.author_id, users.id))
+            .where(eq(blogs.is_published, true))
+            .orderBy(desc(blogs.published_date))
+            .limit(3);
+    } catch (error) {
+        console.error('Failed to fetch recent blogs:', error);
+    }
 
     if (!recentBlogs.length) return null;
 

@@ -17,53 +17,86 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
 
-    const [user] = await db
-        .select({ name: users.name, bio: users.bio })
-        .from(users)
-        .where(eq(users.id, Number(id)))
-        .limit(1);
+    try {
+        const [user] = await db
+            .select({ name: users.name, bio: users.bio })
+            .from(users)
+            .where(eq(users.id, Number(id)))
+            .limit(1);
 
-    if (!user) return { title: 'User Not Found' };
+        if (!user) return { title: 'User Not Found' };
 
-    return {
-        title: user.name,
-        description: user.bio || `Profile of ${user.name}`,
-    };
+        return {
+            title: user.name,
+            description: user.bio || `Profile of ${user.name}`,
+        };
+    } catch (error) {
+        console.error('Failed to fetch user metadata:', error);
+        return { title: 'User Profile' };
+    }
 }
 
 /** Public user profile page. */
 export default async function UserProfilePage({ params }: Props) {
     const { id } = await params;
 
-    const [user] = await db
-        .select({
-            id: users.id,
-            name: users.name,
-            profile_image: users.profile_image,
-            bio: users.bio,
-            role: users.role,
-            created_at: users.created_at,
-        })
-        .from(users)
-        .where(eq(users.id, Number(id)))
-        .limit(1);
+    let user:
+        | {
+              id: number;
+              name: string;
+              profile_image: string | null;
+              bio: string | null;
+              role: 'admin' | 'user';
+              created_at: Date;
+          }
+        | undefined;
+    let userBlogs: {
+        id: number;
+        title: string;
+        slug: string;
+        excerpt: string | null;
+        cover_image: string | null;
+        published_date: Date | null;
+        views: number;
+    }[] = [];
+
+    try {
+        [user] = await db
+            .select({
+                id: users.id,
+                name: users.name,
+                profile_image: users.profile_image,
+                bio: users.bio,
+                role: users.role,
+                created_at: users.created_at,
+            })
+            .from(users)
+            .where(eq(users.id, Number(id)))
+            .limit(1);
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+    }
 
     if (!user) notFound();
 
-    const userBlogs = await db
-        .select({
-            id: blogs.id,
-            title: blogs.title,
-            slug: blogs.slug,
-            excerpt: blogs.excerpt,
-            cover_image: blogs.cover_image,
-            published_date: blogs.published_date,
-            views: blogs.views,
-        })
-        .from(blogs)
-        .where(and(eq(blogs.author_id, user.id), eq(blogs.is_published, true)))
-        .orderBy(desc(blogs.published_date))
-        .limit(10);
+    try {
+        userBlogs = await db
+            .select({
+                id: blogs.id,
+                title: blogs.title,
+                slug: blogs.slug,
+                excerpt: blogs.excerpt,
+                cover_image: blogs.cover_image,
+                published_date: blogs.published_date,
+                views: blogs.views,
+            })
+            .from(blogs)
+            .where(and(eq(blogs.author_id, user.id), eq(blogs.is_published, true)))
+            .orderBy(desc(blogs.published_date))
+            .limit(10);
+    } catch (error) {
+        console.error('Failed to fetch user blogs:', error);
+    }
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-12">

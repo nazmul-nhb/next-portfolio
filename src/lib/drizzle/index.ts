@@ -16,6 +16,7 @@ import {
     otpCodes,
 } from '@/lib/drizzle/schema/messages';
 import { projects } from '@/lib/drizzle/schema/projects';
+import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
 
 const sql = neon(ENV.dbUrl);
@@ -24,6 +25,7 @@ export const db = drizzle(sql, {
     schema: {
         users,
         projects,
+        skills,
         blogs,
         tags,
         categories,

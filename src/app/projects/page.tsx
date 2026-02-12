@@ -15,7 +15,13 @@ export const revalidate = 3600;
 
 /** Projects listing page. */
 export default async function ProjectsPage() {
-    const allProjects = await db.select().from(projects).orderBy(desc(projects.created_at));
+    let allProjects: (typeof projects.$inferSelect)[] = [];
+
+    try {
+        allProjects = await db.select().from(projects).orderBy(desc(projects.created_at));
+    } catch (error) {
+        console.error('Failed to fetch projects:', error);
+    }
 
     return (
         <div className="mx-auto max-w-6xl px-4 py-12">

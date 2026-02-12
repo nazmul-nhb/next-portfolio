@@ -8,6 +8,7 @@ import {
     Mail,
 } from 'lucide-react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import {
     FadeInUp,
     ScaleInItem,
@@ -16,6 +17,8 @@ import {
     StaggerContainer,
 } from '@/components/animations';
 import { siteConfig } from '@/configs/site';
+import { db } from '@/lib/drizzle';
+import { skills } from '@/lib/drizzle/schema/skills';
 
 export const metadata: Metadata = {
     title: 'Resume',
@@ -57,7 +60,15 @@ const education = [
 ];
 
 /** Resume / CV page with downloadable PDF option. */
-export default function ResumePage() {
+export default async function ResumePage() {
+    let allSkills: (typeof skills.$inferSelect)[] = [];
+
+    try {
+        allSkills = await db.select().from(skills);
+    } catch (error) {
+        console.error('Failed to fetch skills:', error);
+    }
+
     return (
         <div className="mx-auto max-w-3xl px-4 py-12">
             {/* Header */}
@@ -187,27 +198,36 @@ export default function ResumePage() {
             </section>
 
             {/* Skills */}
-            <section className="mb-10">
-                <SlideInLeft>
-                    <div className="mb-6 flex items-center gap-2">
-                        <Code2 className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-bold">Technical Skills</h2>
-                    </div>
-                </SlideInLeft>
+            {allSkills.length > 0 && (
+                <section className="mb-10">
+                    <SlideInLeft>
+                        <div className="mb-6 flex items-center gap-2">
+                            <Code2 className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Technical Skills</h2>
+                        </div>
+                    </SlideInLeft>
 
-                <FadeInUp>
-                    <div className="flex flex-wrap gap-2">
-                        {siteConfig.skills.map((skill) => (
-                            <span
-                                className="rounded-md border border-border/50 bg-muted px-2.5 py-1 text-xs font-medium"
-                                key={skill}
-                            >
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
-                </FadeInUp>
-            </section>
+                    <FadeInUp>
+                        <div className="flex flex-wrap gap-2">
+                            {allSkills.map((skill) => (
+                                <span
+                                    className="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-muted px-2.5 py-1 text-xs font-medium"
+                                    key={skill.id}
+                                >
+                                    <Image
+                                        alt={skill.title}
+                                        className="h-3.5 w-3.5 object-contain"
+                                        height={14}
+                                        src={skill.icon}
+                                        width={14}
+                                    />
+                                    {skill.title}
+                                </span>
+                            ))}
+                        </div>
+                    </FadeInUp>
+                </section>
+            )}
         </div>
     );
 }

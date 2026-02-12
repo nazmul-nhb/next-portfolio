@@ -8,6 +8,7 @@ import {
     Twitter,
 } from 'lucide-react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import {
     FadeInUp,
     ScaleInItem,
@@ -16,13 +17,23 @@ import {
     StaggerContainer,
 } from '@/components/animations';
 import { siteConfig } from '@/configs/site';
+import { db } from '@/lib/drizzle';
+import { skills } from '@/lib/drizzle/schema/skills';
 
 export const metadata: Metadata = {
     title: 'About',
     description: 'Learn more about Nazmul Hassan - Full-Stack Web Developer.',
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    let allSkills: (typeof skills.$inferSelect)[] = [];
+
+    try {
+        allSkills = await db.select().from(skills);
+    } catch (error) {
+        console.error('Failed to fetch skills:', error);
+    }
+
     return (
         <div className="mx-auto max-w-4xl px-4 py-12">
             {/* Intro */}
@@ -111,24 +122,33 @@ export default function AboutPage() {
             </section>
 
             {/* Skills */}
-            <section className="mb-16">
-                <SlideInLeft>
-                    <div className="mb-8 flex items-center gap-3">
-                        <Code2 className="h-6 w-6 text-primary" />
-                        <h2 className="text-2xl font-bold">Technical Skills</h2>
-                    </div>
-                </SlideInLeft>
+            {allSkills.length > 0 && (
+                <section className="mb-16">
+                    <SlideInLeft>
+                        <div className="mb-8 flex items-center gap-3">
+                            <Code2 className="h-6 w-6 text-primary" />
+                            <h2 className="text-2xl font-bold">Technical Skills</h2>
+                        </div>
+                    </SlideInLeft>
 
-                <StaggerContainer className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                    {siteConfig.skills.map((skill) => (
-                        <ScaleInItem key={skill}>
-                            <div className="rounded-lg border border-border/50 bg-card p-3 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-                                {skill}
-                            </div>
-                        </ScaleInItem>
-                    ))}
-                </StaggerContainer>
-            </section>
+                    <StaggerContainer className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                        {allSkills.map((skill) => (
+                            <ScaleInItem key={skill.id}>
+                                <div className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card p-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                                    <Image
+                                        alt={skill.title}
+                                        className="h-5 w-5 object-contain"
+                                        height={20}
+                                        src={skill.icon}
+                                        width={20}
+                                    />
+                                    {skill.title}
+                                </div>
+                            </ScaleInItem>
+                        ))}
+                    </StaggerContainer>
+                </section>
+            )}
 
             {/* Interests */}
             <section className="mb-16">

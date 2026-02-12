@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { db } from '@/lib/drizzle';
+import { skills } from '@/lib/drizzle/schema/skills';
 import { HeroSection } from './_components/HeroSection';
 import { RecentBlogsSection } from './_components/RecentBlogs';
 import { RecentProjectsSection } from './_components/RecentProjects';
@@ -13,11 +15,19 @@ export const metadata: Metadata = {
         'Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+    let allSkills: (typeof skills.$inferSelect)[] = [];
+
+    try {
+        allSkills = await db.select().from(skills);
+    } catch (error) {
+        console.error('Failed to fetch skills:', error);
+    }
+
     return (
         <div className="flex flex-col">
             <HeroSection />
-            <SkillsSection />
+            <SkillsSection skills={allSkills} />
             <RecentProjectsSection />
             <RecentBlogsSection />
             <TestimonialsSection />

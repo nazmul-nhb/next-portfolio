@@ -1,12 +1,27 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
-import { siteConfig } from '@/configs/site';
+import type { SelectSkill } from '@/types/skills';
 
-/**
- * Skills section displaying technology expertise with animated icons.
- */
-export function SkillsSection() {
+const floatAnimation = {
+    y: [0, -6, 0],
+    transition: {
+        duration: 3,
+        repeat: Number.POSITIVE_INFINITY,
+        ease: 'easeInOut' as const,
+    },
+};
+
+interface SkillsSectionProps {
+    skills: SelectSkill[];
+}
+
+/** Skills section displaying technology expertise with animated icons from DB. */
+export function SkillsSection({ skills }: SkillsSectionProps) {
+    if (!skills.length) return null;
+
     return (
         <section className="border-t border-border/50 bg-muted/30 py-20">
             <div className="mx-auto max-w-6xl px-4">
@@ -22,13 +37,31 @@ export function SkillsSection() {
                 </FadeInUp>
 
                 <StaggerContainer className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {siteConfig.skills.map((skill) => (
-                        <ScaleInItem key={skill}>
-                            <div className="group flex cursor-default items-center justify-center rounded-xl border border-border/50 bg-card p-4 text-center transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/5">
+                    {skills.map((skill, index) => (
+                        <ScaleInItem key={skill.id}>
+                            <motion.div
+                                animate={floatAnimation}
+                                className="group flex cursor-default flex-col items-center justify-center gap-3 rounded-xl border border-border/50 bg-card p-5 text-center transition-colors hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+                                style={{
+                                    animationDelay: `${index * 0.2}s`,
+                                }}
+                                transition={{
+                                    delay: index * 0.15,
+                                }}
+                            >
+                                <div className="relative h-10 w-10 transition-transform duration-300 group-hover:scale-110">
+                                    <Image
+                                        alt={skill.title}
+                                        className="object-contain"
+                                        fill
+                                        sizes="40px"
+                                        src={skill.icon}
+                                    />
+                                </div>
                                 <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-                                    {skill}
+                                    {skill.title}
                                 </span>
-                            </div>
+                            </motion.div>
                         </ScaleInItem>
                     ))}
                 </StaggerContainer>
