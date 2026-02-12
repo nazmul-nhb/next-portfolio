@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -46,6 +47,9 @@ export async function POST(req: NextRequest) {
 
         const [newExperience] = await db.insert(experiences).values(parsed.data).returning();
 
+        revalidatePath('/admin/experience');
+        revalidatePath('/resume');
+
         return sendResponse('Experience', 'POST', newExperience);
     } catch (error) {
         console.error('Error creating experience:', error);
@@ -87,6 +91,9 @@ export async function PATCH(req: NextRequest) {
             return sendErrorResponse('Experience not found', 404);
         }
 
+        revalidatePath('/admin/experience');
+        revalidatePath('/resume');
+
         return sendResponse('Experience', 'PATCH', updatedExperience);
     } catch (error) {
         console.error('Error updating experience:', error);
@@ -119,6 +126,9 @@ export async function DELETE(req: NextRequest) {
         if (!deleted) {
             return sendErrorResponse('Experience not found', 404);
         }
+
+        revalidatePath('/admin/experience');
+        revalidatePath('/resume');
 
         return sendResponse('Experience', 'DELETE', deleted);
     } catch (error) {

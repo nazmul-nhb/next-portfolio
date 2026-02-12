@@ -44,7 +44,9 @@ export default function MessagesPage() {
 
     const fetchConversations = useCallback(async () => {
         try {
-            const { data } = await httpRequest<Conversation[]>('/api/messages/conversations' as '/api/messages');
+            const { data } = await httpRequest<Conversation[]>(
+                '/api/messages/conversations' as '/api/messages'
+            );
             if (data) setConversations(data);
         } catch {
             // No conversations yet

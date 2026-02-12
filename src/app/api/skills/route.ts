@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -35,7 +36,8 @@ export async function POST(req: Request) {
         if (!skill?.id) {
             return sendErrorResponse('Error creating new skill!');
         }
-
+        revalidatePath('/admin/skills');
+        revalidatePath('/resume');
         return sendResponse('Skill', 'POST', skill);
     } catch (error) {
         console.error(error);
@@ -70,6 +72,9 @@ export async function PATCH(req: NextRequest) {
             return sendErrorResponse('Skill not found!');
         }
 
+        revalidatePath('/admin/skills');
+        revalidatePath('/resume');
+
         return sendResponse('Skill', 'PATCH', updated);
     } catch (error) {
         console.error(error);
@@ -91,6 +96,9 @@ export async function DELETE(req: NextRequest) {
         if (!deleted?.id) {
             return sendErrorResponse('Skill not found!');
         }
+
+        revalidatePath('/admin/skills');
+        revalidatePath('/resume');
 
         return sendResponse('Skill', 'DELETE', deleted);
     } catch (error) {

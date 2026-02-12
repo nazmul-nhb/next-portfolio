@@ -7,6 +7,7 @@ import ThemeToggler from '@/components/theme-toggler';
 import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/configs/site';
 import { AuthProvider } from '@/providers/auth-provider';
+import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
 
 const geistSans = Geist({
@@ -55,17 +56,19 @@ export default function RootLayout({
                 suppressHydrationWarning
             >
                 <AuthProvider>
-                    <NextThemesProvider
-                        attribute="class"
-                        defaultTheme="dark"
-                        themes={['dark', 'light']}
-                    >
-                        <Navbar />
-                        <main className="min-h-[calc(100vh-4rem)]">{children}</main>
-                        <Footer />
-                        <ThemeToggler />
-                        <Toaster />
-                    </NextThemesProvider>
+                    <ReactQueryProvider>
+                        <NextThemesProvider
+                            attribute="class"
+                            defaultTheme="dark"
+                            themes={['dark', 'light']}
+                        >
+                            <Navbar />
+                            <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+                            <Footer />
+                            <ThemeToggler />
+                            <Toaster />
+                        </NextThemesProvider>
+                    </ReactQueryProvider>
                 </AuthProvider>
             </body>
         </html>

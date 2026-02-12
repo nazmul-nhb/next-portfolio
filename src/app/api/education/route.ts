@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -42,6 +43,9 @@ export async function POST(req: NextRequest) {
 
         const [newEducation] = await db.insert(education).values(parsed.data).returning();
 
+        revalidatePath('/admin/education');
+        revalidatePath('/resume');
+
         return sendResponse('Education', 'POST', newEducation);
     } catch (error) {
         console.error('Error creating education:', error);
@@ -83,6 +87,9 @@ export async function PATCH(req: NextRequest) {
             return sendErrorResponse('Education record not found', 404);
         }
 
+        revalidatePath('/admin/education');
+        revalidatePath('/resume');
+
         return sendResponse('Education', 'PATCH', updatedEducation);
     } catch (error) {
         console.error('Error updating education:', error);
@@ -115,6 +122,9 @@ export async function DELETE(req: NextRequest) {
         if (!deleted) {
             return sendErrorResponse('Education record not found', 404);
         }
+
+        revalidatePath('/admin/education');
+        revalidatePath('/resume');
 
         return sendResponse('Education', 'DELETE', deleted);
     } catch (error) {

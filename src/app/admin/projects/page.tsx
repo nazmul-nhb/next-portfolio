@@ -5,7 +5,7 @@ import { ProjectsClient } from './_components/ProjectsClient';
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-    let allProjects: typeof projects.$inferSelect[] = [];
+    let allProjects: (typeof projects.$inferSelect)[] = [];
 
     try {
         allProjects = await db.select().from(projects).orderBy(projects.created_at);

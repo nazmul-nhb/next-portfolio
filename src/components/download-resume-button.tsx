@@ -48,7 +48,12 @@ interface DownloadButtonProps {
     skills: Skill[];
 }
 
-export function DownloadResumeButton({ user, experiences, education, skills }: DownloadButtonProps) {
+export function DownloadResumeButton({
+    user,
+    experiences,
+    education,
+    skills,
+}: DownloadButtonProps) {
     const [downloading, setDownloading] = useState(false);
 
     const handleDownload = async () => {

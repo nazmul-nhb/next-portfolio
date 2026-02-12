@@ -162,14 +162,12 @@ export async function PATCH(
         if (category_ids) {
             await db.delete(blogCategories).where(eq(blogCategories.blog_id, blog.id));
             if (category_ids.length) {
-                await db
-                    .insert(blogCategories)
-                    .values(
-                        category_ids.map((category_id: number) => ({
-                            blog_id: blog.id,
-                            category_id,
-                        }))
-                    );
+                await db.insert(blogCategories).values(
+                    category_ids.map((category_id: number) => ({
+                        blog_id: blog.id,
+                        category_id,
+                    }))
+                );
             }
         }
 

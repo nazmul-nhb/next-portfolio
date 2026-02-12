@@ -1,5 +1,6 @@
 import { desc } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import {
     getContactAutoResponseTemplate,
     getContactEmailTemplate,
@@ -50,6 +51,9 @@ export async function POST(req: NextRequest) {
             subject: 'Thanks for reaching out!',
             html: getContactAutoResponseTemplate(name),
         }).catch(console.error);
+
+        // Revalidate admin messages page
+        revalidatePath('/admin/messages');
 
         return sendResponse('Message', 'POST', {
             id: stored.id,

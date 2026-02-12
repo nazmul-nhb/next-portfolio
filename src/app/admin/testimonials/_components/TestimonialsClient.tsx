@@ -22,24 +22,47 @@ export function TestimonialsClient({ initialTestimonials }: TestimonialsClientPr
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const handleDelete = async (id: number, clientName: string) => {
-        if (!confirm(`Are you sure you want to delete testimonial from "${clientName}"?`))
-            return;
-
-        setDeletingId(id);
-        try {
-            await httpRequest(`/api/testimonials?id=${id}`, {
-                method: 'DELETE',
-            });
-
-            setTestimonials(testimonials.filter((t) => t.id !== id));
-            router.refresh();
-            toast.success('Testimonial deleted successfully');
-        } catch (error) {
-            console.error('Failed to delete testimonial:', error);
-            toast.error('Failed to delete testimonial. Please try again.');
-        } finally {
-            setDeletingId(null);
-        }
+        toast.custom(
+            (t) => (
+                <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
+                    <div className="flex-1">
+                        <p className="font-medium">Delete testimonial from "{clientName}"?</p>
+                        <p className="text-sm text-muted-foreground">
+                            This action cannot be undone.
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={async () => {
+                                toast.dismiss(t);
+                                setDeletingId(id);
+                                try {
+                                    await httpRequest(`/api/testimonials?id=${id}`, {
+                                        method: 'DELETE',
+                                    });
+                                    setTestimonials(testimonials.filter((t) => t.id !== id));
+                                    toast.success('Testimonial deleted successfully');
+                                    router.refresh();
+                                } catch (error) {
+                                    console.error('Failed to delete testimonial:', error);
+                                    toast.error('Failed to delete testimonial');
+                                } finally {
+                                    setDeletingId(null);
+                                }
+                            }}
+                            size="sm"
+                            variant="destructive"
+                        >
+                            Delete
+                        </Button>
+                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            ),
+            { duration: 5000 }
+        );
     };
 
     return (

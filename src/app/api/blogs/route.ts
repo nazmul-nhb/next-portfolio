@@ -151,14 +151,12 @@ export async function POST(req: NextRequest) {
         }
 
         if (category_ids?.length) {
-            await db
-                .insert(blogCategories)
-                .values(
-                    category_ids.map((category_id: number) => ({
-                        blog_id: newBlog.id,
-                        category_id,
-                    }))
-                );
+            await db.insert(blogCategories).values(
+                category_ids.map((category_id: number) => ({
+                    blog_id: newBlog.id,
+                    category_id,
+                }))
+            );
         }
 
         return sendResponse('Blog', 'POST', newBlog);

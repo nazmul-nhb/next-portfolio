@@ -41,7 +41,9 @@ export async function GET() {
         const conversationsWithUsers = await Promise.all(
             userConversations.map(async (conv) => {
                 const otherUserId =
-                    conv.participant_one === userId ? conv.participant_two : conv.participant_one;
+                    conv.participant_one === userId
+                        ? conv.participant_two
+                        : conv.participant_one;
 
                 const [otherUser] = await db
                     .select({
