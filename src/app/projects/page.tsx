@@ -7,7 +7,7 @@ import {
     MotionCard,
     SectionHeading,
     StaggerContainer,
-} from '@/components/animations';
+} from '@/components/misc/animations';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
 

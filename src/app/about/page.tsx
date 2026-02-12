@@ -1,12 +1,4 @@
-import {
-    Briefcase,
-    Code2,
-    Github,
-    GraduationCap,
-    Heart,
-    Linkedin,
-    Twitter,
-} from 'lucide-react';
+import { Briefcase, Code2, Github, GraduationCap, Heart, Linkedin } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import {
@@ -15,7 +7,7 @@ import {
     SlideInLeft,
     SlideInRight,
     StaggerContainer,
-} from '@/components/animations';
+} from '@/components/misc/animations';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
@@ -201,7 +193,7 @@ export default async function AboutPage() {
                         >
                             <Linkedin className="h-5 w-5" />
                         </a>
-                        <a
+                        {/* <a
                             aria-label="Twitter"
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground"
                             href={siteConfig.links.twitter}
@@ -209,7 +201,7 @@ export default async function AboutPage() {
                             target="_blank"
                         >
                             <Twitter className="h-5 w-5" />
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </FadeInUp>

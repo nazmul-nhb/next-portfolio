@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { AdminSidebar } from '@/components/admin-sidebar';
+import { AdminSidebar } from '@/components/nav/admin-sidebar';
 import { auth } from '@/lib/auth';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

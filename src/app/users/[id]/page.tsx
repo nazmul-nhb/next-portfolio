@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
+import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Camera, Github, Linkedin, Twitter } from 'lucide-react';
+import { ArrowRight, Camera, Cat, Github, Linkedin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -122,9 +122,9 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                     label: 'LinkedIn',
                                 },
                                 {
-                                    icon: Twitter,
-                                    href: siteConfig.links.twitter,
-                                    label: 'Twitter',
+                                    icon: Cat,
+                                    href: siteConfig.links.discord,
+                                    label: 'Discord',
                                 },
                             ].map(({ icon: Icon, href, label }) => (
                                 <motion.a

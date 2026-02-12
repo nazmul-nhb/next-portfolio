@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { FadeInUp } from '@/components/animations';
+import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {

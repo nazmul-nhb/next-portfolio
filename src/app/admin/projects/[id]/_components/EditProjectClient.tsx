@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ProjectForm } from '@/components/project-form';
+import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectProject, UpdateProject } from '@/types/projects';

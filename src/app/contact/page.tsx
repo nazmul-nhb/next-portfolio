@@ -1,6 +1,6 @@
-import { Github, Linkedin, Mail, MessageSquare, Twitter } from 'lucide-react';
+import { Github, Linkedin, Mail, MessageSquare } from 'lucide-react';
 import type { Metadata } from 'next';
-import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/animations';
+import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/misc/animations';
 import { siteConfig } from '@/configs/site';
 import { ContactForm } from './_components/ContactForm';
 
@@ -91,12 +91,12 @@ export default function ContactPage() {
                             <div className="flex gap-3">
                                 <a
                                     className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
-                                    href={siteConfig.links.twitter}
+                                    href={siteConfig.links.github}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    <Twitter className="h-5 w-5 text-primary" />
-                                    <span className="text-sm font-medium">Twitter</span>
+                                    <Github className="h-5 w-5 text-primary" />
+                                    <span className="text-sm font-medium">GitHub</span>
                                 </a>
                                 <a
                                     className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"

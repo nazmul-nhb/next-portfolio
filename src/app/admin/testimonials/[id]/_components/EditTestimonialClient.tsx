@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { TestimonialForm } from '@/components/testimonial-form';
+import { TestimonialForm } from '@/components/forms/testimonial-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectTestimonial, UpdateTestimonial } from '@/types/testimonials';
@@ -25,7 +25,7 @@ export function EditTestimonialClient({ testimonial }: EditTestimonialClientProp
             });
 
             toast.success('Testimonial updated successfully');
-            router.push('/admin/testimonials' as '/');
+            router.push('/admin/testimonials');
             router.refresh();
         } catch (error) {
             console.error('Failed to update testimonial:', error);

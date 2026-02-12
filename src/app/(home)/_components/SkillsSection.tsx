@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
+import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
 import type { SelectSkill } from '@/types/skills';
 
 const floatAnimation = {

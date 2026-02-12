@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { FadeInUp } from '@/components/animations';
+import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { httpRequest } from '@/lib/actions/baseRequest';

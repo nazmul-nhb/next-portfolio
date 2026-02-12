@@ -1,6 +1,6 @@
 'use client';
 
-import { ProjectForm } from '@/components/project-form';
+import { ProjectForm } from '@/components/forms/project-form';
 import type { InsertProject } from '@/types/projects';
 
 export default function CreateProject() {

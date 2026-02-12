@@ -3,7 +3,7 @@
 import { MessageCircle, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { FadeInUp } from '@/components/animations';
+import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

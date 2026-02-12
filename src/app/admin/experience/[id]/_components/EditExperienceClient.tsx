@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ExperienceForm } from '@/components/experience-form';
+import { ExperienceForm } from '@/components/forms/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectExperience, UpdateExperience } from '@/types/career';
@@ -25,7 +25,7 @@ export function EditExperienceClient({ experience }: EditExperienceClientProps) 
             });
 
             toast.success('Experience updated successfully');
-            router.push('/admin/experience' as '/');
+            router.push('/admin/experience');
             router.refresh();
         } catch (error) {
             console.error('Failed to update experience:', error);

@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { Calendar, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MotionCard, SectionHeading, StaggerContainer } from '@/components/animations';
+import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';

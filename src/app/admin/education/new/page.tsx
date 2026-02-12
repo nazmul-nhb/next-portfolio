@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { EducationForm } from '@/components/education-form';
+import { EducationForm } from '@/components/forms/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { InsertEducation, UpdateEducation } from '@/types/career';
@@ -21,7 +21,7 @@ export default function NewEducationPage() {
             });
 
             toast.success('Education created successfully');
-            router.push('/admin/education' as '/');
+            router.push('/admin/education');
             router.refresh();
         } catch (error) {
             console.error('Failed to create education:', error);

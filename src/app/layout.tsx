@@ -2,8 +2,8 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import Navbar from '@/components/navbar';
-import ThemeToggler from '@/components/theme-toggler';
+import ThemeToggler from '@/components/misc/theme-toggler';
+import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/configs/site';
 import { AuthProvider } from '@/providers/auth-provider';

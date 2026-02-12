@@ -8,7 +8,7 @@ import {
     MotionCard,
     SectionHeading,
     StaggerContainer,
-} from '@/components/animations';
+} from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';

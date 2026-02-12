@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 import Image from 'next/image';
-import { MotionCard, SectionHeading, StaggerContainer } from '@/components/animations';
+import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import { ENV } from '@/configs/env';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';

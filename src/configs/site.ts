@@ -32,7 +32,7 @@ export const siteConfig = {
         github: 'https://github.com/nazmul-nhb',
         linkedin: 'https://linkedin.com/in/nazmul-nhb',
         discord: 'https://discord.com/users/831030314528538664',
-        twitter: 'https://twitter.com/nazmul_nhb',
+        // twitter: 'https://twitter.com/nhb42',
     },
     tokenName: 'nhb-token',
 } as const;

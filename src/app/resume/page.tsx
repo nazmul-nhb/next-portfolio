@@ -8,8 +8,8 @@ import {
     SlideInLeft,
     SlideInRight,
     StaggerContainer,
-} from '@/components/animations';
-import { DownloadResumeButton } from '@/components/download-resume-button';
+} from '@/components/misc/animations';
+import { DownloadResumeButton } from '@/components/misc/download-resume-button';
 import { siteConfig } from '@/configs/site';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';

@@ -10,7 +10,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import { FadeIn, FadeInUp } from '@/components/animations';
+import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { httpRequest } from '@/lib/actions/baseRequest';
 

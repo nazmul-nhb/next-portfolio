@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SkillForm } from '@/components/skill-form';
+import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { InsertSkill, UpdateSkill } from '@/types/skills';

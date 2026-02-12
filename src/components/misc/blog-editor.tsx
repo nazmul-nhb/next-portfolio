@@ -22,7 +22,7 @@ import {
     Undo,
 } from 'lucide-react';
 import { useEffect } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 interface BlogEditorProps {
     content: string;
