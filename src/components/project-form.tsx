@@ -35,15 +35,13 @@ import type { InsertProject } from '@/types/projects';
 type ProjectData = Partial<ProjectFormData>;
 
 interface Props {
-    onSubmit: (data: Partial<InsertProject>) => void;
+    onSubmit: ((data: InsertProject) => void) | ((data: Partial<InsertProject>) => void);
     defaultValues?: ProjectData;
     isLoading?: boolean;
 }
 
 export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Props) {
-    const [techStackItems, setTechStackItems] = useState<string[]>(
-        defaultValues?.tech_stack || []
-    );
+    const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || ['']);
     const [techStackInput, setTechStackInput] = useState('');
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
