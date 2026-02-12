@@ -1,12 +1,5 @@
-import {
-    Briefcase,
-    Code2,
-    Download,
-    Github,
-    GraduationCap,
-    Linkedin,
-    Mail,
-} from 'lucide-react';
+import { desc, eq } from 'drizzle-orm';
+import { Briefcase, Code2, Github, GraduationCap, Linkedin, Mail } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import {
@@ -16,57 +9,66 @@ import {
     SlideInRight,
     StaggerContainer,
 } from '@/components/animations';
+import { DownloadResumeButton } from '@/components/download-resume-button';
 import { siteConfig } from '@/configs/site';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
+import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
+import { users } from '@/lib/drizzle/schema/users';
 
 export const metadata: Metadata = {
     title: 'Resume',
-    description: 'Resume of Nazmul Hassan - Full-Stack Web Developer.',
+    description: 'Resume - Full-Stack Web Developer.',
 };
-
-const experience = [
-    {
-        title: 'Full-Stack Web Developer',
-        company: 'Freelance',
-        period: 'Jan 2022 - Present',
-        highlights: [
-            'Designed and developed full-stack web applications using Next.js, React, and Node.js.',
-            'Implemented database schemas with Drizzle ORM and PostgreSQL for production apps.',
-            'Built and published reusable npm packages (nhb-toolbox, nhb-hooks) used by the community.',
-            'Integrated third-party services including Cloudinary, Stripe, and various OAuth providers.',
-        ],
-    },
-    {
-        title: 'Open Source Contributor',
-        company: 'Various Projects',
-        period: 'Jun 2023 - Present',
-        highlights: [
-            'Contributed bug fixes and features to open-source repositories on GitHub.',
-            'Maintained personal npm packages with automated CI/CD pipelines.',
-            'Helped onboard new developers through documentation and code reviews.',
-        ],
-    },
-];
-
-const education = [
-    {
-        degree: 'Bachelor of Science in Computer Science',
-        institution: 'University',
-        period: '2018 - 2022',
-        details:
-            'Focused on software engineering, algorithms, data structures, and web technologies.',
-    },
-];
 
 /** Resume / CV page with downloadable PDF option. */
 export default async function ResumePage() {
+    const session = await auth();
+
+    // Fetch all data
     let allSkills: (typeof skills.$inferSelect)[] = [];
+    let allExperiences: (typeof experiences.$inferSelect)[] = [];
+    let allEducation: (typeof education.$inferSelect)[] = [];
+    let userData: {
+        name: string;
+        email: string;
+        profile_image?: string | null;
+    } = {
+        name: siteConfig.name,
+        email: 'contact@example.com',
+    };
 
     try {
         allSkills = await db.select().from(skills);
+        allExperiences = await db
+            .select()
+            .from(experiences)
+            .orderBy(desc(experiences.start_date));
+        allEducation = await db.select().from(education).orderBy(desc(education.start_date));
+
+        // Get user data if logged in
+        if (session?.user?.id) {
+            const userId = Number.parseInt(session.user.id, 10);
+            const [user] = await db
+                .select({
+                    name: users.name,
+                    email: users.email,
+                    profile_image: users.profile_image,
+                })
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
+            if (user) {
+                userData = {
+                    name: user.name,
+                    email: user.email || 'contact@example.com',
+                    profile_image: user.profile_image,
+                };
+            }
+        }
     } catch (error) {
-        console.error('Failed to fetch skills:', error);
+        console.error('Failed to fetch resume data:', error);
     }
 
     return (
@@ -75,17 +77,17 @@ export default async function ResumePage() {
             <FadeInUp>
                 <div className="mb-10 flex items-start justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight">{siteConfig.name}</h1>
+                        <h1 className="text-4xl font-bold tracking-tight">{userData.name}</h1>
                         <p className="mt-1 text-lg text-muted-foreground">
                             Full-Stack Web Developer
                         </p>
                         <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
-                                href={`mailto:contact@nazmul.me`}
+                                href={`mailto:${userData.email}`}
                             >
                                 <Mail className="h-3.5 w-3.5" />
-                                contact@nazmul.me
+                                {userData.email}
                             </a>
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
@@ -107,14 +109,12 @@ export default async function ResumePage() {
                             </a>
                         </div>
                     </div>
-                    <a
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                        download
-                        href="/resume.pdf"
-                    >
-                        <Download className="h-4 w-4" />
-                        Download PDF
-                    </a>
+                    <DownloadResumeButton
+                        education={allEducation}
+                        experiences={allExperiences}
+                        skills={allSkills}
+                        user={userData}
+                    />
                 </div>
             </FadeInUp>
 
@@ -133,69 +133,119 @@ export default async function ResumePage() {
             </FadeInUp>
 
             {/* Experience */}
-            <section className="mb-10">
-                <SlideInLeft>
-                    <div className="mb-6 flex items-center gap-2">
-                        <Briefcase className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-bold">Experience</h2>
-                    </div>
-                </SlideInLeft>
+            {allExperiences.length > 0 && (
+                <section className="mb-10">
+                    <SlideInLeft>
+                        <div className="mb-6 flex items-center gap-2">
+                            <Briefcase className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Experience</h2>
+                        </div>
+                    </SlideInLeft>
 
-                <StaggerContainer className="space-y-8">
-                    {experience.map((exp) => (
-                        <ScaleInItem key={exp.title}>
-                            <div>
-                                <div className="mb-1 flex items-start justify-between gap-4">
-                                    <div>
-                                        <h3 className="font-semibold">{exp.title}</h3>
-                                        <p className="text-sm text-primary">{exp.company}</p>
+                    <StaggerContainer className="space-y-8">
+                        {allExperiences.map((exp) => (
+                            <ScaleInItem key={exp.id}>
+                                <div>
+                                    <div className="mb-1 flex items-start justify-between gap-4">
+                                        <div>
+                                            <h3 className="font-semibold">{exp.position}</h3>
+                                            <p className="text-sm text-primary">
+                                                {exp.company}
+                                                {exp.location && ` • ${exp.location}`}
+                                            </p>
+                                        </div>
+                                        <span className="shrink-0 text-xs text-muted-foreground">
+                                            {exp.start_date} - {exp.end_date || 'Present'}
+                                        </span>
                                     </div>
-                                    <span className="shrink-0 text-xs text-muted-foreground">
-                                        {exp.period}
-                                    </span>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        {exp.description}
+                                    </p>
+                                    {exp.achievements.length > 0 && (
+                                        <ul className="mt-2 space-y-1">
+                                            {exp.achievements.map((achievement, idx) => (
+                                                <li
+                                                    className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
+                                                    key={idx}
+                                                >
+                                                    {achievement}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {exp.technologies.length > 0 && (
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {exp.technologies.map((tech, idx) => (
+                                                <span
+                                                    className="rounded-md bg-primary/10 px-2 py-1 text-xs text-primary"
+                                                    key={idx}
+                                                >
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <ul className="mt-2 space-y-1">
-                                    {exp.highlights.map((h) => (
-                                        <li
-                                            className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
-                                            key={h}
-                                        >
-                                            {h}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </ScaleInItem>
-                    ))}
-                </StaggerContainer>
-            </section>
+                            </ScaleInItem>
+                        ))}
+                    </StaggerContainer>
+                </section>
+            )}
 
             {/* Education */}
-            <section className="mb-10">
-                <SlideInRight>
-                    <div className="mb-6 flex items-center gap-2">
-                        <GraduationCap className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-bold">Education</h2>
-                    </div>
-                </SlideInRight>
-
-                <FadeInUp>
-                    {education.map((edu) => (
-                        <div key={edu.degree}>
-                            <div className="mb-1 flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 className="font-semibold">{edu.degree}</h3>
-                                    <p className="text-sm text-primary">{edu.institution}</p>
-                                </div>
-                                <span className="shrink-0 text-xs text-muted-foreground">
-                                    {edu.period}
-                                </span>
-                            </div>
-                            <p className="mt-1 text-sm text-muted-foreground">{edu.details}</p>
+            {allEducation.length > 0 && (
+                <section className="mb-10">
+                    <SlideInRight>
+                        <div className="mb-6 flex items-center gap-2">
+                            <GraduationCap className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-bold">Education</h2>
                         </div>
-                    ))}
-                </FadeInUp>
-            </section>
+                    </SlideInRight>
+
+                    <StaggerContainer className="space-y-6">
+                        {allEducation.map((edu) => (
+                            <ScaleInItem key={edu.id}>
+                                <div>
+                                    <div className="mb-1 flex items-start justify-between gap-4">
+                                        <div>
+                                            <h3 className="font-semibold">{edu.degree}</h3>
+                                            <p className="text-sm text-primary">
+                                                {edu.institution}
+                                                {edu.location && ` • ${edu.location}`}
+                                            </p>
+                                        </div>
+                                        <span className="shrink-0 text-xs text-muted-foreground">
+                                            {edu.start_date} - {edu.end_date || 'Present'}
+                                        </span>
+                                    </div>
+                                    {edu.grade && (
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            Grade: {edu.grade}
+                                        </p>
+                                    )}
+                                    {edu.description && (
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            {edu.description}
+                                        </p>
+                                    )}
+                                    {edu.achievements && edu.achievements.length > 0 && (
+                                        <ul className="mt-2 space-y-1">
+                                            {edu.achievements.map((achievement, idx) => (
+                                                <li
+                                                    className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
+                                                    key={idx}
+                                                >
+                                                    {achievement}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </ScaleInItem>
+                        ))}
+                    </StaggerContainer>
+                </section>
+            )}
 
             {/* Skills */}
             {allSkills.length > 0 && (

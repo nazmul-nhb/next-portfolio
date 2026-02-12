@@ -12,12 +12,15 @@ import { httpRequest } from '@/lib/actions/baseRequest';
 
 interface Conversation {
     id: number;
-    participant: {
+    participant_one: number;
+    participant_two: number;
+    last_message_at: string;
+    created_at: string;
+    otherUser: {
         id: number;
         name: string;
         profile_image: string | null;
     };
-    last_message_at: string;
 }
 
 interface Message {
@@ -41,7 +44,7 @@ export default function MessagesPage() {
 
     const fetchConversations = useCallback(async () => {
         try {
-            const { data } = await httpRequest<Conversation[]>('/api/messages');
+            const { data } = await httpRequest<Conversation[]>('/api/messages/conversations' as '/api/messages');
             if (data) setConversations(data);
         } catch {
             // No conversations yet
@@ -51,7 +54,7 @@ export default function MessagesPage() {
     const fetchMessages = useCallback(async (conversationId: number) => {
         try {
             const { data } = await httpRequest<Message[]>(
-                `/api/messages/${conversationId}` as '/api/messages'
+                `/api/messages/conversations/${conversationId}` as '/api/messages'
             );
             if (data) setMessages(data);
         } catch {
@@ -79,17 +82,41 @@ export default function MessagesPage() {
         if (!newMessage.trim()) return;
         setSending(true);
         try {
-            await httpRequest<null, Record<string, unknown>>('/api/messages', {
-                method: 'POST',
-                body: {
-                    recipient_id: Number(recipientId) || undefined,
-                    content: newMessage,
-                    conversation_id: activeConversation || undefined,
-                },
-            });
-            setNewMessage('');
-            if (activeConversation) fetchMessages(activeConversation);
-            fetchConversations();
+            // If there's an active conversation, send to that conversation
+            if (activeConversation) {
+                await httpRequest<null, Record<string, unknown>>(
+                    `/api/messages/conversations/${activeConversation}` as '/api/messages',
+                    {
+                        method: 'POST',
+                        body: { content: newMessage },
+                    }
+                );
+                setNewMessage('');
+                fetchMessages(activeConversation);
+            } else if (recipientId) {
+                // Create a new conversation
+                const { data } = await httpRequest<Conversation, Record<string, unknown>>(
+                    '/api/messages/conversations' as '/api/messages',
+                    {
+                        method: 'POST',
+                        body: { participant_id: recipientId },
+                    }
+                );
+                if (data) {
+                    setActiveConversation(data.id);
+                    setRecipientId('');
+                    // Send the message
+                    await httpRequest<null, Record<string, unknown>>(
+                        `/api/messages/conversations/${data.id}` as '/api/messages',
+                        {
+                            method: 'POST',
+                            body: { content: newMessage },
+                        }
+                    );
+                    setNewMessage('');
+                    fetchConversations();
+                }
+            }
         } catch (error) {
             console.error('Failed to send message:', error);
         } finally {
@@ -141,12 +168,12 @@ export default function MessagesPage() {
                                     onClick={() => setActiveConversation(conv.id)}
                                     type="button"
                                 >
-                                    {conv.participant.profile_image ? (
+                                    {conv.otherUser.profile_image ? (
                                         <Image
-                                            alt={conv.participant.name}
+                                            alt={conv.otherUser.name}
                                             className="h-9 w-9 rounded-full object-cover"
                                             height={36}
-                                            src={conv.participant.profile_image}
+                                            src={conv.otherUser.profile_image}
                                             width={36}
                                         />
                                     ) : (
@@ -154,7 +181,7 @@ export default function MessagesPage() {
                                     )}
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-sm font-medium">
-                                            {conv.participant.name}
+                                            {conv.otherUser.name}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
                                             {new Date(
