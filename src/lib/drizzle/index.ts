@@ -9,6 +9,7 @@ import {
     comments,
     tags,
 } from '@/lib/drizzle/schema/blogs';
+import { education, experiences } from '@/lib/drizzle/schema/career';
 import {
     contactMessages,
     conversations,
@@ -26,6 +27,8 @@ export const db = drizzle(sql, {
         users,
         projects,
         skills,
+        experiences,
+        education,
         blogs,
         tags,
         categories,

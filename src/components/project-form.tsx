@@ -41,7 +41,7 @@ interface Props {
 }
 
 export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Props) {
-    const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || ['']);
+    const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || []);
     const [techStackInput, setTechStackInput] = useState('');
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
@@ -330,6 +330,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                 <div className="space-y-4">
                                     <Input
                                         accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/gif"
+                                        className="cursor-pointer"
                                         onChange={(e) => {
                                             onChange(e.target.files);
                                             handleFaviconChange(e);
@@ -409,6 +410,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                                     }}
                                                     type="file"
                                                     {...field}
+                                                    className="cursor-pointer"
                                                 />
                                                 {screenshotPreviews[index] && (
                                                     <Card>

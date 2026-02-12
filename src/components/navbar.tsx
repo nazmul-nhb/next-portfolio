@@ -1,6 +1,6 @@
 'use client';
 
-import { LogIn, LogOut, User } from 'lucide-react';
+import { LogIn, LogOut, Settings, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
@@ -11,6 +11,7 @@ import { siteConfig } from '@/configs/site';
 /** Main navigation bar with animated tabs and auth state. */
 export default function Navbar() {
     const { data: session, status } = useSession();
+    const isAdmin = session?.user?.role === 'admin';
 
     return (
         <nav className="sticky top-0 z-50 flex items-center justify-center gap-3 py-2">
@@ -20,6 +21,16 @@ export default function Navbar() {
                     <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
                 ) : session?.user ? (
                     <div className="flex items-center gap-1">
+                        {isAdmin && (
+                            <Link
+                                className="flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors hover:bg-muted"
+                                href={'/admin' as '/'}
+                                title="Admin Dashboard"
+                            >
+                                <Settings className="h-4 w-4" />
+                                <span className="hidden sm:inline">Admin</span>
+                            </Link>
+                        )}
                         <Link
                             className="flex items-center gap-2 rounded-full px-2 py-1 text-sm transition-colors hover:bg-muted"
                             href="/settings"

@@ -1,4 +1,3 @@
-/** biome-ignore lint/performance/noImgElement: this is for image preview during upload */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -133,9 +132,14 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                         <FormItem>
                             <FormLabel>Skill Name *</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g., TypeScript, React, Node.js" {...field} />
+                                <Input
+                                    placeholder="e.g., TypeScript, React, Node.js"
+                                    {...field}
+                                />
                             </FormControl>
-                            <FormDescription>The name of the skill or technology</FormDescription>
+                            <FormDescription>
+                                The name of the skill or technology
+                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -152,6 +156,7 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                                 <div className="space-y-4">
                                     <Input
                                         accept="image/*"
+                                        className="cursor-pointer"
                                         onChange={(e) => {
                                             onChange(e.target.files);
                                             handleIconChange(e);
@@ -162,6 +167,7 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                                     {iconPreview && (
                                         <div className="flex items-center gap-4">
                                             <div className="rounded-lg border border-border p-4">
+                                                {/** biome-ignore lint/performance/noImgElement: it's for preview */}
                                                 <img
                                                     alt="Icon preview"
                                                     className="h-12 w-12 object-contain"

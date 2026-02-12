@@ -1,4 +1,11 @@
-import { FolderKanban, LayoutDashboard, Lightbulb, MessageCircle } from 'lucide-react';
+import {
+    Briefcase,
+    FolderKanban,
+    GraduationCap,
+    LayoutDashboard,
+    Lightbulb,
+    MessageCircle,
+} from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
@@ -14,6 +21,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
         { href: '/admin/skills', label: 'Skills', icon: Lightbulb },
+        { href: '/admin/experience', label: 'Experience', icon: Briefcase },
+        { href: '/admin/education', label: 'Education', icon: GraduationCap },
         { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
     ];
 

@@ -1,9 +1,23 @@
 import { eq } from 'drizzle-orm';
-import { FolderKanban, Lightbulb, MessageCircle, Users } from 'lucide-react';
+import {
+    Briefcase,
+    FolderKanban,
+    GraduationCap,
+    Lightbulb,
+    MessageCircle,
+    Users,
+} from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/lib/drizzle';
-import { contactMessages, projects, skills, users } from '@/lib/drizzle/schema';
+import {
+    contactMessages,
+    education,
+    experiences,
+    projects,
+    skills,
+    users,
+} from '@/lib/drizzle/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,14 +25,25 @@ export default async function AdminDashboard() {
     let stats = {
         projects: 0,
         skills: 0,
+        experience: 0,
+        education: 0,
         users: 0,
         messages: 0,
     };
 
     try {
-        const [projectsCount, skillsCount, usersCount, messagesCount] = await Promise.all([
+        const [
+            projectsCount,
+            skillsCount,
+            experienceCount,
+            educationCount,
+            usersCount,
+            messagesCount,
+        ] = await Promise.all([
             db.select().from(projects),
             db.select().from(skills),
+            db.select().from(experiences),
+            db.select().from(education),
             db.select().from(users),
             db.select().from(contactMessages).where(eq(contactMessages.is_read, false)),
         ]);
@@ -26,6 +51,8 @@ export default async function AdminDashboard() {
         stats = {
             projects: projectsCount.length,
             skills: skillsCount.length,
+            experience: experienceCount.length,
+            education: educationCount.length,
             users: usersCount.length,
             messages: messagesCount.length,
         };
@@ -47,6 +74,20 @@ export default async function AdminDashboard() {
             icon: Lightbulb,
             href: '/admin/skills',
             color: 'text-yellow-600',
+        },
+        {
+            title: 'Experience',
+            count: stats.experience,
+            icon: Briefcase,
+            href: '/admin/experience',
+            color: 'text-cyan-600',
+        },
+        {
+            title: 'Education',
+            count: stats.education,
+            icon: GraduationCap,
+            href: '/admin/education',
+            color: 'text-indigo-600',
         },
         {
             title: 'Users',
@@ -73,7 +114,7 @@ export default async function AdminDashboard() {
                 </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {cards.map((card) => (
                     <Link href={card.href as '/'} key={card.title}>
                         <Card className="transition-shadow hover:shadow-lg">
