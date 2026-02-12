@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowLeft, Eye, Save } from 'lucide-react';
+import { ArrowLeft, Eye, Save, Upload } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -10,12 +11,15 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+import { toast } from 'sonner';
 import { FadeInUp } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { uploadToCloudinary } from '@/lib/actions/cloudinary';
 
 /**
  * Blog post editor with markdown preview.
@@ -27,6 +31,7 @@ export default function NewBlogPage() {
     const [content, setContent] = useState('');
     const [excerpt, setExcerpt] = useState('');
     const [coverImage, setCoverImage] = useState('');
+    const [uploadingCover, setUploadingCover] = useState(false);
     const [isPreview, setIsPreview] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -46,6 +51,24 @@ export default function NewBlogPage() {
     }
 
     if (!session?.user) return null;
+
+    const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingCover(true);
+        try {
+            const result = await uploadToCloudinary(file, 'blog-covers');
+            const cloudinaryPath = result.url.split('/upload/')[1];
+            setCoverImage(cloudinaryPath);
+            toast.success('Cover image uploaded successfully');
+        } catch (error) {
+            console.error('Failed to upload cover image:', error);
+            toast.error('Failed to upload cover image. Please try again.');
+        } finally {
+            setUploadingCover(false);
+        }
+    };
 
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) return;
@@ -73,6 +96,7 @@ export default function NewBlogPage() {
             }
         } catch (error) {
             console.error('Failed to create blog:', error);
+            toast.error('Failed to create blog. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -128,14 +152,33 @@ export default function NewBlogPage() {
                     </div>
 
                     <div>
-                        <Label htmlFor="cover">Cover Image URL (optional)</Label>
-                        <Input
-                            className="mt-1.5"
-                            id="cover"
-                            onChange={(e) => setCoverImage(e.target.value)}
-                            placeholder="https://example.com/image.jpg"
-                            value={coverImage}
-                        />
+                        <Label htmlFor="cover">Cover Image (optional)</Label>
+                        <div className="mt-1.5 space-y-3">
+                            <Input
+                                accept="image/*"
+                                className="cursor-pointer"
+                                disabled={uploadingCover}
+                                id="cover"
+                                onChange={handleCoverImageUpload}
+                                type="file"
+                            />
+                            {uploadingCover && (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Upload className="h-4 w-4 animate-pulse" />
+                                    Uploading cover image...
+                                </div>
+                            )}
+                            {coverImage && !uploadingCover && (
+                                <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+                                    <Image
+                                        alt="Cover preview"
+                                        className="object-cover"
+                                        fill
+                                        src={`${ENV.cloudinary.urls.base_url}${coverImage}`}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div>

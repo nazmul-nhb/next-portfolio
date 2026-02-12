@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function EditSkillPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
-    const id = Number.parseInt(resolvedParams.id);
+    const id = +resolvedParams.id;
 
     if (Number.isNaN(id)) {
         notFound();

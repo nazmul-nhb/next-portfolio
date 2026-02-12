@@ -5,6 +5,7 @@ import {
     LayoutDashboard,
     Lightbulb,
     MessageCircle,
+    MessageSquareQuote,
 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -23,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { href: '/admin/skills', label: 'Skills', icon: Lightbulb },
         { href: '/admin/experience', label: 'Experience', icon: Briefcase },
         { href: '/admin/education', label: 'Education', icon: GraduationCap },
+        { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
         { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
     ];
 

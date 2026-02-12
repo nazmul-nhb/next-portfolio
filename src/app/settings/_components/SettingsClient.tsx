@@ -1,15 +1,19 @@
 'use client';
 
-import { AlertCircle, CheckCircle, LogOut, Mail, Save, Shield } from 'lucide-react';
+import { AlertCircle, CheckCircle, LogOut, Mail, Save, Shield, Upload } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { FadeInUp } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 
 interface UserProfile {
     id: number;
@@ -32,6 +36,7 @@ export function SettingsClient() {
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [profileImage, setProfileImage] = useState('');
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
 
@@ -62,6 +67,35 @@ export function SettingsClient() {
             fetchProfile();
         }
     }, [status, router, fetchProfile]);
+
+    const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const oldImage = profileImage;
+        setUploadingImage(true);
+
+        try {
+            const result = await uploadToCloudinary(file, 'profile-images');
+            const cloudinaryPath = result.url.split('/upload/')[1];
+            setProfileImage(cloudinaryPath);
+            toast.success('Profile image uploaded successfully');
+
+            // Delete old image if exists and was from cloudinary
+            if (oldImage && !oldImage.startsWith('http')) {
+                try {
+                    await deleteFromCloudinary(oldImage);
+                } catch (error) {
+                    console.error('Failed to delete old image:', error);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to upload profile image:', error);
+            toast.error('Failed to upload profile image. Please try again.');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const handleSave = async () => {
         setSaving(true);
@@ -263,14 +297,37 @@ export function SettingsClient() {
                         </div>
 
                         <div>
-                            <Label htmlFor="profile_image">Profile Image URL</Label>
-                            <Input
-                                className="mt-1.5"
-                                id="profile_image"
-                                onChange={(e) => setProfileImage(e.target.value)}
-                                placeholder="https://example.com/avatar.jpg"
-                                value={profileImage}
-                            />
+                            <Label htmlFor="profile_image">Profile Image</Label>
+                            <div className="mt-1.5 space-y-3">
+                                <Input
+                                    accept="image/*"
+                                    className="cursor-pointer"
+                                    disabled={uploadingImage || saving}
+                                    id="profile_image"
+                                    onChange={handleProfileImageUpload}
+                                    type="file"
+                                />
+                                {uploadingImage && (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Upload className="h-4 w-4 animate-pulse" />
+                                        Uploading image...
+                                    </div>
+                                )}
+                                {profileImage && !uploadingImage && (
+                                    <div className="relative h-24 w-24 overflow-hidden rounded-full border">
+                                        <Image
+                                            alt="Profile preview"
+                                            className="object-cover"
+                                            fill
+                                            src={
+                                                profileImage.startsWith('http')
+                                                    ? profileImage
+                                                    : `${ENV.cloudinary.urls.base_url}${profileImage}`
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {saveMessage && (

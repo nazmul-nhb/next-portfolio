@@ -5,6 +5,7 @@ import {
     GraduationCap,
     Lightbulb,
     MessageCircle,
+    MessageSquareQuote,
     Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -16,6 +17,7 @@ import {
     experiences,
     projects,
     skills,
+    testimonials,
     users,
 } from '@/lib/drizzle/schema';
 
@@ -27,6 +29,7 @@ export default async function AdminDashboard() {
         skills: 0,
         experience: 0,
         education: 0,
+        testimonials: 0,
         users: 0,
         messages: 0,
     };
@@ -37,6 +40,7 @@ export default async function AdminDashboard() {
             skillsCount,
             experienceCount,
             educationCount,
+            testimonialsCount,
             usersCount,
             messagesCount,
         ] = await Promise.all([
@@ -44,6 +48,7 @@ export default async function AdminDashboard() {
             db.select().from(skills),
             db.select().from(experiences),
             db.select().from(education),
+            db.select().from(testimonials),
             db.select().from(users),
             db.select().from(contactMessages).where(eq(contactMessages.is_read, false)),
         ]);
@@ -53,6 +58,7 @@ export default async function AdminDashboard() {
             skills: skillsCount.length,
             experience: experienceCount.length,
             education: educationCount.length,
+            testimonials: testimonialsCount.length,
             users: usersCount.length,
             messages: messagesCount.length,
         };
@@ -88,6 +94,13 @@ export default async function AdminDashboard() {
             icon: GraduationCap,
             href: '/admin/education',
             color: 'text-indigo-600',
+        },
+        {
+            title: 'Testimonials',
+            count: stats.testimonials,
+            icon: MessageSquareQuote,
+            href: '/admin/testimonials',
+            color: 'text-pink-600',
         },
         {
             title: 'Users',

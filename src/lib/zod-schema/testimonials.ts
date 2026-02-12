@@ -24,7 +24,7 @@ export const TestimonialUpdateSchema = TestimonialCreationSchema.partial();
 export const TestimonialFormSchema = TestimonialCreationSchema.omit({
     client_avatar: true,
 }).extend({
-    client_avatar: ImageSchema.optional(),
+    client_avatar: ImageSchema,
 });
 
 /**
