@@ -26,6 +26,8 @@ export default function NewBlogPage() {
     const [content, setContent] = useState('');
     const [excerpt, setExcerpt] = useState('');
     const [coverImage, setCoverImage] = useState('');
+    const [pendingCoverFile, setPendingCoverFile] = useState<File | null>(null);
+    const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [uploadingCover, setUploadingCover] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -46,22 +48,16 @@ export default function NewBlogPage() {
 
     if (!session?.user) return null;
 
-    const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setUploadingCover(true);
-        try {
-            const result = await uploadToCloudinary(file, 'blog-covers');
-            const cloudinaryPath = result.url.split('/upload/')[1];
-            setCoverImage(cloudinaryPath);
-            toast.success('Cover image uploaded successfully');
-        } catch (error) {
-            console.error('Failed to upload cover image:', error);
-            toast.error('Failed to upload cover image. Please try again.');
-        } finally {
-            setUploadingCover(false);
-        }
+        setPendingCoverFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setCoverPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = async () => {
@@ -69,6 +65,19 @@ export default function NewBlogPage() {
 
         setSubmitting(true);
         try {
+            let finalCoverImage = coverImage;
+
+            // Upload cover image if pending
+            if (pendingCoverFile) {
+                setUploadingCover(true);
+                const result = await uploadToCloudinary(pendingCoverFile, 'blog-covers');
+                finalCoverImage = result.url.split('/upload/')[1];
+                setCoverImage(finalCoverImage);
+                setPendingCoverFile(null);
+                setCoverPreview(null);
+                setUploadingCover(false);
+            }
+
             const { data } = await httpRequest<{ slug: string }, Record<string, unknown>>(
                 '/api/blogs',
                 {
@@ -77,7 +86,7 @@ export default function NewBlogPage() {
                         title,
                         content,
                         excerpt: excerpt || undefined,
-                        cover_image: coverImage || undefined,
+                        cover_image: finalCoverImage || undefined,
                         is_published: isPublished,
                     },
                 }
@@ -152,7 +161,20 @@ export default function NewBlogPage() {
                                     Uploading cover image...
                                 </div>
                             )}
-                            {coverImage && !uploadingCover && (
+                            {coverPreview && (
+                                <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+                                    <Image
+                                        alt="Cover preview"
+                                        className="object-cover"
+                                        fill
+                                        src={coverPreview}
+                                    />
+                                    <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-0.5 text-xs text-white">
+                                        Will upload on submit
+                                    </div>
+                                </div>
+                            )}
+                            {!coverPreview && coverImage && !uploadingCover && (
                                 <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
                                     <Image
                                         alt="Cover preview"

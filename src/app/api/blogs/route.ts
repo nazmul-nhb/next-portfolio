@@ -1,4 +1,5 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { slugifyString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -158,6 +159,9 @@ export async function POST(req: NextRequest) {
                 }))
             );
         }
+
+        revalidatePath('/blogs');
+        revalidatePath('/(home)', 'page');
 
         return sendResponse('Blog', 'POST', newBlog);
     } catch (error) {

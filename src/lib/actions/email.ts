@@ -32,7 +32,6 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
             text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
         });
 
-        console.log('Email sent:', info.messageId);
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('Failed to send email:', error);

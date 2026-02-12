@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
@@ -171,6 +172,9 @@ export async function PATCH(
             }
         }
 
+        revalidatePath('/blogs');
+        revalidatePath('/(home)', 'page');
+
         return sendResponse('Blog', 'PATCH', updated);
     } catch (error) {
         return sendErrorResponse(error);
@@ -202,6 +206,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ slug
         }
 
         await db.delete(blogs).where(eq(blogs.id, blog.id));
+
+        revalidatePath('/blogs');
+        revalidatePath('/(home)', 'page');
 
         return sendResponse('Blog', 'DELETE');
     } catch (error) {

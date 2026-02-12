@@ -78,17 +78,19 @@ export default function RootLayout({
 /** Site footer with links and copyright. */
 function Footer() {
     return (
-        <footer className="border-t border-border bg-background/80 backdrop-blur-sm">
-            <div className="mx-auto max-w-6xl px-4 py-8">
-                <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                    <p className="text-sm text-muted-foreground">
-                        &copy; {new Date().getFullYear()} {siteConfig.name}. All rights
-                        reserved.
-                    </p>
-                    <div className="flex gap-4">
+        <footer className="border-t border-border/40 bg-background/80 backdrop-blur-sm">
+            <div className="mx-auto max-w-6xl px-4 py-10">
+                <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-xs font-bold text-white">
+                            NH
+                        </div>
+                        <span className="font-semibold">{siteConfig.name}</span>
+                    </div>
+                    <div className="flex gap-5">
                         {Object.entries(siteConfig.links).map(([name, url]) => (
                             <a
-                                className="text-sm text-muted-foreground transition-colors hover:text-foreground capitalize"
+                                className="text-sm text-muted-foreground capitalize transition-colors hover:text-foreground"
                                 href={url}
                                 key={name}
                                 rel="noopener noreferrer"
@@ -98,6 +100,12 @@ function Footer() {
                             </a>
                         ))}
                     </div>
+                </div>
+                <div className="border-t border-border/40 pt-6 text-center">
+                    <p className="text-xs text-muted-foreground">
+                        &copy; {new Date().getFullYear()} {siteConfig.name}. Built with Next.js,
+                        Tailwind CSS &amp; lots of ☕
+                    </p>
                 </div>
             </div>
         </footer>

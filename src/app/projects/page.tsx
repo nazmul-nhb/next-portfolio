@@ -2,7 +2,12 @@ import { desc } from 'drizzle-orm';
 import { ExternalLink, Github } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
+import {
+    FadeInUp,
+    MotionCard,
+    SectionHeading,
+    StaggerContainer,
+} from '@/components/animations';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
 
@@ -11,7 +16,7 @@ export const metadata: Metadata = {
     description: 'Explore my portfolio of web development projects.',
 };
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 /** Projects listing page. */
 export default async function ProjectsPage() {
@@ -24,16 +29,19 @@ export default async function ProjectsPage() {
     }
 
     return (
-        <div className="mx-auto max-w-6xl px-4 py-12">
-            <FadeInUp>
-                <div className="mb-12 text-center">
-                    <h1 className="mb-3 text-4xl font-bold tracking-tight">Projects</h1>
-                    <p className="mx-auto max-w-2xl text-muted-foreground">
-                        A collection of projects I&apos;ve built. Each one reflects my passion
-                        for clean code and great user experiences.
-                    </p>
-                </div>
-            </FadeInUp>
+        <div className="relative mx-auto max-w-6xl px-4 py-12">
+            {/* Decorative background */}
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 left-0 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+            </div>
+            <SectionHeading
+                align="center"
+                className="mb-12"
+                subtitle="A collection of projects I've built. Each one reflects my passion for clean code and great user experiences."
+            >
+                Projects
+            </SectionHeading>
 
             {allProjects.length === 0 ? (
                 <FadeInUp>
@@ -44,7 +52,7 @@ export default async function ProjectsPage() {
             ) : (
                 <StaggerContainer className="grid gap-8 md:grid-cols-2">
                     {allProjects.map((project) => (
-                        <ScaleInItem key={project.id}>
+                        <MotionCard key={project.id}>
                             <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:shadow-lg">
                                 {/* Screenshots preview */}
                                 {project.screenshots.length > 0 && (
@@ -141,7 +149,7 @@ export default async function ProjectsPage() {
                                     </div>
                                 </div>
                             </article>
-                        </ScaleInItem>
+                        </MotionCard>
                     ))}
                 </StaggerContainer>
             )}

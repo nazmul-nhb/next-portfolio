@@ -3,13 +3,18 @@ import { Calendar, Eye, PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
+import {
+    FadeInUp,
+    MotionCard,
+    SectionHeading,
+    StaggerContainer,
+} from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 
-export const revalidate = 600; // ISR: revalidate every 10 minutes
+export const revalidate = 60; // ISR: revalidate every minute
 
 export const metadata: Metadata = {
     title: 'Blog',
@@ -53,23 +58,26 @@ export default async function BlogsPage() {
     }
 
     return (
-        <div className="mx-auto max-w-6xl px-4 py-12">
-            <FadeInUp>
-                <div className="mb-12 flex items-center justify-between">
-                    <div>
-                        <h1 className="mb-3 text-4xl font-bold tracking-tight">Blog</h1>
-                        <p className="text-lg text-muted-foreground">
-                            Articles about web development, technology, and other topics.
-                        </p>
-                    </div>
-                    <Button asChild>
-                        <Link href="/blogs/new">
-                            <PenTool className="mr-2 h-4 w-4" />
-                            Write a Post
-                        </Link>
-                    </Button>
-                </div>
-            </FadeInUp>
+        <div className="relative mx-auto max-w-6xl px-4 py-12">
+            {/* Decorative background */}
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 right-1/4 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+            </div>
+            <SectionHeading
+                className="mb-12"
+                subtitle="Articles about web development, technology, and other topics."
+            >
+                Blog
+            </SectionHeading>
+            <div className="mb-8 flex justify-end">
+                <Button asChild>
+                    <Link href="/blogs/new">
+                        <PenTool className="mr-2 h-4 w-4" />
+                        Write a Post
+                    </Link>
+                </Button>
+            </div>
 
             {allBlogs.length === 0 ? (
                 <FadeInUp>
@@ -87,7 +95,7 @@ export default async function BlogsPage() {
             ) : (
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {allBlogs.map((blog) => (
-                        <ScaleInItem key={blog.id}>
+                        <MotionCard key={blog.id}>
                             <Link
                                 className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                                 href={`/blogs/${blog.slug}`}
@@ -146,7 +154,7 @@ export default async function BlogsPage() {
                                     </div>
                                 </div>
                             </Link>
-                        </ScaleInItem>
+                        </MotionCard>
                     ))}
                 </StaggerContainer>
             )}

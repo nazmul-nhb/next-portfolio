@@ -2,7 +2,7 @@ import { desc } from 'drizzle-orm';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/animations';
+import { MotionCard, SectionHeading, StaggerContainer } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
@@ -28,25 +28,18 @@ export async function RecentProjectsSection() {
     return (
         <section className="py-20">
             <div className="mx-auto max-w-6xl px-4">
-                <FadeInUp>
-                    <div className="mb-12 flex items-center justify-between">
-                        <div>
-                            <h2 className="mb-3 text-3xl font-bold tracking-tight">
-                                Recent Projects
-                            </h2>
-                            <p className="text-muted-foreground">
-                                Some of my latest work and side projects
-                            </p>
-                        </div>
-                        <Button asChild variant="outline">
-                            <Link href="/projects">View All</Link>
-                        </Button>
-                    </div>
-                </FadeInUp>
+                <div className="mb-12 flex items-center justify-between">
+                    <SectionHeading subtitle="Some of my latest work and side projects">
+                        Recent Projects
+                    </SectionHeading>
+                    <Button asChild variant="outline">
+                        <Link href="/projects">View All</Link>
+                    </Button>
+                </div>
 
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {recentProjects.map((project) => (
-                        <ScaleInItem key={project.id}>
+                        <MotionCard key={project.id}>
                             <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
                                 {project.screenshots[0] && (
                                     <div className="aspect-video overflow-hidden bg-muted">
@@ -95,7 +88,7 @@ export async function RecentProjectsSection() {
                                     </a>
                                 </div>
                             </div>
-                        </ScaleInItem>
+                        </MotionCard>
                     ))}
                 </StaggerContainer>
             </div>

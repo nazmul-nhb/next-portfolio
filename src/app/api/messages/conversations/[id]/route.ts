@@ -13,7 +13,7 @@ interface RouteParams {
 /**
  * GET /api/messages/conversations/[id] - Get all messages in a conversation
  */
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(_req: NextRequest, { params }: RouteParams) {
     try {
         const session = await auth();
 

@@ -180,3 +180,50 @@ export function ScaleInItem({ children, className }: Omit<AnimatedProps, 'delay'
         </motion.div>
     );
 }
+
+/**
+ * Motion card with hover lift + subtle shadow. Use for interactive cards.
+ */
+export function MotionCard({ children, className }: Omit<AnimatedProps, 'delay'>) {
+    return (
+        <motion.div
+            className={className}
+            variants={scaleIn}
+            whileHover={{
+                y: -4,
+                transition: { duration: 0.2, ease: 'easeOut' },
+            }}
+        >
+            {children}
+        </motion.div>
+    );
+}
+
+/**
+ * Animated section heading with gradient underline.
+ */
+export function SectionHeading({
+    children,
+    subtitle,
+    className,
+    align = 'left',
+}: {
+    children: ReactNode;
+    subtitle?: string;
+    className?: string;
+    align?: 'left' | 'center';
+}) {
+    return (
+        <FadeInUp className={className}>
+            <div className={align === 'center' ? 'text-center' : ''}>
+                <h2 className="mb-3 text-3xl font-bold tracking-tight">{children}</h2>
+                {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
+                <div
+                    className={`mt-4 h-1 w-16 rounded-full bg-linear-to-r from-blue-600 to-violet-600 ${
+                        align === 'center' ? 'mx-auto' : ''
+                    }`}
+                />
+            </div>
+        </FadeInUp>
+    );
+}

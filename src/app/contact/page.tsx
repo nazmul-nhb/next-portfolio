@@ -1,6 +1,6 @@
 import { Github, Linkedin, Mail, MessageSquare, Twitter } from 'lucide-react';
 import type { Metadata } from 'next';
-import { FadeInUp, SlideInLeft, SlideInRight } from '@/components/animations';
+import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/animations';
 import { siteConfig } from '@/configs/site';
 import { ContactForm } from './_components/ContactForm';
 
@@ -11,16 +11,20 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
     return (
-        <div className="mx-auto max-w-6xl px-4 py-12">
-            <FadeInUp>
-                <div className="mb-12 text-center">
-                    <h1 className="mb-3 text-4xl font-bold tracking-tight">Get in Touch</h1>
-                    <p className="mx-auto max-w-lg text-lg text-muted-foreground">
-                        Have a question, want to collaborate, or just want to say hi? Feel free
-                        to reach out!
-                    </p>
-                </div>
-            </FadeInUp>
+        <div className="relative mx-auto max-w-6xl px-4 py-12">
+            {/* Decorative background */}
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="absolute -top-24 left-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+            </div>
+
+            <SectionHeading
+                align="center"
+                className="mb-12"
+                subtitle="Have a question, want to collaborate, or just want to say hi? Feel free to reach out!"
+            >
+                Get in Touch
+            </SectionHeading>
 
             <div className="grid gap-12 lg:grid-cols-2">
                 <SlideInLeft>

@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { FadeInUp } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +35,8 @@ export function SettingsClient() {
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [profileImage, setProfileImage] = useState('');
+    const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState('');
@@ -68,45 +69,51 @@ export function SettingsClient() {
         }
     }, [status, router, fetchProfile]);
 
-    const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const oldImage = profileImage;
-        setUploadingImage(true);
-
-        try {
-            const result = await uploadToCloudinary(file, 'profile-images');
-            const cloudinaryPath = result.url.split('/upload/')[1];
-            setProfileImage(cloudinaryPath);
-            toast.success('Profile image uploaded successfully');
-
-            // Delete old image if exists and was from cloudinary
-            if (oldImage && !oldImage.startsWith('http')) {
-                try {
-                    await deleteFromCloudinary(oldImage);
-                } catch (error) {
-                    console.error('Failed to delete old image:', error);
-                }
-            }
-        } catch (error) {
-            console.error('Failed to upload profile image:', error);
-            toast.error('Failed to upload profile image. Please try again.');
-        } finally {
-            setUploadingImage(false);
-        }
+        setPendingImageFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSave = async () => {
         setSaving(true);
         setSaveMessage('');
         try {
+            let finalImage = profileImage;
+
+            // Upload pending image if exists
+            if (pendingImageFile) {
+                setUploadingImage(true);
+                const oldImage = profileImage;
+                const result = await uploadToCloudinary(pendingImageFile, 'profile-images');
+                finalImage = result.url.split('/upload/')[1];
+                setProfileImage(finalImage);
+                setPendingImageFile(null);
+                setImagePreview(null);
+                setUploadingImage(false);
+
+                // Delete old image if exists and was from cloudinary
+                if (oldImage && !oldImage.startsWith('http')) {
+                    try {
+                        await deleteFromCloudinary(oldImage);
+                    } catch (error) {
+                        console.error('Failed to delete old image:', error);
+                    }
+                }
+            }
+
             await httpRequest('/api/users/me', {
                 method: 'PATCH',
                 body: {
                     name: name || undefined,
                     bio: bio || undefined,
-                    profile_image: profileImage || undefined,
+                    profile_image: finalImage || undefined,
                 },
             });
             setSaveMessage('Profile updated successfully!');
@@ -115,6 +122,7 @@ export function SettingsClient() {
             setSaveMessage('Failed to update profile');
         } finally {
             setSaving(false);
+            setUploadingImage(false);
         }
     };
 
@@ -313,18 +321,25 @@ export function SettingsClient() {
                                         Uploading image...
                                     </div>
                                 )}
-                                {profileImage && !uploadingImage && (
+                                {(imagePreview || profileImage) && !uploadingImage && (
                                     <div className="relative h-24 w-24 overflow-hidden rounded-full border">
                                         <Image
                                             alt="Profile preview"
                                             className="object-cover"
                                             fill
                                             src={
-                                                profileImage.startsWith('http')
-                                                    ? profileImage
-                                                    : `${ENV.cloudinary.urls.base_url}${profileImage}`
+                                                imagePreview
+                                                    ? imagePreview
+                                                    : profileImage.startsWith('http')
+                                                      ? profileImage
+                                                      : `${ENV.cloudinary.urls.base_url}${profileImage}`
                                             }
                                         />
+                                        {imagePreview && (
+                                            <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 text-center text-[10px] text-white">
+                                                Pending upload
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
