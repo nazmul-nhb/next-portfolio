@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
  * Recent blog posts section on the homepage.
@@ -74,7 +75,7 @@ export async function RecentBlogsSection() {
                                             alt={blog.title}
                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={200}
-                                            src={blog.cover_image}
+                                            src={buildCloudinaryUrl(blog.cover_image)}
                                             width={360}
                                         />
                                     </div>
@@ -95,7 +96,9 @@ export async function RecentBlogsSection() {
                                                     alt={blog.author.name}
                                                     className="h-5 w-5 rounded-full object-cover"
                                                     height={20}
-                                                    src={blog.author.profile_image}
+                                                    src={buildCloudinaryUrl(
+                                                        blog.author.profile_image
+                                                    )}
                                                     width={20}
                                                 />
                                             )}

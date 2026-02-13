@@ -35,4 +35,6 @@ export const siteConfig = {
         // twitter: 'https://twitter.com/nhb42',
     },
     tokenName: 'nhb-token',
+    logoSvg: '/logo.svg',
+    favicon: '/favicon.png',
 } as const;

@@ -23,18 +23,16 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
 
     const handleDelete = async (id: number, title: string) => {
         toast.custom(
-            (t) => (
+            (toastId) => (
                 <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
                     <div className="flex-1">
                         <p className="font-medium">Delete "{title}"?</p>
-                        <p className="text-sm text-muted-foreground">
-                            This action cannot be undone.
-                        </p>
+                        <p className="text-sm text-muted-foreground">This cannot be undone!</p>
                     </div>
                     <div className="flex gap-2">
                         <Button
                             onClick={async () => {
-                                toast.dismiss(t);
+                                toast.dismiss(toastId);
                                 setDeletingId(id);
                                 try {
                                     await httpRequest(`/api/skills?id=${id}`, {
@@ -55,7 +53,11 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                         >
                             Delete
                         </Button>
-                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
+                        <Button
+                            onClick={() => toast.dismiss(toastId)}
+                            size="sm"
+                            variant="outline"
+                        >
                             Cancel
                         </Button>
                     </div>

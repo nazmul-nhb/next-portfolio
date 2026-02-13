@@ -8,10 +8,10 @@ import { useSession } from 'next-auth/react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface HeroSectionProps {
     adminImage?: string | null;
@@ -53,8 +53,9 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
     const imageUrl = heroImage
         ? heroImage.startsWith('http')
             ? heroImage
-            : `${ENV.cloudinary.urls.base_url}${heroImage}`
+            : buildCloudinaryUrl(heroImage)
         : null;
+
     return (
         <section className="relative flex min-h-[85vh] items-center overflow-hidden">
             {/* Animated background elements */}

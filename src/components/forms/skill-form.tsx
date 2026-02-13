@@ -21,6 +21,7 @@ import {
     deleteFromCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import { ImageSchema } from '@/lib/zod-schema/files';
 import { SkillCreationSchema, SkillUpdateSchema } from '@/lib/zod-schema/skills';
 import type { InsertSkill, SelectSkill, UpdateSkill } from '@/types/skills';
@@ -117,7 +118,7 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
     // Initialize preview from default values
     useEffect(() => {
         if (defaultValues?.icon) {
-            setIconPreview(defaultValues.icon);
+            setIconPreview(buildCloudinaryUrl(defaultValues.icon));
         }
     }, [defaultValues]);
 

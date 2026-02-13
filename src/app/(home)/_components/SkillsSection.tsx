@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 
 const floatAnimation = {
@@ -55,7 +56,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                                         className="object-contain"
                                         fill
                                         sizes="40px"
-                                        src={skill.icon}
+                                        src={buildCloudinaryUrl(skill.icon)}
                                     />
                                 </div>
                                 <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">

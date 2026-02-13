@@ -25,6 +25,7 @@ export const metadata: Metadata = {
         default: siteConfig.name,
         template: `%s | ${siteConfig.name}`,
     },
+    metadataBase: new URL(siteConfig.baseUrl),
     description: siteConfig.description,
     keywords: [
         'web developer',
@@ -39,15 +40,31 @@ export const metadata: Metadata = {
     openGraph: {
         title: siteConfig.name,
         description: siteConfig.description,
+        url: siteConfig.baseUrl,
+        siteName: siteConfig.name,
+        images: [
+            {
+                url: siteConfig.logoSvg,
+                alt: `${siteConfig.name} Logo`,
+                width: 1200,
+                height: 630,
+            },
+            {
+                url: siteConfig.favicon,
+                alt: `${siteConfig.name} Logo`,
+                width: 1200,
+                height: 630,
+            },
+        ],
         type: 'website',
     },
 };
 
-export default function RootLayout({
-    children,
-}: Readonly<{
+type RootProps = Readonly<{
     children: React.ReactNode;
-}>) {
+}>;
+
+export default function RootLayout({ children }: RootProps) {
     return (
         <html lang="en" suppressHydrationWarning>
             <link href="favicon.png" rel="shortcut icon" type="image/png" />
