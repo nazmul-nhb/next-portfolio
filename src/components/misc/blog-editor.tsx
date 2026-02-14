@@ -22,7 +22,9 @@ import {
     Undo,
 } from 'lucide-react';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 interface BlogEditorProps {
     content: string;
@@ -32,6 +34,7 @@ interface BlogEditorProps {
 
 export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) {
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                 heading: {
@@ -74,18 +77,78 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
         return null;
     }
 
+    const showInputToast = (
+        title: string,
+        placeholder: string,
+        onSubmit: (value: string) => void
+    ) => {
+        let currentValue = '';
+
+        toast.custom(
+            (t) => (
+                <div className="w-full rounded-lg border border-border bg-background p-4 shadow-lg">
+                    <h3 className="mb-3 font-semibold">{title}</h3>
+                    <Input
+                        autoFocus
+                        className="mb-3"
+                        defaultValue=""
+                        onChange={(e) => {
+                            currentValue = e.target.value;
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && currentValue) {
+                                onSubmit(currentValue);
+                                toast.dismiss(t);
+                            } else if (e.key === 'Escape') {
+                                toast.dismiss(t);
+                            }
+                        }}
+                        placeholder={placeholder}
+                        type="url"
+                    />
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            onClick={() => {
+                                toast.dismiss(t);
+                            }}
+                            size="sm"
+                            type="button"
+                            variant="outline"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                if (currentValue) {
+                                    onSubmit(currentValue);
+                                    toast.dismiss(t);
+                                }
+                            }}
+                            size="sm"
+                            type="button"
+                        >
+                            Add
+                        </Button>
+                    </div>
+                </div>
+            ),
+            {
+                duration: Infinity,
+                position: 'top-center',
+            }
+        );
+    };
+
     const addLink = () => {
-        const url = window.prompt('Enter URL:');
-        if (url) {
+        showInputToast('Add Link', 'https://example.com', (url) => {
             editor.chain().focus().setLink({ href: url }).run();
-        }
+        });
     };
 
     const addImage = () => {
-        const url = window.prompt('Enter image URL:');
-        if (url) {
+        showInputToast('Add Image', 'https://example.com/image.jpg', (url) => {
             editor.chain().focus().setImage({ src: url }).run();
-        }
+        });
     };
 
     return (

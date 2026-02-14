@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectEducation } from '@/types/career';
 
 interface EducationClientProps {
@@ -111,7 +111,9 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                                                     alt={edu.institution}
                                                     className="object-contain"
                                                     height={48}
-                                                    src={`${ENV.cloudinary.urls.base_url}${edu.institution_logo}`}
+                                                    src={buildCloudinaryUrl(
+                                                        edu.institution_logo
+                                                    )}
                                                     width={48}
                                                 />
                                             </div>

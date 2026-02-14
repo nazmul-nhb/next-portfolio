@@ -9,6 +9,7 @@ import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface Conversation {
     id: number;
@@ -175,7 +176,9 @@ export default function MessagesPage() {
                                             alt={conv.otherUser.name}
                                             className="h-9 w-9 rounded-full object-cover"
                                             height={36}
-                                            src={conv.otherUser.profile_image}
+                                            src={buildCloudinaryUrl(
+                                                conv.otherUser.profile_image
+                                            )}
                                             width={36}
                                         />
                                     ) : (

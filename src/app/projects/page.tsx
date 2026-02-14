@@ -10,6 +10,7 @@ import {
 } from '@/components/misc/animations';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Projects',
@@ -61,7 +62,7 @@ export default async function ProjectsPage() {
                                             alt={project.title}
                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={300}
-                                            src={project.screenshots[0]}
+                                            src={buildCloudinaryUrl(project.screenshots[0])}
                                             width={600}
                                         />
                                         <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -76,7 +77,7 @@ export default async function ProjectsPage() {
                                                 alt=""
                                                 className="h-6 w-6 rounded"
                                                 height={24}
-                                                src={project.favicon}
+                                                src={buildCloudinaryUrl(project.favicon)}
                                                 width={24}
                                             />
                                         )}

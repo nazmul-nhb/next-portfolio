@@ -8,6 +8,7 @@ import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 import type { TabItem } from '@/components/ui/doc-tabs';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 type Props = {
     isAdmin: boolean;
@@ -136,7 +137,7 @@ export default function NavMobileDrawer({
                                     alt={user?.name || 'User'}
                                     className="h-10 w-10 rounded-full object-cover ring-1 ring-border"
                                     height={40}
-                                    src={user.image}
+                                    src={buildCloudinaryUrl(user.image)}
                                     width={40}
                                 />
                             ) : (

@@ -1,9 +1,9 @@
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
-import { ENV } from '@/configs/env';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
  * Testimonials section displaying client feedback.
@@ -56,7 +56,7 @@ export async function TestimonialsSection() {
                                                 alt={t.client_name}
                                                 className="object-cover"
                                                 height={40}
-                                                src={`${ENV.cloudinary.urls.base_url}${t.client_avatar}`}
+                                                src={buildCloudinaryUrl(t.client_avatar)}
                                                 width={40}
                                             />
                                         </div>

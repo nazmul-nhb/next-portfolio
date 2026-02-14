@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 
 interface SkillsClientProps {
@@ -105,7 +105,7 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                                             alt={skill.title}
                                             className="rounded object-contain"
                                             height={40}
-                                            src={ENV.cloudinary.urls.base_url + skill.icon}
+                                            src={buildCloudinaryUrl(skill.icon)}
                                             width={40}
                                         />
                                         <CardTitle className="text-base">

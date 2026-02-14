@@ -12,9 +12,9 @@ import { BlogEditor } from '@/components/misc/blog-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
  * Blog post editor with rich text editor.
@@ -180,7 +180,7 @@ export default function NewBlogPage() {
                                         alt="Cover preview"
                                         className="object-cover"
                                         fill
-                                        src={`${ENV.cloudinary.urls.base_url}${coverImage}`}
+                                        src={buildCloudinaryUrl(coverImage)}
                                     />
                                 </div>
                             )}

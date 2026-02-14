@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectExperience } from '@/types/career';
 
 interface ExperiencesClientProps {
@@ -111,7 +111,7 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
                                                     alt={exp.company}
                                                     className="object-contain"
                                                     height={48}
-                                                    src={`${ENV.cloudinary.urls.base_url}${exp.company_logo}`}
+                                                    src={buildCloudinaryUrl(exp.company_logo)}
                                                     width={48}
                                                 />
                                             </div>

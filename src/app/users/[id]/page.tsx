@@ -8,6 +8,7 @@ import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/anima
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -109,7 +110,7 @@ export default async function UserProfilePage({ params }: Props) {
                                 alt={user.name}
                                 className="h-28 w-28 rounded-full border-4 border-primary/20 object-cover"
                                 height={112}
-                                src={user.profile_image}
+                                src={buildCloudinaryUrl(user.profile_image)}
                                 width={112}
                             />
                         ) : (
@@ -170,7 +171,7 @@ export default async function UserProfilePage({ params }: Props) {
                                                 alt={post.title}
                                                 className="hidden h-20 w-28 shrink-0 rounded-lg object-cover sm:block"
                                                 height={80}
-                                                src={post.cover_image}
+                                                src={buildCloudinaryUrl(post.cover_image)}
                                                 width={112}
                                             />
                                         )}

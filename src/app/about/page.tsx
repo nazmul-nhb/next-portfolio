@@ -11,6 +11,7 @@ import {
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'About',
@@ -137,7 +138,7 @@ export default async function AboutPage() {
                                         alt={skill.title}
                                         className="h-5 w-5 object-contain"
                                         height={20}
-                                        src={skill.icon}
+                                        src={buildCloudinaryUrl(skill.icon)}
                                         width={20}
                                     />
                                     {skill.title}

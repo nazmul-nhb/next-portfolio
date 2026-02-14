@@ -16,6 +16,7 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Resume',
@@ -268,7 +269,7 @@ export default async function ResumePage() {
                                         alt={skill.title}
                                         className="h-3.5 w-3.5 object-contain"
                                         height={14}
-                                        src={skill.icon}
+                                        src={buildCloudinaryUrl(skill.icon)}
                                         width={14}
                                     />
                                     {skill.title}

@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectProject } from '@/types/projects';
 
 interface ProjectsClientProps {
@@ -103,7 +103,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                             alt={`${project.title} favicon`}
                                             className="rounded"
                                             height={32}
-                                            src={ENV.cloudinary.urls.base_url + project.favicon}
+                                            src={buildCloudinaryUrl(project.favicon)}
                                             width={32}
                                         />
                                         <CardTitle className="text-lg">

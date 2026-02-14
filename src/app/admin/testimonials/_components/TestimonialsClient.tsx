@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectTestimonial } from '@/types/testimonials';
 
 interface TestimonialsClientProps {
@@ -108,7 +108,9 @@ export function TestimonialsClient({ initialTestimonials }: TestimonialsClientPr
                                                     alt={testimonial.client_name}
                                                     className="object-cover"
                                                     height={48}
-                                                    src={`${ENV.cloudinary.urls.base_url}${testimonial.client_avatar}`}
+                                                    src={buildCloudinaryUrl(
+                                                        testimonial.client_avatar
+                                                    )}
                                                     width={48}
                                                 />
                                             </div>

@@ -6,6 +6,7 @@ import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
  * Recent projects section on the homepage.
@@ -47,7 +48,7 @@ export async function RecentProjectsSection() {
                                             alt={project.title}
                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={200}
-                                            src={project.screenshots[0]}
+                                            src={buildCloudinaryUrl(project.screenshots[0])}
                                             width={360}
                                         />
                                     </div>
@@ -59,7 +60,7 @@ export async function RecentProjectsSection() {
                                                 alt=""
                                                 className="h-5 w-5 rounded"
                                                 height={20}
-                                                src={project.favicon}
+                                                src={buildCloudinaryUrl(project.favicon)}
                                                 width={20}
                                             />
                                         )}
