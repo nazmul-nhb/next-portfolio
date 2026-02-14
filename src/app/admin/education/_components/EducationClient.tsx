@@ -106,7 +106,7 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                                 <div className="flex items-start justify-between">
                                     <div className="flex gap-4">
                                         {edu.institution_logo && (
-                                            <div className="h-12 w-12 overflow-hidden rounded-lg border">
+                                            <div className="size-12 rounded-lg border">
                                                 <Image
                                                     alt={edu.institution}
                                                     className="object-contain"

@@ -148,7 +148,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                 <View style={styles.header}>
                     <Text style={styles.name}>{data.user.name}</Text>
                     {data.user.email && <Text style={styles.contact}>{data.user.email}</Text>}
-                    <Text style={styles.contact}>Portfolio: https://yourportfolio.com</Text>
+                    <Text style={styles.contact}>Web: https://nazmul-nhb.dev</Text>
                 </View>
 
                 {/* Experience */}

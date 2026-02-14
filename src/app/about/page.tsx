@@ -1,6 +1,8 @@
+import { eq } from 'drizzle-orm';
 import { Briefcase, Code2, Github, GraduationCap, Heart, Linkedin } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { formatDate } from 'nhb-toolbox';
 import {
     FadeInUp,
     ScaleInItem,
@@ -8,8 +10,10 @@ import {
     SlideInRight,
     StaggerContainer,
 } from '@/components/misc/animations';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
+import { education, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
@@ -20,11 +24,26 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
     let allSkills: (typeof skills.$inferSelect)[] = [];
+    let allEdu: (typeof education.$inferSelect)[] = [];
+    let adminImage: string | null = null;
 
     try {
-        allSkills = await db.select().from(skills);
+        const [sk, ed, [admin]] = await Promise.all([
+            db.select().from(skills),
+            db.select().from(education).orderBy(education.start_date),
+            db
+                .select({ profile_image: users.profile_image })
+                .from(users)
+                .where(eq(users.email, ENV.adminEmail))
+                .limit(1),
+        ]);
+
+        allSkills = sk;
+        allEdu = ed;
+
+        adminImage = admin?.profile_image;
     } catch (error) {
-        console.error('Failed to fetch skills:', error);
+        console.error('Failed to fetch about data:', error);
     }
 
     return (
@@ -38,7 +57,17 @@ export default async function AboutPage() {
             <FadeInUp>
                 <div className="mb-16 text-center">
                     <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 shadow-lg shadow-blue-500/10">
-                        <span className="text-5xl">👨‍💻</span>
+                        {adminImage ? (
+                            <Image
+                                alt={siteConfig.name}
+                                className="size-16 rounded-full object-cover"
+                                height={320}
+                                src={buildCloudinaryUrl(adminImage)}
+                                width={320}
+                            />
+                        ) : (
+                            <span className="text-5xl">👨‍💻</span>
+                        )}
                     </div>
                     <h1 className="mb-3 text-4xl font-bold tracking-tight">
                         {siteConfig.name}
@@ -67,14 +96,14 @@ export default async function AboutPage() {
                         {
                             title: 'Full-Stack Web Developer',
                             company: 'Freelance',
-                            period: '2022 - Present',
+                            period: '2023 - Present',
                             description:
                                 'Building web applications and SaaS products for clients. Specializing in React, Next.js, and TypeScript ecosystems.',
                         },
                         {
                             title: 'Open Source Contributor',
                             company: 'Various Projects',
-                            period: '2023 - Present',
+                            period: '2024 - Present',
                             description:
                                 'Actively contributing to open-source projects and maintaining personal npm packages used by the community.',
                         },
@@ -108,16 +137,29 @@ export default async function AboutPage() {
                     </div>
                 </SlideInRight>
 
-                <FadeInUp>
-                    <div className="rounded-xl border border-border/50 bg-card p-6">
-                        <h3 className="font-semibold">
-                            Bachelor of Science in Computer Science
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                            Focused on software engineering, algorithms, and web technologies.
-                        </p>
-                    </div>
-                </FadeInUp>
+                {allEdu.map((edu) => (
+                    <FadeInUp key={edu.id}>
+                        <div className="rounded-xl border border-border/50 bg-card p-6">
+                            <h3 className="font-semibold">
+                                {edu.degree} - {edu.institution}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                {formatDate({ date: edu.start_date, format: 'mmm DD, YYYY' })} -{' '}
+                                {edu.end_date
+                                    ? formatDate({ date: edu.end_date, format: 'mmm DD, YYYY' })
+                                    : 'Present'}
+                            </p>
+                            {edu.grade && (
+                                <p className="text-sm font-medium text-primary">
+                                    Grade: {edu.grade}
+                                </p>
+                            )}
+                            <p className="mt-2 text-sm text-muted-foreground">
+                                • {edu.achievements?.join(' • ')}
+                            </p>
+                        </div>
+                    </FadeInUp>
+                ))}
             </section>
 
             {/* Skills */}
