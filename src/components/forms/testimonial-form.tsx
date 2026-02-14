@@ -101,14 +101,14 @@ export function TestimonialForm({
             };
 
             // Remove the FileList avatar property before sending
-            delete (payload as { client_avatar?: FileList | string }).client_avatar;
-            (payload as InsertTestimonial).client_avatar = avatarUrl as string;
+            // delete (payload as { client_avatar?: FileList | string }).client_avatar;
+            // (payload as InsertTestimonial).client_avatar = avatarUrl as string;
 
-            if (defaultValues) {
-                onSubmit(payload as UpdateTestimonial);
-            } else {
-                onSubmit(payload as InsertTestimonial);
-            }
+            // if (defaultValues) {
+            //     onSubmit(payload as UpdateTestimonial);
+            // } else {
+            onSubmit(payload);
+            // }
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded avatar on error

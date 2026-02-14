@@ -97,14 +97,14 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
             };
 
             // Remove the FileList icon property before sending
-            delete (payload as { icon?: FileList | string }).icon;
-            (payload as InsertSkill).icon = iconUrl as string;
+            // delete (payload as { icon?: FileList | string }).icon;
+            // (payload as InsertSkill).icon = iconUrl as string;
 
-            if (defaultValues) {
-                onSubmit(payload as UpdateSkill);
-            } else {
-                onSubmit(payload as InsertSkill);
-            }
+            // if (defaultValues) {
+            //     onSubmit(payload as UpdateSkill);
+            // } else {
+            onSubmit(payload);
+            // }
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded icon on error

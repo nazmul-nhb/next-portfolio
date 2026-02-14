@@ -119,14 +119,14 @@ export function EducationForm({
             };
 
             // Remove FileList property
-            delete (payload as { institution_logo?: FileList | string }).institution_logo;
-            (payload as InsertEducation).institution_logo = logoUrl as string;
+            // delete payload.institution_logo;
+            // payload.institution_logo = logoUrl;
 
-            if (defaultValues) {
-                onSubmit(payload as UpdateEducation);
-            } else {
-                onSubmit(payload as InsertEducation);
-            }
+            // if (defaultValues) {
+            // } else {
+            //     onSubmit(payload as InsertEducation);
+            // }
+            onSubmit(payload);
         } catch (error) {
             console.error('Form submission error:', error);
             if (logoRes?.public_id) {

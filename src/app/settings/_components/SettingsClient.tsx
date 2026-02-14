@@ -35,6 +35,7 @@ export function SettingsClient() {
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [profileImage, setProfileImage] = useState('');
+    const [publicId, setPublicId] = useState('');
     const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
@@ -84,29 +85,24 @@ export function SettingsClient() {
     const handleSave = async () => {
         setSaving(true);
         setSaveMessage('');
+        const oldImage = profileImage;
         try {
             let finalImage = profileImage;
 
             // Upload pending image if exists
             if (pendingImageFile) {
                 setUploadingImage(true);
-                const oldImage = profileImage;
-                const result = await uploadToCloudinary(pendingImageFile, 'profile-images');
+                const { public_id, url } = await uploadToCloudinary(
+                    pendingImageFile,
+                    'profile-images'
+                );
 
-                finalImage = result.url;
+                setPublicId(public_id);
+                finalImage = url;
                 setProfileImage(finalImage);
                 setPendingImageFile(null);
                 setImagePreview(null);
                 setUploadingImage(false);
-
-                // Delete old image if exists and was from cloudinary
-                if (oldImage && !oldImage.startsWith('http')) {
-                    try {
-                        await deleteFromCloudinary(buildCloudinaryPublicId(oldImage));
-                    } catch (error) {
-                        console.error('Failed to delete old image:', error);
-                    }
-                }
             }
 
             await httpRequest('/api/users/me', {
@@ -121,7 +117,20 @@ export function SettingsClient() {
             fetchProfile();
         } catch {
             setSaveMessage('Failed to update profile');
+
+            if (publicId) {
+                await deleteFromCloudinary(publicId);
+            }
         } finally {
+            if (oldImage && !oldImage.startsWith('http')) {
+                // Delete old image if exists and was from cloudinary
+                try {
+                    await deleteFromCloudinary(buildCloudinaryPublicId(oldImage));
+                } catch (error) {
+                    console.error('Failed to delete old image:', error);
+                }
+            }
+
             setSaving(false);
             setUploadingImage(false);
         }

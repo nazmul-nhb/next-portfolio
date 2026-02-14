@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
@@ -25,6 +25,7 @@ export default function NewBlogPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [excerpt, setExcerpt] = useState('');
+    const [publicId, setPublicId] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [pendingCoverFile, setPendingCoverFile] = useState<File | null>(null);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -70,8 +71,12 @@ export default function NewBlogPage() {
             // Upload cover image if pending
             if (pendingCoverFile) {
                 setUploadingCover(true);
-                const result = await uploadToCloudinary(pendingCoverFile, 'blog-covers');
-                finalCoverImage = result.url.split('/upload/')[1];
+                const { public_id, url } = await uploadToCloudinary(
+                    pendingCoverFile,
+                    'blog-covers'
+                );
+                setPublicId(public_id);
+                finalCoverImage = url;
                 setCoverImage(finalCoverImage);
                 setPendingCoverFile(null);
                 setCoverPreview(null);
@@ -99,6 +104,11 @@ export default function NewBlogPage() {
             }
         } catch (error) {
             console.error('Failed to create blog:', error);
+
+            if (publicId) {
+                await deleteFromCloudinary(publicId);
+            }
+
             toast.error('Failed to create blog. Please try again.');
         } finally {
             setSubmitting(false);

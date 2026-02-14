@@ -146,15 +146,15 @@ export function ExperienceForm({
                 achievements: achievements.filter((a) => a.trim()),
             };
 
-            // Remove FileList property
-            delete (payload as { company_logo?: FileList | string }).company_logo;
-            (payload as InsertExperience).company_logo = logoUrl as string;
+            // // Remove FileList property
+            // delete (payload as { company_logo?: FileList | string }).company_logo;
+            // (payload as InsertExperience).company_logo = logoUrl as string;
 
-            if (defaultValues) {
-                onSubmit(payload as UpdateExperience);
-            } else {
-                onSubmit(payload as InsertExperience);
-            }
+            // if (defaultValues) {
+            //     onSubmit(payload as UpdateExperience);
+            // } else {
+            onSubmit(payload);
+            // }
         } catch (error) {
             console.error('Form submission error:', error);
             if (logoRes?.public_id) {

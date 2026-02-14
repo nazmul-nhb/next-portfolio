@@ -10,6 +10,7 @@ import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { CreateBlogSchema } from '@/lib/zod-schema/blogs';
+import type z from 'zod';
 
 /**
  * GET /api/blogs - Fetch all published blogs with pagination.
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const body = await req.json();
+        const body = (await req.json()) as z.infer<typeof CreateBlogSchema>;
 
         const validation = await validateRequest(CreateBlogSchema, body);
 
@@ -148,7 +149,7 @@ export async function POST(req: NextRequest) {
         if (tag_ids?.length) {
             await db
                 .insert(blogTags)
-                .values(tag_ids.map((tag_id: number) => ({ blog_id: newBlog.id, tag_id })));
+                .values(tag_ids.map((tag_id) => ({ blog_id: newBlog.id, tag_id })));
         }
 
         if (category_ids?.length) {

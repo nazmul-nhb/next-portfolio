@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface HeroSectionProps {
@@ -34,17 +34,30 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
 
         setUploading(true);
         try {
-            const result = await uploadToCloudinary(file, 'profile-images');
-            const cloudinaryPath = result.url.split('/upload/')[1];
-            setHeroImage(cloudinaryPath);
+            const { url, public_id } = await uploadToCloudinary(file, 'profile-images');
 
-            await httpRequest('/api/users/me', {
-                method: 'PATCH',
-                body: { profile_image: cloudinaryPath },
-            });
-            toast.success('Hero image updated!');
+            setHeroImage(url);
+
+            try {
+                const { success } = await httpRequest('/api/users/me', {
+                    method: 'PATCH',
+                    body: { profile_image: url },
+                });
+
+                if (success) {
+                    toast.success('Hero image updated!');
+                }
+            } catch (error) {
+                console.error('Image update failed: ', error);
+
+                if (public_id) {
+                    await deleteFromCloudinary(public_id);
+                }
+
+                toast.error('Failed to update image');
+            }
         } catch {
-            toast.error('Failed to update image');
+            toast.error('Failed to upload image');
         } finally {
             setUploading(false);
         }
