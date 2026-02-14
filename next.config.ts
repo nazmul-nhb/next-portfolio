@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     reactCompiler: true,
     allowedDevOrigins: ['192.168.0.100'],
     images: {
+        qualities: [75, 100],
         remotePatterns: [{ protocol: 'https', hostname: '**' }],
     },
     experimental: {

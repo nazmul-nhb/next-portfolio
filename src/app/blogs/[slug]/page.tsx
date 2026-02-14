@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { truncateString } from 'nhb-toolbox';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import {
     blogCategories,
@@ -11,6 +13,7 @@ import {
     tags,
 } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import { BlogContent } from './_components/BlogContent';
 import { CommentSection } from './_components/CommentSection';
 
@@ -27,6 +30,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
                 title: blogs.title,
                 excerpt: blogs.excerpt,
                 cover_image: blogs.cover_image,
+                content: blogs.content,
             })
             .from(blogs)
             .where(eq(blogs.slug, slug))
@@ -36,11 +40,13 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
 
         return {
             title: blog.title,
-            description: blog.excerpt || undefined,
+            description: blog.excerpt || truncateString(blog.content, 160),
             openGraph: {
                 title: blog.title,
                 description: blog.excerpt || undefined,
-                ...(blog.cover_image && { images: [blog.cover_image] }),
+                images: blog.cover_image
+                    ? buildCloudinaryUrl(blog.cover_image)
+                    : [siteConfig.favicon, siteConfig.logoSvg],
             },
         };
     } catch (error) {

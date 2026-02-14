@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { formatDate } from 'nhb-toolbox';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
@@ -13,6 +14,7 @@ import remarkGfm from 'remark-gfm';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface BlogContentProps {
     blog: {
@@ -71,7 +73,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                             alt={blog.title}
                             className="h-auto w-full object-cover"
                             height={400}
-                            src={blog.cover_image}
+                            src={buildCloudinaryUrl(blog.cover_image)}
                             width={800}
                         />
                     </div>
@@ -110,7 +112,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                                     alt={blog.author.name}
                                     className="h-8 w-8 rounded-full object-cover"
                                     height={32}
-                                    src={blog.author.profile_image}
+                                    src={buildCloudinaryUrl(blog.author.profile_image)}
                                     width={32}
                                 />
                             ) : (
@@ -122,11 +124,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         {blog.published_date && (
                             <span className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
-                                {new Date(blog.published_date).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                })}
+                                {formatDate({ date: blog.published_date })}
                             </span>
                         )}
 

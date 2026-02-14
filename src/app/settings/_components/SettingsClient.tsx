@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ENV } from '@/configs/env';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { buildCloudinaryPublicId, buildCloudinaryUrl } from '@/lib/utils';
 
 interface UserProfile {
     id: number;
@@ -92,7 +92,8 @@ export function SettingsClient() {
                 setUploadingImage(true);
                 const oldImage = profileImage;
                 const result = await uploadToCloudinary(pendingImageFile, 'profile-images');
-                finalImage = result.url.split('/upload/')[1];
+
+                finalImage = result.url;
                 setProfileImage(finalImage);
                 setPendingImageFile(null);
                 setImagePreview(null);
@@ -101,7 +102,7 @@ export function SettingsClient() {
                 // Delete old image if exists and was from cloudinary
                 if (oldImage && !oldImage.startsWith('http')) {
                     try {
-                        await deleteFromCloudinary(oldImage);
+                        await deleteFromCloudinary(buildCloudinaryPublicId(oldImage));
                     } catch (error) {
                         console.error('Failed to delete old image:', error);
                     }
@@ -332,7 +333,7 @@ export function SettingsClient() {
                                                     ? imagePreview
                                                     : profileImage.startsWith('http')
                                                       ? profileImage
-                                                      : `${ENV.cloudinary.urls.base_url}${profileImage}`
+                                                      : buildCloudinaryUrl(profileImage)
                                             }
                                         />
                                         {imagePreview && (

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, Search } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -95,9 +96,17 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
                         href="/"
                     >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-sm font-bold text-white shadow-md">
+                        {/* <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-sm font-bold text-white shadow-md">
                             NH
-                        </div>
+                        </div> */}
+                        <Image
+                            alt={siteConfig.name}
+                            className="h-8 w-8 rounded-full object-fit"
+                            height={520}
+                            quality={100}
+                            src={siteConfig.logoSvg}
+                            width={520}
+                        />
                         <span className="hidden text-lg font-semibold tracking-tight sm:inline">
                             {siteConfig.name}
                         </span>

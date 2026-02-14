@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Image from 'next/image';
 import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
@@ -99,9 +100,17 @@ function Footer() {
             <div className="mx-auto max-w-6xl px-4 py-10">
                 <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-xs font-bold text-white">
+                        {/* <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-xs font-bold text-white">
                             NH
-                        </div>
+                        </div> */}
+                        <Image
+                            alt={siteConfig.name}
+                            className="h-8 w-8 rounded-full object-fit"
+                            height={520}
+                            quality={100}
+                            src={siteConfig.logoSvg}
+                            width={520}
+                        />
                         <span className="font-semibold">{siteConfig.name}</span>
                     </div>
                     <div className="flex gap-5">

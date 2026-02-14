@@ -10,6 +10,7 @@ import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface Comment {
     id: number;
@@ -79,7 +80,7 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
                                 alt={comment.author.name}
                                 className="h-8 w-8 rounded-full object-cover"
                                 height={32}
-                                src={comment.author.profile_image}
+                                src={buildCloudinaryUrl(comment.author.profile_image)}
                                 width={32}
                             />
                         ) : (

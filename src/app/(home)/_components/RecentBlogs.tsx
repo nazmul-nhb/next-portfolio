@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { Calendar, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { formatDate } from 'nhb-toolbox';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
@@ -108,11 +109,9 @@ export async function RecentBlogsSection() {
                                             {blog.published_date && (
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="h-3 w-3" />
-                                                    {new Date(
-                                                        blog.published_date
-                                                    ).toLocaleDateString('en-US', {
-                                                        month: 'short',
-                                                        day: 'numeric',
+                                                    {formatDate({
+                                                        date: blog.published_date,
+                                                        format: 'dd, mmm DD, YYYY',
                                                     })}
                                                 </span>
                                             )}

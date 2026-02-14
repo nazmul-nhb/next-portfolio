@@ -5,6 +5,7 @@ import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import { Button } from '@/components/ui/button';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 type Props = {
     pathname: string;
@@ -44,7 +45,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                 alt={user.name || 'User'}
                                 className="h-8 w-8 rounded-full object-cover ring-1 ring-border"
                                 height={32}
-                                src={user.image}
+                                src={buildCloudinaryUrl(user.image)}
                                 width={32}
                             />
                         ) : (

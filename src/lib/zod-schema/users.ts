@@ -50,7 +50,10 @@ export const UpdateProfileSchema = createInsertSchema(users)
             .max(128, 'Name must be at most 128 characters')
             .optional(),
         bio: z.string().max(500, 'Bio must be at most 500 characters').optional(),
-        profile_image: z.url('Must be a valid URL').optional(),
+        profile_image: z
+            .string('Must be a valid cloudinary image')
+            .startsWith('v', { error: 'Must be a valid cloudinary image' })
+            .optional(),
     });
 
 /** Schema for OTP verification. */

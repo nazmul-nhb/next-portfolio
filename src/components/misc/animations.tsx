@@ -199,6 +199,13 @@ export function MotionCard({ children, className }: Omit<AnimatedProps, 'delay'>
     );
 }
 
+type SecHeadProps = {
+    children: ReactNode;
+    subtitle?: string;
+    className?: string;
+    align?: 'left' | 'center';
+};
+
 /**
  * Animated section heading with gradient underline.
  */
@@ -207,12 +214,7 @@ export function SectionHeading({
     subtitle,
     className,
     align = 'left',
-}: {
-    children: ReactNode;
-    subtitle?: string;
-    className?: string;
-    align?: 'left' | 'center';
-}) {
+}: SecHeadProps) {
     return (
         <FadeInUp className={className}>
             <div className={align === 'center' ? 'text-center' : ''}>
