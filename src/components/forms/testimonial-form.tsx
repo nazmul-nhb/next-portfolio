@@ -271,12 +271,8 @@ export function TestimonialForm({
                     )}
                 />
 
-                <Button disabled={isLoading} type="submit">
-                    {isLoading
-                        ? 'Saving...'
-                        : defaultValues
-                          ? 'Update Testimonial'
-                          : 'Create Testimonial'}
+                <Button disabled={isLoading} loading={isLoading} type="submit">
+                    {defaultValues ? 'Update Testimonial' : 'Create Testimonial'}
                 </Button>
             </form>
         </Form>

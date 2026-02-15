@@ -616,12 +616,8 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                 />
 
                 {/* Submit Button */}
-                <Button disabled={isLoading} type="submit">
-                    {isLoading
-                        ? 'Processing...'
-                        : defaultValues
-                          ? 'Update Project'
-                          : 'Create Project'}
+                <Button disabled={isLoading} loading={isLoading} type="submit">
+                    {defaultValues ? 'Update Project' : 'Create Project'}
                 </Button>
             </form>
         </Form>

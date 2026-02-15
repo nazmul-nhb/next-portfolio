@@ -1,8 +1,19 @@
+'use client';
+
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+
+interface Ripple {
+    id: number;
+    x: number;
+    y: number;
+    size: number;
+}
 
 const buttonVariants = cva(
     "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -37,6 +48,7 @@ const buttonVariants = cva(
  interface ButtonProps extends React.ComponentProps<'button'>,
     VariantProps<typeof buttonVariants> {
         asChild?: boolean;
+        loading?: boolean;
     }
 
 function Button({
@@ -44,16 +56,105 @@ function Button({
     variant,
     size,
     asChild = false,
+    loading = false,
+    disabled,
+    children,
+    onClick,
     ...props
 }: ButtonProps) {
     const Comp = asChild ? Slot : 'button';
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const [ripples, setRipples] = React.useState<Ripple[]>([]);
+
+    // Handle ripple effect on click
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (loading || disabled) return;
+
+        const button = buttonRef.current;
+        if (!button) return;
+
+        // Calculate ripple position - centered on click point
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const newRipple: Ripple = {
+            id: Date.now(),
+            x,
+            y,
+            size: Math.max(rect.width, rect.height),
+        };
+
+        setRipples((prev) => [...prev, newRipple]);
+
+        // Remove ripple after animation
+        setTimeout(() => {
+            setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
+        }, 900);
+
+        // Call original onClick if provided
+        onClick?.(e);
+    };
+
+    // When using asChild, Slot expects a single child, so we can't add effects
+    if (asChild) {
+        return (
+            <Comp
+                data-slot="button"
+                className={cn(buttonVariants({ variant, size, className }))}
+                onClick={onClick}
+                {...props}
+            >
+                {children}
+            </Comp>
+        );
+    }
 
     return (
         <Comp
+            ref={buttonRef}
             data-slot="button"
-            className={cn(buttonVariants({ variant, size, className }))}
+            className={cn(buttonVariants({ variant, size, className }), 'relative overflow-hidden')}
+            disabled={disabled || loading}
+            onClick={handleClick}
             {...props}
-        />
+        >
+            {loading && <Loader2 className="animate-spin" />}
+            {children}
+
+            {/* Ripple effects - horizontal shine spreading left and right */}
+            <AnimatePresence>
+                {ripples.map((ripple) => (
+                    <motion.span
+                        key={ripple.id}
+                        className="pointer-events-none absolute"
+                        style={{
+                            left: ripple.x,
+                            top: 0,
+                            height: '100%',
+                            width: '4px',
+                            background: 'rgba(255, 255, 255, 0.6)',
+                            transform: 'translateX(-50%)',
+                        }}
+                        initial={{
+                            opacity: 0.7,
+                            scaleX: 1,
+                        }}
+                        animate={{
+                            opacity: 0,
+                            scaleX: ripple.size,
+                        }}
+                        exit={{
+                            opacity: 0,
+                        }}
+                        transition={{
+                            duration: 0.9,
+                            ease: [0.4, 0, 0.2, 1],
+                        }}
+                    />
+                ))}
+            </AnimatePresence>
+        </Comp>
     );
 }
 

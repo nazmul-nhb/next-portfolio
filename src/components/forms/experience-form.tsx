@@ -431,12 +431,8 @@ export function ExperienceForm({
                     )}
                 />
 
-                <Button disabled={isLoading} type="submit">
-                    {isLoading
-                        ? 'Saving...'
-                        : defaultValues
-                          ? 'Update Experience'
-                          : 'Create Experience'}
+                <Button disabled={isLoading} loading={isLoading} type="submit">
+                    {defaultValues ? 'Update Experience' : 'Create Experience'}
                 </Button>
             </form>
         </Form>

@@ -33,7 +33,7 @@ export async function RecentProjectsSection() {
                     <SectionHeading subtitle="Some of my latest work and side projects">
                         Recent Projects
                     </SectionHeading>
-                    <Button asChild variant="outline">
+                    <Button variant="outline">
                         <Link href="/projects">View All</Link>
                     </Button>
                 </div>

@@ -195,12 +195,8 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                 />
 
                 <div className="flex gap-4">
-                    <Button disabled={isLoading} type="submit">
-                        {isLoading
-                            ? 'Saving...'
-                            : defaultValues
-                              ? 'Update Skill'
-                              : 'Create Skill'}
+                    <Button disabled={isLoading} loading={isLoading} type="submit">
+                        {defaultValues ? 'Update Skill' : 'Create Skill'}
                     </Button>
                     <Button
                         disabled={isLoading}

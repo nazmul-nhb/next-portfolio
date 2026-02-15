@@ -11,7 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import {
+    deleteFromCloudinary,
+    deleteOldCloudFile,
+    uploadToCloudinary,
+} from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface UserProfile {
@@ -86,9 +90,9 @@ export function SettingsClient() {
         setSaving(true);
         setSaveMessage('');
         const oldImage = profileImage;
-        try {
-            let finalImage = profileImage;
+        let finalImage = profileImage;
 
+        try {
             // Upload pending image if exists
             if (pendingImageFile) {
                 setUploadingImage(true);
@@ -122,13 +126,11 @@ export function SettingsClient() {
                 await deleteFromCloudinary(publicId);
             }
         } finally {
-            if (oldImage && !oldImage.startsWith('http')) {
-                // Delete old image if exists and was from cloudinary
-                try {
-                    await deleteFromCloudinary(oldImage);
-                } catch (error) {
-                    console.error('Failed to delete old image:', error);
-                }
+            // Delete old image if exists and was from cloudinary
+            try {
+                await deleteOldCloudFile(oldImage, finalImage);
+            } catch (error) {
+                console.error('Failed to delete old image:', error);
             }
 
             setSaving(false);
@@ -238,10 +240,11 @@ export function SettingsClient() {
                                         />
                                         <Button
                                             disabled={otp.length !== 6 || otpLoading}
+                                            loading={otpLoading}
                                             onClick={handleVerifyOTP}
                                             size="sm"
                                         >
-                                            {otpLoading ? 'Verifying...' : 'Verify'}
+                                            {'Verify'}
                                         </Button>
                                     </div>
                                 )}

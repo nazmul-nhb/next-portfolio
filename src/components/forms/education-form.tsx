@@ -372,12 +372,8 @@ export function EducationForm({
                     )}
                 />
 
-                <Button disabled={isLoading} type="submit">
-                    {isLoading
-                        ? 'Saving...'
-                        : defaultValues
-                          ? 'Update Education'
-                          : 'Create Education'}
+                <Button disabled={isLoading} loading={isLoading} type="submit">
+                    {defaultValues ? 'Update Education' : 'Create Education'}
                 </Button>
             </form>
         </Form>

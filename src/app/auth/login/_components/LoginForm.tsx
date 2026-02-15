@@ -118,9 +118,14 @@ export function LoginForm() {
                             </div>
                         </div>
 
-                        <Button className="w-full gap-2" disabled={loading} type="submit">
+                        <Button
+                            className="w-full gap-2"
+                            disabled={loading}
+                            loading={loading}
+                            type="submit"
+                        >
                             <LogIn className="h-4 w-4" />
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {'Sign In'}
                         </Button>
                     </form>
 

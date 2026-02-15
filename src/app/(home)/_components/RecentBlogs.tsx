@@ -58,7 +58,7 @@ export async function RecentBlogsSection() {
                     <SectionHeading subtitle="Thoughts, insights, and tutorials">
                         Latest Blog Posts
                     </SectionHeading>
-                    <Button asChild variant="outline">
+                    <Button variant="outline">
                         <Link href="/blogs">View All</Link>
                     </Button>
                 </div>

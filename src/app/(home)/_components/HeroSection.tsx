@@ -118,7 +118,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                     View Projects <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
-                            <Button asChild size="lg" variant="outline">
+                            <Button size="lg" variant="outline">
                                 <Link href="/blogs">Read My Blog</Link>
                             </Button>
                         </div>

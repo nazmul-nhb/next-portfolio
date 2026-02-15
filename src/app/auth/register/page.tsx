@@ -141,9 +141,14 @@ export default function RegisterPage() {
 
                         {error && <p className="text-sm text-destructive">{error}</p>}
 
-                        <Button className="w-full" disabled={loading} type="submit">
+                        <Button
+                            className="w-full"
+                            disabled={loading}
+                            loading={loading}
+                            type="submit"
+                        >
                             <UserPlus className="mr-2 h-4 w-4" />
-                            {loading ? 'Creating account...' : 'Create Account'}
+                            {'Create Account'}
                         </Button>
                     </form>
 
