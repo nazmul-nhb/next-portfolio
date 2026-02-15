@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
-import { buildCloudinaryPublicId, buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface UserProfile {
     id: number;
@@ -125,7 +125,7 @@ export function SettingsClient() {
             if (oldImage && !oldImage.startsWith('http')) {
                 // Delete old image if exists and was from cloudinary
                 try {
-                    await deleteFromCloudinary(buildCloudinaryPublicId(oldImage));
+                    await deleteFromCloudinary(oldImage);
                 } catch (error) {
                     console.error('Failed to delete old image:', error);
                 }

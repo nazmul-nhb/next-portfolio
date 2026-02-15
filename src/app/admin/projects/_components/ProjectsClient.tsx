@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectProject } from '@/types/projects';
 
@@ -21,48 +23,39 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
     const [projects, setProjects] = useState(initialProjects);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const handleDelete = async (id: number, title: string) => {
-        toast.custom(
-            (t) => (
-                <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
-                    <div className="flex-1">
-                        <p className="font-medium">Delete "{title}"?</p>
-                        <p className="text-sm text-muted-foreground">
-                            This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={async () => {
-                                toast.dismiss(t);
-                                setDeletingId(id);
-                                try {
-                                    await httpRequest(`/api/projects?id=${id}`, {
-                                        method: 'DELETE',
-                                    });
-                                    setProjects(projects.filter((p) => p.id !== id));
-                                    toast.success('Project deleted successfully');
-                                    router.refresh();
-                                } catch (error) {
-                                    console.error('Failed to delete project:', error);
-                                    toast.error('Failed to delete project');
-                                } finally {
-                                    setDeletingId(null);
-                                }
-                            }}
-                            size="sm"
-                            variant="destructive"
-                        >
-                            Delete
-                        </Button>
-                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ),
-            { duration: 5000 }
-        );
+    const handleDelete = async (project: SelectProject) => {
+        const { id, title, favicon, screenshots } = project;
+
+        confirmToast({
+            onConfirm: async () => {
+                setDeletingId(id);
+                try {
+                    const { success } = await httpRequest(`/api/projects?id=${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (success) {
+                        await Promise.all(
+                            [favicon, ...screenshots].map((publicId) =>
+                                deleteFromCloudinary(publicId)
+                            )
+                        );
+
+                        setProjects(projects.filter((p) => p.id !== id));
+                        toast.success('Project deleted successfully');
+                        router.refresh();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete project:', error);
+                    toast.error('Failed to delete project');
+                } finally {
+                    setDeletingId(null);
+                }
+            },
+            title: `Delete "${title}"?`,
+            description: 'This action cannot be undone!',
+            confirmText: 'Delete',
+        });
     };
 
     return (
@@ -118,9 +111,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                         </Link>
                                         <Button
                                             disabled={deletingId === project.id}
-                                            onClick={() =>
-                                                handleDelete(project.id, project.title)
-                                            }
+                                            onClick={() => handleDelete(project)}
                                             size="sm"
                                             variant="ghost"
                                         >

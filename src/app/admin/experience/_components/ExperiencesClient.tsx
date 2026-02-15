@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectExperience } from '@/types/career';
 
@@ -21,48 +23,38 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
     const [experiences, setExperiences] = useState(initialExperiences);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const handleDelete = async (id: number, position: string) => {
-        toast.custom(
-            (t) => (
-                <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
-                    <div className="flex-1">
-                        <p className="font-medium">Delete "{position}"?</p>
-                        <p className="text-sm text-muted-foreground">
-                            This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={async () => {
-                                toast.dismiss(t);
-                                setDeletingId(id);
-                                try {
-                                    await httpRequest(`/api/experiences?id=${id}`, {
-                                        method: 'DELETE',
-                                    });
-                                    setExperiences(experiences.filter((e) => e.id !== id));
-                                    toast.success('Experience deleted successfully');
-                                    router.refresh();
-                                } catch (error) {
-                                    console.error('Failed to delete experience:', error);
-                                    toast.error('Failed to delete experience');
-                                } finally {
-                                    setDeletingId(null);
-                                }
-                            }}
-                            size="sm"
-                            variant="destructive"
-                        >
-                            Delete
-                        </Button>
-                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ),
-            { duration: 5000 }
-        );
+    const handleDelete = async (exp: SelectExperience) => {
+        const { position, id, company_logo } = exp;
+
+        confirmToast({
+            onConfirm: async () => {
+                setDeletingId(id);
+                try {
+                    const { success } = await httpRequest(`/api/experiences?id=${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (success) {
+                        setExperiences(experiences.filter((e) => e.id !== id));
+
+                        if (company_logo) {
+                            await deleteFromCloudinary(company_logo);
+                        }
+
+                        toast.success('Experience deleted successfully');
+                        router.refresh();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete experience:', error);
+                    toast.error('Failed to delete experience');
+                } finally {
+                    setDeletingId(null);
+                }
+            },
+            title: `Delete "${position}"?`,
+            description: 'This action cannot be undone!',
+            confirmText: 'Delete',
+        });
     };
 
     const formatDate = (date: string | null) => {
@@ -137,7 +129,7 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
                                         </Link>
                                         <Button
                                             disabled={deletingId === exp.id}
-                                            onClick={() => handleDelete(exp.id, exp.position)}
+                                            onClick={() => handleDelete(exp)}
                                             size="icon"
                                             variant="destructive"
                                         >

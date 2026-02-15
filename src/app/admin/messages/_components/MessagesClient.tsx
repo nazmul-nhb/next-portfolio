@@ -4,6 +4,7 @@ import { Check, Mail, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
@@ -50,47 +51,30 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     };
 
     const handleDelete = async (id: number, name: string) => {
-        toast.custom(
-            (t) => (
-                <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
-                    <div className="flex-1">
-                        <p className="font-medium">Delete message from {name}?</p>
-                        <p className="text-sm text-muted-foreground">
-                            This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={async () => {
-                                toast.dismiss(t);
-                                setProcessingId(id);
-                                try {
-                                    await httpRequest(`/api/contact-messages?id=${id}`, {
-                                        method: 'DELETE',
-                                    });
-                                    setMessages(messages.filter((m) => m.id !== id));
-                                    toast.success('Message deleted');
-                                    router.refresh();
-                                } catch (error) {
-                                    console.error('Failed to delete message:', error);
-                                    toast.error('Failed to delete message');
-                                } finally {
-                                    setProcessingId(null);
-                                }
-                            }}
-                            size="sm"
-                            variant="destructive"
-                        >
-                            Delete
-                        </Button>
-                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ),
-            { duration: 5000 }
-        );
+        confirmToast({
+            onConfirm: async () => {
+                setProcessingId(id);
+                try {
+                    const { success } = await httpRequest(`/api/contact-messages?id=${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (success) {
+                        setMessages(messages.filter((m) => m.id !== id));
+                        toast.success('Message deleted');
+                        router.refresh();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete message:', error);
+                    toast.error('Failed to delete message');
+                } finally {
+                    setProcessingId(null);
+                }
+            },
+            title: `Delete message from "${name}"?`,
+            description: 'This action cannot be undone!',
+            confirmText: 'Delete',
+        });
     };
 
     if (messages.length === 0) {

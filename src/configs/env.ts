@@ -19,6 +19,8 @@ export const ENV = {
             api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY as string,
             api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET as string,
         },
+        folder: 'portfolio',
+        preset: 'portfolio',
         urls: {
             base_url: process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_BASE_URL as string,
             upload_url: process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_UPLOAD_URL as string,

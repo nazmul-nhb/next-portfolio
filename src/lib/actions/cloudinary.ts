@@ -1,9 +1,9 @@
 import axios from 'axios';
 import type { UploadApiResponse } from 'cloudinary';
-import { generateRandomID } from 'nhb-toolbox';
+import { generateRandomID, getTimestamp } from 'nhb-toolbox';
 import { ENV } from '@/configs/env';
+import { buildCloudinaryPublicId } from '@/lib/utils';
 import { httpRequest } from './baseRequest';
-
 /** - Response from `Cloudinary` after uploading a file successfully. */
 export interface CloudinaryResponse {
     url: string;
@@ -19,20 +19,19 @@ export interface SignedData {
 /**
  * * Uploads a file to Cloudinary and returns the uploaded file's URL and public ID.
  * @param file The file to upload.
- * @param suffix The suffix to append to the file name. Defaults to `'nhb'`.
+ * @param prefix The prefix to add at the start of the filename. Defaults to `'nhb'`.
  * @returns An object containing the secure URL and public ID of the uploaded image.
  */
 export async function uploadToCloudinary(
     file: File | FileList,
-    suffix = 'nhb'
+    prefix = 'nhb'
 ): Promise<CloudinaryResponse> {
     const filename = generateRandomID({
         caseOption: 'lower',
         length: 8,
-        prefix: 'portfolio',
-        suffix,
+        prefix,
         separator: '-',
-        timeStamp: true,
+        suffix: getTimestamp().replace(/[:.]/g, '-'),
     });
 
     try {
@@ -44,8 +43,8 @@ export async function uploadToCloudinary(
         const formData = new FormData();
 
         formData.append('file', file instanceof File ? file : (file.item(0) as File));
-        formData.append('upload_preset', 'portfolio');
-        formData.append('folder', 'portfolio');
+        formData.append('upload_preset', ENV.cloudinary.preset);
+        formData.append('folder', ENV.cloudinary.folder);
         formData.append('api_key', ENV.cloudinary.config.api_key);
         formData.append('public_id', filename);
         formData.append('timestamp', String(data?.timestamp));
@@ -90,17 +89,21 @@ export async function uploadMultipleToCloudinary(
 
 /**
  * Deletes a file from Cloudinary by public ID.
- * @param public_id The public ID of the image to delete.
+ * @param publicId The public ID of the image to delete.
  * @returns A promise that resolves when the image is deleted.
  */
-export async function deleteFromCloudinary(public_id: string): Promise<void> {
+export async function deleteFromCloudinary(publicId: string): Promise<boolean> {
     try {
+        const public_id = publicId.startsWith(`${ENV.cloudinary.folder}/`)
+            ? publicId
+            : buildCloudinaryPublicId(publicId);
+
         const res = await httpRequest<void, { public_id: string }>('/api/uploads', {
-            method: 'PUT',
+            method: 'DELETE',
             body: { public_id },
         });
 
-        return res.data;
+        return res.success;
     } catch (error) {
         console.error('Error deleting from Cloudinary:', error);
         throw new Error('Failed to delete image from Cloudinary');

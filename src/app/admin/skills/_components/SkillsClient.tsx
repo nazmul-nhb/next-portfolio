@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 
@@ -21,50 +23,37 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
     const [skills, setSkills] = useState(initialSkills);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const handleDelete = async (id: number, title: string) => {
-        toast.custom(
-            (toastId) => (
-                <div className="flex items-center gap-3 rounded-lg border bg-background p-4 shadow-lg">
-                    <div className="flex-1">
-                        <p className="font-medium">Delete "{title}"?</p>
-                        <p className="text-sm text-muted-foreground">This cannot be undone!</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={async () => {
-                                toast.dismiss(toastId);
-                                setDeletingId(id);
-                                try {
-                                    await httpRequest(`/api/skills?id=${id}`, {
-                                        method: 'DELETE',
-                                    });
-                                    setSkills(skills.filter((s) => s.id !== id));
-                                    toast.success('Skill deleted successfully');
-                                    router.refresh();
-                                } catch (error) {
-                                    console.error('Failed to delete skill:', error);
-                                    toast.error('Failed to delete skill');
-                                } finally {
-                                    setDeletingId(null);
-                                }
-                            }}
-                            size="sm"
-                            variant="destructive"
-                        >
-                            Delete
-                        </Button>
-                        <Button
-                            onClick={() => toast.dismiss(toastId)}
-                            size="sm"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ),
-            { duration: 5000 }
-        );
+    const handleDelete = async (skill: SelectSkill) => {
+        const { id, title, icon } = skill;
+
+        confirmToast({
+            onConfirm: async () => {
+                setDeletingId(id);
+                try {
+                    const { success } = await httpRequest(`/api/skills?id=${id}`, {
+                        method: 'DELETE',
+                    });
+                    if (success) {
+                        setSkills(skills.filter((s) => s.id !== id));
+
+                        if (icon) {
+                            await deleteFromCloudinary(icon);
+                        }
+
+                        toast.success('Skill deleted successfully');
+                        router.refresh();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete skill:', error);
+                    toast.error('Failed to delete skill');
+                } finally {
+                    setDeletingId(null);
+                }
+            },
+            title: `Delete "${title}"?`,
+            description: 'This action cannot be undone!',
+            confirmText: 'Delete',
+        });
     };
 
     return (
@@ -124,7 +113,7 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                                     </Link>
                                     <Button
                                         disabled={deletingId === skill.id}
-                                        onClick={() => handleDelete(skill.id, skill.title)}
+                                        onClick={() => handleDelete(skill)}
                                         size="sm"
                                         variant="outline"
                                     >

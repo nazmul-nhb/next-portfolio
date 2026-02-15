@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
     const signature = cloudinary.utils.api_sign_request(
         {
             timestamp,
-            upload_preset: 'portfolio',
-            folder: 'portfolio',
+            upload_preset: ENV.cloudinary.preset,
+            folder: ENV.cloudinary.folder,
             public_id: filename,
         },
         configs.api_secret
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
  * * Deletes an image from Cloudinary.
  * @param req The Next.js request object containing `public_id` in body.
  */
-export async function PUT(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
     try {
         const { public_id } = (await req.json()) as { public_id: string };
 

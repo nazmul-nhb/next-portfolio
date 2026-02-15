@@ -6,6 +6,7 @@ import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import type { TabItem } from '@/components/ui/doc-tabs';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -151,15 +152,19 @@ export default function NavMobileDrawer({
                                     {user.email}
                                 </p>
                             </div>
-                            <Button
-                                className="h-8 w-8 shrink-0 rounded-full"
-                                onClick={() => signOut({ callbackUrl: '/' })}
-                                size="icon"
-                                title="Sign Out"
-                                variant="ghost"
-                            >
-                                <LogOut className="h-4 w-4" />
-                            </Button>
+                            <SmartTooltip
+                                content="Sign out"
+                                trigger={
+                                    <Button
+                                        className="h-8 w-8 shrink-0 rounded-full"
+                                        onClick={() => signOut({ callbackUrl: '/' })}
+                                        size="icon"
+                                        variant="ghost"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                    </Button>
+                                }
+                            />
                         </div>
                     ) : (
                         <Button asChild className="w-full" size="sm">

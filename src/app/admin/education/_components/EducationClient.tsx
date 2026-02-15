@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectEducation } from '@/types/career';
 
@@ -21,48 +23,37 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
     const [education, setEducation] = useState(initialEducation);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const handleDelete = async (id: number, degree: string) => {
-        toast.custom(
-            (t) => (
-                <div className="rounded-lg border bg-background p-4 shadow-lg space-y-3">
-                    <div className="flex-1">
-                        <p className="font-medium">Delete "{degree}"?</p>
-                        <p className="text-sm text-muted-foreground">
-                            This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex gap-2 justify-end">
-                        <Button
-                            onClick={async () => {
-                                toast.dismiss(t);
-                                setDeletingId(id);
-                                try {
-                                    await httpRequest(`/api/education?id=${id}`, {
-                                        method: 'DELETE',
-                                    });
-                                    setEducation(education.filter((e) => e.id !== id));
-                                    toast.success('Education deleted successfully');
-                                    router.refresh();
-                                } catch (error) {
-                                    console.error('Failed to delete education:', error);
-                                    toast.error('Failed to delete education');
-                                } finally {
-                                    setDeletingId(null);
-                                }
-                            }}
-                            size="sm"
-                            variant="destructive"
-                        >
-                            Delete
-                        </Button>
-                        <Button onClick={() => toast.dismiss(t)} size="sm" variant="outline">
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ),
-            { duration: 5000 }
-        );
+    const handleDelete = async (edu: SelectEducation) => {
+        const { degree, id, institution_logo } = edu;
+
+        confirmToast({
+            onConfirm: async () => {
+                setDeletingId(id);
+                try {
+                    const { success } = await httpRequest(`/api/education?id=${id}`, {
+                        method: 'DELETE',
+                    });
+                    if (success) {
+                        setEducation(education.filter((e) => e.id !== id));
+
+                        if (institution_logo) {
+                            await deleteFromCloudinary(institution_logo);
+                        }
+
+                        toast.success('Education deleted successfully');
+                        router.refresh();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete education:', error);
+                    toast.error('Failed to delete education');
+                } finally {
+                    setDeletingId(null);
+                }
+            },
+            title: `Delete "${degree}"?`,
+            description: 'This action cannot be undone!',
+            confirmText: 'Delete',
+        });
     };
 
     const formatDate = (date: string | null) => {
@@ -144,7 +135,7 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                                         </Link>
                                         <Button
                                             disabled={deletingId === edu.id}
-                                            onClick={() => handleDelete(edu.id, edu.degree)}
+                                            onClick={() => handleDelete(edu)}
                                             size="icon"
                                             variant="destructive"
                                         >

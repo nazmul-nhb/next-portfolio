@@ -3,7 +3,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
-import { isArrayOfType, isNotEmptyObject } from 'nhb-toolbox';
+import { isArrayOfType, isNotEmptyObject, isString } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ import {
     uploadMultipleToCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import {
     type ProjectFormData,
     ProjectFormSchema,
@@ -203,18 +204,15 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
 
     // Initialize previews from default values
     useEffect(() => {
-        if (defaultValues?.favicon && typeof defaultValues.favicon === 'string') {
-            setFaviconPreview(defaultValues.favicon);
+        if (isString(defaultValues?.favicon)) {
+            setFaviconPreview(buildCloudinaryUrl(defaultValues.favicon));
         }
 
-        if (defaultValues?.screenshots && Array.isArray(defaultValues.screenshots)) {
-            const previews = Array(3).fill(null);
-            defaultValues.screenshots.forEach((url, index) => {
-                if (url && index < 3) previews[index] = url;
-            });
+        if (isArrayOfType(defaultValues?.screenshots, isString)) {
+            const previews = defaultValues.screenshots.map((ss) => buildCloudinaryUrl(ss));
             setScreenshotPreviews(previews);
         }
-    }, [defaultValues]);
+    }, [defaultValues?.favicon, defaultValues?.screenshots]);
 
     return (
         <Form {...form}>
@@ -253,16 +251,16 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                 {/* Repository Links */}
                 <div className="space-y-4">
                     <FormLabel>Repository Links</FormLabel>
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="flex gap-4 flex-col sm:flex-row items-start w-full">
                         <FormField
                             control={form.control}
                             name="repo_links.0"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="flex-1 w-full">
                                     <FormLabel>GitHub Link 1 *</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="https://github.com/user/repo"
+                                            placeholder="https://github.com/user/repo1"
                                             {...field}
                                         />
                                     </FormControl>
@@ -274,7 +272,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                             control={form.control}
                             name="repo_links.1"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="flex-1 w-full">
                                     <FormLabel>GitHub Link 2 (Optional)</FormLabel>
                                     <FormControl>
                                         <Input
