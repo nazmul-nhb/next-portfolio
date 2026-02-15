@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import type { SelectProject, UpdateProject } from '@/types/projects';
 
 interface EditProjectClientProps {
@@ -29,15 +29,11 @@ export function EditProjectClient({ project }: EditProjectClientProps) {
             );
 
             if (success && updated) {
-                if (data.favicon && data.favicon !== project.favicon) {
-                    await deleteFromCloudinary(project.favicon);
-                }
+                await deleteOldCloudFile(project.favicon, data.favicon);
 
                 if (data.screenshots) {
                     for (let i = 0; i < data.screenshots.length; i++) {
-                        if (data.screenshots[i] !== project.screenshots[i]) {
-                            await deleteFromCloudinary(project.screenshots[i]);
-                        }
+                        await deleteOldCloudFile(project.screenshots[i], data.screenshots[i]);
                     }
                 }
 

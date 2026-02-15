@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { EducationForm } from '@/components/forms/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import type { SelectEducation, UpdateEducation } from '@/types/career';
 
 interface EditEducationClientProps {
@@ -19,14 +20,20 @@ export function EditEducationClient({ education }: EditEducationClientProps) {
     const handleSubmit = async (data: UpdateEducation) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/education?id=${education.id}`, {
+            const { success, data: updated } = await httpRequest<
+                SelectEducation,
+                UpdateEducation
+            >(`/api/education?id=${education.id}`, {
                 method: 'PATCH',
                 body: data,
             });
+            if (success && updated) {
+                await deleteOldCloudFile(education.institution_logo, data.institution_logo);
 
-            toast.success('Education updated successfully');
-            router.push('/admin/education');
-            router.refresh();
+                toast.success('Education updated successfully');
+                router.push('/admin/education');
+                router.refresh();
+            }
         } catch (error) {
             console.error('Failed to update education:', error);
             toast.error('Failed to update education. Please try again.');

@@ -1,6 +1,8 @@
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
 import type { SVGProps } from 'react';
 
+export type Uncertain<T> = T | null | undefined;
+
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
     size?: number;
 };

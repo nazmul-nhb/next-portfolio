@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import type { SelectSkill, UpdateSkill } from '@/types/skills';
 
 interface EditSkillClientProps {
@@ -29,9 +29,7 @@ export function EditSkillClient({ skill }: EditSkillClientProps) {
             );
 
             if (success && updated) {
-                if (data.icon && data.icon !== skill.icon) {
-                    await deleteFromCloudinary(skill.icon);
-                }
+                await deleteOldCloudFile(skill.icon, data.icon);
 
                 router.push('/admin/skills');
                 router.refresh();

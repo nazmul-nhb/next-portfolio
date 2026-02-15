@@ -1,9 +1,8 @@
-/** biome-ignore-all lint/performance/noImgElement: this is for image preview during upload */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
-import { isArrayOfType, isNotEmptyObject } from 'nhb-toolbox';
+import { isNotEmptyObject } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -24,10 +23,9 @@ import { httpRequest } from '@/lib/actions/baseRequest';
 import {
     type CloudinaryResponse,
     deleteFromCloudinary,
-    uploadMultipleToCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
-import { buildCloudinaryUrl, constructFileListFromPaths } from '@/lib/utils';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import {
     type ProjectFormData,
     ProjectFormSchema,
@@ -45,18 +43,26 @@ interface Props {
 }
 
 export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Props) {
+    const isUpdateMode = !!defaultValues;
+
+    // State management
     const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || []);
     const [techStackInput, setTechStackInput] = useState('');
     const [skills, setSkills] = useState<SelectSkill[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
-    const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
-    const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>(Array(3).fill(null));
-    const [defaultImages, setDefaultImages] = useState<
-        [FileList | undefined, FileList | undefined]
-    >([undefined, undefined]);
 
-    const formSchema = defaultValues ? ProjectFormUpdateSchema : ProjectFormSchema;
+    // Image state - track individual files for better control
+    const [faviconFile, setFaviconFile] = useState<File | null>(null);
+    const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
+    const [screenshotFiles, setScreenshotFiles] = useState<(File | null)[]>([null, null, null]);
+    const [screenshotPreviews, setScreenshotPreviews] = useState<(string | null)[]>([
+        null,
+        null,
+        null,
+    ]);
+
+    const formSchema = isUpdateMode ? ProjectFormUpdateSchema : ProjectFormSchema;
 
     const form = useForm<ProjectData>({
         resolver: zodResolver(formSchema),
@@ -67,39 +73,68 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
             repo_links: defaultValues?.repo_links || ['', ''],
             features: defaultValues?.features || [''],
             tech_stack: defaultValues?.tech_stack || [],
-            favicon: defaultImages[0],
-            screenshots: defaultImages[1],
         } as ProjectData,
     });
 
-    // Handle favicon preview
+    // Helper: Create preview from file
+    const createPreview = (file: File, callback: (url: string) => void) => {
+        const reader = new FileReader();
+        reader.onloadend = () => callback(reader.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    // Helper: Convert File array to FileList for form validation
+    const filesToFileList = (files: (File | null)[]): FileList | undefined => {
+        const validFiles = files.filter((f): f is File => f !== null);
+        if (validFiles.length === 0) return undefined;
+
+        const dataTransfer = new DataTransfer();
+        for (const file of validFiles) {
+            dataTransfer.items.add(file);
+        }
+        return dataTransfer.files;
+    };
+
+    // Image handlers
     const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFaviconPreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            setFaviconFile(file);
+            createPreview(file, setFaviconPreview);
+
+            // Update form with FileList (required for create mode, optional for update)
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            form.setValue('favicon', dt.files);
         }
     };
 
-    // Handle screenshot previews
-    const handleScreenshotsChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const newPreviews = [...screenshotPreviews];
-                newPreviews[index] = reader.result as string;
+            const newFiles = [...screenshotFiles];
+            newFiles[index] = file;
+            setScreenshotFiles(newFiles);
+
+            const newPreviews = [...screenshotPreviews];
+            createPreview(file, (url) => {
+                newPreviews[index] = url;
                 setScreenshotPreviews(newPreviews);
-            };
-            reader.readAsDataURL(file);
+            });
+
+            // For create mode, only update form if we have all 3 screenshots
+            // For update mode, we handle validation in submit handler
+            if (!isUpdateMode) {
+                const fileList = filesToFileList(newFiles);
+                if (fileList && fileList.length === 3) {
+                    form.setValue('screenshots', fileList);
+                }
+            }
         }
     };
 
     // Tech stack handlers
-    const handleAddTechStack = (skill?: string) => {
+    const addTechStack = (skill?: string) => {
         const techToAdd = skill || techStackInput.trim();
         if (techToAdd && !techStackItems.includes(techToAdd)) {
             const newItems = [...techStackItems, techToAdd];
@@ -110,6 +145,19 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
         }
     };
 
+    const removeTechStack = (index: number) => {
+        const newItems = techStackItems.filter((_, i) => i !== index);
+        setTechStackItems(newItems);
+        form.setValue('tech_stack', newItems);
+    };
+
+    const handleTechStackKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && e.currentTarget === document.activeElement) {
+            e.preventDefault();
+            addTechStack();
+        }
+    };
+
     const filteredSkills = skills.filter(
         (skill) =>
             techStackInput &&
@@ -117,40 +165,10 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
             !techStackItems.includes(skill.title)
     );
 
-    // Fetch skills on mount
-    useEffect(() => {
-        const fetchSkills = async () => {
-            try {
-                const { data } = await httpRequest<SelectSkill[]>('/api/skills');
-                if (data) {
-                    setSkills(data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch skills:', error);
-            }
-        };
-        fetchSkills();
-    }, []);
-
-    const handleRemoveTechStack = (index: number) => {
-        const newItems = techStackItems.filter((_, i) => i !== index);
-        setTechStackItems(newItems);
-        form.setValue('tech_stack', newItems);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && e.currentTarget === document.activeElement) {
-            e.preventDefault();
-            handleAddTechStack();
-        }
-    };
-
     // Features handlers
-    const handleAddFeature = () => {
-        setFeatures([...features, '']);
-    };
+    const addFeature = () => setFeatures([...features, '']);
 
-    const handleRemoveFeature = (index: number) => {
+    const removeFeature = (index: number) => {
         if (features.length > 1) {
             const newFeatures = features.filter((_, i) => i !== index);
             setFeatures(newFeatures);
@@ -158,61 +176,67 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
         }
     };
 
-    const handleFeatureChange = (index: number, value: string) => {
+    const updateFeature = (index: number, value: string) => {
         const newFeatures = [...features];
         newFeatures[index] = value;
         setFeatures(newFeatures);
         form.setValue('features', newFeatures);
     };
 
-    const [faviconRes, setFaviconRes] = useState<CloudinaryResponse>();
-    const [screenshotsRes, setScreenshotsRes] = useState<CloudinaryResponse[]>();
-
-    // Form submission
+    // Form submission with optimized image handling
     const handleSubmit = async (data: ProjectData) => {
-        try {
-            // Handle favicon upload or use existing
-            let faviconUrl: string | undefined;
-            let favRes: CloudinaryResponse | undefined;
+        const uploadedAssets: Array<CloudinaryResponse> = [];
 
-            if (data?.favicon && data.favicon.length > 0) {
-                // New favicon provided, upload it
-                favRes = await uploadToCloudinary(data.favicon, 'favicon');
+        try {
+            // Handle favicon
+            let faviconUrl: string;
+            if (faviconFile) {
+                const favRes = await uploadToCloudinary(faviconFile, 'favicon');
                 if (!isNotEmptyObject(favRes)) {
                     toast.error('Failed to upload favicon');
                     return;
                 }
-                setFaviconRes(favRes);
+                uploadedAssets.push(favRes);
                 faviconUrl = favRes.url;
             } else if (defaultValues?.favicon) {
-                // No new favicon, use existing one
                 faviconUrl = defaultValues.favicon;
             } else {
-                // No favicon at all (shouldn't happen for valid forms)
                 toast.error('Favicon is required');
                 return;
             }
 
-            // Handle screenshots upload or use existing
-            let screenshotUrls: string[] | undefined;
-            let ssRes: CloudinaryResponse[] | undefined;
+            // Handle screenshots - upload only changed ones
+            const screenshotUrls: string[] = [];
+            for (let i = 0; i < 3; i++) {
+                if (screenshotFiles[i]) {
+                    // New file - upload it
+                    const screenshotFile = screenshotFiles[i];
+                    if (!screenshotFile) continue;
 
-            if (data?.screenshots && data.screenshots.length > 0) {
-                // New screenshots provided, upload them
-                ssRes = await uploadMultipleToCloudinary(data.screenshots, 'screenshot');
-                if (!isArrayOfType(ssRes, isNotEmptyObject)) {
-                    toast.error('Failed to upload screenshots');
+                    const ssFileList = new DataTransfer();
+                    ssFileList.items.add(screenshotFile);
+                    const ssRes = await uploadToCloudinary(ssFileList.files, 'screenshot');
+                    if (!isNotEmptyObject(ssRes)) {
+                        toast.error(`Failed to upload screenshot ${i + 1}`);
+                        // Cleanup previously uploaded assets
+                        await Promise.allSettled(
+                            uploadedAssets.map((asset) => deleteFromCloudinary(asset.public_id))
+                        );
+                        return;
+                    }
+                    uploadedAssets.push(ssRes);
+                    screenshotUrls[i] = ssRes.url;
+                } else if (defaultValues?.screenshots?.[i]) {
+                    // Keep existing
+                    screenshotUrls[i] = defaultValues.screenshots[i];
+                } else {
+                    toast.error(`Screenshot ${i + 1} is required`);
+                    // Cleanup uploaded assets
+                    await Promise.allSettled(
+                        uploadedAssets.map((asset) => deleteFromCloudinary(asset.public_id))
+                    );
                     return;
                 }
-                setScreenshotsRes(ssRes);
-                screenshotUrls = ssRes.map((s) => s.url);
-            } else if (defaultValues?.screenshots) {
-                // No new screenshots, use existing ones
-                screenshotUrls = defaultValues.screenshots;
-            } else {
-                // No screenshots at all (shouldn't happen for valid forms)
-                toast.error('Screenshots are required');
-                return;
             }
 
             const payload = {
@@ -226,38 +250,37 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
             console.error('Error submitting project:', error);
             toast.error('Failed to submit project. Please try again.');
 
-            // Clean up uploaded images if submission failed
-            if (faviconRes?.public_id) {
-                await deleteFromCloudinary(faviconRes.public_id);
-            }
-
-            if (isArrayOfType(screenshotsRes, isNotEmptyObject)) {
+            // Cleanup any uploaded assets
+            if (uploadedAssets.length > 0) {
                 await Promise.allSettled(
-                    screenshotsRes.map((ss) => deleteFromCloudinary(ss.public_id))
+                    uploadedAssets.map((asset) => deleteFromCloudinary(asset.public_id))
                 );
             }
         }
     };
 
-    // Initialize previews from default values
+    // Initialize from default values
     useEffect(() => {
         if (defaultValues) {
             setFaviconPreview(buildCloudinaryUrl(defaultValues.favicon));
-            const previews = defaultValues.screenshots.map((ss) => buildCloudinaryUrl(ss));
-            setScreenshotPreviews(previews);
-
-            const constructImages = async () => {
-                const fi = await constructFileListFromPaths([defaultValues?.favicon]);
-
-                const ss = await constructFileListFromPaths(defaultValues?.screenshots);
-
-                setDefaultImages([fi, ss]);
-            };
-
-            constructImages();
+            setScreenshotPreviews(
+                defaultValues.screenshots.map((ss) => buildCloudinaryUrl(ss))
+            );
         }
     }, [defaultValues]);
-    console.log(form.getValues('screenshots'));
+
+    // Fetch skills on mount
+    useEffect(() => {
+        const fetchSkills = async () => {
+            try {
+                const { data } = await httpRequest<SelectSkill[]>('/api/skills');
+                if (data) setSkills(data);
+            } catch (error) {
+                console.error('Failed to fetch skills:', error);
+            }
+        };
+        fetchSkills();
+    }, []);
 
     return (
         <Form {...form}>
@@ -348,7 +371,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                             setShowSuggestions(true);
                                         }}
                                         onFocus={() => setShowSuggestions(true)}
-                                        onKeyDown={handleKeyDown}
+                                        onKeyDown={handleTechStackKeyDown}
                                         placeholder="Add technology (e.g., React, Node.js)"
                                         value={techStackInput}
                                     />
@@ -358,9 +381,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                                 <button
                                                     className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
                                                     key={skill.id}
-                                                    onClick={() =>
-                                                        handleAddTechStack(skill.title)
-                                                    }
+                                                    onClick={() => addTechStack(skill.title)}
                                                     type="button"
                                                 >
                                                     {skill.title}
@@ -370,7 +391,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                     )}
                                 </div>
                                 <Button
-                                    onClick={() => handleAddTechStack()}
+                                    onClick={() => addTechStack()}
                                     type="button"
                                     variant="outline"
                                 >
@@ -406,7 +427,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                         <span>{item}</span>
                                         <button
                                             className="ml-1 rounded-full hover:bg-primary/20"
-                                            onClick={() => handleRemoveTechStack(idx)}
+                                            onClick={() => removeTechStack(idx)}
                                             type="button"
                                         >
                                             <X className="h-3 w-3" />
@@ -441,6 +462,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                                 <CardContent className="p-4">
                                                     <div className="flex items-center gap-4">
                                                         <div className="relative h-16 w-16 overflow-hidden rounded">
+                                                            {/** biome-ignore lint/performance/noImgElement: for image preview */}
                                                             <img
                                                                 alt="Favicon preview"
                                                                 className="h-full w-full object-contain"
@@ -489,42 +511,26 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                             <div className="space-y-4">
                                                 <Input
                                                     accept="image/png,image/jpeg,image/jpg"
+                                                    className="cursor-pointer"
                                                     onChange={(e) => {
-                                                        const newFiles = new DataTransfer();
-
-                                                        // Copy existing files
-                                                        if (value) {
-                                                            [...value].forEach((file, i) => {
-                                                                if (i !== index) {
-                                                                    newFiles.items.add(file);
-                                                                }
-                                                            });
-                                                        }
-
-                                                        // Add new file at position
-                                                        const newFile = e.target.files?.[0];
-                                                        if (newFile) {
-                                                            newFiles.items.add(newFile);
-                                                        }
-
-                                                        onChange(newFiles.files);
-                                                        handleScreenshotsChange(e, index);
+                                                        handleScreenshotChange(e, index);
                                                     }}
                                                     type="file"
                                                     {...field}
-                                                    className="cursor-pointer"
+                                                    value=""
                                                 />
                                                 {screenshotPreviews[index] && (
                                                     <Card>
                                                         <CardContent className="p-4">
                                                             <div className="relative aspect-video overflow-hidden rounded">
+                                                                {/** biome-ignore lint/performance/noImgElement: for preview */}
                                                                 <img
                                                                     alt={`Screenshot ${index + 1} preview`}
                                                                     className="h-full w-full object-cover"
                                                                     src={
                                                                         screenshotPreviews[
                                                                             index
-                                                                        ]
+                                                                        ] ?? ''
                                                                     }
                                                                 />
                                                             </div>
@@ -549,13 +555,13 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                     {features.map((feature, index) => (
                         <div className="flex gap-2" key={index}>
                             <Input
-                                onChange={(e) => handleFeatureChange(index, e.target.value)}
+                                onChange={(e) => updateFeature(index, e.target.value)}
                                 placeholder={`Feature ${index + 1}`}
                                 value={feature}
                             />
                             {features.length > 1 && (
                                 <Button
-                                    onClick={() => handleRemoveFeature(index)}
+                                    onClick={() => removeFeature(index)}
                                     size="icon"
                                     type="button"
                                     variant="destructive"
@@ -566,12 +572,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                         </div>
                     ))}
 
-                    <Button
-                        onClick={handleAddFeature}
-                        size="sm"
-                        type="button"
-                        variant="outline"
-                    >
+                    <Button onClick={addFeature} size="sm" type="button" variant="outline">
                         <Plus className="mr-2 h-4 w-4" />
                         Add Feature
                     </Button>

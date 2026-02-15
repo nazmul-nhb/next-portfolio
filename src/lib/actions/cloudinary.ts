@@ -3,7 +3,9 @@ import type { UploadApiResponse } from 'cloudinary';
 import { generateRandomID, getTimestamp } from 'nhb-toolbox';
 import { ENV } from '@/configs/env';
 import { buildCloudinaryPublicId } from '@/lib/utils';
+import type { Uncertain } from '@/types';
 import { httpRequest } from './baseRequest';
+
 /** - Response from `Cloudinary` after uploading a file successfully. */
 export interface CloudinaryResponse {
     url: string;
@@ -20,7 +22,7 @@ export interface SignedData {
  * * Uploads a file to Cloudinary and returns the uploaded file's URL and public ID.
  * @param file The file to upload.
  * @param prefix The prefix to add at the start of the filename. Defaults to `'nhb'`.
- * @returns An object containing the secure URL and public ID of the uploaded image.
+ * @returns An object containing the secure URL and public ID of the uploaded file.
  */
 export async function uploadToCloudinary(
     file: File | FileList,
@@ -66,7 +68,7 @@ export async function uploadToCloudinary(
         };
     } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
-        throw new Error('Failed to upload image to Cloudinary');
+        throw new Error('Failed to upload file to Cloudinary');
     }
 }
 
@@ -89,8 +91,8 @@ export async function uploadMultipleToCloudinary(
 
 /**
  * Deletes a file from Cloudinary by public ID.
- * @param publicId The public ID of the image to delete.
- * @returns A promise that resolves when the image is deleted.
+ * @param publicId The public ID of the file to delete.
+ * @returns A promise that resolves when the file is deleted.
  */
 export async function deleteFromCloudinary(publicId: string): Promise<boolean> {
     try {
@@ -106,6 +108,18 @@ export async function deleteFromCloudinary(publicId: string): Promise<boolean> {
         return res.success;
     } catch (error) {
         console.error('Error deleting from Cloudinary:', error);
-        throw new Error('Failed to delete image from Cloudinary');
+        throw new Error('Failed to delete file from Cloudinary');
+    }
+}
+
+/**
+ * Compares old and new Cloudinary public IDs and deletes the old file if they are different.
+ * @param oldId The old Cloudinary public ID.
+ * @param newId The new Cloudinary public ID.
+ * @returns A promise that resolves when the comparison and deletion (if needed) is complete.
+ */
+export async function deleteOldCloudFile(oldId: Uncertain<string>, newId: Uncertain<string>) {
+    if (newId && oldId && newId !== oldId) {
+        await deleteFromCloudinary(oldId);
     }
 }

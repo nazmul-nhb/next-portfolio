@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { TestimonialForm } from '@/components/forms/testimonial-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import type { SelectTestimonial, UpdateTestimonial } from '@/types/testimonials';
 
 interface EditTestimonialClientProps {
@@ -19,14 +20,21 @@ export function EditTestimonialClient({ testimonial }: EditTestimonialClientProp
     const handleSubmit = async (data: UpdateTestimonial) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/testimonials?id=${testimonial.id}`, {
+            const { success, data: updated } = await httpRequest<
+                SelectTestimonial,
+                UpdateTestimonial
+            >(`/api/testimonials?id=${testimonial.id}`, {
                 method: 'PATCH',
                 body: data,
             });
 
-            toast.success('Testimonial updated successfully');
-            router.push('/admin/testimonials');
-            router.refresh();
+            if (success && updated) {
+                await deleteOldCloudFile(testimonial.client_avatar, data.client_avatar);
+
+                toast.success('Testimonial updated successfully');
+                router.push('/admin/testimonials');
+                router.refresh();
+            }
         } catch (error) {
             console.error('Failed to update testimonial:', error);
             toast.error('Failed to update testimonial. Please try again.');

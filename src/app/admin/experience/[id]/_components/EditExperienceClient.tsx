@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { ExperienceForm } from '@/components/forms/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import type { SelectExperience, UpdateExperience } from '@/types/career';
 
 interface EditExperienceClientProps {
@@ -19,14 +20,21 @@ export function EditExperienceClient({ experience }: EditExperienceClientProps) 
     const handleSubmit = async (data: UpdateExperience) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/experiences?id=${experience.id}`, {
+            const { success, data: updated } = await httpRequest<
+                SelectExperience,
+                UpdateExperience
+            >(`/api/experiences?id=${experience.id}`, {
                 method: 'PATCH',
                 body: data,
             });
 
-            toast.success('Experience updated successfully');
-            router.push('/admin/experience');
-            router.refresh();
+            if (success && updated) {
+                await deleteOldCloudFile(experience.company_logo, data.company_logo);
+
+                toast.success('Experience updated successfully');
+                router.push('/admin/experience');
+                router.refresh();
+            }
         } catch (error) {
             console.error('Failed to update experience:', error);
             toast.error('Failed to update experience. Please try again.');
