@@ -6,8 +6,8 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { ProjectCreationSchema } from '@/lib/zod-schema/projects';
-import type { InsertProject } from '@/types/projects';
+import { ProjectCreationSchema, ProjectUpdateSchema } from '@/lib/zod-schema/projects';
+import type { InsertProject, UpdateProject } from '@/types/projects';
 
 /** Get all projects */
 export async function GET() {
@@ -45,6 +45,44 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error(error);
 
+        return sendErrorResponse(error);
+    }
+}
+
+/** Update a project */
+export async function PATCH(req: NextRequest) {
+    try {
+        const id = Number(req.nextUrl.searchParams.get('id'));
+
+        if (!id || Number.isNaN(id)) {
+            return sendErrorResponse('Valid project ID is required!');
+        }
+
+        // For simplicity, we'll allow partial updates without strict validation
+        const data = (await req.json()) as UpdateProject;
+
+        const parsed = await validateRequest(ProjectUpdateSchema, data);
+
+        if (!parsed.success) {
+            return parsed.response;
+        }
+
+        const [updated] = await db
+            .update(projects)
+            .set(parsed.data)
+            .where(eq(projects.id, id))
+            .returning();
+
+        if (!updated?.id) {
+            return sendErrorResponse('Project not found or no changes made!');
+        }
+
+        revalidatePath('/admin/projects');
+        revalidatePath('/(home)', 'page');
+
+        return sendResponse('Project', 'PATCH', updated);
+    } catch (error) {
+        console.error(error);
         return sendErrorResponse(error);
     }
 }

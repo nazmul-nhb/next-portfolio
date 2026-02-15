@@ -6,7 +6,8 @@ import { toast } from 'sonner';
 import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import type { InsertSkill, SelectSkill, UpdateSkill } from '@/types/skills';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import type { SelectSkill, UpdateSkill } from '@/types/skills';
 
 interface EditSkillClientProps {
     skill: SelectSkill;
@@ -16,16 +17,25 @@ export function EditSkillClient({ skill }: EditSkillClientProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertSkill | UpdateSkill) => {
+    const handleSubmit = async (data: UpdateSkill) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/skills?id=${skill.id}`, {
-                method: 'PATCH',
-                body: data,
-            });
+            const { success, data: updated } = await httpRequest<SelectSkill, UpdateSkill>(
+                `/api/skills?id=${skill.id}`,
+                {
+                    method: 'PATCH',
+                    body: data,
+                }
+            );
 
-            router.push('/admin/skills');
-            router.refresh();
+            if (success && updated) {
+                if (data.icon && data.icon !== skill.icon) {
+                    await deleteFromCloudinary(skill.icon);
+                }
+
+                router.push('/admin/skills');
+                router.refresh();
+            }
         } catch (error) {
             console.error('Failed to update skill:', error);
             toast.error('Failed to update skill. Please try again.');

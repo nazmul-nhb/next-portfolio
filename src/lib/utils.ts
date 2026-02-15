@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import { getLastArrayElement } from 'nhb-toolbox';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 
@@ -15,4 +16,38 @@ export function buildCloudinaryUrl(urlFromDB: string) {
 /** Utility function to extract Cloudinary public ID from DB URL for transformations. */
 export function buildCloudinaryPublicId(urlFromDB: string) {
     return urlFromDB.slice(urlFromDB.indexOf('/') + 1, urlFromDB.lastIndexOf('.'));
+}
+
+/**
+ * Converts a given cloudinary image path to a File object.
+ * @param imgPath The image path stored in the database (e.g., `"v1234567890/folder/image.jpg"`).
+ * @returns A promise that resolves to a File object.
+ */
+export async function pathToFile(imgPath: string) {
+    const url = buildCloudinaryUrl(imgPath);
+    const filename = getLastArrayElement(imgPath.split('/')) as string;
+
+    const response = await fetch(url);
+    // Get the MIME type from the response headers or hardcode if known
+    const mimeType = response.headers.get('content-type') || 'image/jpeg';
+    const blob = await response.blob();
+    // The File constructor takes a Blob, name, and options
+    return new File([blob], filename, { type: mimeType });
+}
+
+/**
+ * Constructs a list of File objects (mimicking FileList behavior) from an array of image paths stored in the database.
+ * @param imgPaths An array of image paths stored in the database (e.g., `["v1234567890/folder/image1.jpg", "v1234567890/folder/image2.png"]`).
+ * @returns A promise that resolves to an array of File objects.
+ */
+export async function constructFileListFromPaths(imgPaths: string[]): Promise<FileList> {
+    const filesArray = await Promise.all(imgPaths.map(pathToFile));
+
+    const dataTransfer = new DataTransfer();
+
+    for (const file of filesArray) {
+        dataTransfer.items.add(file);
+    }
+
+    return dataTransfer.files;
 }

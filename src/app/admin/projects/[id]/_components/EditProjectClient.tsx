@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import type { SelectProject, UpdateProject } from '@/types/projects';
 
 interface EditProjectClientProps {
@@ -19,13 +20,33 @@ export function EditProjectClient({ project }: EditProjectClientProps) {
     const handleSubmit = async (data: UpdateProject) => {
         setIsLoading(true);
         try {
-            await httpRequest(`/api/projects?id=${project.id}`, {
-                method: 'PATCH',
-                body: data,
-            });
+            const { success, data: updated } = await httpRequest<SelectProject, UpdateProject>(
+                `/api/projects?id=${project.id}`,
+                {
+                    method: 'PATCH',
+                    body: data,
+                }
+            );
 
-            router.push('/admin/projects');
-            router.refresh();
+            if (success && updated) {
+                if (data.favicon && data.favicon !== project.favicon) {
+                    await deleteFromCloudinary(project.favicon);
+                }
+
+                if (data.screenshots) {
+                    for (let i = 0; i < data.screenshots.length; i++) {
+                        if (data.screenshots[i] !== project.screenshots[i]) {
+                            await deleteFromCloudinary(project.screenshots[i]);
+                        }
+                    }
+                }
+
+                toast.success('Project updated successfully!');
+                router.push('/admin/projects');
+                router.refresh();
+            } else {
+                toast.error('Failed to update project. Please try again.');
+            }
         } catch (error) {
             console.error('Failed to update project:', error);
             toast.error('Failed to update project. Please try again.');
@@ -47,7 +68,6 @@ export function EditProjectClient({ project }: EditProjectClientProps) {
                 </CardHeader>
                 <CardContent>
                     <ProjectForm
-                        // @ts-expect-error - ProjectForm accepts string URLs for favicon/screenshots when editing
                         defaultValues={project}
                         isLoading={isLoading}
                         onSubmit={handleSubmit}

@@ -3,9 +3,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
-import { isArrayOfType, isNotEmptyObject, isString } from 'nhb-toolbox';
+import { isArrayOfType, isNotEmptyObject } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -26,20 +27,20 @@ import {
     uploadMultipleToCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, constructFileListFromPaths } from '@/lib/utils';
 import {
     type ProjectFormData,
     ProjectFormSchema,
     ProjectFormUpdateSchema,
 } from '@/lib/zod-schema/projects';
-import type { InsertProject, UpdateProject } from '@/types/projects';
+import type { InsertProject, SelectProject, UpdateProject } from '@/types/projects';
 import type { SelectSkill } from '@/types/skills';
 
 type ProjectData = Partial<ProjectFormData>;
 
 interface Props {
     onSubmit: ((data: InsertProject) => void) | ((data: UpdateProject) => void);
-    defaultValues?: ProjectData;
+    defaultValues?: SelectProject;
     isLoading?: boolean;
 }
 
@@ -51,6 +52,9 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>(Array(3).fill(null));
+    const [defaultImages, setDefaultImages] = useState<
+        [FileList | undefined, FileList | undefined]
+    >([undefined, undefined]);
 
     const formSchema = defaultValues ? ProjectFormUpdateSchema : ProjectFormSchema;
 
@@ -63,8 +67,9 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
             repo_links: defaultValues?.repo_links || ['', ''],
             features: defaultValues?.features || [''],
             tech_stack: defaultValues?.tech_stack || [],
-            ...defaultValues,
-        },
+            favicon: defaultImages[0],
+            screenshots: defaultImages[1],
+        } as ProjectData,
     });
 
     // Handle favicon preview
@@ -116,9 +121,9 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const response = await httpRequest<{ data: SelectSkill[] }>('/api/skills');
-                if (response.data && 'data' in response.data) {
-                    setSkills(response.data.data);
+                const { data } = await httpRequest<SelectSkill[]>('/api/skills');
+                if (data) {
+                    setSkills(data);
                 }
             } catch (error) {
                 console.error('Failed to fetch skills:', error);
@@ -166,30 +171,62 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     // Form submission
     const handleSubmit = async (data: ProjectData) => {
         try {
-            const favRes = data?.favicon
-                ? await uploadToCloudinary(data.favicon, 'favicon')
-                : undefined;
+            // Handle favicon upload or use existing
+            let faviconUrl: string | undefined;
+            let favRes: CloudinaryResponse | undefined;
 
-            if (!isNotEmptyObject(favRes)) return;
+            if (data?.favicon && data.favicon.length > 0) {
+                // New favicon provided, upload it
+                favRes = await uploadToCloudinary(data.favicon, 'favicon');
+                if (!isNotEmptyObject(favRes)) {
+                    toast.error('Failed to upload favicon');
+                    return;
+                }
+                setFaviconRes(favRes);
+                faviconUrl = favRes.url;
+            } else if (defaultValues?.favicon) {
+                // No new favicon, use existing one
+                faviconUrl = defaultValues.favicon;
+            } else {
+                // No favicon at all (shouldn't happen for valid forms)
+                toast.error('Favicon is required');
+                return;
+            }
 
-            setFaviconRes(favRes);
+            // Handle screenshots upload or use existing
+            let screenshotUrls: string[] | undefined;
+            let ssRes: CloudinaryResponse[] | undefined;
 
-            const ssRes = data?.screenshots
-                ? await uploadMultipleToCloudinary(data.screenshots, 'screenshot')
-                : undefined;
-
-            if (!isArrayOfType(ssRes, isNotEmptyObject)) return;
-
-            setScreenshotsRes(ssRes);
+            if (data?.screenshots && data.screenshots.length > 0) {
+                // New screenshots provided, upload them
+                ssRes = await uploadMultipleToCloudinary(data.screenshots, 'screenshot');
+                if (!isArrayOfType(ssRes, isNotEmptyObject)) {
+                    toast.error('Failed to upload screenshots');
+                    return;
+                }
+                setScreenshotsRes(ssRes);
+                screenshotUrls = ssRes.map((s) => s.url);
+            } else if (defaultValues?.screenshots) {
+                // No new screenshots, use existing ones
+                screenshotUrls = defaultValues.screenshots;
+            } else {
+                // No screenshots at all (shouldn't happen for valid forms)
+                toast.error('Screenshots are required');
+                return;
+            }
 
             const payload = {
                 ...data,
-                favicon: favRes.url,
-                screenshots: ssRes.map((s) => s.url),
+                favicon: faviconUrl,
+                screenshots: screenshotUrls,
             };
 
             onSubmit(payload as InsertProject);
-        } catch {
+        } catch (error) {
+            console.error('Error submitting project:', error);
+            toast.error('Failed to submit project. Please try again.');
+
+            // Clean up uploaded images if submission failed
             if (faviconRes?.public_id) {
                 await deleteFromCloudinary(faviconRes.public_id);
             }
@@ -204,15 +241,23 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
 
     // Initialize previews from default values
     useEffect(() => {
-        if (isString(defaultValues?.favicon)) {
+        if (defaultValues) {
             setFaviconPreview(buildCloudinaryUrl(defaultValues.favicon));
-        }
-
-        if (isArrayOfType(defaultValues?.screenshots, isString)) {
             const previews = defaultValues.screenshots.map((ss) => buildCloudinaryUrl(ss));
             setScreenshotPreviews(previews);
+
+            const constructImages = async () => {
+                const fi = await constructFileListFromPaths([defaultValues?.favicon]);
+
+                const ss = await constructFileListFromPaths(defaultValues?.screenshots);
+
+                setDefaultImages([fi, ss]);
+            };
+
+            constructImages();
         }
-    }, [defaultValues?.favicon, defaultValues?.screenshots]);
+    }, [defaultValues]);
+    console.log(form.getValues('screenshots'));
 
     return (
         <Form {...form}>
@@ -257,7 +302,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                             name="repo_links.0"
                             render={({ field }) => (
                                 <FormItem className="flex-1 w-full">
-                                    <FormLabel>GitHub Link 1 *</FormLabel>
+                                    <FormLabel>Repository Link 1 *</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="https://github.com/user/repo1"
@@ -273,7 +318,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                             name="repo_links.1"
                             render={({ field }) => (
                                 <FormItem className="flex-1 w-full">
-                                    <FormLabel>GitHub Link 2 (Optional)</FormLabel>
+                                    <FormLabel>Repository Link 2 (Optional)</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="https://github.com/user/repo2"
@@ -287,137 +332,144 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                     </div>
                 </div>
 
-                {/* Tech Stack */}
-                <div className="space-y-4">
-                    <FormLabel>Tech Stack *</FormLabel>
-                    <div className="space-y-2">
-                        <div className="relative flex gap-2">
-                            <div className="relative flex-1">
-                                <Input
-                                    onBlur={() =>
-                                        setTimeout(() => setShowSuggestions(false), 200)
-                                    }
-                                    onChange={(e) => {
-                                        setTechStackInput(e.target.value);
-                                        setShowSuggestions(true);
-                                    }}
-                                    onFocus={() => setShowSuggestions(true)}
-                                    onKeyDown={handleKeyDown}
-                                    placeholder="Add technology (e.g., React, Node.js)"
-                                    value={techStackInput}
-                                />
-                                {showSuggestions && filteredSkills.length > 0 && (
-                                    <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 shadow-lg">
-                                        {filteredSkills.map((skill) => (
-                                            <button
-                                                className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
-                                                key={skill.id}
-                                                onClick={() => handleAddTechStack(skill.title)}
-                                                type="button"
-                                            >
-                                                {skill.title}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <Button
-                                onClick={() => handleAddTechStack()}
-                                type="button"
-                                variant="outline"
-                            >
-                                <Plus className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        <FormDescription>
-                            Press Enter or click + to add technology. Start typing to see
-                            suggestions from your skills.
-                        </FormDescription>
-                        <FormField
-                            control={form.control}
-                            name="tech_stack"
-                            render={() => (
-                                <FormItem>
-                                    <FormControl>
-                                        <input type="hidden" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    {/* Tech Stack Tags */}
-                    {techStackItems.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                            {techStackItems.map((item, idx) => (
-                                <div
-                                    className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm"
-                                    key={idx}
-                                >
-                                    <span>{item}</span>
-                                    <button
-                                        className="ml-1 rounded-full hover:bg-primary/20"
-                                        onClick={() => handleRemoveTechStack(idx)}
-                                        type="button"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Favicon Upload */}
-                <FormField
-                    control={form.control}
-                    name="favicon"
-                    render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem>
-                            <FormLabel>Favicon *</FormLabel>
-                            <FormControl>
-                                <div className="space-y-4">
+                <div className="flex items-start w-full flex-col gap-4 sm:flex-row">
+                    {/* Tech Stack */}
+                    <div className="space-y-2 flex-1 w-full">
+                        <FormLabel>Tech Stack *</FormLabel>
+                        <div className="space-y-2">
+                            <div className="relative flex gap-2">
+                                <div className="relative flex-1">
                                     <Input
-                                        accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/gif"
-                                        className="cursor-pointer"
+                                        onBlur={() =>
+                                            setTimeout(() => setShowSuggestions(false), 200)
+                                        }
                                         onChange={(e) => {
-                                            onChange(e.target.files);
-                                            handleFaviconChange(e);
+                                            setTechStackInput(e.target.value);
+                                            setShowSuggestions(true);
                                         }}
-                                        type="file"
-                                        {...field}
+                                        onFocus={() => setShowSuggestions(true)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Add technology (e.g., React, Node.js)"
+                                        value={techStackInput}
                                     />
-                                    {faviconPreview && (
-                                        <Card>
-                                            <CardContent className="p-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="relative h-16 w-16 overflow-hidden rounded">
-                                                        <img
-                                                            alt="Favicon preview"
-                                                            className="h-full w-full object-contain"
-                                                            src={faviconPreview}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium">
-                                                            Preview
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            Recommended: 32×32 or 64×64 pixels
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                    {showSuggestions && filteredSkills.length > 0 && (
+                                        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 shadow-lg">
+                                            {filteredSkills.map((skill) => (
+                                                <button
+                                                    className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                                                    key={skill.id}
+                                                    onClick={() =>
+                                                        handleAddTechStack(skill.title)
+                                                    }
+                                                    type="button"
+                                                >
+                                                    {skill.title}
+                                                </button>
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
-                            </FormControl>
-                            <FormDescription>Upload project favicon (max 2MB)</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                <Button
+                                    onClick={() => handleAddTechStack()}
+                                    type="button"
+                                    variant="outline"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <FormDescription>
+                                Press Enter or click + to add technology. Start typing to see
+                                suggestions from your skills.
+                            </FormDescription>
+                            <FormField
+                                control={form.control}
+                                name="tech_stack"
+                                render={() => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <input type="hidden" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {/* Tech Stack Tags */}
+                        {techStackItems.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {techStackItems.map((item, idx) => (
+                                    <div
+                                        className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm"
+                                        key={idx}
+                                    >
+                                        <span>{item}</span>
+                                        <button
+                                            className="ml-1 rounded-full hover:bg-primary/20"
+                                            onClick={() => handleRemoveTechStack(idx)}
+                                            type="button"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Favicon Upload */}
+                    <FormField
+                        control={form.control}
+                        name="favicon"
+                        render={({ field: { value, onChange, ...field } }) => (
+                            <FormItem className="flex-1 w-full">
+                                <FormLabel>Favicon *</FormLabel>
+                                <FormControl>
+                                    <div className="space-y-4">
+                                        <Input
+                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/gif"
+                                            className="cursor-pointer"
+                                            onChange={(e) => {
+                                                onChange(e.target.files);
+                                                handleFaviconChange(e);
+                                            }}
+                                            type="file"
+                                            {...field}
+                                        />
+                                        {faviconPreview && (
+                                            <Card>
+                                                <CardContent className="p-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="relative h-16 w-16 overflow-hidden rounded">
+                                                            <img
+                                                                alt="Favicon preview"
+                                                                className="h-full w-full object-contain"
+                                                                src={faviconPreview}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-medium">
+                                                                Preview
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                Recommended: 32×32 or 64×64
+                                                                pixels
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )}
+                                    </div>
+                                </FormControl>
+                                <FormDescription>
+                                    Upload project favicon (max 2MB)
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
                 {/* Screenshots Upload */}
                 <div className="space-y-4">

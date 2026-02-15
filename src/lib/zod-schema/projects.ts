@@ -15,8 +15,8 @@ export const ProjectCreationSchema = createInsertSchema(projects)
     })
     .extend({
         repo_links: z.tuple([
-            z.string().url('First GitHub link is required'),
-            z.union([z.string().url(), z.literal('')]).optional(),
+            z.url('First Repository link is required'),
+            z.union([z.url(), z.literal('')]).optional(),
         ]),
         screenshots: z.tuple([
             z.string('Screenshot 1 is required'),

@@ -116,7 +116,6 @@ export function TestimonialForm({
             if (avatarRes?.public_id) {
                 await deleteFromCloudinary(avatarRes.public_id);
             }
-            throw error;
         }
     };
 

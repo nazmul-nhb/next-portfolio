@@ -133,7 +133,6 @@ export function EducationForm({
             if (logoRes?.public_id) {
                 await deleteFromCloudinary(logoRes.public_id);
             }
-            throw error;
         }
     };
 

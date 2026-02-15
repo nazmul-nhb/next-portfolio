@@ -111,7 +111,6 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
             if (iconRes?.public_id) {
                 await deleteFromCloudinary(iconRes.public_id);
             }
-            throw error;
         }
     };
 
