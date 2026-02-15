@@ -24,6 +24,7 @@ import {
     deleteFromCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import { ExperienceFormSchema, ExperienceFormUpdateSchema } from '@/lib/zod-schema/career';
 import type { InsertExperience, SelectExperience, UpdateExperience } from '@/types/career';
 
@@ -167,7 +168,7 @@ export function ExperienceForm({
     // Initialize preview from default values
     useEffect(() => {
         if (defaultValues?.company_logo) {
-            setLogoPreview(defaultValues.company_logo);
+            setLogoPreview(buildCloudinaryUrl(defaultValues.company_logo));
         }
     }, [defaultValues]);
 

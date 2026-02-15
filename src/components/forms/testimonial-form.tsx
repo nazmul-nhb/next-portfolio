@@ -24,6 +24,7 @@ import {
     deleteFromCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import {
     TestimonialFormSchema,
     TestimonialFormUpdateSchema,
@@ -122,7 +123,7 @@ export function TestimonialForm({
     // Initialize preview from default values
     useEffect(() => {
         if (defaultValues?.client_avatar) {
-            setAvatarPreview(defaultValues.client_avatar);
+            setAvatarPreview(buildCloudinaryUrl(defaultValues.client_avatar));
         }
     }, [defaultValues]);
 

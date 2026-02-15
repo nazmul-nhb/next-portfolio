@@ -24,6 +24,7 @@ import {
     deleteFromCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { buildCloudinaryUrl } from '@/lib/utils';
 import { EducationFormSchema, EducationFormUpdateSchema } from '@/lib/zod-schema/career';
 import type { InsertEducation, SelectEducation, UpdateEducation } from '@/types/career';
 
@@ -139,7 +140,7 @@ export function EducationForm({
     // Initialize preview from default values
     useEffect(() => {
         if (defaultValues?.institution_logo) {
-            setLogoPreview(defaultValues.institution_logo);
+            setLogoPreview(buildCloudinaryUrl(defaultValues.institution_logo));
         }
     }, [defaultValues]);
 
