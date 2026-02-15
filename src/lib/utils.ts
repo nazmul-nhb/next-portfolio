@@ -14,5 +14,5 @@ export function buildCloudinaryUrl(urlFromDB: string) {
 
 /** Utility function to extract Cloudinary public ID from DB URL for transformations. */
 export function buildCloudinaryPublicId(urlFromDB: string) {
-    return urlFromDB.slice(urlFromDB.indexOf('/') + 1, -4);
+    return urlFromDB.slice(urlFromDB.indexOf('/') + 1, urlFromDB.lastIndexOf('.'));
 }
