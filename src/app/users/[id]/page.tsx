@@ -37,29 +37,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
+type UserProfile = {
+    id: number;
+    name: string;
+    profile_image: string | null;
+    bio: string | null;
+    role: 'admin' | 'user';
+    created_at: Date;
+};
+
+type UserBlog = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image: string | null;
+    published_date: Date | null;
+    views: number;
+};
+
 /** Public user profile page. */
 export default async function UserProfilePage({ params }: Props) {
     const { id } = await params;
 
-    let user:
-        | {
-              id: number;
-              name: string;
-              profile_image: string | null;
-              bio: string | null;
-              role: 'admin' | 'user';
-              created_at: Date;
-          }
-        | undefined;
-    let userBlogs: {
-        id: number;
-        title: string;
-        slug: string;
-        excerpt: string | null;
-        cover_image: string | null;
-        published_date: Date | null;
-        views: number;
-    }[] = [];
+    let user: UserProfile | undefined;
+    let userBlogs: UserBlog[] = [];
 
     try {
         [user] = await db

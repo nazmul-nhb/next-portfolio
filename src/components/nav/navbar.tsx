@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import NavbarAuth from '@/components/nav/nav-auth';
 import NavbarDocked from '@/components/nav/nav-docked';
 import NavMobileDrawer from '@/components/nav/nav-mobile';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import type { TabItem } from '@/components/ui/doc-tabs';
 import { siteConfig } from '@/configs/site';
@@ -129,20 +130,25 @@ export default function Navbar() {
                     {/* Right: Search + Profile + Actions */}
                     <div className="flex items-center gap-1.5">
                         {/* Search Button */}
-                        <Button
-                            className="h-9 w-9 rounded-full"
-                            onClick={() => setSearchOpen(true)}
-                            size="icon"
-                            title="Search (Ctrl+K)"
-                            variant="ghost"
-                        >
-                            <Search className="h-4 w-4" />
-                        </Button>
+                        <SmartTooltip
+                            content={'Search (Ctrl+K)'}
+                            trigger={
+                                <Button
+                                    className="h-9 w-9 rounded-full"
+                                    onClick={() => setSearchOpen(true)}
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <Search className="h-4 w-4" />
+                                </Button>
+                            }
+                        />
 
                         {/* Secondary nav items (desktop only) */}
                         <div className="hidden items-center gap-0.5 md:flex">
                             {secondaryNav.map((tab) => {
                                 const Icon = tab.icon;
+
                                 return (
                                     <Link
                                         className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
@@ -152,9 +158,11 @@ export default function Navbar() {
                                         }`}
                                         href={tab.path as '/'}
                                         key={tab.path}
-                                        title={tab.title}
                                     >
-                                        <Icon className="h-4 w-4" />
+                                        <SmartTooltip
+                                            content={tab.title}
+                                            trigger={<Icon className="h-4 w-4" />}
+                                        />
                                     </Link>
                                 );
                             })}

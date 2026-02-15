@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import type { ComponentType } from 'react';
+import SmartTooltip from '@/components/smart-tooltip';
 import type { TabItem } from '@/components/ui/doc-tabs';
 
 type Props = {
@@ -32,7 +33,7 @@ export default function NavbarDocked({ active, tab, Icon }: Props) {
                 />
             )}
             <span className="relative z-10 flex items-center gap-1.5">
-                <Icon className="h-4 w-4" />
+                <SmartTooltip content={tab.title} trigger={<Icon className="h-4 w-4" />} />
                 <AnimatePresence mode="wait">
                     {active && (
                         <motion.span

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { siteConfig } from '@/configs/site';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
@@ -80,11 +81,13 @@ export default function RootLayout({ children }: RootProps) {
                             defaultTheme="dark"
                             themes={['dark', 'light']}
                         >
-                            <Navbar />
-                            <main className="min-h-[calc(100vh-4rem)]">{children}</main>
-                            <Footer />
-                            <ThemeToggler />
-                            <Toaster />
+                            <TooltipProvider>
+                                <Navbar />
+                                <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+                                <Footer />
+                                <ThemeToggler />
+                                <Toaster />
+                            </TooltipProvider>
                         </NextThemesProvider>
                     </ReactQueryProvider>
                 </AuthProvider>

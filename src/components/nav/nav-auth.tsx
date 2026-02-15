@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
@@ -29,40 +30,51 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                     : 'hover:bg-accent'
                             }`}
                             href={'/admin'}
-                            title="Admin Dashboard"
                         >
-                            <Settings className="h-3.5 w-3.5" />
+                            <SmartTooltip
+                                content="Admin Dashboard"
+                                trigger={<Settings className="h-3.5 w-3.5" />}
+                            />
                             <span>Admin</span>
                         </Link>
                     )}
                     <Link
                         className="flex items-center rounded-full p-0.5 transition-all hover:ring-2 hover:ring-primary/30"
                         href="/settings"
-                        title={user.name || 'Profile'}
                     >
-                        {user.image ? (
-                            <Image
-                                alt={user.name || 'User'}
-                                className="h-8 w-8 rounded-full object-cover ring-1 ring-border"
-                                height={32}
-                                src={buildCloudinaryUrl(user.image)}
-                                width={32}
-                            />
-                        ) : (
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white">
-                                {(user.name || 'User').charAt(0).toUpperCase()}
-                            </div>
-                        )}
+                        <SmartTooltip
+                            content={user.name || 'Profile'}
+                            trigger={
+                                user.image ? (
+                                    <Image
+                                        alt={user.name || 'User'}
+                                        className="h-8 w-8 rounded-full object-cover ring-1 ring-border"
+                                        height={32}
+                                        src={buildCloudinaryUrl(user.image)}
+                                        width={32}
+                                    />
+                                ) : (
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white">
+                                        {(user.name || 'User').charAt(0).toUpperCase()}
+                                    </div>
+                                )
+                            }
+                        />
                     </Link>
-                    <Button
-                        className="h-8 w-8 rounded-full text-muted-foreground"
-                        onClick={() => signOut({ callbackUrl: '/' })}
-                        size="icon"
-                        title="Sign out"
-                        variant="ghost"
-                    >
-                        <LogOut className="h-4 w-4" />
-                    </Button>
+
+                    <SmartTooltip
+                        content="Sign out"
+                        trigger={
+                            <Button
+                                className="h-8 w-8 rounded-full text-muted-foreground"
+                                onClick={() => signOut({ callbackUrl: '/' })}
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <LogOut className="h-4 w-4" />
+                            </Button>
+                        }
+                    />
                 </div>
             ) : (
                 <Button asChild className="rounded-full" size="sm" variant="default">
