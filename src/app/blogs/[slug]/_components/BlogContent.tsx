@@ -15,26 +15,12 @@ import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
 
 interface BlogContentProps {
-    blog: {
-        id: number;
-        title: string;
-        slug: string;
-        content: string;
-        cover_image: string | null;
-        published_date: Date | null;
-        views: number;
-        reactions: Record<string, number[]> | null;
-        author: {
-            id: number;
-            name: string;
-            profile_image: string | null;
-            bio: string | null;
-        };
-    };
-    tags: { id: number; title: string; slug: string }[];
-    categories: { id: number; title: string; slug: string }[];
+    blog: BlogDetails;
+    tags: BlogTag[];
+    categories: BlogCategory[];
 }
 
 /**

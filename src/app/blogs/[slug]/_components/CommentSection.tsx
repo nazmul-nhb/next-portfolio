@@ -5,29 +5,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { buildCloudinaryUrl } from '@/lib/utils';
-
-interface Comment {
-    id: number;
-    content: string;
-    parent_comment_id: number | null;
-    reactions: Record<string, number[]> | null;
-    created_at: Date;
-    author: {
-        id: number;
-        name: string;
-        profile_image: string | null;
-    };
-}
+import type { BlogComment } from '@/types/blogs';
 
 interface CommentSectionProps {
     blogId: number;
-    comments: Comment[];
+    comments: BlogComment[];
+}
+
+interface CommentItemProps {
+    comment: BlogComment;
+    depth?: number;
 }
 
 /**
@@ -39,10 +32,11 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
     const [content, setContent] = useState('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const topLevelComments = comments.filter((c) => !c.parent_comment_id);
 
-    const getReplies = (parentId: number): Comment[] =>
+    const getReplies = (parentId: number): BlogComment[] =>
         comments.filter((c) => c.parent_comment_id === parentId);
 
     const handleSubmit = async () => {
@@ -68,7 +62,7 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
         }
     };
 
-    const CommentItem = ({ comment, depth = 0 }: { comment: Comment; depth?: number }) => {
+    const CommentItem = ({ comment, depth = 0 }: CommentItemProps) => {
         const replies = getReplies(comment.id);
 
         return (
@@ -106,7 +100,10 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
                         {session?.user && (
                             <button
                                 className="mt-1 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                                onClick={() => setReplyTo(comment.id)}
+                                onClick={() => {
+                                    setReplyTo(comment.id);
+                                    textAreaRef?.current?.focus();
+                                }}
                                 type="button"
                             >
                                 <ReplyIcon className="h-3 w-3" />
@@ -147,6 +144,7 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
                                 disabled={submitting}
                                 onChange={(e) => setContent(e.target.value)}
                                 placeholder="Write a comment..."
+                                ref={textAreaRef}
                                 value={content}
                             />
                             <Button

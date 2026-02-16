@@ -81,6 +81,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
                 parent_comment_id: comments.parent_comment_id,
                 reactions: comments.reactions,
                 created_at: comments.created_at,
+                updated_at: comments.updated_at,
                 author: {
                     id: users.id,
                     name: users.name,
@@ -95,7 +96,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
         revalidatePath('/(home)', 'page');
 
         return sendResponse('Blog', 'GET', {
-            ...blog,
+            blog,
             tags: blogTagList,
             categories: blogCategoryList,
             comments: blogComments,

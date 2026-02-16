@@ -3,7 +3,7 @@ export const ENV = {
     dbUrl: process.env.DATABASE_URL as string,
     jwtSecret: process.env.JWT_SECRET as string,
     authSecret: process.env.AUTH_SECRET as string,
-    baseUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_SITE_URL as string,
     google: {
         clientId: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
