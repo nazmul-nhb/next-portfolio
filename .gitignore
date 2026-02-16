@@ -45,4 +45,6 @@ __*.*
 .estimator
 *Instructions.md
 EXAMPLE_*.*
-MIGRATION_*.*
+MIGRATION_*.md
+QUICK_*.md
+ZUSTAND_*.md

@@ -2,144 +2,60 @@
 
 import { MessageCircle, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { httpRequest } from '@/lib/actions/baseRequest';
-
-interface Conversation {
-    id: number;
-    user1_id: number;
-    user2_id: number;
-    last_message_at: Date | null;
-    created_at: Date;
-    updated_at: Date;
-    otherUser: {
-        id: number;
-        name: string;
-        profile_image: string | null;
-    };
-}
-
-interface Message {
-    id: number;
-    conversation_id: number;
-    sender_id: number;
-    content: string;
-    is_read: boolean;
-    created_at: Date;
-}
+import {
+    useConversationMessages,
+    useConversations,
+    useSendMessage,
+} from '@/lib/hooks/use-messages';
 
 interface MessagesClientProps {
     userId: number;
 }
 
+/**
+ * Messages client component with real-time messaging.
+ * Uses TanStack Query for automatic polling and cache management.
+ */
 export function MessagesClient({ userId }: MessagesClientProps) {
-    const [conversations, setConversations] = useState<Conversation[]>([]);
     const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [sending, setSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Fetch messages for selected conversation
-    const fetchMessages = async (conversationId: number) => {
-        try {
-            const { data } = await httpRequest<Message[]>(
-                `/api/messages/conversations/${conversationId}`
-            );
-            if (data) {
-                setMessages(data);
-                scrollToBottom();
-            }
-        } catch (error) {
-            console.error('Failed to fetch messages:', error);
-            toast.error('Failed to load messages');
-        }
-    };
+    // ✅ TanStack Query - automatic caching, refetching
+    const { data: conversations, isLoading } = useConversations();
 
-    // Send message
+    // ✅ Auto-polls every 5 seconds for new messages!
+    const { data: messages } = useConversationMessages(selectedConversation);
+
+    // ✅ Mutation with automatic refetch
+    const sendMessageMutation = useSendMessage(selectedConversation || 0);
+
+    // Auto-scroll to bottom when new messages arrive
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
+
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
 
-        setSending(true);
-        try {
-            await httpRequest(`/api/messages/conversations/${selectedConversation}`, {
-                method: 'POST',
-                body: { content: newMessage },
-            });
-
-            setNewMessage('');
-            await fetchMessages(selectedConversation);
-        } catch (error) {
-            console.error('Failed to send message:', error);
-            toast.error('Failed to send message');
-        } finally {
-            setSending(false);
-        }
+        // ✅ Simple! Everything auto-handled by TanStack Query
+        sendMessageMutation.mutate(
+            { content: newMessage },
+            {
+                onSuccess: () => {
+                    setNewMessage('');
+                    // Messages auto-refetch via invalidation!
+                },
+            }
+        );
     };
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // Initial load
-    useEffect(() => {
-        // Fetch conversations
-        const fetchConversations = async () => {
-            try {
-                const { data } = await httpRequest<Conversation[]>(
-                    '/api/messages/conversations'
-                );
-                if (data) {
-                    setConversations(data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch conversations:', error);
-                toast.error('Failed to load conversations');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchConversations();
-    }, []);
-
-    // Polling for new messages (every 5 seconds)
-    useEffect(() => {
-        if (!selectedConversation) return;
-
-        const $fetchMessages = async (conversationId: number) => {
-            try {
-                const { data } = await httpRequest<Message[]>(
-                    `/api/messages/conversations/${conversationId}`
-                );
-                if (data) {
-                    setMessages(data);
-                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-                }
-            } catch (error) {
-                console.error('Failed to fetch messages:', error);
-                toast.error('Failed to load messages');
-            }
-        };
-
-        // Load messages when conversation is selected
-        if (selectedConversation) {
-            $fetchMessages(selectedConversation);
-        }
-
-        const interval = setInterval(() => {
-            $fetchMessages(selectedConversation);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [selectedConversation]);
-
-    if (loading) {
+    // ✅ Loading state from TanStack Query
+    if (isLoading) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -158,7 +74,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                 <FadeInUp delay={0.1}>
                     <Card className="p-4">
                         <h2 className="mb-4 text-lg font-semibold">Conversations</h2>
-                        {conversations.length === 0 ? (
+                        {!conversations || conversations.length === 0 ? (
                             <div className="flex flex-col items-center gap-3 py-8 text-center text-muted-foreground">
                                 <MessageCircle className="h-12 w-12" />
                                 <p className="text-sm">No conversations yet</p>
@@ -207,7 +123,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                             <>
                                 {/* Messages */}
                                 <div className="flex-1 space-y-4 overflow-y-auto p-4">
-                                    {messages.map((msg) => (
+                                    {messages?.map((msg) => (
                                         <div
                                             className={`flex ${
                                                 msg.sender_id === userId
@@ -246,7 +162,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                                     <div className="flex gap-2">
                                         <Input
                                             className="flex-1"
-                                            disabled={sending}
+                                            disabled={sendMessageMutation.isPending}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -258,7 +174,10 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                                             value={newMessage}
                                         />
                                         <Button
-                                            disabled={!newMessage.trim() || sending}
+                                            disabled={
+                                                !newMessage.trim() ||
+                                                sendMessageMutation.isPending
+                                            }
                                             onClick={handleSendMessage}
                                         >
                                             <Send className="h-4 w-4" />

@@ -2,25 +2,24 @@ import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 
 interface Message {
     id: number;
+    conversation_id: number;
+    sender_id: number;
     content: string;
+    is_read: boolean;
     created_at: string;
-    sender: {
-        id: number;
-        name: string;
-        profile_image: string | null;
-    };
 }
 
 interface Conversation {
     id: number;
-    participant: {
+    participant_one: number;
+    participant_two: number;
+    last_message_at: string | null;
+    created_at: string;
+    otherUser: {
         id: number;
         name: string;
         profile_image: string | null;
     };
-    last_message: string;
-    last_message_at: string;
-    unread_count: number;
 }
 
 /**

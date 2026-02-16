@@ -1,14 +1,5 @@
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { useUserStore } from '@/lib/store/user-store';
-
-interface UserProfile {
-    id: number;
-    name: string;
-    email: string;
-    bio: string | null;
-    profile_image: string | null;
-    role: 'admin' | 'user';
-}
+import { type UserProfile, useUserStore } from '@/lib/store/user-store';
 
 interface UpdateProfileData {
     name?: string;

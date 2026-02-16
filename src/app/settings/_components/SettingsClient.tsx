@@ -4,7 +4,8 @@ import { AlertCircle, CheckCircle, LogOut, Mail, Save, Shield, Upload } from 'lu
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,26 +17,24 @@ import {
     deleteOldCloudFile,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { buildCloudinaryUrl } from '@/lib/utils';
-
-interface UserProfile {
-    id: number;
-    name: string;
-    email: string;
-    profile_image: string | null;
-    bio: string | null;
-    role: string;
-    provider: string;
-    email_verified: boolean;
-}
 
 /**
  * Settings page client component with profile editing and email verification.
+ * Uses TanStack Query + Zustand for state management.
  */
 export function SettingsClient() {
     const { status } = useSession();
     const router = useRouter();
-    const [profile, setProfile] = useState<UserProfile | null>(null);
+
+    // ✅ TanStack Query hook - automatic loading, caching, refetching
+    const { data: profile, isLoading } = useUserProfile();
+
+    // ✅ Mutation hook with Zustand sync - navbar updates automatically!
+    const updateProfileMutation = useUpdateProfile();
+
+    // Local form state
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [profileImage, setProfileImage] = useState('');
@@ -43,8 +42,6 @@ export function SettingsClient() {
     const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
-    const [saving, setSaving] = useState(false);
-    const [saveMessage, setSaveMessage] = useState('');
 
     // OTP state
     const [otpSent, setOtpSent] = useState(false);
@@ -52,27 +49,21 @@ export function SettingsClient() {
     const [otpLoading, setOtpLoading] = useState(false);
     const [otpMessage, setOtpMessage] = useState('');
 
-    const fetchProfile = useCallback(async () => {
-        try {
-            const { data } = await httpRequest<UserProfile>('/api/users/me');
-            if (data) {
-                setProfile(data);
-                setName(data.name);
-                setBio(data.bio || '');
-                setProfileImage(data.profile_image || '');
-            }
-        } catch {
-            // Not logged in
-        }
-    }, []);
-
+    // Redirect if unauthenticated
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/auth/login');
-        } else if (status === 'authenticated') {
-            fetchProfile();
         }
-    }, [status, router, fetchProfile]);
+    }, [status, router]);
+
+    // Initialize form from fetched profile
+    useEffect(() => {
+        if (profile) {
+            setName(profile.name);
+            setBio(profile.bio || '');
+            setProfileImage(profile.profile_image || '');
+        }
+    }, [profile]);
 
     const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -87,8 +78,6 @@ export function SettingsClient() {
     };
 
     const handleSave = async () => {
-        setSaving(true);
-        setSaveMessage('');
         const oldImage = profileImage;
         let finalImage = profileImage;
 
@@ -109,32 +98,38 @@ export function SettingsClient() {
                 setUploadingImage(false);
             }
 
-            await httpRequest('/api/users/me', {
-                method: 'PATCH',
-                body: {
+            // ✅ Use TanStack Query mutation - auto syncs with Zustand!
+            updateProfileMutation.mutate(
+                {
                     name: name || undefined,
                     bio: bio || undefined,
                     profile_image: finalImage || undefined,
                 },
-            });
-            setSaveMessage('Profile updated successfully!');
-            fetchProfile();
+                {
+                    onSuccess: () => {
+                        toast.success('Profile updated successfully!');
+                        // ✅ Navbar updates automatically via Zustand!
+                    },
+                    onError: () => {
+                        toast.error('Failed to update profile');
+                        // Rollback image if upload succeeded but API failed
+                        if (publicId) {
+                            deleteFromCloudinary(publicId);
+                        }
+                    },
+                }
+            );
         } catch {
-            setSaveMessage('Failed to update profile');
-
-            if (publicId) {
-                await deleteFromCloudinary(publicId);
-            }
-        } finally {
-            // Delete old image if exists and was from cloudinary
-            try {
-                await deleteOldCloudFile(oldImage, finalImage);
-            } catch (error) {
-                console.error('Failed to delete old image:', error);
-            }
-
-            setSaving(false);
+            toast.error('Failed to upload image');
             setUploadingImage(false);
+            return;
+        }
+
+        // Delete old image if exists and was from cloudinary
+        try {
+            await deleteOldCloudFile(oldImage, finalImage);
+        } catch (error) {
+            console.error('Failed to delete old image:', error);
         }
     };
 
@@ -149,12 +144,14 @@ export function SettingsClient() {
             });
             setOtpSent(true);
             setOtpMessage('OTP sent to your email!');
+            toast.success('OTP sent to your email!');
         } catch (err) {
             const msg =
                 typeof err === 'object' && err !== null && 'message' in err
                     ? String((err as { message: string }).message)
                     : 'Failed to send OTP';
             setOtpMessage(msg);
+            toast.error(msg);
         } finally {
             setOtpLoading(false);
         }
@@ -170,20 +167,32 @@ export function SettingsClient() {
                 body: { email: profile.email, code: otp },
             });
             setOtpMessage('Email verified successfully!');
-            fetchProfile();
-            setOtpSent(false);
-            setOtp('');
+            toast.success('Email verified successfully!');
+            // Refetch profile to get updated email_verified status
+            window.location.reload(); // Simple reload to sync everything
         } catch {
-            setOtpMessage('Invalid or expired OTP');
+            const msg = 'Invalid or expired OTP';
+            setOtpMessage(msg);
+            toast.error(msg);
         } finally {
             setOtpLoading(false);
         }
     };
 
-    if (status === 'loading' || !profile) {
+    // ✅ Loading state from TanStack Query
+    if (status === 'loading' || isLoading) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+        );
+    }
+
+    // ✅ No profile check - TanStack Query handles this
+    if (!profile) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center">
+                <p className="text-muted-foreground">Failed to load profile</p>
             </div>
         );
     }
@@ -323,7 +332,7 @@ export function SettingsClient() {
                                 <Input
                                     accept="image/*"
                                     className="cursor-pointer"
-                                    disabled={uploadingImage || saving}
+                                    disabled={uploadingImage || updateProfileMutation.isPending}
                                     id="profile_image"
                                     onChange={handleProfileImageUpload}
                                     type="file"
@@ -358,17 +367,14 @@ export function SettingsClient() {
                             </div>
                         </div>
 
-                        {saveMessage && (
-                            <p
-                                className={`text-sm ${saveMessage.includes('success') ? 'text-green-600' : 'text-destructive'}`}
-                            >
-                                {saveMessage}
-                            </p>
-                        )}
-
-                        <Button disabled={saving} onClick={handleSave}>
+                        <Button
+                            disabled={updateProfileMutation.isPending || uploadingImage}
+                            onClick={handleSave}
+                        >
                             <Save className="mr-2 h-4 w-4" />
-                            {saving ? 'Saving...' : 'Save Changes'}
+                            {updateProfileMutation.isPending || uploadingImage
+                                ? 'Saving...'
+                                : 'Save Changes'}
                         </Button>
                     </div>
                 </div>
