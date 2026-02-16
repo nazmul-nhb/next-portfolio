@@ -6,6 +6,7 @@ import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 type Props = {
@@ -16,6 +17,13 @@ type Props = {
 };
 
 export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
+    // Use Zustand store for profile image (updates immediately)
+    const profile = useUserStore((state) => state.profile);
+
+    // Prefer Zustand profile over session for profile image (for real-time updates)
+    const displayName = profile?.name || user?.name;
+    const displayImage = profile?.profile_image || user?.image;
+
     return (
         <>
             {status === 'loading' ? (
@@ -43,19 +51,19 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                         href="/settings"
                     >
                         <SmartTooltip
-                            content={user.name || 'Profile'}
+                            content={displayName || 'Profile'}
                             trigger={
-                                user.image ? (
+                                displayImage ? (
                                     <Image
-                                        alt={user.name || 'User'}
+                                        alt={displayName || 'User'}
                                         className="h-8 w-8 rounded-full object-cover ring-1 ring-border"
                                         height={32}
-                                        src={buildCloudinaryUrl(user.image)}
+                                        src={buildCloudinaryUrl(displayImage)}
                                         width={32}
                                     />
                                 ) : (
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white">
-                                        {(user.name || 'User').charAt(0).toUpperCase()}
+                                        {(displayName || 'User').charAt(0).toUpperCase()}
                                     </div>
                                 )
                             }
