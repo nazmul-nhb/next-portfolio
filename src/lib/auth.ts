@@ -126,7 +126,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return true;
         },
 
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id as string;
                 token.role = (user.role as 'admin' | 'user') || 'user';
@@ -134,11 +134,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.provider = (user.provider as 'credentials' | 'google') || 'credentials';
             }
 
+            // Handle session updates from client (updateSession call)
+            if (trigger === 'update' && session) {
+                if (session.name) token.name = session.name;
+                if (session.image !== undefined) token.picture = session.image;
+            }
+
             return token;
         },
 
         async session({ session, token }) {
             session.user.id = token.id as string;
+            session.user.name = token.name as string;
+            session.user.email = token.email as string;
+            session.user.image = token.picture as string | null | undefined;
             session.user.role = token.role as 'admin' | 'user';
             session.user.email_verified = token.email_verified as boolean;
             session.user.provider = token.provider as 'credentials' | 'google';

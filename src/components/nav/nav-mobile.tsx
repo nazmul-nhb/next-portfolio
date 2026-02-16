@@ -6,8 +6,8 @@ import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
-import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { TabItem } from '@/types';
 
@@ -30,6 +30,13 @@ export default function NavMobileDrawer({
     setMobileOpen,
     user,
 }: Props) {
+    const { clearProfile } = useUserStore();
+
+    const handleLogout = async () => {
+        clearProfile();
+        await signOut();
+    };
+
     return (
         <>
             {/* Backdrop */}
@@ -152,19 +159,15 @@ export default function NavMobileDrawer({
                                     {user.email}
                                 </p>
                             </div>
-                            <SmartTooltip
-                                content="Sign out"
-                                trigger={
-                                    <Button
-                                        className="h-8 w-8 shrink-0 rounded-full"
-                                        onClick={() => signOut({ callbackUrl: '/' })}
-                                        size="icon"
-                                        variant="ghost"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                    </Button>
-                                }
-                            />
+
+                            <Button
+                                className="h-8 w-8 shrink-0 rounded-full"
+                                onClick={handleLogout}
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <LogOut className="h-4 w-4" />
+                            </Button>
                         </div>
                     ) : (
                         <Button asChild className="w-full" size="sm">

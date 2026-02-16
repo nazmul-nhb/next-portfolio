@@ -9,12 +9,19 @@ import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
-import { httpRequest } from '@/lib/actions/baseRequest';
-import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import {
+    deleteFromCloudinary,
+    deleteOldCloudFile,
+    uploadToCloudinary,
+} from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
+import type { UpdateProfile } from '@/lib/hooks/use-user';
+import { type UserProfile, useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { Uncertain } from '@/types';
 
 interface HeroSectionProps {
-    adminImage?: string | null;
+    adminImage: Uncertain<string>;
 }
 
 /**
@@ -22,11 +29,19 @@ interface HeroSectionProps {
  * Admin can click the hero image to update it.
  */
 export function HeroSection({ adminImage }: HeroSectionProps) {
-    const { data: session } = useSession();
+    const { data: session, update: updateSession } = useSession();
     const isAdmin = session?.user?.role === 'admin';
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [heroImage, setHeroImage] = useState(adminImage || null);
     const [uploading, setUploading] = useState(false);
+
+    const updateUser = useApiMutation<UserProfile, UpdateProfile>('/api/users/me', 'PATCH', {
+        successMessage: 'Hero image updated successfully',
+        errorMessage: 'Failed to update hero image',
+        invalidateKeys: 'user-profile',
+    });
+
+    const { updateProfile } = useUserStore();
 
     const handleImageUpdate = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -38,24 +53,23 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
 
             setHeroImage(url);
 
-            try {
-                const { success } = await httpRequest('/api/users/me', {
-                    method: 'PATCH',
-                    body: { profile_image: url },
-                });
+            updateUser.mutate(
+                { profile_image: url },
+                {
+                    onError: async (error) => {
+                        console.error('Image update failed: ', error);
 
-                if (success) {
-                    toast.success('Hero image updated!');
+                        if (public_id) {
+                            await deleteFromCloudinary(public_id);
+                        }
+                    },
+                    onSuccess: async () => {
+                        updateProfile({ profile_image: url });
+                        updateSession({ image: url });
+                        await deleteOldCloudFile(adminImage, heroImage);
+                    },
                 }
-            } catch (error) {
-                console.error('Image update failed: ', error);
-
-                if (public_id) {
-                    await deleteFromCloudinary(public_id);
-                }
-
-                toast.error('Failed to update image');
-            }
+            );
         } catch {
             toast.error('Failed to upload image');
         } finally {
@@ -174,10 +188,11 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 {imageUrl ? (
                                     <Image
                                         alt={siteConfig.name}
-                                        className="h-full w-full rounded-full object-cover"
-                                        height={320}
+                                        className="size-80 rounded-full object-cover"
+                                        height={512}
+                                        quality={100}
                                         src={imageUrl}
-                                        width={320}
+                                        width={512}
                                     />
                                 ) : (
                                     <span className="text-8xl">👨‍💻</span>

@@ -1,7 +1,8 @@
+import { useSession } from 'next-auth/react';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { type UserProfile, useUserStore } from '@/lib/store/user-store';
 
-interface UpdateProfileData {
+export interface UpdateProfile {
     name?: string;
     bio?: string;
     profile_image?: string;
@@ -19,8 +20,9 @@ export function useUserProfile() {
  */
 export function useUpdateProfile() {
     const { updateProfile } = useUserStore();
+    const { update: updateSession } = useSession();
 
-    return useApiMutation<UserProfile, UpdateProfileData>('/api/users/me', 'PATCH', {
+    return useApiMutation<UserProfile, UpdateProfile>('/api/users/me', 'PATCH', {
         successMessage: 'Profile updated successfully',
         errorMessage: 'Failed to update profile',
         invalidateKeys: 'user-profile',
@@ -31,20 +33,12 @@ export function useUpdateProfile() {
                 bio: data.bio,
                 profile_image: data.profile_image,
             });
-        },
-    });
-}
 
-/**
- * Upload profile image
- */
-export function useUploadProfileImage() {
-    const { updateProfile } = useUserStore();
-
-    return useApiMutation<{ url: string }, FormData>('/api/uploads/profile', 'POST', {
-        successMessage: 'Image uploaded successfully',
-        onSuccess: (data) => {
-            updateProfile({ profile_image: data.url });
+            // Update NextAuth session to prevent stale data on reload
+            updateSession({
+                name: data.name,
+                image: data.profile_image,
+            });
         },
     });
 }

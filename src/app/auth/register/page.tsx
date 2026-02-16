@@ -56,7 +56,7 @@ export default function RegisterPage() {
     };
 
     const handleGoogleLogin = () => {
-        signIn('google', { callbackUrl: '/' });
+        signIn('google', { redirectTo: '/' });
     };
 
     return (

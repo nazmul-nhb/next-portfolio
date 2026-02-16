@@ -18,11 +18,16 @@ type Props = {
 
 export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
     // Use Zustand store for profile image (updates immediately)
-    const { profile } = useUserStore();
+    const { profile, clearProfile } = useUserStore();
 
     // Prefer Zustand profile over session for profile image (for real-time updates)
     const displayName = profile?.name || user?.name;
     const displayImage = profile?.profile_image || user?.image;
+
+    const handleLogout = async () => {
+        clearProfile();
+        await signOut();
+    };
 
     return (
         <>
@@ -70,19 +75,14 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                         />
                     </Link>
 
-                    <SmartTooltip
-                        content="Sign out"
-                        trigger={
-                            <Button
-                                className="h-8 w-8 rounded-full text-muted-foreground"
-                                onClick={() => signOut({ callbackUrl: '/' })}
-                                size="icon"
-                                variant="ghost"
-                            >
-                                <LogOut className="h-4 w-4" />
-                            </Button>
-                        }
-                    />
+                    <Button
+                        className="h-8 w-8 rounded-full text-muted-foreground"
+                        onClick={handleLogout}
+                        size="icon"
+                        variant="ghost"
+                    >
+                        <LogOut className="h-4 w-4" />
+                    </Button>
                 </div>
             ) : (
                 <Button asChild className="rounded-full" size="sm" variant="default">

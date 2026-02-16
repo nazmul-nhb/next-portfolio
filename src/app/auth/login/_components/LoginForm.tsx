@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 export function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const callbackUrl = (searchParams.get('callbackUrl') || '/') as '/';
+    const redirectTo = (searchParams.get('redirectTo') || '/') as '/';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -37,13 +37,13 @@ export function LoginForm() {
             setError('Invalid email or password');
             setLoading(false);
         } else {
-            router.push(callbackUrl);
+            router.push(redirectTo);
             router.refresh();
         }
     };
 
     const handleGoogleLogin = () => {
-        signIn('google', { callbackUrl });
+        signIn('google', { redirectTo });
     };
 
     return (

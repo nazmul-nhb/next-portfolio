@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
     if (pathname.startsWith('/admin')) {
         if (!session?.user) {
             return NextResponse.redirect(
-                new URL(`/auth/login?callbackUrl=${pathname}`, req.url)
+                new URL(`/auth/login?redirectTo=${pathname}`, req.url)
             );
         }
 
@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
     ) {
         if (!session?.user) {
             return NextResponse.redirect(
-                new URL(`/auth/login?callbackUrl=${pathname}`, req.url)
+                new URL(`/auth/login?redirectTo=${pathname}`, req.url)
             );
         }
 

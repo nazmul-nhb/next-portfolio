@@ -18,6 +18,7 @@ import {
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
+import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
@@ -33,6 +34,14 @@ export function SettingsClient() {
 
     // ✅ Mutation hook with Zustand sync - navbar updates automatically!
     const updateProfile = useUpdateProfile();
+
+    // ✅ Zustand store for clear profile on logout
+    const { clearProfile } = useUserStore();
+
+    const handleLogout = async () => {
+        clearProfile();
+        await signOut({ redirectTo: '/' });
+    };
 
     // Local form state
     const [name, setName] = useState('');
@@ -108,19 +117,20 @@ export function SettingsClient() {
                             await deleteFromCloudinary(publicId);
                         }
                     },
+                    onSuccess: async () => {
+                        // Delete old image if exists and was from cloudinary
+                        try {
+                            await deleteOldCloudFile(oldImage, finalImage);
+                        } catch (error) {
+                            console.error('Failed to delete old image:', error);
+                        }
+                    },
                 }
             );
         } catch {
             toast.error('Failed to upload image');
             setUploadingImage(false);
             return;
-        }
-
-        // Delete old image if exists and was from cloudinary
-        try {
-            await deleteOldCloudFile(oldImage, finalImage);
-        } catch (error) {
-            console.error('Failed to delete old image:', error);
         }
     };
 
@@ -196,11 +206,7 @@ export function SettingsClient() {
             <FadeInUp>
                 <div className="mb-8 flex items-center justify-between">
                     <h1 className="text-3xl font-bold">Settings</h1>
-                    <Button
-                        onClick={() => signOut({ callbackUrl: '/' })}
-                        size="sm"
-                        variant="ghost"
-                    >
+                    <Button onClick={handleLogout} size="sm" variant="ghost">
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign Out
                     </Button>
@@ -247,7 +253,7 @@ export function SettingsClient() {
                                             onClick={handleVerifyOTP}
                                             size="sm"
                                         >
-                                            {'Verify'}
+                                            Verify
                                         </Button>
                                     </div>
                                 )}
@@ -271,8 +277,8 @@ export function SettingsClient() {
                             Email verified
                         </span>
                         {profile.role === 'admin' && (
-                            <span className="ml-auto flex items-center gap-1 rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
-                                <Shield className="h-3 w-3" />
+                            <span className="ml-auto flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary">
+                                <Shield className="size-3.5" />
                                 Admin
                             </span>
                         )}
@@ -366,9 +372,7 @@ export function SettingsClient() {
                             loading={updateProfile.isPending || uploadingImage}
                             onClick={handleSave}
                         >
-                            {!(updateProfile.isPending || uploadingImage) && (
-                                <Save className="mr-2 h-4 w-4" />
-                            )}
+                            <Save className="mr-2 h-4 w-4" />
                             Save Changes
                         </Button>
                     </div>
