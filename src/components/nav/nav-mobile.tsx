@@ -8,8 +8,8 @@ import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
-import type { TabItem } from '@/components/ui/doc-tabs';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { TabItem } from '@/types';
 
 type Props = {
     isAdmin: boolean;

@@ -12,8 +12,8 @@ import NavbarDocked from '@/components/nav/nav-docked';
 import NavMobileDrawer from '@/components/nav/nav-mobile';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
-import type { TabItem } from '@/components/ui/doc-tabs';
 import { siteConfig } from '@/configs/site';
+import type { TabItem } from '@/types';
 
 /** Main navigation bar with animated tabs, search, and responsive drawer. */
 export default function Navbar() {

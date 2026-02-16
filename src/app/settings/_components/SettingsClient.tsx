@@ -32,7 +32,7 @@ export function SettingsClient() {
     const { data: profile, isLoading } = useUserProfile();
 
     // ✅ Mutation hook with Zustand sync - navbar updates automatically!
-    const updateProfileMutation = useUpdateProfile();
+    const updateProfile = useUpdateProfile();
 
     // Local form state
     const [name, setName] = useState('');
@@ -99,22 +99,13 @@ export function SettingsClient() {
             }
 
             // ✅ Use TanStack Query mutation - auto syncs with Zustand!
-            updateProfileMutation.mutate(
+            updateProfile.mutate(
+                { name, bio, profile_image: finalImage },
                 {
-                    name: name || undefined,
-                    bio: bio || undefined,
-                    profile_image: finalImage || undefined,
-                },
-                {
-                    onSuccess: () => {
-                        toast.success('Profile updated successfully!');
-                        // ✅ Navbar updates automatically via Zustand!
-                    },
-                    onError: () => {
-                        toast.error('Failed to update profile');
+                    onError: async () => {
                         // Rollback image if upload succeeded but API failed
                         if (publicId) {
-                            deleteFromCloudinary(publicId);
+                            await deleteFromCloudinary(publicId);
                         }
                     },
                 }
@@ -162,14 +153,17 @@ export function SettingsClient() {
         setOtpLoading(true);
         setOtpMessage('');
         try {
-            await httpRequest('/api/auth/otp', {
+            const { success } = await httpRequest('/api/auth/otp', {
                 method: 'PUT',
                 body: { email: profile.email, code: otp },
             });
-            setOtpMessage('Email verified successfully!');
-            toast.success('Email verified successfully!');
-            // Refetch profile to get updated email_verified status
-            window.location.reload(); // Simple reload to sync everything
+
+            if (success) {
+                setOtpMessage('Email verified successfully!');
+                toast.success('Email verified successfully!');
+                // Refetch profile to get updated email_verified status
+                window.location.reload(); // Simple reload to sync everything
+            }
         } catch {
             const msg = 'Invalid or expired OTP';
             setOtpMessage(msg);
@@ -332,7 +326,7 @@ export function SettingsClient() {
                                 <Input
                                     accept="image/*"
                                     className="cursor-pointer"
-                                    disabled={uploadingImage || updateProfileMutation.isPending}
+                                    disabled={uploadingImage || updateProfile.isPending}
                                     id="profile_image"
                                     onChange={handleProfileImageUpload}
                                     type="file"
@@ -368,13 +362,14 @@ export function SettingsClient() {
                         </div>
 
                         <Button
-                            disabled={updateProfileMutation.isPending || uploadingImage}
+                            disabled={updateProfile.isPending || uploadingImage}
+                            loading={updateProfile.isPending || uploadingImage}
                             onClick={handleSave}
                         >
-                            <Save className="mr-2 h-4 w-4" />
-                            {updateProfileMutation.isPending || uploadingImage
-                                ? 'Saving...'
-                                : 'Save Changes'}
+                            {!(updateProfile.isPending || uploadingImage) && (
+                                <Save className="mr-2 h-4 w-4" />
+                            )}
+                            Save Changes
                         </Button>
                     </div>
                 </div>

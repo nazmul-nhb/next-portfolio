@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import type { ComponentType } from 'react';
 import SmartTooltip from '@/components/smart-tooltip';
-import type { TabItem } from '@/components/ui/doc-tabs';
+import type { TabItem } from '@/types';
 
 type Props = {
     active: boolean;

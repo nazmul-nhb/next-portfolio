@@ -8,7 +8,7 @@ import {
     PenTool,
     Settings,
 } from 'lucide-react';
-import type { TabItem } from '@/components/ui/doc-tabs';
+import type { TabItem } from '@/types';
 
 export type SiteConfig = typeof siteConfig;
 

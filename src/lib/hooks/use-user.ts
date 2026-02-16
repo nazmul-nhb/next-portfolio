@@ -18,10 +18,11 @@ export function useUserProfile() {
  * Update user profile with automatic Zustand store sync
  */
 export function useUpdateProfile() {
-    const updateProfile = useUserStore((state) => state.updateProfile);
+    const { updateProfile } = useUserStore();
 
     return useApiMutation<UserProfile, UpdateProfileData>('/api/users/me', 'PATCH', {
         successMessage: 'Profile updated successfully',
+        errorMessage: 'Failed to update profile',
         invalidateKeys: 'user-profile',
         onSuccess: (data) => {
             // Sync with Zustand store immediately
@@ -38,7 +39,7 @@ export function useUpdateProfile() {
  * Upload profile image
  */
 export function useUploadProfileImage() {
-    const updateProfile = useUserStore((state) => state.updateProfile);
+    const { updateProfile } = useUserStore();
 
     return useApiMutation<{ url: string }, FormData>('/api/uploads/profile', 'POST', {
         successMessage: 'Image uploaded successfully',

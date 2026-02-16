@@ -48,3 +48,19 @@ export interface ServerResponse<T> {
     status: number;
     data?: T;
 }
+
+export interface Tab {
+    title: string;
+    icon: React.ComponentType<{ className?: string }>;
+    path: string;
+    type?: never;
+}
+
+export interface Separator {
+    type: 'separator';
+    title?: never;
+    icon?: never;
+    path?: never;
+}
+
+export type TabItem = Tab | Separator;

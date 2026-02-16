@@ -18,7 +18,7 @@ type Props = {
 
 export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
     // Use Zustand store for profile image (updates immediately)
-    const profile = useUserStore((state) => state.profile);
+    const { profile } = useUserStore();
 
     // Prefer Zustand profile over session for profile image (for real-time updates)
     const displayName = profile?.name || user?.name;
