@@ -50,7 +50,7 @@ export const useUserStore = create<UserState>()(
             syncFromSession: (session) => {
                 if (session?.user) {
                     const profile: UserProfile = {
-                        id: Number(session.user.id),
+                        id: +session.user.id,
                         name: session.user.name,
                         email: session.user.email,
                         bio: null, // Will be loaded from API

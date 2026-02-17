@@ -20,7 +20,7 @@ export async function GET() {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const userId = Number(session.user.id);
+        const userId = +session.user.id;
 
         const userConversations = await db
             .select()
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
         if (!validation.success) return validation.response;
 
         const { recipient_id, content } = validation.data;
-        const senderId = Number(session.user.id);
+        const senderId = +session.user.id;
 
         if (senderId === recipient_id) {
             return sendErrorResponse('Cannot send message to yourself', 400);

@@ -10,7 +10,7 @@ interface PageProps {
 
 export default async function EditEducationPage({ params }: PageProps) {
     const { id } = await params;
-    const educationId = Number.parseInt(id, 10);
+    const educationId = +id;
 
     if (Number.isNaN(educationId)) {
         notFound();

@@ -50,7 +50,7 @@ export default async function ResumePage() {
 
         // Get user data if logged in
         if (session?.user?.id) {
-            const userId = Number.parseInt(session.user.id, 10);
+            const userId = +session.user.id;
             const [user] = await db
                 .select({
                     name: users.name,

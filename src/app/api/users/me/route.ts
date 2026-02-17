@@ -32,7 +32,7 @@ export async function GET() {
                 created_at: users.created_at,
             })
             .from(users)
-            .where(eq(users.id, Number(session.user.id)))
+            .where(eq(users.id, +session.user.id))
             .limit(1);
 
         if (!user) {
@@ -65,7 +65,7 @@ export async function PATCH(req: NextRequest) {
         const [updated] = await db
             .update(users)
             .set(validation.data)
-            .where(eq(users.id, Number(session.user.id)))
+            .where(eq(users.id, +session.user.id))
             .returning({
                 id: users.id,
                 name: users.name,

@@ -17,7 +17,7 @@ export async function GET() {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const userId = Number.parseInt(session.user.id, 10);
+        const userId = +session.user.id;
 
         // Get all conversations where user is a participant
         const userConversations = await db
@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
             return sendErrorResponse('participant_id is required', 400);
         }
 
-        const userId = Number.parseInt(session.user.id, 10);
-        const participantId = Number.parseInt(participant_id, 10);
+        const userId = +session.user.id;
+        const participantId = +participant_id;
 
         // Check if conversation already exists
         const [existing] = await db

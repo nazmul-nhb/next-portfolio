@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { httpRequest } from '@/lib/actions/baseRequest';
 
-type QueryKey = string | string[] | Array<QueryKey>;
+type QueryKey = string | Array<QueryKey>;
 
 /**
  * Generic query hook for GET requests

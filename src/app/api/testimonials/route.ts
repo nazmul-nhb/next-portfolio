@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { type NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { type NextRequest, NextResponse } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -92,7 +92,7 @@ export async function PATCH(req: NextRequest) {
         const [updated] = await db
             .update(testimonials)
             .set(parsed.data)
-            .where(eq(testimonials.id, Number.parseInt(id)))
+            .where(eq(testimonials.id, +id))
             .returning();
 
         revalidatePath('/admin/testimonials');
@@ -126,7 +126,7 @@ export async function DELETE(req: NextRequest) {
             );
         }
 
-        await db.delete(testimonials).where(eq(testimonials.id, Number.parseInt(id)));
+        await db.delete(testimonials).where(eq(testimonials.id, +id));
 
         revalidatePath('/admin/testimonials');
         revalidatePath('/(home)', 'page');

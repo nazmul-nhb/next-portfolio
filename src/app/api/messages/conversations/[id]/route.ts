@@ -22,7 +22,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
-        const conversationId = Number.parseInt(id, 10);
+        const conversationId = +id;
 
         if (Number.isNaN(conversationId)) {
             return sendErrorResponse('Invalid conversation ID', 400);
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
-        const conversationId = Number.parseInt(id, 10);
+        const conversationId = +id;
 
         if (Number.isNaN(conversationId)) {
             return sendErrorResponse('Invalid conversation ID', 400);

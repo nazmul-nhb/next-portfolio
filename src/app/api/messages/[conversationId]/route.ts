@@ -22,8 +22,8 @@ export async function GET(
         }
 
         const { conversationId } = await params;
-        const convId = Number(conversationId);
-        const userId = Number(session.user.id);
+        const convId = +conversationId;
+        const userId = +session.user.id;
 
         // Verify user is a participant
         const [conv] = await db

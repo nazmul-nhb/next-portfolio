@@ -2,6 +2,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { slugifyString } from 'nhb-toolbox';
+import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -10,7 +11,6 @@ import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { CreateBlogSchema } from '@/lib/zod-schema/blogs';
-import type z from 'zod';
 
 /**
  * GET /api/blogs - Fetch all published blogs with pagination.
@@ -18,8 +18,8 @@ import type z from 'zod';
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const page = Number(searchParams.get('page') || '1');
-        const limit = Number(searchParams.get('limit') || '12');
+        const page = +(searchParams.get('page') || '1');
+        const limit = +(searchParams.get('limit') || '12');
         const tag = searchParams.get('tag');
         const category = searchParams.get('category');
         const search = searchParams.get('search');
@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
                 title,
                 slug,
                 content,
-                author_id: Number(session.user.id),
+                author_id: +session.user.id,
                 cover_image: cover_image || null,
                 excerpt: excerpt || null,
                 is_published,

@@ -157,7 +157,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         onClick={() => handleReact('like')}
                         size="sm"
                         variant={
-                            session?.user && likes.includes(Number(session.user.id))
+                            session?.user && likes.includes(+session.user.id)
                                 ? 'default'
                                 : 'outline'
                         }
@@ -170,7 +170,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         onClick={() => handleReact('dislike')}
                         size="sm"
                         variant={
-                            session?.user && dislikes.includes(Number(session.user.id))
+                            session?.user && dislikes.includes(+session.user.id)
                                 ? 'destructive'
                                 : 'outline'
                         }

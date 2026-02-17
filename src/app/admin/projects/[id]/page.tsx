@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
-    const id = Number.parseInt(resolvedParams.id, 10);
+    const id = +resolvedParams.id;
 
     if (Number.isNaN(id)) {
         notFound();

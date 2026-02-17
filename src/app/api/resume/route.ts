@@ -18,7 +18,7 @@ export async function GET() {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const userId = Number.parseInt(session.user.id, 10);
+        const userId = +session.user.id;
 
         // Get user details
         const [user] = await db

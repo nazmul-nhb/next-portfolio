@@ -10,7 +10,7 @@ interface PageProps {
 
 export default async function EditExperiencePage({ params }: PageProps) {
     const { id } = await params;
-    const experienceId = Number.parseInt(id, 10);
+    const experienceId = +id;
 
     if (Number.isNaN(experienceId)) {
         notFound();

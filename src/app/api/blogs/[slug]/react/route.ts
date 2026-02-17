@@ -29,7 +29,7 @@ export async function POST(
             return sendErrorResponse('Invalid reaction type', 400);
         }
 
-        const userId = Number(session.user.id);
+        const userId = +session.user.id;
 
         const [blog] = await db.select().from(blogs).where(eq(blogs.slug, slug)).limit(1);
 

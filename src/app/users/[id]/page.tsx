@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const [user] = await db
             .select({ name: users.name, bio: users.bio })
             .from(users)
-            .where(eq(users.id, Number(id)))
+            .where(eq(users.id, +id))
             .limit(1);
 
         if (!user) return { title: 'User Not Found' };
@@ -74,7 +74,7 @@ export default async function UserProfilePage({ params }: Props) {
                 created_at: users.created_at,
             })
             .from(users)
-            .where(eq(users.id, Number(id)))
+            .where(eq(users.id, +id))
             .limit(1);
     } catch (error) {
         console.error('Failed to fetch user:', error);

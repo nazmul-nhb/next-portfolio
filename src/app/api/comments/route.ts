@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
             .insert(comments)
             .values({
                 content,
-                author_id: Number(session.user.id),
+                author_id: +session.user.id,
                 blog_id,
                 parent_comment_id: parent_comment_id || null,
             })
@@ -58,8 +58,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const { searchParams } = new URL(req.url);
-        const commentId = Number(searchParams.get('id'));
+        const commentId = Number(req.nextUrl.searchParams.get('id'));
 
         if (!commentId) {
             return sendErrorResponse('Comment ID is required', 400);
@@ -76,7 +75,7 @@ export async function DELETE(req: NextRequest) {
         }
 
         // Only author or admin can delete
-        if (comment.author_id !== Number(session.user.id) && session.user.role !== 'admin') {
+        if (comment.author_id !== +session.user.id && session.user.role !== 'admin') {
             return sendErrorResponse('Forbidden', 403);
         }
 

@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
-        const messageId = Number.parseInt(id, 10);
+        const messageId = +id;
 
         if (Number.isNaN(messageId)) {
             return sendErrorResponse('Invalid message ID', 400);

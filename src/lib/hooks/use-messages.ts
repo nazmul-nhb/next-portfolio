@@ -1,6 +1,6 @@
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 
-interface Message {
+export interface Message {
     id: number;
     conversation_id: number;
     sender_id: number;
@@ -9,7 +9,7 @@ interface Message {
     created_at: string;
 }
 
-interface Conversation {
+export interface Conversation {
     id: number;
     participant_one: number;
     participant_two: number;

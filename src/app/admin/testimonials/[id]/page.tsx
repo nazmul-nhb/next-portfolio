@@ -10,7 +10,7 @@ interface PageProps {
 
 export default async function EditTestimonialPage({ params }: PageProps) {
     const { id } = await params;
-    const testimonialId = Number.parseInt(id, 10);
+    const testimonialId = +id;
 
     if (Number.isNaN(testimonialId)) {
         notFound();

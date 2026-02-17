@@ -84,7 +84,7 @@ export async function PATCH(req: NextRequest) {
         const [updatedExperience] = await db
             .update(experiences)
             .set(parsed.data)
-            .where(eq(experiences.id, Number.parseInt(id, 10)))
+            .where(eq(experiences.id, +id))
             .returning();
 
         if (!updatedExperience) {
@@ -120,7 +120,7 @@ export async function DELETE(req: NextRequest) {
 
         const [deleted] = await db
             .delete(experiences)
-            .where(eq(experiences.id, Number.parseInt(id, 10)))
+            .where(eq(experiences.id, +id))
             .returning();
 
         if (!deleted) {

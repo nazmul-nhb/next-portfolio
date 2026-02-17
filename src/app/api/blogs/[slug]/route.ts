@@ -130,7 +130,7 @@ export async function PATCH(
         }
 
         // Only author or admin can update
-        if (blog.author_id !== Number(session.user.id) && session.user.role !== 'admin') {
+        if (blog.author_id !== +session.user.id && session.user.role !== 'admin') {
             return sendErrorResponse('Forbidden', 403);
         }
 
@@ -205,7 +205,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ slug
         }
 
         // Only author or admin can delete
-        if (blog.author_id !== Number(session.user.id) && session.user.role !== 'admin') {
+        if (blog.author_id !== +session.user.id && session.user.role !== 'admin') {
             return sendErrorResponse('Forbidden', 403);
         }
 

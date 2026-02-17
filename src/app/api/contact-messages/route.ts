@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import type { NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { auth } from '@/lib/auth';
@@ -24,7 +24,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Message ID is required', 400);
         }
 
-        const id = Number.parseInt(idParam, 10);
+        const id = +idParam;
         if (Number.isNaN(id)) {
             return sendErrorResponse('Invalid message ID', 400);
         }

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import type { NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest) {
         const [updatedEducation] = await db
             .update(education)
             .set(parsed.data)
-            .where(eq(education.id, Number.parseInt(id)))
+            .where(eq(education.id, +id))
             .returning();
 
         if (!updatedEducation) {
@@ -114,10 +114,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Education ID is required', 400);
         }
 
-        const [deleted] = await db
-            .delete(education)
-            .where(eq(education.id, Number.parseInt(id)))
-            .returning();
+        const [deleted] = await db.delete(education).where(eq(education.id, +id)).returning();
 
         if (!deleted) {
             return sendErrorResponse('Education record not found', 404);
