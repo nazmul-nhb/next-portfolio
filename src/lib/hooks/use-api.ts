@@ -1,9 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { isArray } from 'nhb-toolbox';
 import { toast } from 'sonner';
+import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
 
-type QueryKey = string | Array<QueryKey>;
+type $QueryKey = string | number | Array<string | number>;
+
+export type QueryKey = $QueryKey | Array<$QueryKey>;
 
 /**
  * Generic query hook for GET requests
@@ -18,12 +22,12 @@ export function useApiQuery<T>(
     }
 ) {
     return useQuery({
-        queryKey: Array.isArray(key) ? key : [key],
+        queryKey: isArray<QueryKey>(key) ? key : [key],
         queryFn: async () => {
             const { data } = await httpRequest<T>(endpoint, { method: 'GET' });
             return data;
         },
-        staleTime: options?.staleTime ?? 5 * 60 * 1000, // 5 minutes default
+        staleTime: options?.staleTime ?? siteConfig.staleTime,
         refetchInterval: options?.refetchInterval,
         enabled: options?.enabled,
     });
@@ -58,7 +62,7 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
                 toast.success(options.successMessage);
             }
             if (options?.invalidateKeys) {
-                const keys = Array.isArray(options.invalidateKeys)
+                const keys = isArray<QueryKey>(options.invalidateKeys)
                     ? options.invalidateKeys
                     : [options.invalidateKeys];
 
@@ -69,10 +73,7 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
             data && options?.onSuccess?.(data);
         },
         onError: (error) => {
-            const message =
-                options?.errorMessage ||
-                (error as { message?: string })?.message ||
-                'An error occurred';
+            const message = options?.errorMessage || error?.message || 'An error occurred';
             toast.error(message);
             options?.onError?.(error);
         },
@@ -102,7 +103,7 @@ export function useApiMutationWithRedirect<TData = unknown, TVariables = unknown
                 toast.success(options.successMessage);
             }
             if (options?.invalidateKeys) {
-                const keys = Array.isArray(options.invalidateKeys)
+                const keys = isArray<QueryKey>(options.invalidateKeys)
                     ? options.invalidateKeys
                     : [options.invalidateKeys];
 
@@ -128,7 +129,7 @@ export function useOptimisticMutation<TData = unknown, TVariables = unknown>(
     }
 ) {
     const queryClient = useQueryClient();
-    const key = Array.isArray(queryKey) ? queryKey : [queryKey];
+    const key = isArray<QueryKey>(queryKey) ? queryKey : [queryKey];
 
     return useMutation({
         mutationFn: async (variables: TVariables) => {

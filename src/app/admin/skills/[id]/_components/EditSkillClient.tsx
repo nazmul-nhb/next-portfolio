@@ -1,12 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectSkill, UpdateSkill } from '@/types/skills';
 
 interface EditSkillClientProps {
@@ -15,31 +13,28 @@ interface EditSkillClientProps {
 
 export function EditSkillClient({ skill }: EditSkillClientProps) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: UpdateSkill) => {
-        setIsLoading(true);
-        try {
-            const { success, data: updated } = await httpRequest<SelectSkill, UpdateSkill>(
-                `/api/skills?id=${skill.id}`,
-                {
-                    method: 'PATCH',
-                    body: data,
-                }
-            );
+    const { isPending, mutate } = useApiMutation<SelectSkill, UpdateSkill>(
+        `/api/skills?id=${skill.id}`,
+        'PATCH',
+        {
+            successMessage: 'Skill updated successfully!',
+            errorMessage: 'Failed to update skill. Please try again.',
+            invalidateKeys: ['skills', skill.id],
+        }
+    );
 
-            if (success && updated) {
+    const handleSubmit = (data: UpdateSkill) => {
+        mutate(data, {
+            onSuccess: async () => {
                 await deleteOldCloudFile(skill.icon, data.icon);
-
                 router.push('/admin/skills');
                 router.refresh();
-            }
-        } catch (error) {
-            console.error('Failed to update skill:', error);
-            toast.error('Failed to update skill. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onError: (error) => {
+                console.error('Failed to update skill:', error);
+            },
+        });
     };
 
     return (
@@ -56,7 +51,7 @@ export function EditSkillClient({ skill }: EditSkillClientProps) {
                 <CardContent>
                     <SkillForm
                         defaultValues={skill}
-                        isLoading={isLoading}
+                        isLoading={isPending}
                         onSubmit={handleSubmit}
                     />
                 </CardContent>

@@ -10,13 +10,11 @@ import {
 } from 'lucide-react';
 import type { TabItem } from '@/types';
 
-export type SiteConfig = typeof siteConfig;
-
 export const siteConfig = {
     name: 'Nazmul Hassan',
     description:
         'Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
-    baseUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_SITE_URL as string,
     navItems: [
         { title: 'Home', path: '/', icon: Home },
         { title: 'Blog', path: '/blogs', icon: PenTool },
@@ -37,4 +35,8 @@ export const siteConfig = {
     tokenName: 'nhb-token',
     logoSvg: '/logo.svg',
     favicon: '/favicon.png',
+    /** 1 Minute */
+    staleTime: 60000,
 } as const;
+
+export type SiteConfig = typeof siteConfig;
