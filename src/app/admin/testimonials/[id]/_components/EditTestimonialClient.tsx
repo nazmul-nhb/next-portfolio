@@ -1,12 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { TestimonialForm } from '@/components/forms/testimonial-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectTestimonial, UpdateTestimonial } from '@/types/testimonials';
 
 interface EditTestimonialClientProps {
@@ -15,32 +13,28 @@ interface EditTestimonialClientProps {
 
 export function EditTestimonialClient({ testimonial }: EditTestimonialClientProps) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { isPending, mutate } = useApiMutation<SelectTestimonial, UpdateTestimonial>(
+        `/api/testimonials?id=${testimonial.id}`,
+        'PATCH',
+        {
+            successMessage: 'Testimonial updated successfully!',
+            errorMessage: 'Failed to update testimonial. Please try again.',
+            invalidateKeys: ['testimonials', testimonial.id],
+        }
+    );
 
     const handleSubmit = async (data: UpdateTestimonial) => {
-        setIsLoading(true);
-        try {
-            const { success, data: updated } = await httpRequest<
-                SelectTestimonial,
-                UpdateTestimonial
-            >(`/api/testimonials?id=${testimonial.id}`, {
-                method: 'PATCH',
-                body: data,
-            });
-
-            if (success && updated) {
+        mutate(data, {
+            onSuccess: async () => {
                 await deleteOldCloudFile(testimonial.client_avatar, data.client_avatar);
-
-                toast.success('Testimonial updated successfully');
                 router.push('/admin/testimonials');
                 router.refresh();
-            }
-        } catch (error) {
-            console.error('Failed to update testimonial:', error);
-            toast.error('Failed to update testimonial. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onError: (error) => {
+                console.error('Failed to update testimonial:', error);
+            },
+        });
     };
 
     return (
@@ -57,7 +51,7 @@ export function EditTestimonialClient({ testimonial }: EditTestimonialClientProp
                 <CardContent>
                     <TestimonialForm
                         defaultValues={testimonial}
-                        isLoading={isLoading}
+                        isLoading={isPending}
                         onSubmit={handleSubmit}
                     />
                 </CardContent>

@@ -51,6 +51,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     const [skills, setSkills] = useState<SelectSkill[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Image state - track individual files for better control
     const [faviconFile, setFaviconFile] = useState<File | null>(null);
@@ -188,6 +189,8 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
         const uploadedAssets: Array<CloudinaryResponse> = [];
 
         try {
+            setIsUploading(true);
+
             // Handle favicon
             let faviconUrl: string;
             if (faviconFile) {
@@ -256,6 +259,8 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                     uploadedAssets.map((asset) => deleteFromCloudinary(asset.public_id))
                 );
             }
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -616,7 +621,11 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                 />
 
                 {/* Submit Button */}
-                <Button disabled={isLoading} loading={isLoading} type="submit">
+                <Button
+                    disabled={isLoading || isUploading}
+                    loading={isLoading || isUploading}
+                    type="submit"
+                >
                     {defaultValues ? 'Update Project' : 'Create Project'}
                 </Button>
             </form>

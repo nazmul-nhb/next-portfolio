@@ -120,7 +120,7 @@ export function TestimonialsClient({ initialTestimonials }: TestimonialsClientPr
                                             <div className="mt-1 flex gap-1">
                                                 {Array.from({ length: 5 }).map((_, idx) => (
                                                     <Star
-                                                        className={`h-4 w-4 ${
+                                                        className={`size-4 ${
                                                             idx < testimonial.rating
                                                                 ? 'fill-yellow-400 text-yellow-400'
                                                                 : 'text-muted-foreground'

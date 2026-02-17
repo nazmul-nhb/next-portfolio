@@ -51,6 +51,7 @@ export function ExperienceForm({
     const [achievements, setAchievements] = useState<string[]>(
         defaultValues?.achievements || ['']
     );
+    const [isUploading, setIsUploading] = useState(false);
 
     const formSchema = defaultValues ? ExperienceFormUpdateSchema : ExperienceFormSchema;
 
@@ -126,6 +127,8 @@ export function ExperienceForm({
     // Form submission
     const handleSubmit = async (data: ExperienceFormData | ExperienceFormUpdateData) => {
         try {
+            setIsUploading(true);
+
             let logoUrl = defaultValues?.company_logo;
 
             // Only upload if new logo is provided
@@ -147,20 +150,14 @@ export function ExperienceForm({
                 achievements: achievements.filter((a) => a.trim()),
             };
 
-            // // Remove FileList property
-            // delete (payload as { company_logo?: FileList | string }).company_logo;
-            // (payload as InsertExperience).company_logo = logoUrl as string;
-
-            // if (defaultValues) {
-            //     onSubmit(payload as UpdateExperience);
-            // } else {
             onSubmit(payload);
-            // }
         } catch (error) {
             console.error('Form submission error:', error);
             if (logoRes?.public_id) {
                 await deleteFromCloudinary(logoRes.public_id);
             }
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -431,7 +428,11 @@ export function ExperienceForm({
                     )}
                 />
 
-                <Button disabled={isLoading} loading={isLoading} type="submit">
+                <Button
+                    disabled={isLoading || isUploading}
+                    loading={isLoading || isUploading}
+                    type="submit"
+                >
                     {defaultValues ? 'Update Experience' : 'Create Experience'}
                 </Button>
             </form>

@@ -7,11 +7,11 @@ import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectSkill, UpdateSkill } from '@/types/skills';
 
-interface EditSkillClientProps {
+interface Props {
     skill: SelectSkill;
 }
 
-export function EditSkillClient({ skill }: EditSkillClientProps) {
+export function EditSkillClient({ skill }: Props) {
     const router = useRouter();
 
     const { isPending, mutate } = useApiMutation<SelectSkill, UpdateSkill>(

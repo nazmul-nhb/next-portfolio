@@ -1,46 +1,40 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { ExperienceForm } from '@/components/forms/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectExperience, UpdateExperience } from '@/types/career';
 
-interface EditExperienceClientProps {
+interface Props {
     experience: SelectExperience;
 }
 
-export function EditExperienceClient({ experience }: EditExperienceClientProps) {
+export function EditExperienceClient({ experience }: Props) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { isPending, mutate } = useApiMutation<SelectExperience, UpdateExperience>(
+        `/api/experiences?id=${experience.id}`,
+        'PATCH',
+        {
+            successMessage: 'Experience updated successfully!',
+            errorMessage: 'Failed to update experience. Please try again.',
+            invalidateKeys: ['experiences', experience.id],
+        }
+    );
 
     const handleSubmit = async (data: UpdateExperience) => {
-        setIsLoading(true);
-        try {
-            const { success, data: updated } = await httpRequest<
-                SelectExperience,
-                UpdateExperience
-            >(`/api/experiences?id=${experience.id}`, {
-                method: 'PATCH',
-                body: data,
-            });
-
-            if (success && updated) {
+        mutate(data, {
+            onSuccess: async () => {
                 await deleteOldCloudFile(experience.company_logo, data.company_logo);
-
-                toast.success('Experience updated successfully');
                 router.push('/admin/experience');
                 router.refresh();
-            }
-        } catch (error) {
-            console.error('Failed to update experience:', error);
-            toast.error('Failed to update experience. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onError: (error) => {
+                console.error('Failed to update experience:', error);
+            },
+        });
     };
 
     return (
@@ -57,7 +51,7 @@ export function EditExperienceClient({ experience }: EditExperienceClientProps) 
                 <CardContent>
                     <ExperienceForm
                         defaultValues={experience}
-                        isLoading={isLoading}
+                        isLoading={isPending}
                         onSubmit={handleSubmit}
                     />
                 </CardContent>

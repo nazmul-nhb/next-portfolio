@@ -1,45 +1,40 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { EducationForm } from '@/components/forms/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectEducation, UpdateEducation } from '@/types/career';
 
-interface EditEducationClientProps {
+interface Props {
     education: SelectEducation;
 }
 
-export function EditEducationClient({ education }: EditEducationClientProps) {
+export function EditEducationClient({ education }: Props) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { isPending, mutate } = useApiMutation<SelectEducation, UpdateEducation>(
+        `/api/education?id=${education.id}`,
+        'PATCH',
+        {
+            successMessage: 'Education updated successfully!',
+            errorMessage: 'Failed to update education. Please try again.',
+            invalidateKeys: ['education', education.id],
+        }
+    );
 
     const handleSubmit = async (data: UpdateEducation) => {
-        setIsLoading(true);
-        try {
-            const { success, data: updated } = await httpRequest<
-                SelectEducation,
-                UpdateEducation
-            >(`/api/education?id=${education.id}`, {
-                method: 'PATCH',
-                body: data,
-            });
-            if (success && updated) {
+        mutate(data, {
+            onSuccess: async () => {
                 await deleteOldCloudFile(education.institution_logo, data.institution_logo);
-
-                toast.success('Education updated successfully');
                 router.push('/admin/education');
                 router.refresh();
-            }
-        } catch (error) {
-            console.error('Failed to update education:', error);
-            toast.error('Failed to update education. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onError: (error) => {
+                console.error('Failed to update education:', error);
+            },
+        });
     };
 
     return (
@@ -56,7 +51,7 @@ export function EditEducationClient({ education }: EditEducationClientProps) {
                 <CardContent>
                     <EducationForm
                         defaultValues={education}
-                        isLoading={isLoading}
+                        isLoading={isPending}
                         onSubmit={handleSubmit}
                     />
                 </CardContent>

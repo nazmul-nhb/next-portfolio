@@ -47,6 +47,7 @@ interface SkillFormProps {
 export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillFormProps) {
     const [iconPreview, setIconPreview] = useState<string | null>(null);
     const [iconRes, setIconRes] = useState<CloudinaryResponse>();
+    const [isUploading, setIsUploading] = useState(false);
 
     const formSchema = defaultValues ? SkillFormUpdateSchema : SkillFormCreationSchema;
 
@@ -72,6 +73,8 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
     // Form submission
     const handleSubmit = async (data: SkillFormData | SkillFormUpdateData) => {
         try {
+            setIsUploading(true);
+
             let iconUrl = defaultValues?.icon;
 
             // Only upload if new icon is provided
@@ -96,21 +99,15 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                 icon: iconUrl,
             };
 
-            // Remove the FileList icon property before sending
-            // delete (payload as { icon?: FileList | string }).icon;
-            // (payload as InsertSkill).icon = iconUrl as string;
-
-            // if (defaultValues) {
-            //     onSubmit(payload as UpdateSkill);
-            // } else {
             onSubmit(payload);
-            // }
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded icon on error
             if (iconRes?.public_id) {
                 await deleteFromCloudinary(iconRes.public_id);
             }
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -195,11 +192,15 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                 />
 
                 <div className="flex gap-4">
-                    <Button disabled={isLoading} loading={isLoading} type="submit">
+                    <Button
+                        disabled={isLoading || isUploading}
+                        loading={isLoading || isUploading}
+                        type="submit"
+                    >
                         {defaultValues ? 'Update Skill' : 'Create Skill'}
                     </Button>
                     <Button
-                        disabled={isLoading}
+                        disabled={isLoading || isUploading}
                         onClick={() => form.reset()}
                         type="button"
                         variant="outline"

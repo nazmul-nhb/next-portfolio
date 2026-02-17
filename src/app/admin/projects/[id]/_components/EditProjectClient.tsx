@@ -1,54 +1,40 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectProject, UpdateProject } from '@/types/projects';
 
-interface EditProjectClientProps {
+interface Props {
     project: SelectProject;
 }
 
-export function EditProjectClient({ project }: EditProjectClientProps) {
+export function EditProjectClient({ project }: Props) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: UpdateProject) => {
-        setIsLoading(true);
-        try {
-            const { success, data: updated } = await httpRequest<SelectProject, UpdateProject>(
-                `/api/projects?id=${project.id}`,
-                {
-                    method: 'PATCH',
-                    body: data,
-                }
-            );
+    const { isPending, mutate } = useApiMutation<SelectProject, UpdateProject>(
+        `/api/projects?id=${project.id}`,
+        'PATCH',
+        {
+            successMessage: 'Project updated successfully!',
+            errorMessage: 'Failed to update project. Please try again.',
+            invalidateKeys: ['projects', project.id],
+        }
+    );
 
-            if (success && updated) {
+    const handleSubmit = (data: UpdateProject) => {
+        mutate(data, {
+            onSuccess: async () => {
                 await deleteOldCloudFile(project.favicon, data.favicon);
-
-                if (data.screenshots) {
-                    for (let i = 0; i < data.screenshots.length; i++) {
-                        await deleteOldCloudFile(project.screenshots[i], data.screenshots[i]);
-                    }
-                }
-
-                toast.success('Project updated successfully!');
                 router.push('/admin/projects');
                 router.refresh();
-            } else {
-                toast.error('Failed to update project. Please try again.');
-            }
-        } catch (error) {
-            console.error('Failed to update project:', error);
-            toast.error('Failed to update project. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            onError: (error) => {
+                console.error('Failed to update project:', error);
+            },
+        });
     };
 
     return (
@@ -65,7 +51,7 @@ export function EditProjectClient({ project }: EditProjectClientProps) {
                 <CardContent>
                     <ProjectForm
                         defaultValues={project}
-                        isLoading={isLoading}
+                        isLoading={isPending}
                         onSubmit={handleSubmit}
                     />
                 </CardContent>

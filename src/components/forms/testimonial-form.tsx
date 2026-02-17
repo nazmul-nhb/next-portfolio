@@ -52,6 +52,7 @@ export function TestimonialForm({
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarRes, setAvatarRes] = useState<CloudinaryResponse>();
     const [rating, setRating] = useState(defaultValues?.rating || 5);
+    const [isUploading, setIsUploading] = useState(false);
 
     const formSchema = defaultValues ? TestimonialFormUpdateSchema : TestimonialFormSchema;
 
@@ -81,6 +82,8 @@ export function TestimonialForm({
     // Form submission
     const handleSubmit = async (data: TestimonialFormData | TestimonialFormUpdateData) => {
         try {
+            setIsUploading(true);
+
             let avatarUrl = defaultValues?.client_avatar;
 
             // Only upload if new avatar is provided
@@ -101,21 +104,15 @@ export function TestimonialForm({
                 rating,
             };
 
-            // Remove the FileList avatar property before sending
-            // delete (payload as { client_avatar?: FileList | string }).client_avatar;
-            // (payload as InsertTestimonial).client_avatar = avatarUrl as string;
-
-            // if (defaultValues) {
-            //     onSubmit(payload as UpdateTestimonial);
-            // } else {
             onSubmit(payload);
-            // }
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded avatar on error
             if (avatarRes?.public_id) {
                 await deleteFromCloudinary(avatarRes.public_id);
             }
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -271,7 +268,11 @@ export function TestimonialForm({
                     )}
                 />
 
-                <Button disabled={isLoading} loading={isLoading} type="submit">
+                <Button
+                    disabled={isLoading || isUploading}
+                    loading={isLoading || isUploading}
+                    type="submit"
+                >
                     {defaultValues ? 'Update Testimonial' : 'Create Testimonial'}
                 </Button>
             </form>

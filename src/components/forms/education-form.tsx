@@ -47,6 +47,7 @@ export function EducationForm({
     const [achievements, setAchievements] = useState<string[]>(
         defaultValues?.achievements || ['']
     );
+    const [isUploading, setIsUploading] = useState(false);
 
     const formSchema = defaultValues ? EducationFormUpdateSchema : EducationFormSchema;
 
@@ -99,6 +100,8 @@ export function EducationForm({
     // Form submission
     const handleSubmit = async (data: EducationFormData | EducationFormUpdateData) => {
         try {
+            setIsUploading(true);
+
             let logoUrl = defaultValues?.institution_logo;
 
             // Only upload if new logo is provided
@@ -119,20 +122,14 @@ export function EducationForm({
                 achievements: achievements.filter((a) => a.trim()),
             };
 
-            // Remove FileList property
-            // delete payload.institution_logo;
-            // payload.institution_logo = logoUrl;
-
-            // if (defaultValues) {
-            // } else {
-            //     onSubmit(payload as InsertEducation);
-            // }
             onSubmit(payload);
         } catch (error) {
             console.error('Form submission error:', error);
             if (logoRes?.public_id) {
                 await deleteFromCloudinary(logoRes.public_id);
             }
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -372,7 +369,11 @@ export function EducationForm({
                     )}
                 />
 
-                <Button disabled={isLoading} loading={isLoading} type="submit">
+                <Button
+                    disabled={isLoading || isUploading}
+                    loading={isLoading || isUploading}
+                    type="submit"
+                >
                     {defaultValues ? 'Update Education' : 'Create Education'}
                 </Button>
             </form>
