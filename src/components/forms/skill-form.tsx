@@ -39,7 +39,7 @@ type SkillFormData = z.infer<typeof SkillFormCreationSchema>;
 type SkillFormUpdateData = z.infer<typeof SkillFormUpdateSchema>;
 
 interface SkillFormProps {
-    onSubmit: (data: InsertSkill | UpdateSkill) => void;
+    onSubmit: ((data: UpdateSkill) => void) | ((data: InsertSkill) => void);
     defaultValues?: SelectSkill;
     isLoading?: boolean;
 }
@@ -99,7 +99,7 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                 icon: iconUrl,
             };
 
-            onSubmit(payload);
+            onSubmit(payload as InsertSkill);
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded icon on error

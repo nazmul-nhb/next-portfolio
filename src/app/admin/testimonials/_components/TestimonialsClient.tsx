@@ -20,7 +20,7 @@ export function TestimonialsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: testimonials = initialData } = useApiQuery<SelectTestimonial[]>(
-        'testimonials',
+        ['testimonials'],
         '/api/testimonials'
     );
 
@@ -31,11 +31,16 @@ export function TestimonialsClient({ initialData }: Props) {
             successMessage: 'Testimonial deleted successfully!',
             errorMessage: 'Failed to delete testimonial. Please try again.',
             invalidateKeys: ['testimonials'],
+            onError: (error) => {
+                console.error('Failed to delete testimonial:', error);
+            },
         }
     );
 
     const handleDelete = (testimonial: SelectTestimonial) => {
         const { client_avatar, client_name, id } = testimonial;
+
+        setDeletingId(id);
 
         confirmToast({
             title: `Delete testimonial from "${client_name}"?`,
@@ -43,15 +48,11 @@ export function TestimonialsClient({ initialData }: Props) {
             confirmText: 'Delete',
             isLoading: deletingId === id && isPending,
             onConfirm: () => {
-                setDeletingId(id);
                 mutate(undefined, {
                     onSuccess: async () => {
                         if (client_avatar) {
                             await deleteFromCloudinary(client_avatar);
                         }
-                    },
-                    onError: (error) => {
-                        console.error('Failed to delete testimonial:', error);
                     },
                     onSettled: () => {
                         setDeletingId(null);
@@ -144,14 +145,14 @@ export function TestimonialsClient({ initialData }: Props) {
                                         </Link>
                                         <Button
                                             disabled={
-                                                deletingId === testimonial.id || isPending
+                                                deletingId === testimonial.id && isPending
                                             }
                                             loading={deletingId === testimonial.id && isPending}
                                             onClick={() => handleDelete(testimonial)}
                                             size="icon"
                                             variant="destructive"
                                         >
-                                            {!(deletingId === testimonial.id || isPending) && (
+                                            {(deletingId === testimonial.id && isPending) || (
                                                 <Trash2 className="h-4 w-4" />
                                             )}
                                         </Button>

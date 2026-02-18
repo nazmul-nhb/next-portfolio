@@ -1,34 +1,29 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
-import type { InsertSkill, UpdateSkill } from '@/types/skills';
+import { useApiMutation } from '@/lib/hooks/use-api';
+import type { InsertSkill, SelectSkill } from '@/types/skills';
 
 export default function NewSkillPage() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertSkill | UpdateSkill) => {
-        setIsLoading(true);
-        try {
-            await httpRequest('/api/skills', {
-                method: 'POST',
-                body: data,
-            });
-
-            router.push('/admin/skills');
-            router.refresh();
-        } catch (error) {
-            console.error('Failed to create skill:', error);
-            toast.error('Failed to create skill. Please try again.');
-        } finally {
-            setIsLoading(false);
+    const { mutate, isPending } = useApiMutation<SelectSkill, InsertSkill>(
+        '/api/skills',
+        'POST',
+        {
+            successMessage: 'Skill created successfully',
+            errorMessage: 'Failed to create skill. Please try again.',
+            invalidateKeys: ['skills'],
+            onSuccess: () => {
+                router.push('/admin/skills');
+            },
+            onError: (error) => {
+                console.error('Failed to create skill:', error);
+            },
         }
-    };
+    );
 
     return (
         <div className="space-y-6">
@@ -42,7 +37,7 @@ export default function NewSkillPage() {
                     <CardTitle>Skill Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <SkillForm isLoading={isLoading} onSubmit={handleSubmit} />
+                    <SkillForm isLoading={isPending} onSubmit={mutate} />
                 </CardContent>
             </Card>
         </div>

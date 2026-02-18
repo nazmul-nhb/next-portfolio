@@ -3,56 +3,59 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 
-interface SkillsClientProps {
-    initialSkills: SelectSkill[];
+interface Props {
+    initialData: SelectSkill[];
 }
 
-export function SkillsClient({ initialSkills }: SkillsClientProps) {
-    const router = useRouter();
-    const [skills, setSkills] = useState(initialSkills);
+export function SkillsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const { data: skills = initialData } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
+
+    const { mutate, isPending } = useApiMutation<{ id: number }, undefined>(
+        `/api/skills?id=${deletingId}`,
+        'DELETE',
+        {
+            successMessage: 'Skill deleted successfully!',
+            errorMessage: 'Failed to delete skill. Please try again.',
+            invalidateKeys: ['skills'],
+            onError: (error) => {
+                console.error('Failed to delete testimonial:', error);
+            },
+        }
+    );
 
     const handleDelete = async (skill: SelectSkill) => {
         const { id, title, icon } = skill;
 
+        setDeletingId(id);
+
         confirmToast({
-            onConfirm: async () => {
-                setDeletingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/skills?id=${id}`, {
-                        method: 'DELETE',
-                    });
-                    if (success) {
-                        setSkills(skills.filter((s) => s.id !== id));
-
-                        if (icon) {
-                            await deleteFromCloudinary(icon);
-                        }
-
-                        toast.success('Skill deleted successfully');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete skill:', error);
-                    toast.error('Failed to delete skill');
-                } finally {
-                    setDeletingId(null);
-                }
-            },
             title: `Delete "${title}"?`,
             description: 'This action cannot be undone!',
             confirmText: 'Delete',
+            isLoading: deletingId === id && isPending,
+            onConfirm: () => {
+                mutate(undefined, {
+                    onSuccess: async () => {
+                        if (icon) {
+                            await deleteFromCloudinary(icon);
+                        }
+                    },
+                    onSettled: () => {
+                        setDeletingId(null);
+                    },
+                });
+            },
         });
     };
 
@@ -112,12 +115,15 @@ export function SkillsClient({ initialSkills }: SkillsClientProps) {
                                         </Button>
                                     </Link>
                                     <Button
-                                        disabled={deletingId === skill.id}
+                                        disabled={deletingId === skill.id && isPending}
+                                        loading={deletingId === skill.id && isPending}
                                         onClick={() => handleDelete(skill)}
                                         size="sm"
                                         variant="outline"
                                     >
-                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                        {(deletingId === skill.id && isPending) || (
+                                            <Trash2 className="h-3 w-3 text-destructive" />
+                                        )}
                                     </Button>
                                 </div>
                             </CardContent>

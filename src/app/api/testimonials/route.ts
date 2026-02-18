@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -20,7 +20,7 @@ export async function GET() {
         const allTestimonials = await db
             .select()
             .from(testimonials)
-            .orderBy(testimonials.created_at);
+            .orderBy(desc(testimonials.created_at));
 
         return sendResponse('Testimonial', 'GET', allTestimonials);
     } catch (error) {

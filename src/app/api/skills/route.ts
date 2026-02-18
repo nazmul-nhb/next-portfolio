@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -12,7 +12,7 @@ import type { InsertSkill, UpdateSkill } from '@/types/skills';
 /** Get all skills */
 export async function GET() {
     try {
-        const result = await db.select().from(skills);
+        const result = await db.select().from(skills).orderBy(desc(skills.created_at));
         return sendResponse('Skill', 'GET', result);
     } catch (error) {
         console.error(error);
@@ -100,7 +100,7 @@ export async function DELETE(req: NextRequest) {
         revalidatePath('/admin/skills');
         revalidatePath('/resume');
 
-        return sendResponse('Skill', 'DELETE', deleted);
+        return sendResponse('Skill', 'DELETE', { id: deleted.id });
     } catch (error) {
         console.error(error);
         return sendErrorResponse(error);
