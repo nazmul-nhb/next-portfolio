@@ -1,16 +1,20 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 
-export async function middleware(req: NextRequest) {
-    const session = await auth();
+export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
+    const session = await auth();
+
+    const hasUser = !!session?.user;
+
+    const authRedirect = new URL(`/auth/login?redirectTo=${pathname}`, req.url);
+
+    const protectedPaths = ['/settings', '/messages', '/blogs/new', '/blogs/edit'] as const;
 
     // Admin routes - require admin role
     if (pathname.startsWith('/admin')) {
-        if (!session?.user) {
-            return NextResponse.redirect(
-                new URL(`/auth/login?redirectTo=${pathname}`, req.url)
-            );
+        if (!hasUser) {
+            return NextResponse.redirect(authRedirect);
         }
 
         if (session.user.role !== 'admin') {
@@ -21,16 +25,9 @@ export async function middleware(req: NextRequest) {
     }
 
     // Protected user routes - require authentication
-    if (
-        pathname.startsWith('/settings') ||
-        pathname.startsWith('/messages') ||
-        pathname === '/blogs/new' ||
-        pathname.startsWith('/blogs/edit')
-    ) {
-        if (!session?.user) {
-            return NextResponse.redirect(
-                new URL(`/auth/login?redirectTo=${pathname}`, req.url)
-            );
+    if (protectedPaths.some((path) => pathname.startsWith(path))) {
+        if (!hasUser) {
+            return NextResponse.redirect(authRedirect);
         }
 
         return NextResponse.next();

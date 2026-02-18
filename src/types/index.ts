@@ -1,5 +1,5 @@
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
-import type { SVGProps } from 'react';
+import type { ReactNode, SVGProps } from 'react';
 
 export type Uncertain<T> = T | null | undefined;
 
@@ -64,3 +64,7 @@ export interface Separator {
 }
 
 export type TabItem = Tab | Separator;
+
+export type ChildrenProp = {
+    children: ReactNode;
+};

@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/nav/admin-sidebar';
 import { auth } from '@/lib/auth';
+import type { ChildrenProp } from '@/types';
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: ChildrenProp) {
     const session = await auth();
 
     if (!session?.user || session.user.role !== 'admin') {
