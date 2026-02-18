@@ -9,7 +9,7 @@ import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, isAdminPath } from '@/lib/utils';
 
 type Props = {
     pathname: string;
@@ -40,7 +40,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                     {isAdmin && (
                         <Link
                             className={`hidden items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors sm:flex ${
-                                pathname.startsWith('/admin')
+                                isAdminPath(pathname)
                                     ? 'bg-primary text-primary-foreground'
                                     : 'hover:bg-accent'
                             }`}

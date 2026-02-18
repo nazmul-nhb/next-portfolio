@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { isAdminPath } from '@/lib/utils';
 
 export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
@@ -12,7 +13,7 @@ export async function proxy(req: NextRequest) {
     const protectedPaths = ['/settings', '/messages', '/blogs/new', '/blogs/edit'] as const;
 
     // Admin routes - require admin role
-    if (pathname.startsWith('/admin')) {
+    if (isAdminPath(pathname)) {
         if (!hasUser) {
             return NextResponse.redirect(authRedirect);
         }

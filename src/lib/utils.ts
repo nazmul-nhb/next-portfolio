@@ -9,6 +9,15 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
+/**
+ * Utility function to check if the current pathname is an admin path.
+ * @param pathname The current pathname (e.g., `window.location.pathname`).
+ * @returns `true` if the pathname starts with `/admin`, otherwise `false`.
+ */
+export function isAdminPath(pathname: string) {
+    return pathname.startsWith('/admin');
+}
+
 /** Utility function to build full Cloudinary image URL from DB path. */
 export function buildCloudinaryUrl(urlFromDB: string) {
     return `${ENV.cloudinary.urls.base_url}${urlFromDB}`;

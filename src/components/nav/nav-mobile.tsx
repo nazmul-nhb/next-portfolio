@@ -9,7 +9,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, isAdminPath } from '@/lib/utils';
 import type { TabItem } from '@/types';
 
 type Props = {
@@ -123,7 +123,7 @@ export default function NavMobileDrawer({
                             <div className="my-3 h-px bg-border" />
                             <Link
                                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                                    pathname.startsWith('/admin')
+                                    isAdminPath(pathname)
                                         ? 'bg-primary text-primary-foreground'
                                         : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                                 }`}

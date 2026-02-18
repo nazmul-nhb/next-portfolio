@@ -1,9 +1,10 @@
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import type { Metadata } from 'next';
 import { ENV } from '@/configs/env';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
+import type { SelectSkill } from '@/types/skills';
 import { HeroSection } from './_components/HeroSection';
 import { RecentBlogsSection } from './_components/RecentBlogs';
 import { RecentProjectsSection } from './_components/RecentProjects';
@@ -19,12 +20,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-    let allSkills: (typeof skills.$inferSelect)[] = [];
+    let allSkills: SelectSkill[] = [];
     let adminImage: string | null = null;
 
     try {
         const [skillsResult, [admin]] = await Promise.all([
-            db.select().from(skills),
+            db.select().from(skills).orderBy(asc(skills.title)),
             db
                 .select({ profile_image: users.profile_image })
                 .from(users)

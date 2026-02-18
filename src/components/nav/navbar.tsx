@@ -140,7 +140,7 @@ export default function Navbar() {
                         >
                             <SmartTooltip
                                 content={'Search (Ctrl+K)'}
-                                trigger={<Search className="h-4 w-4" />}
+                                trigger={<Search className="size-4" />}
                             />
                         </Button>
 
@@ -161,7 +161,7 @@ export default function Navbar() {
                                     >
                                         <SmartTooltip
                                             content={tab.title}
-                                            trigger={<Icon className="h-4 w-4" />}
+                                            trigger={<Icon className="size-4" />}
                                         />
                                     </Link>
                                 );
