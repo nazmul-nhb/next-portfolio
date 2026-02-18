@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import NavbarAuth from '@/components/nav/nav-auth';
 import NavbarDocked from '@/components/nav/nav-docked';
@@ -58,7 +58,7 @@ export default function Navbar() {
     }, []);
 
     const handleSearch = useCallback(
-        (e: React.FormEvent) => {
+        (e: SubmitEvent<HTMLFormElement>) => {
             e.preventDefault();
             if (searchQuery.trim()) {
                 router.push(`/blogs?search=${encodeURIComponent(searchQuery.trim())}`);

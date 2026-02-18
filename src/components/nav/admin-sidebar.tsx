@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
+import FloatingButton from '@/components/ui/floating-button';
 import { siteConfig } from '@/configs/site';
 
 /** Check if a menu item is the active route. */
@@ -77,13 +78,12 @@ export function AdminSidebar() {
             </aside>
 
             {/* Mobile Toggle Button (fixed) */}
-            <Button
-                className="fixed bottom-4 left-4 z-40 size-12 rounded-full shadow-lg md:hidden"
+            <FloatingButton
+                className="md:hidden"
+                icon={Menu}
                 onClick={() => setDrawerOpen(true)}
-                size="icon"
-            >
-                <Menu className="size-6" />
-            </Button>
+                position="bottom-left"
+            />
 
             {/* Mobile Drawer */}
             <AnimatePresence>

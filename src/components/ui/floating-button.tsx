@@ -67,9 +67,9 @@ function positionClasses(position: FloatingButtonProps['position']) {
 }
 
 /**
- * FloatingButton component — a versatile FAB built with shadcn Button and lucide-react icons.
- *
- * JSDoc here is descriptive only — TypeScript types are the source of truth.
+ * A versatile floating action button that can be used for primary actions on a page.
+ * It supports different sizes, shapes, variants, and positions on the viewport.
+ * The button can render an icon, an optional label, or both.
  */
 export default function FloatingButton({
     icon: Icon,
