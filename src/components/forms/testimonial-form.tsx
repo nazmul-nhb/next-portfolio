@@ -39,7 +39,7 @@ type TestimonialFormData = z.infer<typeof TestimonialFormSchema>;
 type TestimonialFormUpdateData = z.infer<typeof TestimonialFormUpdateSchema>;
 
 interface TestimonialFormProps {
-    onSubmit: (data: InsertTestimonial | UpdateTestimonial) => void;
+    onSubmit: ((data: UpdateTestimonial) => void) | ((data: InsertTestimonial) => void);
     defaultValues?: SelectTestimonial;
     isLoading?: boolean;
 }
@@ -104,7 +104,7 @@ export function TestimonialForm({
                 rating,
             };
 
-            onSubmit(payload);
+            onSubmit(payload as InsertTestimonial);
         } catch (error) {
             console.error('Form submission error:', error);
             // Cleanup uploaded avatar on error

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectEducation } from '@/types/career';
 
 interface EducationClientProps {
@@ -54,11 +54,6 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
             description: 'This action cannot be undone!',
             confirmText: 'Delete',
         });
-    };
-
-    const formatDate = (date: string | null) => {
-        if (!date) return 'Present';
-        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
     };
 
     return (
@@ -117,8 +112,7 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                                                 {edu.institution} • {edu.location}
                                             </p>
                                             <p className="text-sm text-muted-foreground">
-                                                {formatDate(edu.start_date)} -{' '}
-                                                {formatDate(edu.end_date)}
+                                                {formatDuration(edu.start_date, edu.end_date)}
                                             </p>
                                             {edu.grade && (
                                                 <p className="text-sm font-medium text-primary">
@@ -128,7 +122,7 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Link href={`/admin/education/${edu.id}` as '/'}>
+                                        <Link href={`/admin/education/${edu.id}`}>
                                             <Button size="icon" variant="outline">
                                                 <Pencil className="h-4 w-4" />
                                             </Button>

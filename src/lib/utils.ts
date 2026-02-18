@@ -1,7 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
-import { getLastArrayElement } from 'nhb-toolbox';
+import { formatDate, getLastArrayElement } from 'nhb-toolbox';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
+import type { Uncertain } from '@/types';
 
 /** Utility function to combine and merge Tailwind CSS class names. */
 export function cn(...inputs: ClassValue[]) {
@@ -50,4 +51,18 @@ export async function constructFileListFromPaths(imgPaths: string[]): Promise<Fi
     }
 
     return dataTransfer.files;
+}
+
+/**
+ * * Formats a duration string given start and end dates, handling "Present" for ongoing durations.
+ * @param startDate The start date of the duration (`string` or `Date`).
+ * @param endDate The end date of the duration (`string` or `Date`). If `null` or `undefined`, it will be treated as `"Present"`.
+ * @returns A formatted string like `"Jan 2020 - Present"` or `"Jan 2020 - Dec 2021"`.
+ */
+export function formatDuration(startDate: string | Date, endDate: Uncertain<string | Date>) {
+    const start = formatDate({ date: startDate, format: 'mmm yyyy' });
+
+    const end = endDate ? formatDate({ date: endDate, format: 'mmm yyyy' }) : 'Present';
+
+    return `${start} - ${end}`;
 }

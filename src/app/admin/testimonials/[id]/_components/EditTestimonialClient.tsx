@@ -7,11 +7,11 @@ import { deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { SelectTestimonial, UpdateTestimonial } from '@/types/testimonials';
 
-interface EditTestimonialClientProps {
+interface Props {
     testimonial: SelectTestimonial;
 }
 
-export function EditTestimonialClient({ testimonial }: EditTestimonialClientProps) {
+export function EditTestimonialClient({ testimonial }: Props) {
     const router = useRouter();
 
     const { isPending, mutate } = useApiMutation<SelectTestimonial, UpdateTestimonial>(
@@ -21,6 +21,9 @@ export function EditTestimonialClient({ testimonial }: EditTestimonialClientProp
             successMessage: 'Testimonial updated successfully!',
             errorMessage: 'Failed to update testimonial. Please try again.',
             invalidateKeys: ['testimonials', testimonial.id],
+            onError: (error) => {
+                console.error('Failed to update testimonial:', error);
+            },
         }
     );
 
@@ -29,10 +32,6 @@ export function EditTestimonialClient({ testimonial }: EditTestimonialClientProp
             onSuccess: async () => {
                 await deleteOldCloudFile(testimonial.client_avatar, data.client_avatar);
                 router.push('/admin/testimonials');
-                router.refresh();
-            },
-            onError: (error) => {
-                console.error('Failed to update testimonial:', error);
             },
         });
     };

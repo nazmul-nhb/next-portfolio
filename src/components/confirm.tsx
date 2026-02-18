@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button, type ButtonProps } from '@/components/ui/button';
 
 type Options = {
-    onConfirm: () => void;
+    onConfirm: () => void | Promise<void>;
     onCancel?: () => void;
     title: React.ReactNode;
     description?: React.ReactNode;
@@ -16,6 +16,7 @@ type Options = {
     cancelButtonVariant?: ButtonProps['variant'];
     buttonSize?: ButtonProps['size'];
     toastOptions?: ExternalToast;
+    isLoading?: boolean;
 };
 
 export function confirmToast(options: Options) {
@@ -30,6 +31,7 @@ export function confirmToast(options: Options) {
         cancelButtonVariant = 'outline',
         confirmButtonVariant = 'destructive',
         buttonSize = 'sm',
+        isLoading,
     } = options;
 
     toast.custom(
@@ -43,6 +45,7 @@ export function confirmToast(options: Options) {
 
                 <div className="flex gap-2 justify-end">
                     <Button
+                        loading={isLoading}
                         onClick={() => {
                             onConfirm();
                             queueMicrotask(() => toast.dismiss(toastId));

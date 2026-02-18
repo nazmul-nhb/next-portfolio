@@ -21,6 +21,9 @@ export function EditExperienceClient({ experience }: Props) {
             successMessage: 'Experience updated successfully!',
             errorMessage: 'Failed to update experience. Please try again.',
             invalidateKeys: ['experiences', experience.id],
+            onError: (error) => {
+                console.error('Failed to update experience:', error);
+            },
         }
     );
 
@@ -30,9 +33,6 @@ export function EditExperienceClient({ experience }: Props) {
                 await deleteOldCloudFile(experience.company_logo, data.company_logo);
                 router.push('/admin/experience');
                 router.refresh();
-            },
-            onError: (error) => {
-                console.error('Failed to update experience:', error);
             },
         });
     };

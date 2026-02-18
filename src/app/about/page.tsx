@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm';
 import { Briefcase, Code2, Github, GraduationCap, Heart, Linkedin } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { formatDate } from 'nhb-toolbox';
 import {
     FadeInUp,
     ScaleInItem,
@@ -15,7 +14,7 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { education, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'About',
@@ -144,10 +143,7 @@ export default async function AboutPage() {
                                 {edu.degree} - {edu.institution}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                {formatDate({ date: edu.start_date, format: 'mmm DD, YYYY' })} -{' '}
-                                {edu.end_date
-                                    ? formatDate({ date: edu.end_date, format: 'mmm DD, YYYY' })
-                                    : 'Present'}
+                                {formatDuration(edu.start_date, edu.end_date)}
                             </p>
                             {edu.grade && (
                                 <p className="text-sm font-medium text-primary">

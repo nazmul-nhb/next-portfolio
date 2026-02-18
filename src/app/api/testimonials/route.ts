@@ -131,7 +131,7 @@ export async function DELETE(req: NextRequest) {
         revalidatePath('/admin/testimonials');
         revalidatePath('/(home)', 'page');
 
-        return sendResponse('Testimonial', 'DELETE', { id });
+        return sendResponse('Testimonial', 'DELETE', { id: +id });
     } catch (error) {
         return sendErrorResponse(error);
     }

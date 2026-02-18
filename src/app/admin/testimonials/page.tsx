@@ -8,5 +8,5 @@ export default async function TestimonialsPage() {
         .from(testimonials)
         .orderBy(testimonials.created_at);
 
-    return <TestimonialsClient initialTestimonials={allTestimonials} />;
+    return <TestimonialsClient initialData={allTestimonials} />;
 }

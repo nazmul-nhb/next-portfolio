@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectExperience } from '@/types/career';
 
 interface ExperiencesClientProps {
@@ -55,11 +55,6 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
             description: 'This action cannot be undone!',
             confirmText: 'Delete',
         });
-    };
-
-    const formatDate = (date: string | null) => {
-        if (!date) return 'Present';
-        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
     };
 
     return (
@@ -116,13 +111,12 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
                                                 {exp.company} • {exp.location}
                                             </p>
                                             <p className="text-sm text-muted-foreground">
-                                                {formatDate(exp.start_date)} -{' '}
-                                                {formatDate(exp.end_date)}
+                                                {formatDuration(exp.start_date, exp.end_date)}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Link href={`/admin/experience/${exp.id}` as '/'}>
+                                        <Link href={`/admin/experience/${exp.id}`}>
                                             <Button size="icon" variant="outline">
                                                 <Pencil className="h-4 w-4" />
                                             </Button>

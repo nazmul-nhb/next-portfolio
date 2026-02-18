@@ -110,7 +110,10 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         {blog.published_date && (
                             <span className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
-                                {formatDate({ date: blog.published_date })}
+                                {formatDate({
+                                    date: blog.published_date,
+                                    format: 'dd, mmm DD, YYYY hh:mm:ss a',
+                                })}
                             </span>
                         )}
 

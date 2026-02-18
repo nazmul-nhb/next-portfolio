@@ -3,56 +3,61 @@
 import { MessageSquareQuote, Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectTestimonial } from '@/types/testimonials';
 
-interface TestimonialsClientProps {
-    initialTestimonials: SelectTestimonial[];
+interface Props {
+    initialData: SelectTestimonial[];
 }
 
-export function TestimonialsClient({ initialTestimonials }: TestimonialsClientProps) {
-    const router = useRouter();
-    const [testimonials, setTestimonials] = useState(initialTestimonials);
+export function TestimonialsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const handleDelete = async (testimonial: SelectTestimonial) => {
+    const { data: testimonials = initialData } = useApiQuery<SelectTestimonial[]>(
+        'testimonials',
+        '/api/testimonials'
+    );
+
+    const { mutate, isPending } = useApiMutation<{ id: number }, undefined>(
+        `/api/testimonials?id=${deletingId}`,
+        'DELETE',
+        {
+            successMessage: 'Testimonial deleted successfully!',
+            errorMessage: 'Failed to delete testimonial. Please try again.',
+            invalidateKeys: ['testimonials'],
+        }
+    );
+
+    const handleDelete = (testimonial: SelectTestimonial) => {
         const { client_avatar, client_name, id } = testimonial;
 
         confirmToast({
-            onConfirm: async () => {
-                setDeletingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/testimonials?id=${id}`, {
-                        method: 'DELETE',
-                    });
-                    if (success) {
-                        setTestimonials(testimonials.filter((t) => t.id !== id));
-
-                        if (client_avatar) {
-                            await deleteFromCloudinary(client_avatar);
-                        }
-
-                        toast.success('Testimonial deleted successfully');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete testimonial:', error);
-                    toast.error('Failed to delete testimonial');
-                } finally {
-                    setDeletingId(null);
-                }
-            },
             title: `Delete testimonial from "${client_name}"?`,
             description: 'This action cannot be undone!',
             confirmText: 'Delete',
+            isLoading: deletingId === id && isPending,
+            onConfirm: () => {
+                setDeletingId(id);
+                mutate(undefined, {
+                    onSuccess: async () => {
+                        if (client_avatar) {
+                            await deleteFromCloudinary(client_avatar);
+                        }
+                    },
+                    onError: (error) => {
+                        console.error('Failed to delete testimonial:', error);
+                    },
+                    onSettled: () => {
+                        setDeletingId(null);
+                    },
+                });
+            },
         });
     };
 
@@ -132,22 +137,23 @@ export function TestimonialsClient({ initialTestimonials }: TestimonialsClientPr
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Link
-                                            href={
-                                                `/admin/testimonials/${testimonial.id}` as '/'
-                                            }
-                                        >
+                                        <Link href={`/admin/testimonials/${testimonial.id}`}>
                                             <Button size="icon" variant="outline">
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
                                         </Link>
                                         <Button
-                                            disabled={deletingId === testimonial.id}
+                                            disabled={
+                                                deletingId === testimonial.id || isPending
+                                            }
+                                            loading={deletingId === testimonial.id && isPending}
                                             onClick={() => handleDelete(testimonial)}
                                             size="icon"
                                             variant="destructive"
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            {!(deletingId === testimonial.id || isPending) && (
+                                                <Trash2 className="h-4 w-4" />
+                                            )}
                                         </Button>
                                     </div>
                                 </div>
