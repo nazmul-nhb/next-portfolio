@@ -131,19 +131,18 @@ export default function Navbar() {
                     {/* Right: Search + Profile + Actions */}
                     <div className="flex items-center gap-1.5">
                         {/* Search Button */}
-                        <SmartTooltip
-                            content={'Search (Ctrl+K)'}
-                            trigger={
-                                <Button
-                                    className="h-9 w-9 rounded-full"
-                                    onClick={() => setSearchOpen(true)}
-                                    size="icon"
-                                    variant="ghost"
-                                >
-                                    <Search className="h-4 w-4" />
-                                </Button>
-                            }
-                        />
+
+                        <Button
+                            className="h-9 w-9 rounded-full"
+                            onClick={() => setSearchOpen(true)}
+                            size="icon"
+                            variant="ghost"
+                        >
+                            <SmartTooltip
+                                content={'Search (Ctrl+K)'}
+                                trigger={<Search className="h-4 w-4" />}
+                            />
+                        </Button>
 
                         {/* Secondary nav items (desktop only) */}
                         <div className="hidden items-center gap-0.5 md:flex">

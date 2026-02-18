@@ -1,6 +1,6 @@
 'use client';
 
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
@@ -62,7 +62,7 @@ function Button({
     onClick,
     ...props
 }: ButtonProps) {
-    const Comp = asChild ? Slot : 'button';
+    const Comp = asChild ? Slot.Slot : 'button';
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const [ripples, setRipples] = React.useState<Ripple[]>([]);
 
