@@ -1,32 +1,13 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    ArrowLeft,
-    Briefcase,
-    FolderKanban,
-    GraduationCap,
-    LayoutDashboard,
-    Lightbulb,
-    Menu,
-    MessageCircle,
-    MessageSquareQuote,
-    X,
-} from 'lucide-react';
+import { ArrowLeft, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
-
-const menuItems = [
-    { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
-    { href: '/admin/skills', label: 'Skills', icon: Lightbulb },
-    { href: '/admin/experience', label: 'Experience', icon: Briefcase },
-    { href: '/admin/education', label: 'Education', icon: GraduationCap },
-    { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
-    { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
-];
+import { siteConfig } from '@/configs/site';
 
 /** Check if a menu item is the active route. */
 function isActive(href: string, pathname: string) {
@@ -47,14 +28,14 @@ export function AdminSidebar() {
     }, [pathname]);
 
     const NavContent = () => (
-        <>
+        <Fragment>
             <div className="border-b border-border p-5">
                 <h2 className="text-lg font-bold tracking-tight">Admin Panel</h2>
                 <p className="text-xs text-muted-foreground">Manage your portfolio</p>
             </div>
 
             <nav className="flex-1 space-y-0.5 p-3">
-                {menuItems.map((item) => {
+                {siteConfig.adminMenus.map((item) => {
                     const active = isActive(item.href, pathname);
                     return (
                         <Link
@@ -83,11 +64,11 @@ export function AdminSidebar() {
                     Back to Site
                 </Link>
             </div>
-        </>
+        </Fragment>
     );
 
     return (
-        <>
+        <Fragment>
             {/* Desktop Sidebar */}
             <aside className="hidden w-60 shrink-0 border-r border-border bg-card/50 md:block">
                 <div className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
@@ -97,17 +78,17 @@ export function AdminSidebar() {
 
             {/* Mobile Toggle Button (fixed) */}
             <Button
-                className="fixed bottom-4 left-4 z-40 h-12 w-12 rounded-full shadow-lg md:hidden"
+                className="fixed bottom-4 left-4 z-40 size-12 rounded-full shadow-lg md:hidden"
                 onClick={() => setDrawerOpen(true)}
                 size="icon"
             >
-                <Menu className="h-5 w-5" />
+                <Menu className="size-6" />
             </Button>
 
             {/* Mobile Drawer */}
             <AnimatePresence>
                 {drawerOpen && (
-                    <>
+                    <Fragment>
                         <motion.div
                             animate={{ opacity: 1 }}
                             className="fixed inset-0 z-60 bg-background/60 backdrop-blur-sm md:hidden"
@@ -134,7 +115,7 @@ export function AdminSidebar() {
                                 </Button>
                             </div>
                             <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
-                                {menuItems.map((item) => {
+                                {siteConfig.adminMenus.map((item) => {
                                     const active = isActive(item.href, pathname);
                                     return (
                                         <Link
@@ -164,9 +145,9 @@ export function AdminSidebar() {
                                 </Link>
                             </div>
                         </motion.aside>
-                    </>
+                    </Fragment>
                 )}
             </AnimatePresence>
-        </>
+        </Fragment>
     );
 }

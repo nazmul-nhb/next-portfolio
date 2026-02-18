@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
@@ -157,7 +158,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                         Live Demo →
                                     </a>
                                     {project.repo_links[0] && (
-                                        <>
+                                        <Fragment>
                                             <span className="text-muted-foreground">•</span>
                                             <a
                                                 className="text-sm text-primary hover:underline"
@@ -167,7 +168,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                             >
                                                 GitHub →
                                             </a>
-                                        </>
+                                        </Fragment>
                                     )}
                                 </div>
                             </CardContent>

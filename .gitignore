@@ -43,6 +43,7 @@ next-env.d.ts
 __*.*
 
 .estimator
+.plans
 *Instructions.md
 EXAMPLE_*.*
 MIGRATION_*.md

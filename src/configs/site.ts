@@ -1,12 +1,17 @@
 import {
+    Briefcase,
     Contact,
     FileText,
     FolderKanban,
+    GraduationCap,
     Home,
     Info,
+    LayoutDashboard,
+    Lightbulb,
+    MessageCircle,
     MessageSquare,
+    MessageSquareQuote,
     PenTool,
-    Settings,
 } from 'lucide-react';
 import type { TabItem } from '@/types';
 
@@ -24,8 +29,17 @@ export const siteConfig = {
         { type: 'separator' },
         { title: 'Messages', path: '/messages', icon: MessageSquare },
         { title: 'Resume', path: '/resume', icon: FileText },
-        { title: 'Settings', path: '/settings', icon: Settings },
+        // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],
+    adminMenus: [
+        { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
+        { href: '/admin/skills', label: 'Skills', icon: Lightbulb },
+        { href: '/admin/experience', label: 'Experience', icon: Briefcase },
+        { href: '/admin/education', label: 'Education', icon: GraduationCap },
+        { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+        { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
+    ],
     links: {
         github: 'https://github.com/nazmul-nhb',
         linkedin: 'https://linkedin.com/in/nazmul-nhb',

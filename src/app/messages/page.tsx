@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -217,7 +218,7 @@ export default function MessagesPage() {
                     {/* Chat area */}
                     <div className="flex flex-col rounded-xl border border-border/50 bg-card">
                         {activeConversation ? (
-                            <>
+                            <Fragment>
                                 <div className="flex-1 space-y-3 overflow-y-auto p-4">
                                     {messages.map((msg) => (
                                         <div
@@ -259,7 +260,7 @@ export default function MessagesPage() {
                                         <Send className="h-4 w-4" />
                                     </Button>
                                 </div>
-                            </>
+                            </Fragment>
                         ) : (
                             <div className="flex flex-1 flex-col items-center justify-center py-20">
                                 <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/50" />

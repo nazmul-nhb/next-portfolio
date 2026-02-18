@@ -6,6 +6,7 @@ import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -38,7 +39,7 @@ export default function NavMobileDrawer({
     };
 
     return (
-        <>
+        <Fragment>
             {/* Backdrop */}
             <motion.div
                 animate={{ opacity: 1 }}
@@ -91,7 +92,7 @@ export default function NavMobileDrawer({
                     </div>
 
                     {secondaryNav.length > 0 && (
-                        <>
+                        <Fragment>
                             <div className="my-3 h-px bg-border" />
                             <div className="space-y-0.5">
                                 {secondaryNav.map((tab) => {
@@ -114,11 +115,11 @@ export default function NavMobileDrawer({
                                     );
                                 })}
                             </div>
-                        </>
+                        </Fragment>
                     )}
 
                     {isAdmin && (
-                        <>
+                        <Fragment>
                             <div className="my-3 h-px bg-border" />
                             <Link
                                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
@@ -132,7 +133,7 @@ export default function NavMobileDrawer({
                                 <Settings className="h-4 w-4" />
                                 Admin Dashboard
                             </Link>
-                        </>
+                        </Fragment>
                     )}
                 </nav>
 
@@ -179,6 +180,6 @@ export default function NavMobileDrawer({
                     )}
                 </div>
             </motion.aside>
-        </>
+        </Fragment>
     );
 }

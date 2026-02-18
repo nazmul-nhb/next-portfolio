@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import NavbarAuth from '@/components/nav/nav-auth';
 import NavbarDocked from '@/components/nav/nav-docked';
 import NavMobileDrawer from '@/components/nav/nav-mobile';
@@ -89,7 +90,7 @@ export default function Navbar() {
     };
 
     return (
-        <>
+        <Fragment>
             <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
                     {/* Left: Logo + Site Name */}
@@ -243,6 +244,6 @@ export default function Navbar() {
                     />
                 )}
             </AnimatePresence>
-        </>
+        </Fragment>
     );
 }

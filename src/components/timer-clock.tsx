@@ -4,6 +4,7 @@ import { Clock, Copy, CopyCheck } from 'lucide-react';
 import { formatTimer, useClock, useCopyText, useMount, useStorage, useTimer } from 'nhb-hooks';
 import { Chronos, isArray } from 'nhb-toolbox';
 import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
+import { Fragment } from 'react/jsx-runtime';
 // import { timeZonePlugin } from 'nhb-toolbox/plugins/timeZonePlugin';
 import { Button } from '@/components/ui/button';
 
@@ -62,13 +63,13 @@ export default function ClockTimer() {
                 onClick={() => copyToClipboard(formatted)}
             >
                 {copiedText ? (
-                    <>
+                    <Fragment>
                         {copiedText} <CopyCheck />
-                    </>
+                    </Fragment>
                 ) : (
-                    <>
+                    <Fragment>
                         Copy Current Date <Copy />
-                    </>
+                    </Fragment>
                 )}
             </Button>
 

@@ -2,6 +2,7 @@
 
 import { MessageCircle, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -120,7 +121,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                 <FadeInUp className="lg:col-span-2" delay={0.2}>
                     <Card className="flex h-150 flex-col">
                         {selectedConversation ? (
-                            <>
+                            <Fragment>
                                 {/* Messages */}
                                 <div className="flex-1 space-y-4 overflow-y-auto p-4">
                                     {messages?.map((msg) => (
@@ -184,7 +185,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                                         </Button>
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         ) : (
                             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground">
                                 <MessageCircle className="h-16 w-16" />
