@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
 import { BlogEditor } from '@/components/misc/blog-editor';
+import { TagCategorySelector } from '@/components/misc/tag-category-selector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,8 @@ export default function NewBlogPage() {
     const [uploadingCover, setUploadingCover] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [tagIds, setTagIds] = useState<number[]>([]);
+    const [categoryIds, setCategoryIds] = useState<number[]>([]);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -93,6 +96,8 @@ export default function NewBlogPage() {
                         excerpt: excerpt || undefined,
                         cover_image: finalCoverImage || undefined,
                         is_published: isPublished,
+                        tag_ids: tagIds.length > 0 ? tagIds : undefined,
+                        category_ids: categoryIds.length > 0 ? categoryIds : undefined,
                     },
                 }
             );
@@ -206,6 +211,34 @@ export default function NewBlogPage() {
                             onChange={setContent}
                             placeholder="Start writing your blog post..."
                         />
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <Label>Tags (optional)</Label>
+                            <div className="mt-1.5">
+                                <TagCategorySelector
+                                    allowCreate
+                                    endpoint="/api/tags"
+                                    label="Tags"
+                                    onChange={setTagIds}
+                                    placeholder="Search or create tags..."
+                                    selectedIds={tagIds}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label>Categories (optional)</Label>
+                            <div className="mt-1.5">
+                                <TagCategorySelector
+                                    endpoint="/api/categories"
+                                    label="Categories"
+                                    onChange={setCategoryIds}
+                                    placeholder="Search categories..."
+                                    selectedIds={categoryIds}
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex items-center justify-between border-t border-border pt-6">

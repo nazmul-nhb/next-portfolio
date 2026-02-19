@@ -133,7 +133,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 </div>
             ),
             {
-                duration: 3,
+                duration: Infinity,
                 position: 'top-center',
             }
         );
@@ -141,13 +141,13 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
 
     const addLink = () => {
         showInputToast('Add Link', 'https://example.com', (url) => {
-            editor.chain().focus().setLink({ href: url }).run();
+            editor.chain().focus().setLink({ href: url, target: '_blank' }).run();
         });
     };
 
     const addImage = () => {
         showInputToast('Add Image', 'https://example.com/image.jpg', (url) => {
-            editor.chain().focus().setImage({ src: url }).run();
+            editor.chain().focus().setImage({ src: url, alt: 'Blog Image' }).run();
         });
     };
 
@@ -161,7 +161,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('bold') ? 'default' : 'ghost'}
                 >
-                    <Bold className="h-4 w-4" />
+                    <Bold className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -169,7 +169,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('italic') ? 'default' : 'ghost'}
                 >
-                    <Italic className="h-4 w-4" />
+                    <Italic className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -177,7 +177,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('strike') ? 'default' : 'ghost'}
                 >
-                    <Strikethrough className="h-4 w-4" />
+                    <Strikethrough className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleCode().run()}
@@ -185,7 +185,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('code') ? 'default' : 'ghost'}
                 >
-                    <Code className="h-4 w-4" />
+                    <Code className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -196,7 +196,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('heading', { level: 1 }) ? 'default' : 'ghost'}
                 >
-                    <Heading1 className="h-4 w-4" />
+                    <Heading1 className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -204,7 +204,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('heading', { level: 2 }) ? 'default' : 'ghost'}
                 >
-                    <Heading2 className="h-4 w-4" />
+                    <Heading2 className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
@@ -212,7 +212,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('heading', { level: 3 }) ? 'default' : 'ghost'}
                 >
-                    <Heading3 className="h-4 w-4" />
+                    <Heading3 className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -223,7 +223,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
                 >
-                    <List className="h-4 w-4" />
+                    <List className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -231,7 +231,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('orderedList') ? 'default' : 'ghost'}
                 >
-                    <ListOrdered className="h-4 w-4" />
+                    <ListOrdered className="size-4" />
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
@@ -239,16 +239,16 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant={editor.isActive('blockquote') ? 'default' : 'ghost'}
                 >
-                    <Quote className="h-4 w-4" />
+                    <Quote className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
 
                 <Button onClick={addLink} size="sm" type="button" variant="ghost">
-                    <Link2 className="h-4 w-4" />
+                    <Link2 className="size-4" />
                 </Button>
                 <Button onClick={addImage} size="sm" type="button" variant="ghost">
-                    <ImageIcon className="h-4 w-4" />
+                    <ImageIcon className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -260,7 +260,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant="ghost"
                 >
-                    <Undo className="h-4 w-4" />
+                    <Undo className="size-4" />
                 </Button>
                 <Button
                     disabled={!editor.can().redo()}
@@ -269,7 +269,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     type="button"
                     variant="ghost"
                 >
-                    <Redo className="h-4 w-4" />
+                    <Redo className="size-4" />
                 </Button>
             </div>
 
