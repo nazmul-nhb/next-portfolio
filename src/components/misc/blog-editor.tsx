@@ -133,7 +133,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 </div>
             ),
             {
-                duration: Infinity,
+                duration: 3,
                 position: 'top-center',
             }
         );

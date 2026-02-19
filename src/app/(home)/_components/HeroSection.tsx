@@ -90,12 +90,12 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
             <motion.div
                 animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
                 className="absolute top-1/4 -right-1/4 -z-10 h-112.5 w-112.5 rounded-full bg-blue-500/8 blur-3xl"
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{ duration: 8, repeat: 3, ease: 'easeInOut' }}
             />
             <motion.div
                 animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }}
                 className="absolute -bottom-1/4 -left-1/4 -z-10 h-112.5 w-112.5 rounded-full bg-violet-500/8 blur-3xl"
-                transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+                transition={{ duration: 10, repeat: 3, ease: 'easeInOut', delay: 2 }}
             />
 
             <div className="mx-auto max-w-6xl px-4 py-20">
