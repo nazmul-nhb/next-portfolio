@@ -36,6 +36,8 @@ export default function NewBlogPage() {
     const [tagIds, setTagIds] = useState<number[]>([]);
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
 
+    console.log({ tagIds, categoryIds });
+
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/auth/login');

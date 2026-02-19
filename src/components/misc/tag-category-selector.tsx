@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,19 +48,21 @@ export function TagCategorySelector({
     const [creating, setCreating] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    /** Fetch available options from the API */
-    const fetchOptions = useCallback(async () => {
-        try {
-            const { data } = await httpRequest<Option[]>(endpoint, { method: 'GET' });
-            if (data) setOptions(data);
-        } catch {
-            // Silently fail — user can retry by reopening
-        }
-    }, [endpoint]);
-
     useEffect(() => {
+        /** Fetch available options from the API */
+        const fetchOptions = async () => {
+            try {
+                const { data } = await httpRequest<Option[]>(endpoint, { method: 'GET' });
+
+                if (data) setOptions(data);
+            } catch {
+                // console.error(err);
+                // Silently fail — user can retry by reopening
+            }
+        };
+
         fetchOptions();
-    }, [fetchOptions]);
+    }, [endpoint]);
 
     /** Focus the search input when the popover opens */
     useEffect(() => {
