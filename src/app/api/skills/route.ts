@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -12,7 +12,10 @@ import type { InsertSkill, UpdateSkill } from '@/types/skills';
 /** Get all skills */
 export async function GET() {
     try {
-        const result = await db.select().from(skills).orderBy(desc(skills.created_at));
+        const result = await db
+            .select()
+            .from(skills)
+            .orderBy(asc(skills.sort_order), asc(skills.title));
         return sendResponse('Skill', 'GET', result);
     } catch (error) {
         console.error(error);

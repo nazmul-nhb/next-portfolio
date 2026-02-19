@@ -68,3 +68,8 @@ export type TabItem = Tab | Separator;
 export type ChildrenProp = {
     children: ReactNode;
 };
+
+export interface ReorderItem {
+    id: number;
+    sort_order: number;
+}

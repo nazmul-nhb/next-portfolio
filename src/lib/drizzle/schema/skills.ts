@@ -1,4 +1,4 @@
-import { pgTable, serial, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
 
 export const skills = pgTable(
     'skills',
@@ -6,6 +6,7 @@ export const skills = pgTable(
         id: serial().primaryKey(),
         title: varchar({ length: 64 }).notNull(),
         icon: varchar({ length: 512 }).notNull(),
+        sort_order: integer().default(0).notNull(),
         created_at: timestamp().defaultNow().notNull(),
         updated_at: timestamp()
             .defaultNow()

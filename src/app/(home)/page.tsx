@@ -25,7 +25,7 @@ export default async function HomePage() {
 
     try {
         const [skillsResult, [admin]] = await Promise.all([
-            db.select().from(skills).orderBy(asc(skills.title)),
+            db.select().from(skills).orderBy(asc(skills.sort_order), asc(skills.title)),
             db
                 .select({ profile_image: users.profile_image })
                 .from(users)

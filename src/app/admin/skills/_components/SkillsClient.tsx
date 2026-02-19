@@ -1,15 +1,30 @@
 'use client';
 
-import { Pencil, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import {
+    closestCenter,
+    DndContext,
+    type DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    rectSortingStrategy,
+    SortableContext,
+    sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import SortableSkillCard from '@/app/admin/skills/_components/SortableSkillCard';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import type { ReorderItem } from '@/types';
 import type { SelectSkill } from '@/types/skills';
 
 interface Props {
@@ -18,10 +33,19 @@ interface Props {
 
 export function SkillsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [orderedSkills, setOrderedSkills] = useState<SelectSkill[]>(initialData);
+    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const { data: skills = initialData } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
+    const { data: skills } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
 
-    const { mutate, isPending } = useApiMutation<{ id: number }, undefined>(
+    // Sync query data into local state when it updates (but not during drag)
+    useEffect(() => {
+        if (skills) {
+            setOrderedSkills(skills);
+        }
+    }, [skills]);
+
+    const { mutate: deleteSkill, isPending: isDeleting } = useApiMutation<{ id: number }, null>(
         `/api/skills?id=${deletingId}`,
         'DELETE',
         {
@@ -29,9 +53,63 @@ export function SkillsClient({ initialData }: Props) {
             errorMessage: 'Failed to delete skill. Please try again.',
             invalidateKeys: ['skills'],
             onError: (error) => {
-                console.error('Failed to delete testimonial:', error);
+                console.error('Failed to delete skill:', error);
             },
         }
+    );
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: { distance: 5 },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const { mutate: reorder, isPending: isReordering } = useApiMutation<
+        { reordered: number },
+        ReorderItem[]
+    >('/api/skills/reorder', 'PUT', {
+        successMessage: 'Skill order saved!',
+        errorMessage: 'Failed to save skill order. Please try again.',
+        invalidateKeys: ['skills'],
+    });
+
+    /** Persist reordered skills to the server (debounced) */
+    const saveOrder = useCallback(
+        (reordered: SelectSkill[]) => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+            }
+
+            saveTimeoutRef.current = setTimeout(async () => {
+                const items: ReorderItem[] = reordered.map((skill, idx) => ({
+                    id: skill.id,
+                    sort_order: idx + 1,
+                }));
+
+                reorder(items);
+            }, 700);
+        },
+        [reorder]
+    );
+
+    const handleDragEnd = useCallback(
+        (event: DragEndEvent) => {
+            const { active, over } = event;
+
+            if (over && active.id !== over.id) {
+                setOrderedSkills((prev) => {
+                    const oldIndex = prev.findIndex((s) => s.id === active.id);
+                    const newIndex = prev.findIndex((s) => s.id === over.id);
+                    const reordered = arrayMove(prev, oldIndex, newIndex);
+                    saveOrder(reordered);
+                    return reordered;
+                });
+            }
+        },
+        [saveOrder]
     );
 
     const handleDelete = async (skill: SelectSkill) => {
@@ -43,9 +121,9 @@ export function SkillsClient({ initialData }: Props) {
             title: `Delete "${title}"?`,
             description: 'This action cannot be undone!',
             confirmText: 'Delete',
-            isLoading: deletingId === id && isPending,
+            isLoading: deletingId === id && isDeleting,
             onConfirm: () => {
-                mutate(undefined, {
+                deleteSkill(null, {
                     onSuccess: async () => {
                         if (icon) {
                             await deleteFromCloudinary(icon);
@@ -64,7 +142,12 @@ export function SkillsClient({ initialData }: Props) {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Skills</h1>
-                    <p className="text-muted-foreground">Manage your skills and technologies</p>
+                    <p className="text-muted-foreground">
+                        Manage your skills and technologies
+                        {isReordering && (
+                            <span className="ml-2 text-xs text-primary">(saving order...)</span>
+                        )}
+                    </p>
                 </div>
                 <Link href="/admin/skills/new">
                     <Button>
@@ -74,7 +157,7 @@ export function SkillsClient({ initialData }: Props) {
                 </Link>
             </div>
 
-            {skills.length === 0 ? (
+            {orderedSkills.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No skills yet</p>
@@ -87,49 +170,28 @@ export function SkillsClient({ initialData }: Props) {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    {skills.map((skill) => (
-                        <Card className="relative" key={skill.id}>
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex flex-1 items-center gap-3">
-                                        <Image
-                                            alt={skill.title}
-                                            className="rounded object-contain"
-                                            height={40}
-                                            src={buildCloudinaryUrl(skill.icon)}
-                                            width={40}
-                                        />
-                                        <CardTitle className="text-base">
-                                            {skill.title}
-                                        </CardTitle>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                                <div className="flex gap-2">
-                                    <Link className="flex-1" href={`/admin/skills/${skill.id}`}>
-                                        <Button className="w-full" size="sm" variant="outline">
-                                            <Pencil className="mr-2 h-3 w-3" />
-                                            Edit
-                                        </Button>
-                                    </Link>
-                                    <Button
-                                        disabled={deletingId === skill.id && isPending}
-                                        loading={deletingId === skill.id && isPending}
-                                        onClick={() => handleDelete(skill)}
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        {(deletingId === skill.id && isPending) || (
-                                            <Trash2 className="h-3 w-3 text-destructive" />
-                                        )}
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <DndContext
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                    sensors={sensors}
+                >
+                    <SortableContext
+                        items={orderedSkills.map((s) => s.id)}
+                        strategy={rectSortingStrategy}
+                    >
+                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                            {orderedSkills.map((skill) => (
+                                <SortableSkillCard
+                                    deletingId={deletingId}
+                                    isPending={isDeleting}
+                                    key={skill.id}
+                                    onDelete={handleDelete}
+                                    skill={skill}
+                                />
+                            ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
             )}
         </div>
     );

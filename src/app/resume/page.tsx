@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { Briefcase, Code2, Github, GraduationCap, Linkedin, Mail } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -41,7 +41,10 @@ export default async function ResumePage() {
     };
 
     try {
-        allSkills = await db.select().from(skills);
+        allSkills = await db
+            .select()
+            .from(skills)
+            .orderBy(asc(skills.sort_order), asc(skills.title));
         allExperiences = await db
             .select()
             .from(experiences)
