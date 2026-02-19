@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
+import { ScaleInItem, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 
@@ -25,16 +25,13 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
     return (
         <section className="border-t border-border/50 bg-muted/30 py-20">
             <div className="mx-auto max-w-6xl px-4">
-                <FadeInUp>
-                    <div className="mb-12 text-center">
-                        <h2 className="mb-3 text-3xl font-bold tracking-tight">
-                            Skills & Expertise
-                        </h2>
-                        <p className="text-muted-foreground">
-                            Technologies I use to bring ideas to life
-                        </p>
-                    </div>
-                </FadeInUp>
+                <SectionHeading
+                    // align="center"
+                    className="mb-12"
+                    subtitle="Technologies I use to bring ideas to life"
+                >
+                    Skills & Expertise
+                </SectionHeading>
 
                 <StaggerContainer className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {skills.map((skill) => (
