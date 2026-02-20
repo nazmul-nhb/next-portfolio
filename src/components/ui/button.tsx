@@ -60,39 +60,50 @@ function Button({
     disabled,
     children,
     onClick,
+    ref,
     ...props
 }: ButtonProps) {
     const Comp = asChild ? Slot.Slot : 'button';
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const internalRef = React.useRef<HTMLButtonElement>(null);
     const [ripples, setRipples] = React.useState<Ripple[]>([]);
+
+    // Compose internal ref with external ref (from Radix Slot, etc.)
+    const composedRef = React.useCallback(
+        (node: HTMLButtonElement | null) => {
+            internalRef.current = node;
+            if (typeof ref === 'function') ref(node);
+            else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+        },
+        [ref]
+    );
 
     // Handle ripple effect on click
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (loading || disabled) return;
 
-        const button = buttonRef.current;
-        if (!button) return;
+        const button = internalRef.current;
+        if (button) {
+            // Calculate ripple position - centered on click point
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-        // Calculate ripple position - centered on click point
-        const rect = button.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+            const newRipple: Ripple = {
+                id: Date.now(),
+                x,
+                y,
+                size: Math.max(rect.width, rect.height),
+            };
 
-        const newRipple: Ripple = {
-            id: Date.now(),
-            x,
-            y,
-            size: Math.max(rect.width, rect.height),
-        };
+            setRipples((prev) => [...prev, newRipple]);
 
-        setRipples((prev) => [...prev, newRipple]);
+            // Remove ripple after animation
+            setTimeout(() => {
+                setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
+            }, 900);
+        }
 
-        // Remove ripple after animation
-        setTimeout(() => {
-            setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
-        }, 900);
-
-        // Call original onClick if provided
+        // Always call onClick — even if ref isn't available (e.g. inside Radix Slot)
         onClick?.(e);
     };
 
@@ -112,7 +123,7 @@ function Button({
 
     return (
         <Comp
-            ref={buttonRef}
+            ref={composedRef}
             data-slot="button"
             className={cn(buttonVariants({ variant, size, className }), 'relative overflow-hidden')}
             disabled={disabled || loading}

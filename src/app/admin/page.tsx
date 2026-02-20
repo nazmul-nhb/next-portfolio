@@ -106,7 +106,7 @@ export default async function AdminDashboard() {
             title: 'Users',
             count: stats.users,
             icon: Users,
-            href: '/users',
+            href: '/admin/users',
             color: 'text-green-600',
         },
         {

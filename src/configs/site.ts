@@ -14,6 +14,7 @@ import {
     Newspaper,
     PenTool,
     Tag,
+    Users,
 } from 'lucide-react';
 import type { TabItem } from '@/types';
 
@@ -43,6 +44,7 @@ export const siteConfig = {
         { href: '/admin/education', label: 'Education', icon: GraduationCap },
         { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
         { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
+        { href: '/admin/users', label: 'Users', icon: Users },
     ],
     links: {
         github: 'https://github.com/nazmul-nhb',
