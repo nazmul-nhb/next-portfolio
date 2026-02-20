@@ -4,6 +4,7 @@ import { MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
@@ -86,7 +87,7 @@ export default function MessagesPage() {
     useEffect(() => {
         if (activeConversation) {
             fetchMessages(activeConversation);
-            const interval = setInterval(() => fetchMessages(activeConversation), 5000);
+            const interval = setInterval(() => fetchMessages(activeConversation), 10000);
             return () => clearInterval(interval);
         }
     }, [activeConversation, fetchMessages]);
@@ -156,7 +157,7 @@ export default function MessagesPage() {
                     setRecipientSearch('');
                     // Send the message
                     await httpRequest<null, Record<string, unknown>>(
-                        `/api/messages/conversations/${data.id}` as '/api/messages',
+                        `/api/messages/conversations/${data.id}`,
                         {
                             method: 'POST',
                             body: { content: newMessage },
@@ -201,51 +202,9 @@ export default function MessagesPage() {
                         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
                             Conversations
                         </h2>
-                        {conversations.length === 0 ? (
-                            <p className="py-8 text-center text-sm text-muted-foreground">
-                                No conversations yet.
-                            </p>
-                        ) : (
-                            conversations.map((conv) => (
-                                <button
-                                    className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
-                                        activeConversation === conv.id
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'hover:bg-muted'
-                                    }`}
-                                    key={conv.id}
-                                    onClick={() => setActiveConversation(conv.id)}
-                                    type="button"
-                                >
-                                    {conv.otherUser.profile_image ? (
-                                        <Image
-                                            alt={conv.otherUser.name}
-                                            className="h-9 w-9 rounded-full object-cover"
-                                            height={36}
-                                            src={buildCloudinaryUrl(
-                                                conv.otherUser.profile_image
-                                            )}
-                                            width={36}
-                                        />
-                                    ) : (
-                                        <User className="h-9 w-9 rounded-full bg-muted p-1.5" />
-                                    )}
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-medium">
-                                            {conv.otherUser.name}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {new Date(
-                                                conv.last_message_at
-                                            ).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </button>
-                            ))
-                        )}
 
                         {/* New conversation */}
-                        <div className="border-t border-border/50 pt-3">
+                        <div className="border-y border-border/50 py-3">
                             <p className="mb-2 text-xs text-muted-foreground">
                                 Start new conversation
                             </p>
@@ -303,6 +262,49 @@ export default function MessagesPage() {
                                 )}
                             </div>
                         </div>
+                        {conversations.length === 0 ? (
+                            <p className="py-8 text-center text-sm text-muted-foreground">
+                                No conversations yet.
+                            </p>
+                        ) : (
+                            conversations.map((conv) => (
+                                <button
+                                    className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
+                                        activeConversation === conv.id
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'hover:bg-muted'
+                                    }`}
+                                    key={conv.id}
+                                    onClick={() => setActiveConversation(conv.id)}
+                                    type="button"
+                                >
+                                    {conv.otherUser.profile_image ? (
+                                        <Image
+                                            alt={conv.otherUser.name}
+                                            className="h-9 w-9 rounded-full object-cover"
+                                            height={36}
+                                            src={buildCloudinaryUrl(
+                                                conv.otherUser.profile_image
+                                            )}
+                                            width={36}
+                                        />
+                                    ) : (
+                                        <User className="h-9 w-9 rounded-full bg-muted p-1.5" />
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-medium">
+                                            {conv.otherUser.name}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatDate({
+                                                date: conv.last_message_at,
+                                                format: 'dd, mmm DD, YYYY hh:mm:ss a',
+                                            })}
+                                        </p>
+                                    </div>
+                                </button>
+                            ))
+                        )}
                     </div>
 
                     {/* Chat area */}
@@ -321,13 +323,10 @@ export default function MessagesPage() {
                                         >
                                             <p>{msg.content}</p>
                                             <p className="mt-1 text-xs opacity-60">
-                                                {new Date(msg.created_at).toLocaleTimeString(
-                                                    'en-US',
-                                                    {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                    }
-                                                )}
+                                                {formatDate({
+                                                    date: msg.created_at,
+                                                    format: 'dd, mmm DD, YYYY hh:mm:ss a',
+                                                })}
                                             </p>
                                         </div>
                                     ))}

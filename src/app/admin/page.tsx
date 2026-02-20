@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
             href: '/admin/categories',
             color: 'text-orange-600',
         },
-    ];
+    ] as const;
 
     return (
         <div className="space-y-8">
@@ -184,7 +184,7 @@ export default async function AdminDashboard() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {cards.map((card) => (
-                    <Link href={card.href as '/'} key={card.title}>
+                    <Link href={card.href} key={card.title}>
                         <Card className="transition-shadow hover:shadow-lg">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">

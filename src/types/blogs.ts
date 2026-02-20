@@ -1,3 +1,5 @@
+import type { categories } from '@/lib/drizzle/schema';
+
 export interface SingleBlogRes {
     blog: BlogDetails;
     tags: BlogTag[];
@@ -51,3 +53,5 @@ export interface BLogReactions {
     like: number[];
     dislike: number[];
 }
+
+export type SelectCategory = typeof categories.$inferSelect;

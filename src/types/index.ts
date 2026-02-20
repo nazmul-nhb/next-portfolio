@@ -1,4 +1,5 @@
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
+import type { GenericObject } from 'nhb-toolbox/object/types';
 import type { ReactNode, SVGProps } from 'react';
 
 export type Uncertain<T> = T | null | undefined;
@@ -73,3 +74,7 @@ export interface ReorderItem {
     id: number;
     sort_order: number;
 }
+
+export type ReplaceDate<T extends GenericObject> = {
+    [K in keyof T]: T[K] extends Date ? string : T[K];
+};

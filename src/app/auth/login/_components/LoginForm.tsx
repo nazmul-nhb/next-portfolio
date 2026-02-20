@@ -22,7 +22,7 @@ export function LoginForm() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleCredentialsLogin = async (e: React.FormEvent) => {
+    const handleCredentialsLogin = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');

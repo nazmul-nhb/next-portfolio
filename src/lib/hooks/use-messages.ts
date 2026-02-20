@@ -35,7 +35,7 @@ export function useConversations() {
 export function useConversationMessages(conversationId: number | null) {
     return useApiQuery<Message[]>(
         ['conversation-messages', String(conversationId)],
-        `/api/messages/conversations/${conversationId}` as `/api/messages`,
+        `/api/messages/conversations/${conversationId}`,
         {
             enabled: conversationId !== null,
             refetchInterval: 5000, // Poll every 5 seconds for new messages
@@ -48,7 +48,7 @@ export function useConversationMessages(conversationId: number | null) {
  */
 export function useSendMessage(conversationId: number) {
     return useApiMutation<Message, { content: string }>(
-        `/api/messages/conversations/${conversationId}` as `/api/messages`,
+        `/api/messages/conversations/${conversationId}`,
         'POST',
         {
             invalidateKeys: [
@@ -64,7 +64,7 @@ export function useSendMessage(conversationId: number) {
  */
 export function useStartConversation() {
     return useApiMutation<Conversation, { recipient_id: number; content: string }>(
-        '/api/messages/conversations' as `/api/messages`,
+        '/api/messages/conversations',
         'POST',
         {
             successMessage: 'Conversation started',

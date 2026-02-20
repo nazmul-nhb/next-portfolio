@@ -129,7 +129,9 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                         {categoryFilter && (
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/20"
-                                href={`/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}`}
+                                href={
+                                    `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                                }
                             >
                                 Category: {categoryFilter}
                                 <X className="h-3 w-3" />
@@ -138,7 +140,9 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                         {tagFilter && (
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                                href={`/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${searchFilter ? `${categoryFilter ? '&' : '?'}search=${searchFilter}` : ''}`}
+                                href={
+                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${searchFilter ? `${categoryFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                                }
                             >
                                 Tag: #{tagFilter}
                                 <X className="h-3 w-3" />
@@ -147,7 +151,9 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                         {searchFilter && (
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                                href={`/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${tagFilter ? `${categoryFilter ? '&' : '?'}tag=${tagFilter}` : ''}`}
+                                href={
+                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${tagFilter ? `${categoryFilter ? '&' : '?'}tag=${tagFilter}` : ''}` as '/'
+                                }
                             >
                                 Search: &quot;{searchFilter}&quot;
                                 <X className="h-3 w-3" />
@@ -173,7 +179,9 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-muted text-muted-foreground hover:text-foreground'
                             }`}
-                            href={`/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}`}
+                            href={
+                                `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                            }
                         >
                             All
                         </Link>

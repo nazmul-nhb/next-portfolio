@@ -129,9 +129,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id as string;
-                token.role = (user.role as 'admin' | 'user') || 'user';
+                token.role = user.role || 'user';
                 token.email_verified = user.email_verified ?? false;
-                token.provider = (user.provider as 'credentials' | 'google') || 'credentials';
+                token.provider = user.provider || 'credentials';
             }
 
             // Handle session updates from client (updateSession call)

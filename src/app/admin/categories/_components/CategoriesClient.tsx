@@ -14,24 +14,18 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
+import type { SelectCategory } from '@/types/blogs';
 
-interface Category {
-    id: number;
-    title: string;
-    slug: string;
-    created_at: string;
-}
-
-export function CategoriesClient({ initialData }: { initialData: Category[] }) {
+export function CategoriesClient({ initialData }: { initialData: SelectCategory[] }) {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [editingCategory, setEditingCategory] = useState<SelectCategory | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: categories } = useApiQuery<Category[]>('categories', '/api/categories');
+    const { data: categories } = useApiQuery<SelectCategory[]>('categories', '/api/categories');
     const allCategories = categories ?? initialData;
 
     const { mutate: createCategory, isPending: isCreating } = useApiMutation<
-        Category,
+        SelectCategory,
         { title: string }
     >('/api/categories', 'POST', {
         successMessage: 'Category created successfully!',
@@ -41,7 +35,7 @@ export function CategoriesClient({ initialData }: { initialData: Category[] }) {
     });
 
     const { mutate: updateCategory, isPending: isUpdating } = useApiMutation<
-        Category,
+        SelectCategory,
         { title: string }
     >(`/api/categories/${editingCategory?.id}`, 'PATCH', {
         successMessage: 'Category updated successfully!',
@@ -53,27 +47,26 @@ export function CategoriesClient({ initialData }: { initialData: Category[] }) {
         },
     });
 
-    const { mutate: deleteCategory, isPending: isDeleting } = useApiMutation<Category, null>(
-        `/api/categories/${deletingId}`,
-        'DELETE',
-        {
-            successMessage: 'Category deleted successfully!',
-            errorMessage: 'Failed to delete category.',
-            invalidateKeys: ['categories'],
-        }
-    );
+    const { mutate: deleteCategory, isPending: isDeleting } = useApiMutation<
+        SelectCategory,
+        null
+    >(`/api/categories/${deletingId}`, 'DELETE', {
+        successMessage: 'Category deleted successfully!',
+        errorMessage: 'Failed to delete category.',
+        invalidateKeys: ['categories'],
+    });
 
     const handleCreate = () => {
         setEditingCategory(null);
         setDialogOpen(true);
     };
 
-    const handleEdit = (category: Category) => {
+    const handleEdit = (category: SelectCategory) => {
         setEditingCategory(category);
         setDialogOpen(true);
     };
 
-    const handleDelete = (category: Category) => {
+    const handleDelete = (category: SelectCategory) => {
         setDeletingId(category.id);
 
         confirmToast({

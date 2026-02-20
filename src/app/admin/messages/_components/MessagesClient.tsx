@@ -16,7 +16,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { cn } from '@/lib/utils';
+import { cn, formatRelativeTime } from '@/lib/utils';
 
 interface ContactMessage {
     id: number;
@@ -311,10 +311,10 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                         variant="outline"
                                     >
                                         {selectedMessage.is_read ? (
-                                            <>
+                                            <Fragment>
                                                 <X className="mr-1.5 h-3.5 w-3.5" />
                                                 Mark Unread
-                                            </>
+                                            </Fragment>
                                         ) : (
                                             <>
                                                 <Check className="mr-1.5 h-3.5 w-3.5" />
@@ -351,25 +351,4 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             </Dialog>
         </Fragment>
     );
-}
-
-/** Format a date as a relative time string */
-function formatRelativeTime(date: Date | string) {
-    const now = Date.now();
-    const then = new Date(date).getTime();
-    const diff = now - then;
-
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-
-    return new Date(date).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-    });
 }

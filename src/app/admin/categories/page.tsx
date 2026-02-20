@@ -1,11 +1,12 @@
 import { db } from '@/lib/drizzle';
 import { categories } from '@/lib/drizzle/schema/blogs';
+import type { SelectCategory } from '@/types/blogs';
 import { CategoriesClient } from './_components/CategoriesClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CategoriesPage() {
-    let allCategories: (typeof categories.$inferSelect)[] = [];
+    let allCategories: SelectCategory[] = [];
 
     try {
         allCategories = await db.select().from(categories);
