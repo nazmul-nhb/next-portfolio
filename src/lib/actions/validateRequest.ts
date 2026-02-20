@@ -34,7 +34,6 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
                 const errObject = error[path];
 
                 if (
-                    isObject(errObject) &&
                     isObjectWithKeys(errObject, ['errors']) &&
                     isArrayOfType(errObject.errors, isString)
                 ) {
@@ -59,5 +58,5 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
         };
     }
 
-    return { success: true, data: parsed.data as unknown as D };
+    return { success: true, data: parsed.data as T & D };
 }

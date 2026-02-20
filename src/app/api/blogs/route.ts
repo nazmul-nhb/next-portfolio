@@ -53,10 +53,7 @@ export async function GET(req: NextRequest) {
         if (tag) {
             query = query
                 .innerJoin(blogTags, eq(blogs.id, blogTags.blog_id))
-                .innerJoin(
-                    tags,
-                    and(eq(blogTags.tag_id, tags.id), eq(tags.slug, tag))
-                ) as typeof query;
+                .innerJoin(tags, and(eq(blogTags.tag_id, tags.id), eq(tags.slug, tag)));
         }
 
         // Category filter
@@ -69,7 +66,7 @@ export async function GET(req: NextRequest) {
                         eq(blogCategories.category_id, categories.id),
                         eq(categories.slug, category)
                     )
-                ) as typeof query;
+                );
         }
 
         // Search filter
@@ -79,7 +76,7 @@ export async function GET(req: NextRequest) {
                     eq(blogs.is_published, true),
                     sql`(${blogs.title} ILIKE ${`%${search}%`} OR ${blogs.excerpt} ILIKE ${`%${search}%`})`
                 )
-            ) as typeof query;
+            );
         }
 
         const result = await query;
