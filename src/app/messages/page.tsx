@@ -4,7 +4,7 @@ import { MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,13 @@ interface Message {
     created_at: string;
 }
 
+interface UserResult {
+    id: number;
+    name: string;
+    email: string;
+    profile_image: string | null;
+}
+
 /** Messages page with conversation list and chat view. */
 export default function MessagesPage() {
     const { data: session, status } = useSession();
@@ -42,7 +49,11 @@ export default function MessagesPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);
-    const [recipientId, setRecipientId] = useState('');
+    const [recipientSearch, setRecipientSearch] = useState('');
+    const [searchResults, setSearchResults] = useState<UserResult[]>([]);
+    const [selectedRecipient, setSelectedRecipient] = useState<UserResult | null>(null);
+    const [searching, setSearching] = useState(false);
+    const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const fetchConversations = useCallback(async () => {
         try {
@@ -82,6 +93,41 @@ export default function MessagesPage() {
         }
     }, [activeConversation, fetchMessages]);
 
+    // Debounced user search
+    const handleRecipientSearch = (value: string) => {
+        setRecipientSearch(value);
+        setSelectedRecipient(null);
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        if (value.trim().length < 2) {
+            setSearchResults([]);
+            return;
+        }
+
+        searchTimeoutRef.current = setTimeout(async () => {
+            setSearching(true);
+            try {
+                const { data } = await httpRequest<UserResult[]>(
+                    `/api/users/search?q=${encodeURIComponent(value.trim())}` as '/api/messages'
+                );
+                if (data) setSearchResults(data);
+            } catch {
+                setSearchResults([]);
+            } finally {
+                setSearching(false);
+            }
+        }, 300);
+    };
+
+    const selectRecipient = (user: UserResult) => {
+        setSelectedRecipient(user);
+        setRecipientSearch(user.email);
+        setSearchResults([]);
+    };
+
     const handleSend = async () => {
         if (!newMessage.trim()) return;
         setSending(true);
@@ -97,18 +143,19 @@ export default function MessagesPage() {
                 );
                 setNewMessage('');
                 fetchMessages(activeConversation);
-            } else if (recipientId) {
-                // Create a new conversation
+            } else if (selectedRecipient) {
+                // Create a new conversation using email
                 const { data } = await httpRequest<Conversation, Record<string, unknown>>(
                     '/api/messages/conversations' as '/api/messages',
                     {
                         method: 'POST',
-                        body: { participant_id: recipientId },
+                        body: { email: selectedRecipient.email },
                     }
                 );
                 if (data) {
                     setActiveConversation(data.id);
-                    setRecipientId('');
+                    setSelectedRecipient(null);
+                    setRecipientSearch('');
                     // Send the message
                     await httpRequest<null, Record<string, unknown>>(
                         `/api/messages/conversations/${data.id}` as '/api/messages',
@@ -204,13 +251,58 @@ export default function MessagesPage() {
                             <p className="mb-2 text-xs text-muted-foreground">
                                 Start new conversation
                             </p>
-                            <div className="flex gap-2">
+                            <div className="relative">
                                 <Input
                                     className="h-8 text-xs"
-                                    onChange={(e) => setRecipientId(e.target.value)}
-                                    placeholder="User ID"
-                                    value={recipientId}
+                                    onChange={(e) => handleRecipientSearch(e.target.value)}
+                                    placeholder="Search by name or email..."
+                                    value={recipientSearch}
                                 />
+                                {/* Search results dropdown */}
+                                {searchResults.length > 0 && (
+                                    <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
+                                        {searchResults.map((user) => (
+                                            <button
+                                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-accent"
+                                                key={user.id}
+                                                onClick={() => selectRecipient(user)}
+                                                type="button"
+                                            >
+                                                {user.profile_image ? (
+                                                    <Image
+                                                        alt={user.name}
+                                                        className="h-6 w-6 rounded-full object-cover"
+                                                        height={24}
+                                                        src={buildCloudinaryUrl(
+                                                            user.profile_image
+                                                        )}
+                                                        width={24}
+                                                    />
+                                                ) : (
+                                                    <User className="h-6 w-6 rounded-full bg-muted p-1" />
+                                                )}
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="truncate font-medium">
+                                                        {user.name}
+                                                    </p>
+                                                    <p className="truncate text-muted-foreground">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {searching && (
+                                    <p className="mt-1 text-xs text-muted-foreground">
+                                        Searching...
+                                    </p>
+                                )}
+                                {selectedRecipient && (
+                                    <p className="mt-1 text-xs text-primary">
+                                        Ready to message {selectedRecipient.name}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

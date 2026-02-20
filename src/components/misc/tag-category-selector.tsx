@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,30 +46,33 @@ export function TagCategorySelector({
     const [options, setOptions] = useState<Option[]>([]);
     const [search, setSearch] = useState('');
     const [creating, setCreating] = useState(false);
+    const [loaded, setLoaded] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        /** Fetch available options from the API */
-        const fetchOptions = async () => {
-            try {
-                const { data } = await httpRequest<Option[]>(endpoint, { method: 'GET' });
-
-                if (data) setOptions(data);
-            } catch {
-                // console.error(err);
-                // Silently fail — user can retry by reopening
+    const fetchOptions = useCallback(async () => {
+        try {
+            const { data } = await httpRequest<Option[]>(endpoint, { method: 'GET' });
+            if (data) {
+                setOptions(data);
+                setLoaded(true);
             }
-        };
-
-        fetchOptions();
+        } catch {
+            // Silently fail — user can retry by reopening
+        }
     }, [endpoint]);
+
+    useEffect(() => {
+        fetchOptions();
+    }, [fetchOptions]);
 
     /** Focus the search input when the popover opens */
     useEffect(() => {
         if (open) {
+            // Refetch options when popover opens to get latest
+            fetchOptions();
             setTimeout(() => inputRef.current?.focus(), 0);
         }
-    }, [open]);
+    }, [open, fetchOptions]);
 
     const filtered = options.filter((opt) =>
         opt.title.toLowerCase().includes(search.toLowerCase())
@@ -183,7 +186,13 @@ export function TagCategorySelector({
                             </button>
                         )}
 
-                        {options.length === 0 && !search && (
+                        {!loaded && options.length === 0 && (
+                            <p className="px-2 py-3 text-center text-sm text-muted-foreground">
+                                Loading {label.toLowerCase()}...
+                            </p>
+                        )}
+
+                        {loaded && options.length === 0 && !search && (
                             <p className="px-2 py-3 text-center text-sm text-muted-foreground">
                                 No {label.toLowerCase()} yet.
                                 {allowCreate && ' Type to create one.'}
@@ -212,6 +221,13 @@ export function TagCategorySelector({
                         </span>
                     ))}
                 </div>
+            )}
+
+            {/* Show count notice when options haven't loaded yet but IDs are selected */}
+            {!loaded && selectedIds.length > 0 && selectedOptions.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                    {selectedIds.length} {label.toLowerCase()} selected (loading names...)
+                </p>
             )}
         </div>
     );

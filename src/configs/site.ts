@@ -11,7 +11,9 @@ import {
     MessageCircle,
     MessageSquare,
     MessageSquareQuote,
+    Newspaper,
     PenTool,
+    Tag,
 } from 'lucide-react';
 import type { TabItem } from '@/types';
 
@@ -35,6 +37,8 @@ export const siteConfig = {
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
         { href: '/admin/skills', label: 'Skills', icon: Lightbulb },
+        { href: '/admin/categories', label: 'Categories', icon: Tag },
+        { href: '/admin/blogs', label: 'Blogs', icon: Newspaper },
         { href: '/admin/experience', label: 'Experience', icon: Briefcase },
         { href: '/admin/education', label: 'Education', icon: GraduationCap },
         { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },

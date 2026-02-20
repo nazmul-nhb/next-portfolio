@@ -80,14 +80,33 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { participant_id } = body;
-
-        if (!participant_id) {
-            return sendErrorResponse('participant_id is required', 400);
-        }
+        const { participant_id, email } = body;
 
         const userId = +session.user.id;
-        const participantId = +participant_id;
+        let participantId: number;
+
+        if (email) {
+            // Look up user by email
+            const [participant] = await db
+                .select({ id: users.id })
+                .from(users)
+                .where(eq(users.email, email))
+                .limit(1);
+
+            if (!participant) {
+                return sendErrorResponse('No user found with that email', 404);
+            }
+
+            participantId = participant.id;
+        } else if (participant_id) {
+            participantId = +participant_id;
+        } else {
+            return sendErrorResponse('email or participant_id is required', 400);
+        }
+
+        if (userId === participantId) {
+            return sendErrorResponse('Cannot start a conversation with yourself', 400);
+        }
 
         // Check if conversation already exists
         const [existing] = await db

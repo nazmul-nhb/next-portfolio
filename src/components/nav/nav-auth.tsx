@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Settings } from 'lucide-react';
+import { LogIn, LogOut, PenTool, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Session } from 'next-auth';
@@ -83,6 +83,15 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                     </p>
                                 </div>
                                 <div className="h-px bg-border" />
+                                <Link href="/blogs/my">
+                                    <Button
+                                        className={`w-full justify-start gap-2 text-sm font-normal ${pathname === ('/blogs/my') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
+                                        variant="ghost"
+                                    >
+                                        <PenTool className="size-4" />
+                                        My Blogs
+                                    </Button>
+                                </Link>
                                 <Link href="/settings">
                                     <Button
                                         className={`w-full justify-start gap-2 text-sm font-normal ${pathname === ('/settings') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}

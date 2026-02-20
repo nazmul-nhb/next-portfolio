@@ -2,7 +2,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Grip, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
@@ -13,9 +12,16 @@ type Props = {
     deletingId: number | null;
     isPending: boolean;
     onDelete: (skill: SelectSkill) => void;
+    onEdit: (skill: SelectSkill) => void;
 };
 
-export default function SortableSkillCard({ skill, deletingId, isPending, onDelete }: Props) {
+export default function SortableSkillCard({
+    skill,
+    deletingId,
+    isPending,
+    onDelete,
+    onEdit,
+}: Props) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
         useSortable({
             id: skill.id,
@@ -58,12 +64,15 @@ export default function SortableSkillCard({ skill, deletingId, isPending, onDele
             </CardHeader>
             <CardContent className="pt-0">
                 <div className="flex gap-2">
-                    <Link className="flex-1" href={`/admin/skills/${skill.id}`}>
-                        <Button className="w-full" size="sm" variant="outline">
-                            <Pencil className="mr-2 h-3 w-3" />
-                            Edit
-                        </Button>
-                    </Link>
+                    <Button
+                        className="flex-1"
+                        onClick={() => onEdit(skill)}
+                        size="sm"
+                        variant="outline"
+                    >
+                        <Pencil className="mr-2 h-3 w-3" />
+                        Edit
+                    </Button>
                     <Button
                         disabled={deletingId === skill.id && isPending}
                         loading={deletingId === skill.id && isPending}

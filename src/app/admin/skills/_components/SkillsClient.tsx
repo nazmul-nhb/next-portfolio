@@ -16,16 +16,23 @@ import {
     sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import SortableSkillCard from '@/app/admin/skills/_components/SortableSkillCard';
 import { confirmToast } from '@/components/confirm';
+import { SkillForm } from '@/components/forms/skill-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { deleteFromCloudinary, deleteOldCloudFile } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import type { ReorderItem } from '@/types';
-import type { SelectSkill } from '@/types/skills';
+import type { InsertSkill, SelectSkill, UpdateSkill } from '@/types/skills';
 
 interface Props {
     initialData: SelectSkill[];
@@ -34,6 +41,8 @@ interface Props {
 export function SkillsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [orderedSkills, setOrderedSkills] = useState<SelectSkill[]>(initialData);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [editingSkill, setEditingSkill] = useState<SelectSkill | null>(null);
     const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const { data: skills } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
@@ -137,6 +146,50 @@ export function SkillsClient({ initialData }: Props) {
         });
     };
 
+    const { mutate: createSkill, isPending: isCreating } = useApiMutation<
+        SelectSkill,
+        InsertSkill
+    >('/api/skills', 'POST', {
+        successMessage: 'Skill created successfully!',
+        errorMessage: 'Failed to create skill.',
+        invalidateKeys: ['skills'],
+        onSuccess: () => setDialogOpen(false),
+    });
+
+    const { mutate: updateSkill, isPending: isUpdating } = useApiMutation<
+        SelectSkill,
+        UpdateSkill
+    >(`/api/skills?id=${editingSkill?.id}`, 'PATCH', {
+        successMessage: 'Skill updated successfully!',
+        errorMessage: 'Failed to update skill.',
+        invalidateKeys: ['skills'],
+    });
+
+    const handleAdd = () => {
+        setEditingSkill(null);
+        setDialogOpen(true);
+    };
+
+    const handleEdit = (skill: SelectSkill) => {
+        setEditingSkill(skill);
+        setDialogOpen(true);
+    };
+
+    const handleCreateSubmit = (data: InsertSkill) => {
+        createSkill(data);
+    };
+
+    const handleEditSubmit = (data: UpdateSkill) => {
+        if (!editingSkill) return;
+        updateSkill(data, {
+            onSuccess: async () => {
+                await deleteOldCloudFile(editingSkill.icon, data.icon);
+                setDialogOpen(false);
+                setEditingSkill(null);
+            },
+        });
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -149,24 +202,20 @@ export function SkillsClient({ initialData }: Props) {
                         )}
                     </p>
                 </div>
-                <Link href="/admin/skills/new">
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Skill
-                    </Button>
-                </Link>
+                <Button onClick={handleAdd}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Skill
+                </Button>
             </div>
 
             {orderedSkills.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No skills yet</p>
-                        <Link href={'/admin/skills/new'}>
-                            <Button>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Your First Skill
-                            </Button>
-                        </Link>
+                        <Button onClick={handleAdd}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Your First Skill
+                        </Button>
                     </CardContent>
                 </Card>
             ) : (
@@ -186,6 +235,7 @@ export function SkillsClient({ initialData }: Props) {
                                     isPending={isDeleting}
                                     key={skill.id}
                                     onDelete={handleDelete}
+                                    onEdit={handleEdit}
                                     skill={skill}
                                 />
                             ))}
@@ -193,6 +243,34 @@ export function SkillsClient({ initialData }: Props) {
                     </SortableContext>
                 </DndContext>
             )}
+
+            {/* Add/Edit Skill Dialog */}
+            <Dialog
+                onOpenChange={(open) => {
+                    setDialogOpen(open);
+                    if (!open) setEditingSkill(null);
+                }}
+                open={dialogOpen}
+            >
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {editingSkill ? 'Edit Skill' : 'Add New Skill'}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {editingSkill
+                                ? 'Update skill details.'
+                                : 'Add a new skill to your profile.'}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <SkillForm
+                        defaultValues={editingSkill ?? undefined}
+                        isLoading={isCreating || isUpdating}
+                        key={editingSkill?.id ?? 'new'}
+                        onSubmit={editingSkill ? handleEditSubmit : handleCreateSubmit}
+                    />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
