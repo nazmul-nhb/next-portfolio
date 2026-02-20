@@ -351,6 +351,51 @@ export default function MessagesPage() {
                                     </Button>
                                 </div>
                             </Fragment>
+                        ) : selectedRecipient ? (
+                            <Fragment>
+                                <div className="flex flex-1 flex-col items-center justify-center py-20">
+                                    {selectedRecipient.profile_image ? (
+                                        <Image
+                                            alt={selectedRecipient.name}
+                                            className="mb-3 h-16 w-16 rounded-full object-cover"
+                                            height={64}
+                                            src={buildCloudinaryUrl(
+                                                selectedRecipient.profile_image
+                                            )}
+                                            width={64}
+                                        />
+                                    ) : (
+                                        <User className="mb-3 h-16 w-16 rounded-full bg-muted p-3 text-muted-foreground" />
+                                    )}
+                                    <p className="text-sm font-medium">
+                                        {selectedRecipient.name}
+                                    </p>
+                                    <p className="mb-2 text-xs text-muted-foreground">
+                                        {selectedRecipient.email}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Send a message to start the conversation
+                                    </p>
+                                </div>
+                                <div className="flex gap-2 border-t border-border/50 p-4">
+                                    <Input
+                                        disabled={sending}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyDown={(e) =>
+                                            e.key === 'Enter' && !e.shiftKey && handleSend()
+                                        }
+                                        placeholder="Type a message..."
+                                        value={newMessage}
+                                    />
+                                    <Button
+                                        disabled={!newMessage.trim() || sending}
+                                        onClick={handleSend}
+                                        size="icon"
+                                    >
+                                        <Send className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </Fragment>
                         ) : (
                             <div className="flex flex-1 flex-col items-center justify-center py-20">
                                 <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/50" />

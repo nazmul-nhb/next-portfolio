@@ -1,13 +1,22 @@
 'use client';
 
-import { Check, Mail, Trash2, X } from 'lucide-react';
+import { Check, Clock, Mail, MailOpen, Trash2, User, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { cn } from '@/lib/utils';
 
 interface ContactMessage {
     id: number;
@@ -28,8 +37,14 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     const router = useRouter();
     const [messages, setMessages] = useState(initialMessages);
     const [processingId, setProcessingId] = useState<number | null>(null);
+    const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
 
-    const handleToggleRead = async (id: number, currentStatus: boolean) => {
+    const handleToggleRead = async (
+        e: React.MouseEvent,
+        id: number,
+        currentStatus: boolean
+    ) => {
+        e.stopPropagation();
         setProcessingId(id);
         try {
             await httpRequest(`/api/contact-messages/${id}`, {
@@ -40,6 +55,13 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             setMessages(
                 messages.map((m) => (m.id === id ? { ...m, is_read: !currentStatus } : m))
             );
+
+            if (selectedMessage?.id === id) {
+                setSelectedMessage((prev) =>
+                    prev ? { ...prev, is_read: !currentStatus } : null
+                );
+            }
+
             toast.success(currentStatus ? 'Marked as unread' : 'Marked as read');
             router.refresh();
         } catch (error) {
@@ -50,7 +72,8 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
         }
     };
 
-    const handleDelete = async (id: number, name: string) => {
+    const handleDelete = async (e: React.MouseEvent, id: number, name: string) => {
+        e.stopPropagation();
         confirmToast({
             onConfirm: async () => {
                 setProcessingId(id);
@@ -61,6 +84,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
 
                     if (success) {
                         setMessages(messages.filter((m) => m.id !== id));
+                        if (selectedMessage?.id === id) setSelectedMessage(null);
                         toast.success('Message deleted');
                         router.refresh();
                     }
@@ -77,76 +101,275 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
         });
     };
 
+    const handleOpenMessage = (message: ContactMessage) => {
+        setSelectedMessage(message);
+
+        // Auto-mark as read when opening
+        if (!message.is_read) {
+            httpRequest(`/api/contact-messages/${message.id}`, {
+                method: 'PATCH',
+                body: { is_read: true },
+            }).then(() => {
+                setMessages((prev) =>
+                    prev.map((m) => (m.id === message.id ? { ...m, is_read: true } : m))
+                );
+                router.refresh();
+            });
+        }
+    };
+
+    const unreadCount = messages.filter((m) => !m.is_read).length;
+
     if (messages.length === 0) {
         return (
             <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                    <Mail className="mb-4 h-12 w-12 text-muted-foreground" />
-                    <p className="text-muted-foreground">No messages yet</p>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                    <Mail className="mb-4 h-12 w-12 text-muted-foreground/40" />
+                    <p className="text-lg font-medium text-muted-foreground">No messages yet</p>
+                    <p className="text-sm text-muted-foreground/70">
+                        Messages from your contact form will appear here.
+                    </p>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <div className="space-y-4">
-            {messages.map((message) => (
-                <Card
-                    className={message.is_read ? 'opacity-60' : 'border-primary/50'}
-                    key={message.id}
-                >
-                    <CardHeader>
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold">{message.name}</h3>
-                                    {!message.is_read && (
-                                        <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                                            New
-                                        </span>
+        <Fragment>
+            {/* Stats bar */}
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{messages.length} total</span>
+                {unreadCount > 0 && (
+                    <span className="flex items-center gap-1.5 font-medium text-primary">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                        {unreadCount} unread
+                    </span>
+                )}
+            </div>
+
+            {/* Message list */}
+            <div className="space-y-2">
+                {messages.map((message) => (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: needs to be clickable for opening modal
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: same as above
+                    <div
+                        className={cn(
+                            'group relative flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-all hover:shadow-md cursor-pointer z-10',
+                            message.is_read
+                                ? 'border-border/50 bg-card/50 hover:bg-card'
+                                : 'border-primary/20 bg-card shadow-sm'
+                        )}
+                        key={message.id}
+                        onClick={() => handleOpenMessage(message)}
+                    >
+                        {/* Unread indicator */}
+                        {!message.is_read && (
+                            <span className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-primary" />
+                        )}
+
+                        {/* Avatar */}
+                        <div
+                            className={cn(
+                                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+                                message.is_read
+                                    ? 'bg-muted text-muted-foreground'
+                                    : 'bg-primary/10 text-primary'
+                            )}
+                        >
+                            <User className="h-5 w-5" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className={cn(
+                                        'truncate text-sm',
+                                        !message.is_read && 'font-semibold'
                                     )}
-                                </div>
-                                <p className="text-sm text-muted-foreground">{message.email}</p>
+                                >
+                                    {message.name}
+                                </span>
                                 {message.subject && (
-                                    <p className="mt-1 text-sm font-medium">
-                                        Subject: {message.subject}
-                                    </p>
+                                    <>
+                                        <span className="text-muted-foreground/40">
+                                            &middot;
+                                        </span>
+                                        <span className="truncate text-sm text-muted-foreground">
+                                            {message.subject}
+                                        </span>
+                                    </>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2">
+                            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                                {message.message}
+                            </p>
+                        </div>
+
+                        {/* Time & actions */}
+                        <div className="flex shrink-0 items-center gap-1">
+                            <span className="mr-2 hidden text-xs text-muted-foreground sm:inline">
+                                {formatRelativeTime(message.created_at)}
+                            </span>
+                            <Button
+                                disabled={processingId === message.id}
+                                onClick={(e) =>
+                                    handleToggleRead(e, message.id, message.is_read)
+                                }
+                                size="icon-sm"
+                                title={message.is_read ? 'Mark unread' : 'Mark read'}
+                                variant="ghost"
+                            >
+                                {message.is_read ? (
+                                    <MailOpen className="h-3.5 w-3.5" />
+                                ) : (
+                                    <Check className="h-3.5 w-3.5" />
+                                )}
+                            </Button>
+                            <Button
+                                disabled={processingId === message.id}
+                                onClick={(e) => handleDelete(e, message.id, message.name)}
+                                size="icon-sm"
+                                title="Delete"
+                                variant="ghost"
+                            >
+                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Message detail modal */}
+            <Dialog
+                onOpenChange={(open) => {
+                    if (!open) setSelectedMessage(null);
+                }}
+                open={!!selectedMessage}
+            >
+                <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+                    {selectedMessage && (
+                        <Fragment>
+                            <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2">
+                                    <User className="h-5 w-5 text-primary" />
+                                    {selectedMessage.name}
+                                </DialogTitle>
+                                <DialogDescription className="flex flex-col gap-1">
+                                    <a
+                                        className="text-primary hover:underline"
+                                        href={`mailto:${selectedMessage.email}`}
+                                    >
+                                        {selectedMessage.email}
+                                    </a>
+                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Clock className="h-3 w-3" />
+                                        {new Date(selectedMessage.created_at).toLocaleString(
+                                            'en-US',
+                                            {
+                                                weekday: 'short',
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            }
+                                        )}
+                                    </span>
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            {selectedMessage.subject && (
+                                <div className="rounded-lg bg-muted/50 px-4 py-2">
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Subject
+                                    </p>
+                                    <p className="text-sm font-semibold">
+                                        {selectedMessage.subject}
+                                    </p>
+                                </div>
+                            )}
+
+                            <div className="rounded-lg border border-border/50 bg-muted/30 p-4">
+                                <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                                    {selectedMessage.message}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2">
+                                <div className="flex gap-2">
+                                    <Button
+                                        disabled={processingId === selectedMessage.id}
+                                        onClick={(e) =>
+                                            handleToggleRead(
+                                                e,
+                                                selectedMessage.id,
+                                                selectedMessage.is_read
+                                            )
+                                        }
+                                        size="sm"
+                                        variant="outline"
+                                    >
+                                        {selectedMessage.is_read ? (
+                                            <>
+                                                <X className="mr-1.5 h-3.5 w-3.5" />
+                                                Mark Unread
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check className="mr-1.5 h-3.5 w-3.5" />
+                                                Mark Read
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button asChild size="sm" variant="outline">
+                                        <a href={`mailto:${selectedMessage.email}`}>
+                                            <Mail className="mr-1.5 h-3.5 w-3.5" />
+                                            Reply
+                                        </a>
+                                    </Button>
+                                </div>
                                 <Button
-                                    disabled={processingId === message.id}
-                                    onClick={() =>
-                                        handleToggleRead(message.id, message.is_read)
+                                    disabled={processingId === selectedMessage.id}
+                                    onClick={(e) =>
+                                        handleDelete(
+                                            e,
+                                            selectedMessage.id,
+                                            selectedMessage.name
+                                        )
                                     }
                                     size="sm"
-                                    variant="ghost"
+                                    variant="destructive"
                                 >
-                                    {message.is_read ? (
-                                        <X className="h-4 w-4" />
-                                    ) : (
-                                        <Check className="h-4 w-4" />
-                                    )}
-                                </Button>
-                                <Button
-                                    disabled={processingId === message.id}
-                                    onClick={() => handleDelete(message.id, message.name)}
-                                    size="sm"
-                                    variant="ghost"
-                                >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                                    Delete
                                 </Button>
                             </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="whitespace-pre-wrap text-sm">{message.message}</p>
-                        <p className="mt-4 text-xs text-muted-foreground">
-                            {new Date(message.created_at).toLocaleString()}
-                        </p>
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
+                        </Fragment>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </Fragment>
     );
+}
+
+/** Format a date as a relative time string */
+function formatRelativeTime(date: Date | string) {
+    const now = Date.now();
+    const then = new Date(date).getTime();
+    const diff = now - then;
+
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+
+    return new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+    });
 }

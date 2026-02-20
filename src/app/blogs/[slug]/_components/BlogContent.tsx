@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Eye, ThumbsDown, ThumbsUp, User } from 'lucide-react';
+import { Calendar, Edit, Eye, ThumbsDown, ThumbsUp, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -86,6 +86,20 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                     <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
                         {blog.title}
                     </h1>
+
+                    {/* Edit button - visible to author and admin */}
+                    {session?.user &&
+                        (blog.author.id === +session.user.id ||
+                            session.user.role === 'admin') && (
+                            <div className="mb-4">
+                                <Button asChild size="sm" variant="outline">
+                                    <Link href={`/blogs/${blog.slug}/edit`}>
+                                        <Edit className="mr-2 h-3.5 w-3.5" />
+                                        Edit Post
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
 
                     {/* Author & meta */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">

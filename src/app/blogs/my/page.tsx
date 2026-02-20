@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Eye, PenTool, Plus } from 'lucide-react';
+import { Calendar, Edit, Eye, PenTool, Plus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -89,26 +89,28 @@ export default function MyBlogsPage() {
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {blogs.map((blog) => (
                         <MotionCard key={blog.id}>
-                            <Link
-                                className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-                                href={`/blogs/${blog.slug}`}
-                            >
-                                {blog.cover_image && (
-                                    <div className="aspect-video overflow-hidden bg-muted">
-                                        <Image
-                                            alt={blog.title}
-                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                            height={200}
-                                            src={buildCloudinaryUrl(blog.cover_image)}
-                                            width={360}
-                                        />
-                                    </div>
-                                )}
+                            <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+                                <Link href={`/blogs/${blog.slug}`}>
+                                    {blog.cover_image && (
+                                        <div className="aspect-video overflow-hidden bg-muted">
+                                            <Image
+                                                alt={blog.title}
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                height={200}
+                                                src={buildCloudinaryUrl(blog.cover_image)}
+                                                width={360}
+                                            />
+                                        </div>
+                                    )}
+                                </Link>
                                 <div className="flex flex-1 flex-col p-5">
                                     <div className="mb-2 flex items-center gap-2">
-                                        <h2 className="line-clamp-2 flex-1 text-lg font-semibold transition-colors group-hover:text-primary">
+                                        <Link
+                                            className="line-clamp-2 flex-1 text-lg font-semibold transition-colors group-hover:text-primary"
+                                            href={`/blogs/${blog.slug}`}
+                                        >
                                             {blog.title}
-                                        </h2>
+                                        </Link>
                                         <span
                                             className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
                                                 blog.is_published
@@ -141,8 +143,21 @@ export default function MyBlogsPage() {
                                             {blog.views}
                                         </span>
                                     </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <Button
+                                            asChild
+                                            className="gap-1.5"
+                                            size="sm"
+                                            variant="outline"
+                                        >
+                                            <Link href={`/blogs/${blog.slug}/edit` as '/'}>
+                                                <Edit className="h-3 w-3" />
+                                                Edit
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 </div>
-                            </Link>
+                            </div>
                         </MotionCard>
                     ))}
                 </StaggerContainer>
