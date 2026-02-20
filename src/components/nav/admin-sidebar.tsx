@@ -124,7 +124,7 @@ export function AdminSidebar() {
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                                             }`}
-                                            href={item.href as '/'}
+                                            href={item.href}
                                             key={item.href}
                                             onClick={() => setDrawerOpen(false)}
                                         >

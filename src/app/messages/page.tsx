@@ -57,9 +57,7 @@ export default function MessagesPage() {
 
     const fetchConversations = useCallback(async () => {
         try {
-            const { data } = await httpRequest<Conversation[]>(
-                '/api/messages/conversations' as '/api/messages'
-            );
+            const { data } = await httpRequest<Conversation[]>('/api/messages/conversations');
             if (data) setConversations(data);
         } catch {
             // No conversations yet
@@ -69,7 +67,7 @@ export default function MessagesPage() {
     const fetchMessages = useCallback(async (conversationId: number) => {
         try {
             const { data } = await httpRequest<Message[]>(
-                `/api/messages/conversations/${conversationId}` as '/api/messages'
+                `/api/messages/conversations/${conversationId}`
             );
             if (data) setMessages(data);
         } catch {
@@ -111,7 +109,7 @@ export default function MessagesPage() {
             setSearching(true);
             try {
                 const { data } = await httpRequest<UserResult[]>(
-                    `/api/users/search?q=${encodeURIComponent(value.trim())}` as '/api/messages'
+                    `/api/users/search?q=${encodeURIComponent(value.trim())}`
                 );
                 if (data) setSearchResults(data);
             } catch {
@@ -135,7 +133,7 @@ export default function MessagesPage() {
             // If there's an active conversation, send to that conversation
             if (activeConversation) {
                 await httpRequest<null, Record<string, unknown>>(
-                    `/api/messages/conversations/${activeConversation}` as '/api/messages',
+                    `/api/messages/conversations/${activeConversation}`,
                     {
                         method: 'POST',
                         body: { content: newMessage },
@@ -146,7 +144,7 @@ export default function MessagesPage() {
             } else if (selectedRecipient) {
                 // Create a new conversation using email
                 const { data } = await httpRequest<Conversation, Record<string, unknown>>(
-                    '/api/messages/conversations' as '/api/messages',
+                    '/api/messages/conversations',
                     {
                         method: 'POST',
                         body: { email: selectedRecipient.email },
