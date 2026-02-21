@@ -47,7 +47,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
         e.stopPropagation();
         setProcessingId(id);
         try {
-            await httpRequest(`/api/contact-messages/${id}`, {
+            await httpRequest(`/api/contact/${id}`, {
                 method: 'PATCH',
                 body: { is_read: !currentStatus },
             });
@@ -78,7 +78,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             onConfirm: async () => {
                 setProcessingId(id);
                 try {
-                    const { success } = await httpRequest(`/api/contact-messages?id=${id}`, {
+                    const { success } = await httpRequest(`/api/contact?id=${id}`, {
                         method: 'DELETE',
                     });
 
@@ -106,7 +106,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
 
         // Auto-mark as read when opening
         if (!message.is_read) {
-            httpRequest(`/api/contact-messages/${message.id}`, {
+            httpRequest(`/api/contact/${message.id}`, {
                 method: 'PATCH',
                 body: { is_read: true },
             }).then(() => {

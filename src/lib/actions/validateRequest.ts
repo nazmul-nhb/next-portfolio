@@ -30,18 +30,15 @@ export async function validateRequest<T, D>(schema: ZodType<T>, data: D): ZodRes
         if (isObject(error)) {
             const paths = Object.keys(error);
 
-            paths.forEach((path) => {
-                const errObject = error[path];
+            for (const path of paths) {
+                const obj = error[path];
 
-                if (
-                    isObjectWithKeys(errObject, ['errors']) &&
-                    isArrayOfType(errObject.errors, isString)
-                ) {
-                    errorMsg = errObject.errors
+                if (isObjectWithKeys(obj, ['errors']) && isArrayOfType(obj.errors, isString)) {
+                    errorMsg = obj.errors
                         .map((msg) => `${toTitleCase(path)}: ${msg}`)
                         .join('; ');
                 }
-            });
+            }
         }
 
         return {
