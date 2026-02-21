@@ -4,11 +4,9 @@ import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import { EditTestimonialClient } from './_components/EditTestimonialClient';
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function EditTestimonialPage({ params }: PageProps) {
+export default async function EditTestimonialPage({
+    params,
+}: PageProps<'/admin/testimonials/[id]'>) {
     const { id } = await params;
     const testimonialId = +id;
 

@@ -6,7 +6,7 @@ import { EditProjectClient } from './_components/EditProjectClient';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditProjectPage({ params }: PageProps<'/admin/projects/[id]'>) {
     const resolvedParams = await params;
     const id = +resolvedParams.id;
 

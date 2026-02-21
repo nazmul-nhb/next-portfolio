@@ -7,14 +7,13 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 
+type Params = { params: Promise<{ slug: string }> };
+
 /**
  * POST /api/blogs/[slug]/react - Toggle a reaction on a blog post.
  * Body: { type: 'like' | 'dislike' }
  */
-export async function POST(
-    req: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
-) {
+export async function POST(req: NextRequest, { params }: Params) {
     try {
         const session = await auth();
 

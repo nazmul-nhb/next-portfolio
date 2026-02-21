@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     description: 'Read articles about web development, technology, and more.',
 };
 
-interface PageProps {
+interface ParamProps {
     searchParams: Promise<{ tag?: string; category?: string; search?: string }>;
 }
 
-export default async function BlogsPage({ searchParams }: PageProps) {
+export default async function BlogsPage({ searchParams }: ParamProps) {
     const params = await searchParams;
     const tagFilter = params.tag;
     const categoryFilter = params.category;

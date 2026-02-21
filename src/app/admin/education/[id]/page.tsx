@@ -4,11 +4,9 @@ import { db } from '@/lib/drizzle';
 import { education } from '@/lib/drizzle/schema';
 import { EditEducationClient } from './_components/EditEducationClient';
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function EditEducationPage({ params }: PageProps) {
+export default async function EditEducationPage({
+    params,
+}: PageProps<'/admin/education/[id]'>) {
     const { id } = await params;
     const educationId = +id;
 

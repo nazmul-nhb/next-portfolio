@@ -4,11 +4,9 @@ import { db } from '@/lib/drizzle';
 import { experiences } from '@/lib/drizzle/schema';
 import { EditExperienceClient } from './_components/EditExperienceClient';
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function EditExperiencePage({ params }: PageProps) {
+export default async function EditExperiencePage({
+    params,
+}: PageProps<'/admin/experience/[id]'>) {
     const { id } = await params;
     const experienceId = +id;
 

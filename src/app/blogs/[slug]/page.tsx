@@ -11,11 +11,9 @@ import { blogs } from '@/lib/drizzle/schema/blogs';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SingleBlogRes } from '@/types/blogs';
 
-interface BlogPageProps {
-    params: Promise<{ slug: string }>;
-}
-
-export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: PageProps<'/blogs/[slug]'>): Promise<Metadata> {
     const { slug } = await params;
 
     try {
@@ -49,7 +47,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
     }
 }
 
-export default async function BlogPostPage({ params }: BlogPageProps) {
+export default async function BlogPostPage({ params }: PageProps<'/blogs/[slug]'>) {
     const { slug } = await params;
 
     try {

@@ -4,10 +4,12 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
 
+type Params = { params: Promise<{ id: string }> };
+
 /**
  * GET /api/users/[id] - Get a user's public profile by ID.
  */
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_req: Request, { params }: Params) {
     try {
         const { id } = await params;
 

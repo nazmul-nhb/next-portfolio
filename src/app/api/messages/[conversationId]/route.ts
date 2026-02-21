@@ -7,13 +7,12 @@ import { db } from '@/lib/drizzle';
 import { conversations, directMessages } from '@/lib/drizzle/schema/messages';
 import { users } from '@/lib/drizzle/schema/users';
 
+type Params = { params: Promise<{ conversationId: string }> };
+
 /**
  * GET /api/messages/[conversationId] - Get messages in a conversation.
  */
-export async function GET(
-    _req: NextRequest,
-    { params }: { params: Promise<{ conversationId: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: Params) {
     try {
         const session = await auth();
 

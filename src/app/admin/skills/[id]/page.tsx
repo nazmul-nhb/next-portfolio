@@ -6,7 +6,7 @@ import { EditSkillClient } from './_components/EditSkillClient';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditSkillPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditSkillPage({ params }: PageProps<'/admin/skills/[id]'>) {
     const resolvedParams = await params;
     const id = +resolvedParams.id;
 

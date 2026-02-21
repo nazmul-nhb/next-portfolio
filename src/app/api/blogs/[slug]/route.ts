@@ -17,10 +17,12 @@ import {
 import { users } from '@/lib/drizzle/schema/users';
 import { UpdateBlogSchema } from '@/lib/zod-schema/blogs';
 
+type Params = { params: Promise<{ slug: string }> };
+
 /**
  * GET /api/blogs/[slug] - Get a single blog post by slug.
  */
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(_req: Request, { params }: Params) {
     try {
         const { slug } = await params;
 
@@ -109,10 +111,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 /**
  * PATCH /api/blogs/[slug] - Update a blog post.
  */
-export async function PATCH(
-    req: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: Params) {
     try {
         const session = await auth();
 
@@ -188,7 +187,7 @@ export async function PATCH(
 /**
  * DELETE /api/blogs/[slug] - Delete a blog post.
  */
-export async function DELETE(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function DELETE(_req: Request, { params }: Params) {
     try {
         const session = await auth();
 

@@ -7,6 +7,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { comments } from '@/lib/drizzle/schema/blogs';
 import { CreateCommentSchema } from '@/lib/zod-schema/blogs';
+import type z from 'zod';
 
 /**
  * POST /api/comments - Create a new comment on a blog post.
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
             return sendErrorResponse('Please verify your email before commenting', 403);
         }
 
-        const body = await req.json();
+        const body: z.infer<typeof CreateCommentSchema> = await req.json();
 
         const validation = await validateRequest(CreateCommentSchema, body);
 

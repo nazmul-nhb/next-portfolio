@@ -10,12 +10,10 @@ import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
-interface Props {
-    params: Promise<{ id: string }>;
-}
-
 /** Generate metadata for user profile page. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: PageProps<'/users/[id]'>): Promise<Metadata> {
     const { id } = await params;
 
     try {
@@ -57,7 +55,7 @@ type UserBlog = {
 };
 
 /** Public user profile page. */
-export default async function UserProfilePage({ params }: Props) {
+export default async function UserProfilePage({ params }: PageProps<'/users/[id]'>) {
     const { id } = await params;
 
     let user: UserProfile | undefined;
