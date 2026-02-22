@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
+import { hasErrorMessage } from '@/lib/utils';
 
 /**
  * Contact form with validation and submission.
@@ -18,7 +19,7 @@ export function ContactForm() {
         subject: '',
         message: '',
     });
-    const [submitting, setSubmitting] = useState(false);
+    // const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
 
@@ -26,27 +27,33 @@ export function ContactForm() {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const { mutate: sendMessage, isPending } = useApiMutation('/api/contact', 'POST', {
+        onSuccess: () => setSubmitted(true),
+        onError: (err) => {
+            console.error('Error sending message:', err);
+
+            setError(hasErrorMessage(err) ? err.message : 'Failed to send message');
+        },
+    });
+
+    const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        setSubmitting(true);
+        // setSubmitting(true);
         setError('');
 
-        try {
-            await httpRequest('/api/contact', {
-                method: 'POST',
-                body: formData,
-            });
-            setSubmitted(true);
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to send message';
-            setError(
-                typeof err === 'object' && err !== null && 'message' in err
-                    ? String((err as { message: string }).message)
-                    : message
-            );
-        } finally {
-            setSubmitting(false);
-        }
+        sendMessage(formData);
+
+        // try {
+        //     await httpRequest('/api/contact', {
+        //         method: 'POST',
+        //         body: formData,
+        //     });
+        //     setSubmitted(true);
+        // } catch (err) {
+        //     setError(err instanceof Error ? err.message : 'Failed to send message');
+        // } finally {
+        //     setSubmitting(false);
+        // }
     };
 
     if (submitted) {
@@ -128,9 +135,9 @@ export function ContactForm() {
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
-            <Button className="w-full" disabled={submitting} type="submit">
+            <Button className="w-full" disabled={isPending} loading={isPending} type="submit">
                 <Send className="mr-2 h-4 w-4" />
-                {submitting ? 'Sending...' : 'Send Message'}
+                Send Message
             </Button>
         </form>
     );

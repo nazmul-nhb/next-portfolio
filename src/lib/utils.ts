@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
-import { formatDate, getLastArrayElement } from 'nhb-toolbox';
+import { formatDate, getLastArrayElement, isObjectWithKeys, isString } from 'nhb-toolbox';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import type { Uncertain } from '@/types';
@@ -92,4 +92,14 @@ export function formatRelativeTime(date: Date | string) {
     if (days < 7) return `${days}d ago`;
 
     return formatDate({ date, format: 'mmm D, yyyy hh:mm a' });
+}
+
+/** Type guard to check if an error object has a message property. */
+export function hasErrorMessage(error: unknown): error is { message: string } {
+    return isObjectWithKeys(error, ['message']) && isString(error.message);
+}
+
+/** Utility function to get the current year. */
+export function getCurrentYear() {
+    return new Date().getFullYear();
 }

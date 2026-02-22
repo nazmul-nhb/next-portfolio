@@ -7,7 +7,7 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
-import { sendEmail } from '@/lib/email/sendEmail';
+import { sendEmail } from '@/lib/email';
 import { welcomeEmailTemplate } from '@/lib/email/templates';
 import { RegisterSchema } from '@/lib/zod-schema/users';
 

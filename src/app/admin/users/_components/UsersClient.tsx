@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 
@@ -104,6 +105,11 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
             onConfirm: () => {
                 deleteUser(null, {
                     onSettled: () => setDeletingId(null),
+                    onSuccess: async () => {
+                        if (user.profile_image) {
+                            await deleteFromCloudinary(user.profile_image);
+                        }
+                    },
                 });
             },
         });

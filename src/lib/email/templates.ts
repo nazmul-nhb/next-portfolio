@@ -1,3 +1,5 @@
+import { getCurrentYear } from '@/lib/utils';
+
 /**
  * Generates an attractive HTML email template for OTP verification.
  * @param name - Recipient's name.
@@ -8,7 +10,10 @@ export function otpEmailTemplate(name: string, otp: string): string {
     return /* html */ `
     <!DOCTYPE html>
     <html lang="en">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
         <div style="max-width:560px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
             <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:32px 24px;text-align:center;">
@@ -23,7 +28,7 @@ export function otpEmailTemplate(name: string, otp: string): string {
                 <p style="color:#85878e;font-size:14px;line-height:1.5;margin:0;">If you didn't request this code, please ignore this email or contact us if you have concerns.</p>
             </div>
             <div style="background:#f4f4f7;padding:16px 24px;text-align:center;">
-                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} Nazmul Hassan. All rights reserved.</p>
+                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${getCurrentYear()} Nazmul Hassan. All rights reserved.</p>
             </div>
         </div>
     </body>
@@ -47,7 +52,10 @@ export function contactEmailTemplate(
     return /* html */ `
     <!DOCTYPE html>
     <html lang="en">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
         <div style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
             <div style="background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);padding:32px 24px;text-align:center;">
@@ -80,7 +88,10 @@ export function contactAutoReplyTemplate(name: string): string {
     return /* html */ `
     <!DOCTYPE html>
     <html lang="en">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
         <div style="max-width:560px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
             <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:32px 24px;text-align:center;">
@@ -95,7 +106,7 @@ export function contactAutoReplyTemplate(name: string): string {
                 </div>
             </div>
             <div style="background:#f4f4f7;padding:16px 24px;text-align:center;">
-                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} Nazmul Hassan. All rights reserved.</p>
+                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${getCurrentYear()} Nazmul Hassan. All rights reserved.</p>
             </div>
         </div>
     </body>
@@ -126,7 +137,7 @@ export function welcomeEmailTemplate(name: string): string {
                 </div>
             </div>
             <div style="background:#f4f4f7;padding:16px 24px;text-align:center;">
-                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} Nazmul Hassan. All rights reserved.</p>
+                <p style="color:#a8aaaf;font-size:12px;margin:0;">&copy; ${getCurrentYear()} Nazmul Hassan. All rights reserved.</p>
             </div>
         </div>
     </body>

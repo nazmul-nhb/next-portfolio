@@ -1,25 +1,25 @@
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
-import {
-    getContactAutoResponseTemplate,
-    getContactEmailTemplate,
-    sendEmail,
-} from '@/lib/actions/email';
+import type z from 'zod';
+import { ENV } from '@/configs/env';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema/messages';
+import { sendEmail } from '@/lib/email';
+// import { getContactAutoResponseTemplate, getContactEmailTemplate } from '@/lib/email/templates';
 import { ContactFormSchema } from '@/lib/zod-schema/messages';
+import { contactAutoReplyTemplate, contactEmailTemplate } from '@/lib/email/templates';
 
 /**
  * POST /api/contact - Submit a contact form message.
  */
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
+        const body: z.infer<typeof ContactFormSchema> = await req.json();
 
         const validation = await validateRequest(ContactFormSchema, body);
 
@@ -39,18 +39,18 @@ export async function POST(req: NextRequest) {
             .returning({ id: contactMessages.id });
 
         // Send notification email to admin (non-blocking)
-        sendEmail({
-            to: process.env.SMTP_USER as string,
+        await sendEmail({
+            to: ENV.adminEmail,
             subject: `New Contact Message from ${name}`,
-            html: getContactEmailTemplate({ name, email, message }),
-        }).catch(console.error);
+            html: contactEmailTemplate(name, email, subject || 'No Subject', message),
+        });
 
         // Send auto-response to sender (non-blocking)
-        sendEmail({
+        await sendEmail({
             to: email,
             subject: 'Thanks for reaching out!',
-            html: getContactAutoResponseTemplate(name),
-        }).catch(console.error);
+            html: contactAutoReplyTemplate(name),
+        });
 
         // Revalidate admin messages page
         revalidatePath('/admin/messages');

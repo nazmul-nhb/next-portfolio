@@ -9,6 +9,7 @@ import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { siteConfig } from '@/configs/site';
+import { getCurrentYear } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
@@ -134,8 +135,9 @@ function Footer() {
                 </div>
                 <div className="border-t border-border/40 pt-6 text-center">
                     <p className="text-xs text-muted-foreground">
-                        &copy; {new Date().getFullYear()} {siteConfig.name}. Built with Next.js,
-                        Tailwind CSS &amp; lots of ☕
+                        &copy; {getCurrentYear()} {siteConfig.name}.
+                        <br />
+                        Built with ❤️
                     </p>
                 </div>
             </div>

@@ -1,21 +1,13 @@
-import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
-import { contactMessages } from '@/lib/drizzle/schema/messages';
 
 /** Schema for contact form submissions. */
-export const ContactFormSchema = createInsertSchema(contactMessages)
-    .omit({
-        id: true,
-        created_at: true,
-        is_read: true,
-        is_replied: true,
-    })
-    .extend({
+export const ContactFormSchema = z
+    .object({
         name: z
             .string()
             .min(2, 'Name must be at least 2 characters')
             .max(128, 'Name must be at most 128 characters'),
-        email: z.string().email('Please enter a valid email address'),
+        email: z.email('Please enter a valid email address'),
         subject: z.string().max(256, 'Subject must be at most 256 characters').optional(),
         message: z
             .string()
