@@ -6,13 +6,19 @@ export const ContactFormSchema = z
         name: z
             .string()
             .min(2, 'Name must be at least 2 characters')
-            .max(128, 'Name must be at most 128 characters'),
+            .max(128, 'Name must not exceed 128 characters')
+            .trim(),
         email: z.email('Please enter a valid email address'),
-        subject: z.string().max(256, 'Subject must be at most 256 characters').optional(),
+        subject: z
+            .string()
+            .max(256, 'Subject must not exceed 256 characters')
+            .trim()
+            .optional(),
         message: z
             .string()
-            .min(10, 'Message must be at least 10 characters')
-            .max(5000, 'Message must be at most 5000 characters'),
+            .min(2, 'Message must be at least 2 characters')
+            .max(5000, 'Message must not exceed 5000 characters')
+            .trim(),
     })
     .strict();
 

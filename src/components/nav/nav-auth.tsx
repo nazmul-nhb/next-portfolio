@@ -94,7 +94,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                 </Link>
                                 <Link href="/settings">
                                     <Button
-                                        className={`w-full justify-start gap-2 text-sm font-normal ${pathname === ('/settings') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
+                                        className={`w-full justify-start gap-2 text-sm font-normal ${pathname === '/settings' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
                                         variant="ghost"
                                     >
                                         <Settings className="size-4" />

@@ -1,20 +1,8 @@
-import { createInsertSchema } from 'drizzle-zod';
 import z from 'zod';
-import { blogs, categories, comments, tags } from '@/lib/drizzle/schema/blogs';
 
 /** Schema for creating a blog post. */
-export const CreateBlogSchema = createInsertSchema(blogs)
-    .omit({
-        id: true,
-        created_at: true,
-        updated_at: true,
-        slug: true,
-        author_id: true,
-        views: true,
-        reactions: true,
-        published_date: true,
-    })
-    .extend({
+export const CreateBlogSchema = z
+    .object({
         title: z
             .string()
             .min(3, 'Title must be at least 3 characters')
@@ -32,15 +20,8 @@ export const CreateBlogSchema = createInsertSchema(blogs)
 export const UpdateBlogSchema = CreateBlogSchema.partial();
 
 /** Schema for creating a comment. */
-export const CreateCommentSchema = createInsertSchema(comments)
-    .omit({
-        id: true,
-        created_at: true,
-        updated_at: true,
-        author_id: true,
-        reactions: true,
-    })
-    .extend({
+export const CreateCommentSchema = z
+    .object({
         content: z.string().min(1, 'Comment cannot be empty').max(2000, 'Comment is too long'),
         blog_id: z.number(),
         parent_comment_id: z.number().optional(),
@@ -48,14 +29,8 @@ export const CreateCommentSchema = createInsertSchema(comments)
     .strict();
 
 /** Schema for creating a tag. */
-export const CreateTagSchema = createInsertSchema(tags)
-    .omit({
-        id: true,
-        created_at: true,
-        updated_at: true,
-        slug: true,
-    })
-    .extend({
+export const CreateTagSchema = z
+    .object({
         title: z
             .string()
             .min(1, 'Tag name is required')
@@ -64,14 +39,8 @@ export const CreateTagSchema = createInsertSchema(tags)
     .strict();
 
 /** Schema for creating a category. */
-export const CreateCategorySchema = createInsertSchema(categories)
-    .omit({
-        id: true,
-        created_at: true,
-        updated_at: true,
-        slug: true,
-    })
-    .extend({
+export const CreateCategorySchema = z
+    .object({
         title: z
             .string()
             .min(1, 'Category name is required')

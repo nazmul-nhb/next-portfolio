@@ -1,59 +1,48 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, Send } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { hasErrorMessage } from '@/lib/utils';
+import { ContactFormSchema } from '@/lib/zod-schema/messages';
+
+type ContactFormValues = z.infer<typeof ContactFormSchema>;
 
 /**
  * Contact form with validation and submission.
  */
 export function ContactForm() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-    });
-    // const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState('');
+    const [apiError, setApiError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    };
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<ContactFormValues>({
+        resolver: zodResolver(ContactFormSchema),
+        defaultValues: { name: '', email: '', subject: '', message: '' },
+    });
 
     const { mutate: sendMessage, isPending } = useApiMutation('/api/contact', 'POST', {
         onSuccess: () => setSubmitted(true),
         onError: (err) => {
             console.error('Error sending message:', err);
-
-            setError(hasErrorMessage(err) ? err.message : 'Failed to send message');
+            setApiError(hasErrorMessage(err) ? err.message : 'Failed to send message');
         },
     });
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        // setSubmitting(true);
-        setError('');
-
-        sendMessage(formData);
-
-        // try {
-        //     await httpRequest('/api/contact', {
-        //         method: 'POST',
-        //         body: formData,
-        //     });
-        //     setSubmitted(true);
-        // } catch (err) {
-        //     setError(err instanceof Error ? err.message : 'Failed to send message');
-        // } finally {
-        //     setSubmitting(false);
-        // }
+    const onSubmit = (data: ContactFormValues) => {
+        setApiError('');
+        sendMessage(data);
     };
 
     if (submitted) {
@@ -68,7 +57,7 @@ export function ContactForm() {
                     className="mt-6"
                     onClick={() => {
                         setSubmitted(false);
-                        setFormData({ name: '', email: '', subject: '', message: '' });
+                        reset();
                     }}
                     variant="outline"
                 >
@@ -79,32 +68,32 @@ export function ContactForm() {
     }
 
     return (
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                     <Label htmlFor="name">Name *</Label>
                     <Input
                         className="mt-1.5"
                         id="name"
-                        name="name"
-                        onChange={handleChange}
                         placeholder="Your name"
-                        required
-                        value={formData.name}
+                        {...register('name')}
                     />
+                    {errors.name && (
+                        <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
+                    )}
                 </div>
                 <div>
                     <Label htmlFor="email">Email *</Label>
                     <Input
                         className="mt-1.5"
                         id="email"
-                        name="email"
-                        onChange={handleChange}
                         placeholder="you@example.com"
-                        required
                         type="email"
-                        value={formData.email}
+                        {...register('email')}
                     />
+                    {errors.email && (
+                        <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
+                    )}
                 </div>
             </div>
 
@@ -113,11 +102,12 @@ export function ContactForm() {
                 <Input
                     className="mt-1.5"
                     id="subject"
-                    name="subject"
-                    onChange={handleChange}
                     placeholder="What's this about?"
-                    value={formData.subject}
+                    {...register('subject')}
                 />
+                {errors.subject && (
+                    <p className="mt-1 text-sm text-destructive">{errors.subject.message}</p>
+                )}
             </div>
 
             <div>
@@ -125,15 +115,15 @@ export function ContactForm() {
                 <Textarea
                     className="mt-1.5 min-h-37.5 resize-y"
                     id="message"
-                    name="message"
-                    onChange={handleChange}
                     placeholder="Tell me about your project, idea, or just say hi..."
-                    required
-                    value={formData.message}
+                    {...register('message')}
                 />
+                {errors.message && (
+                    <p className="mt-1 text-sm text-destructive">{errors.message.message}</p>
+                )}
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {apiError && <p className="text-sm text-destructive">{apiError}</p>}
 
             <Button className="w-full" disabled={isPending} loading={isPending} type="submit">
                 <Send className="mr-2 h-4 w-4" />

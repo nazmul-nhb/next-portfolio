@@ -102,7 +102,7 @@ export function contactAutoReplyTemplate(name: string): string {
                 <p style="color:#51545e;font-size:16px;line-height:1.6;margin:0 0 16px;">Thank you for your message! I've received it and will get back to you within <strong>24-48 hours</strong>.</p>
                 <p style="color:#51545e;font-size:16px;line-height:1.6;margin:0 0 24px;">In the meantime, feel free to check out my latest projects and blog posts on my website.</p>
                 <div style="text-align:center;">
-                    <a href="https://nazmul.dev" style="display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">Visit My Website</a>
+                    <a href="https://nazmul-nhb.dev" style="display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">Visit My Website</a>
                 </div>
             </div>
             <div style="background:#f4f4f7;padding:16px 24px;text-align:center;">
@@ -122,7 +122,10 @@ export function welcomeEmailTemplate(name: string): string {
     return /* html */ `
     <!DOCTYPE html>
     <html lang="en">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
         <div style="max-width:560px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
             <div style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);padding:32px 24px;text-align:center;">
@@ -133,7 +136,7 @@ export function welcomeEmailTemplate(name: string): string {
                 <p style="color:#51545e;font-size:16px;line-height:1.6;margin:0 0 16px;">Welcome to my website! Your account has been created successfully.</p>
                 <p style="color:#51545e;font-size:16px;line-height:1.6;margin:0 0 24px;">You can now write blog posts, interact with other users, and explore all features. Don't forget to verify your email to unlock all capabilities!</p>
                 <div style="text-align:center;">
-                    <a href="https://nazmul.dev/blogs/new" style="display:inline-block;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">Start Writing</a>
+                    <a href="https://nazmul-nhb.dev/blogs/new" style="display:inline-block;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">Start Writing</a>
                 </div>
             </div>
             <div style="background:#f4f4f7;padding:16px 24px;text-align:center;">

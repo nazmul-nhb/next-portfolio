@@ -1,6 +1,7 @@
 import { hash } from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import type z from 'zod';
 import { ENV } from '@/configs/env';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
@@ -16,7 +17,7 @@ import { RegisterSchema } from '@/lib/zod-schema/users';
  */
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
+        const body: z.infer<typeof RegisterSchema> = await req.json();
 
         const validation = await validateRequest(RegisterSchema, body);
 
@@ -50,11 +51,11 @@ export async function POST(req: NextRequest) {
             });
 
         // Send welcome email (non-blocking)
-        sendEmail({
+        await sendEmail({
             to: email,
             subject: "Welcome to Nazmul Hassan's Website!",
             html: welcomeEmailTemplate(name),
-        }).catch(console.error);
+        });
 
         return sendResponse('User', 'POST', newUser);
     } catch (error) {
