@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { education } from '@/lib/drizzle/schema';
+import type { SelectEducation } from '@/types/career';
 import { EditEducationClient } from './_components/EditEducationClient';
 
 export default async function EditEducationPage({
@@ -23,5 +24,5 @@ export default async function EditEducationPage({
         notFound();
     }
 
-    return <EditEducationClient education={educationEntry} />;
+    return <EditEducationClient education={educationEntry as unknown as SelectEducation} />;
 }

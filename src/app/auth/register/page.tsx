@@ -9,7 +9,7 @@ import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
 
 /**
  * Registration page for new users.
@@ -20,39 +20,34 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        try {
-            await httpRequest('/api/auth/register', {
-                method: 'POST',
-                body: { name, email, password },
-            });
-
-            // Auto-login after registration
+    const { mutate: register, isPending: loading } = useApiMutation<
+        unknown,
+        { name: string; email: string; password: string }
+    >('/api/auth/register', 'POST', {
+        onSuccess: async () => {
             const result = await signIn('credentials', {
                 email,
                 password,
                 redirect: false,
             });
-
             if (result?.ok) {
                 router.push('/settings');
-                router.refresh();
             }
-        } catch (err) {
+        },
+        onError: (err) => {
             const message =
                 typeof err === 'object' && err !== null && 'message' in err
                     ? String((err as { message: string }).message)
                     : 'Registration failed';
             setError(message);
-        } finally {
-            setLoading(false);
-        }
+        },
+    });
+
+    const handleRegister = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        register({ name, email, password });
     };
 
     const handleGoogleLogin = () => {

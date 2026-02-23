@@ -3,14 +3,12 @@
 import { Briefcase, Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectExperience } from '@/types/career';
 
@@ -19,37 +17,38 @@ interface ExperiencesClientProps {
 }
 
 export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps) {
-    const router = useRouter();
-    const [experiences, setExperiences] = useState(initialExperiences);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const { data: experiences = initialExperiences } = useApiQuery<SelectExperience[]>(
+        ['experiences'],
+        '/api/experiences'
+    );
+
+    const { mutate: deleteExp } = useApiMutation<SelectExperience>(
+        `/api/experiences?id=${deletingId}`,
+        'DELETE',
+        {
+            successMessage: 'Experience deleted successfully',
+            errorMessage: 'Failed to delete experience',
+            invalidateKeys: ['experiences'],
+            onError: (error) => console.error('Failed to delete experience:', error),
+        }
+    );
 
     const handleDelete = async (exp: SelectExperience) => {
         const { position, id, company_logo } = exp;
 
         confirmToast({
-            onConfirm: async () => {
+            onConfirm: () => {
                 setDeletingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/experiences?id=${id}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (success) {
-                        setExperiences(experiences.filter((e) => e.id !== id));
-
+                deleteExp(null, {
+                    onSuccess: async () => {
                         if (company_logo) {
                             await deleteFromCloudinary(company_logo);
                         }
-
-                        toast.success('Experience deleted successfully');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete experience:', error);
-                    toast.error('Failed to delete experience');
-                } finally {
-                    setDeletingId(null);
-                }
+                    },
+                    onSettled: () => setDeletingId(null),
+                });
             },
             title: `Delete "${position}"?`,
             description: 'This action cannot be undone!',

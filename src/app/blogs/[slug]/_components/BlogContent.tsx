@@ -13,7 +13,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
 
@@ -33,21 +33,22 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
     const likes = reactions.like || [];
     const dislikes = reactions.dislike || [];
 
-    const handleReact = async (type: 'like' | 'dislike') => {
+    const { mutate: reactToBlog } = useApiMutation<unknown, { type: 'like' | 'dislike' }>(
+        `/api/blogs/${blog.slug}/react`,
+        'POST',
+        {
+            invalidateKeys: ['blog', 'blogs'],
+            onSuccess: () => router.refresh(),
+            onError: (error) => console.error('Reaction failed:', error),
+        }
+    );
+
+    const handleReact = (type: 'like' | 'dislike') => {
         if (!session?.user) {
             router.push('/auth/login');
             return;
         }
-
-        try {
-            await httpRequest(`/api/blogs/${blog.slug}/react`, {
-                method: 'POST',
-                body: { type },
-            });
-            router.refresh();
-        } catch (error) {
-            console.error('Reaction failed:', error);
-        }
+        reactToBlog({ type });
     };
 
     return (

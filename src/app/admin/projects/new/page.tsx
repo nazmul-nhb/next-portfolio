@@ -1,34 +1,25 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertProject } from '@/types/projects';
 
 export default function NewProjectPage() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertProject) => {
-        setIsLoading(true);
-        try {
-            await httpRequest('/api/projects', {
-                method: 'POST',
-                body: data,
-            });
-
-            router.push('/admin/projects');
-            router.refresh();
-        } catch (error) {
-            console.error('Failed to create project:', error);
-            toast.error('Failed to create project. Please try again.');
-        } finally {
-            setIsLoading(false);
+    const { mutate, isPending: isLoading } = useApiMutation<InsertProject, InsertProject>(
+        '/api/projects',
+        'POST',
+        {
+            successMessage: 'Project created successfully',
+            errorMessage: 'Failed to create project. Please try again.',
+            invalidateKeys: ['projects'],
+            onSuccess: () => router.push('/admin/projects'),
+            onError: (error) => console.error('Failed to create project:', error),
         }
-    };
+    );
 
     return (
         <div className="space-y-6">
@@ -42,7 +33,7 @@ export default function NewProjectPage() {
                     <CardTitle>Project Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ProjectForm isLoading={isLoading} onSubmit={handleSubmit} />
+                    <ProjectForm isLoading={isLoading} onSubmit={mutate} />
                 </CardContent>
             </Card>
         </div>

@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { experiences } from '@/lib/drizzle/schema';
+import type { SelectExperience } from '@/types/career';
 import { EditExperienceClient } from './_components/EditExperienceClient';
 
 export default async function EditExperiencePage({
@@ -23,5 +24,5 @@ export default async function EditExperiencePage({
         notFound();
     }
 
-    return <EditExperienceClient experience={experience} />;
+    return <EditExperienceClient experience={experience as unknown as SelectExperience} />;
 }

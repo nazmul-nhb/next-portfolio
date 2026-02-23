@@ -215,7 +215,7 @@ export default function Navbar() {
                                 <input
                                     className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/60"
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Search blogs, projects..."
+                                    placeholder="Search for blogs..."
                                     ref={searchInputRef}
                                     type="text"
                                     value={searchQuery}

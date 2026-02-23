@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import {
     deleteFromCloudinary,
     deleteOldCloudFile,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -55,8 +55,41 @@ export function SettingsClient() {
     // OTP state
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState('');
-    const [otpLoading, setOtpLoading] = useState(false);
     const [otpMessage, setOtpMessage] = useState('');
+
+    const { mutate: requestOTP, isPending: otpSending } = useApiMutation<
+        unknown,
+        { email: string }
+    >('/api/auth/otp', 'POST', {
+        successMessage: 'OTP sent to your email!',
+        errorMessage: 'Failed to send OTP',
+        onSuccess: () => {
+            setOtpSent(true);
+            setOtpMessage('OTP sent to your email!');
+        },
+        onError: (err) => {
+            const msg =
+                typeof err === 'object' && err !== null && 'message' in err
+                    ? String((err as { message: string }).message)
+                    : 'Failed to send OTP';
+            setOtpMessage(msg);
+        },
+    });
+
+    const { mutate: verifyOTP, isPending: verifyingOTP } = useApiMutation<
+        unknown,
+        { email: string; code: string }
+    >('/api/auth/otp', 'PUT', {
+        successMessage: 'Email verified successfully!',
+        errorMessage: 'Invalid or expired OTP',
+        onSuccess: () => {
+            setOtpMessage('Email verified successfully!');
+            window.location.reload();
+        },
+        onError: () => setOtpMessage('Invalid or expired OTP'),
+    });
+
+    const otpLoading = otpSending || verifyingOTP;
 
     // Redirect if unauthenticated
     useEffect(() => {
@@ -134,53 +167,16 @@ export function SettingsClient() {
         }
     };
 
-    const handleRequestOTP = async () => {
+    const handleRequestOTP = () => {
         if (!profile) return;
-        setOtpLoading(true);
         setOtpMessage('');
-        try {
-            await httpRequest('/api/auth/otp', {
-                method: 'POST',
-                body: { email: profile.email },
-            });
-            setOtpSent(true);
-            setOtpMessage('OTP sent to your email!');
-            toast.success('OTP sent to your email!');
-        } catch (err) {
-            const msg =
-                typeof err === 'object' && err !== null && 'message' in err
-                    ? String((err as { message: string }).message)
-                    : 'Failed to send OTP';
-            setOtpMessage(msg);
-            toast.error(msg);
-        } finally {
-            setOtpLoading(false);
-        }
+        requestOTP({ email: profile.email });
     };
 
-    const handleVerifyOTP = async () => {
+    const handleVerifyOTP = () => {
         if (!profile) return;
-        setOtpLoading(true);
         setOtpMessage('');
-        try {
-            const { success } = await httpRequest('/api/auth/otp', {
-                method: 'PUT',
-                body: { email: profile.email, code: otp },
-            });
-
-            if (success) {
-                setOtpMessage('Email verified successfully!');
-                toast.success('Email verified successfully!');
-                // Refetch profile to get updated email_verified status
-                window.location.reload(); // Simple reload to sync everything
-            }
-        } catch {
-            const msg = 'Invalid or expired OTP';
-            setOtpMessage(msg);
-            toast.error(msg);
-        } finally {
-            setOtpLoading(false);
-        }
+        verifyOTP({ email: profile.email, code: otp });
     };
 
     // ✅ Loading state from TanStack Query

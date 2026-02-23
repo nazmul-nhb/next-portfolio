@@ -13,8 +13,8 @@ import { TagCategorySelector } from '@/components/misc/tag-category-selector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SingleBlogRes } from '@/types/blogs';
 
@@ -26,7 +26,6 @@ export default function EditBlogPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [excerpt, setExcerpt] = useState('');
@@ -36,9 +35,30 @@ export default function EditBlogPage() {
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [uploadingCover, setUploadingCover] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [tagIds, setTagIds] = useState<number[]>([]);
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
+
+    const {
+        data: blogData,
+        isLoading: loading,
+        isError,
+    } = useApiQuery<SingleBlogRes>(['blog', slug], `/api/blogs/${slug}`, {
+        enabled: status === 'authenticated' && !!slug,
+    });
+
+    const { mutate: updateBlog, isPending: submitting } = useApiMutation<
+        { slug: string },
+        Record<string, unknown>
+    >(`/api/blogs/${slug}`, 'PATCH', {
+        successMessage: 'Blog post updated!',
+        invalidateKeys: ['blog', 'blogs'],
+        onSuccess: (data) => {
+            router.push(data?.slug ? `/blogs/${data.slug}` : `/blogs/${slug}`);
+        },
+        onError: async () => {
+            if (publicId) await deleteFromCloudinary(publicId);
+        },
+    });
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -46,47 +66,34 @@ export default function EditBlogPage() {
         }
     }, [status, router]);
 
-    // Fetch existing blog data
     useEffect(() => {
-        if (!slug || status !== 'authenticated') return;
+        if (isError) {
+            toast.error('Failed to load blog post.');
+            router.push('/blogs/my');
+        }
+    }, [isError, router]);
 
-        const fetchBlog = async () => {
-            try {
-                const { data } = await httpRequest<SingleBlogRes>(`/api/blogs/${slug}`, {
-                    method: 'GET',
-                });
+    // Initialize form state from fetched blog data
+    useEffect(() => {
+        if (!blogData) return;
 
-                if (data) {
-                    const { blog, tags, categories } = data;
+        const { blog, tags, categories } = blogData;
 
-                    // Check ownership
-                    if (
-                        blog.author.id !== +(session?.user?.id ?? 0) &&
-                        session?.user?.role !== 'admin'
-                    ) {
-                        toast.error('You can only edit your own posts.');
-                        router.push(`/blogs/${slug}`);
-                        return;
-                    }
+        // Check ownership
+        if (blog.author.id !== +(session?.user?.id ?? 0) && session?.user?.role !== 'admin') {
+            toast.error('You can only edit your own posts.');
+            router.push(`/blogs/${slug}`);
+            return;
+        }
 
-                    setTitle(blog.title);
-                    setContent(blog.content);
-                    setExcerpt(blog.excerpt ?? '');
-                    setCoverImage(blog.cover_image ?? '');
-                    setIsPublished(blog.is_published);
-                    setTagIds(tags.map((t) => t.id));
-                    setCategoryIds(categories.map((c) => c.id));
-                }
-            } catch {
-                toast.error('Failed to load blog post.');
-                router.push('/blogs/my');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBlog();
-    }, [slug, status, session, router]);
+        setTitle(blog.title);
+        setContent(blog.content);
+        setExcerpt(blog.excerpt ?? '');
+        setCoverImage(blog.cover_image ?? '');
+        setIsPublished(blog.is_published);
+        setTagIds(tags.map((t) => t.id));
+        setCategoryIds(categories.map((c) => c.id));
+    }, [blogData, session, slug, router]);
 
     if (status === 'loading' || loading) {
         return (
@@ -113,11 +120,9 @@ export default function EditBlogPage() {
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) return;
 
-        setSubmitting(true);
-        try {
-            let finalCoverImage = coverImage;
+        let finalCoverImage = coverImage;
 
-            // Upload cover image if pending
+        try {
             if (pendingCoverFile) {
                 setUploadingCover(true);
                 const { public_id, url } = await uploadToCloudinary(
@@ -131,41 +136,21 @@ export default function EditBlogPage() {
                 setCoverPreview(null);
                 setUploadingCover(false);
             }
-
-            const { data } = await httpRequest<{ slug: string }, Record<string, unknown>>(
-                `/api/blogs/${slug}`,
-                {
-                    method: 'PATCH',
-                    body: {
-                        title,
-                        content,
-                        excerpt: excerpt || undefined,
-                        cover_image: finalCoverImage || undefined,
-                        is_published: isPublished,
-                        tag_ids: tagIds,
-                        category_ids: categoryIds,
-                    },
-                }
-            );
-
-            toast.success('Blog post updated!');
-
-            if (data?.slug) {
-                router.push(`/blogs/${data.slug}`);
-            } else {
-                router.push(`/blogs/${slug}`);
-            }
-        } catch (error) {
-            console.error('Failed to update blog:', error);
-
-            if (publicId) {
-                await deleteFromCloudinary(publicId);
-            }
-
-            toast.error('Failed to update blog. Please try again.');
-        } finally {
-            setSubmitting(false);
+        } catch {
+            toast.error('Failed to upload image. Please try again.');
+            setUploadingCover(false);
+            return;
         }
+
+        updateBlog({
+            title,
+            content,
+            excerpt: excerpt || undefined,
+            cover_image: finalCoverImage || undefined,
+            is_published: isPublished,
+            tag_ids: tagIds,
+            category_ids: categoryIds,
+        });
     };
 
     return (
@@ -301,11 +286,13 @@ export default function EditBlogPage() {
                         </label>
 
                         <Button
-                            disabled={!title.trim() || !content.trim() || submitting}
+                            disabled={
+                                !title.trim() || !content.trim() || submitting || uploadingCover
+                            }
                             onClick={handleSubmit}
                         >
                             <Save className="mr-2 h-4 w-4" />
-                            {submitting ? 'Saving...' : 'Update Post'}
+                            {submitting || uploadingCover ? 'Saving...' : 'Update Post'}
                         </Button>
                     </div>
                 </div>

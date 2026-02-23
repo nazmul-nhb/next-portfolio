@@ -3,15 +3,13 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectProject } from '@/types/projects';
 
@@ -20,38 +18,40 @@ interface ProjectsClientProps {
 }
 
 export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
-    const router = useRouter();
-    const [projects, setProjects] = useState(initialProjects);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const { data: projects = initialProjects } = useApiQuery<SelectProject[]>(
+        ['projects'],
+        '/api/projects'
+    );
+
+    const { mutate: deleteProject } = useApiMutation<SelectProject>(
+        `/api/projects?id=${deletingId}`,
+        'DELETE',
+        {
+            successMessage: 'Project deleted successfully',
+            errorMessage: 'Failed to delete project',
+            invalidateKeys: ['projects'],
+            onError: (error) => console.error('Failed to delete project:', error),
+        }
+    );
 
     const handleDelete = async (project: SelectProject) => {
         const { id, title, favicon, screenshots } = project;
 
         confirmToast({
-            onConfirm: async () => {
+            onConfirm: () => {
                 setDeletingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/projects?id=${id}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (success) {
+                deleteProject(null, {
+                    onSuccess: async () => {
                         await Promise.all(
                             [favicon, ...screenshots].map((publicId) =>
                                 deleteFromCloudinary(publicId)
                             )
                         );
-
-                        setProjects(projects.filter((p) => p.id !== id));
-                        toast.success('Project deleted successfully');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete project:', error);
-                    toast.error('Failed to delete project');
-                } finally {
-                    setDeletingId(null);
-                }
+                    },
+                    onSettled: () => setDeletingId(null),
+                });
             },
             title: `Delete "${title}"?`,
             description: 'This action cannot be undone!',

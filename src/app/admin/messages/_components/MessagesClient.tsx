@@ -1,7 +1,6 @@
 'use client';
 
 import { Check, Clock, Mail, MailOpen, Trash2, User, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
@@ -15,7 +14,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { cn, formatRelativeTime } from '@/lib/utils';
 
 interface ContactMessage {
@@ -34,66 +33,59 @@ interface MessagesClientProps {
 }
 
 export function MessagesClient({ initialMessages }: MessagesClientProps) {
-    const router = useRouter();
-    const [messages, setMessages] = useState(initialMessages);
     const [processingId, setProcessingId] = useState<number | null>(null);
     const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
 
-    const handleToggleRead = async (
-        e: React.MouseEvent,
-        id: number,
-        currentStatus: boolean
-    ) => {
+    const { data: messages = initialMessages } = useApiQuery<ContactMessage[]>(
+        ['contact-messages'],
+        '/api/contact'
+    );
+
+    const { mutate: toggleRead } = useApiMutation<ContactMessage, { is_read: boolean }>(
+        `/api/contact/${processingId}`,
+        'PATCH',
+        { invalidateKeys: ['contact-messages'] }
+    );
+
+    const { mutate: deleteMsg } = useApiMutation<ContactMessage>(
+        `/api/contact?id=${processingId}`,
+        'DELETE',
+        { invalidateKeys: ['contact-messages'] }
+    );
+
+    const handleToggleRead = (e: React.MouseEvent, id: number, currentStatus: boolean) => {
         e.stopPropagation();
         setProcessingId(id);
-        try {
-            await httpRequest(`/api/contact/${id}`, {
-                method: 'PATCH',
-                body: { is_read: !currentStatus },
-            });
-
-            setMessages(
-                messages.map((m) => (m.id === id ? { ...m, is_read: !currentStatus } : m))
-            );
-
-            if (selectedMessage?.id === id) {
-                setSelectedMessage((prev) =>
-                    prev ? { ...prev, is_read: !currentStatus } : null
-                );
+        toggleRead(
+            { is_read: !currentStatus },
+            {
+                onSuccess: () => {
+                    if (selectedMessage?.id === id) {
+                        setSelectedMessage((prev) =>
+                            prev ? { ...prev, is_read: !currentStatus } : null
+                        );
+                    }
+                    toast.success(currentStatus ? 'Marked as unread' : 'Marked as read');
+                },
+                onError: () => toast.error('Failed to update message'),
+                onSettled: () => setProcessingId(null),
             }
-
-            toast.success(currentStatus ? 'Marked as unread' : 'Marked as read');
-            router.refresh();
-        } catch (error) {
-            console.error('Failed to update message:', error);
-            toast.error('Failed to update message');
-        } finally {
-            setProcessingId(null);
-        }
+        );
     };
 
-    const handleDelete = async (e: React.MouseEvent, id: number, name: string) => {
+    const handleDelete = (e: React.MouseEvent, id: number, name: string) => {
         e.stopPropagation();
         confirmToast({
-            onConfirm: async () => {
+            onConfirm: () => {
                 setProcessingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/contact?id=${id}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (success) {
-                        setMessages(messages.filter((m) => m.id !== id));
+                deleteMsg(null, {
+                    onSuccess: () => {
                         if (selectedMessage?.id === id) setSelectedMessage(null);
                         toast.success('Message deleted');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete message:', error);
-                    toast.error('Failed to delete message');
-                } finally {
-                    setProcessingId(null);
-                }
+                    },
+                    onError: () => toast.error('Failed to delete message'),
+                    onSettled: () => setProcessingId(null),
+                });
             },
             title: `Delete message from "${name}"?`,
             description: 'This action cannot be undone!',
@@ -104,17 +96,18 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     const handleOpenMessage = (message: ContactMessage) => {
         setSelectedMessage(message);
 
-        // Auto-mark as read when opening
         if (!message.is_read) {
-            httpRequest(`/api/contact/${message.id}`, {
-                method: 'PATCH',
-                body: { is_read: true },
-            }).then(() => {
-                setMessages((prev) =>
-                    prev.map((m) => (m.id === message.id ? { ...m, is_read: true } : m))
-                );
-                router.refresh();
-            });
+            setProcessingId(message.id);
+            toggleRead(
+                { is_read: true },
+                {
+                    onSuccess: () =>
+                        setSelectedMessage((prev) =>
+                            prev ? { ...prev, is_read: true } : null
+                        ),
+                    onSettled: () => setProcessingId(null),
+                }
+            );
         }
     };
 

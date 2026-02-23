@@ -29,7 +29,6 @@ export function EditEducationClient({ education }: Props) {
             onSuccess: async () => {
                 await deleteOldCloudFile(education.institution_logo, data.institution_logo);
                 router.push('/admin/education');
-                router.refresh();
             },
             onError: (error) => {
                 console.error('Failed to update education:', error);

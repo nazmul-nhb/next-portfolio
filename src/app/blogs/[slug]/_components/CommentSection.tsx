@@ -9,7 +9,7 @@ import { useRef, useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { BlogComment } from '@/types/blogs';
 
@@ -31,7 +31,6 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
     const router = useRouter();
     const [content, setContent] = useState('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
-    const [submitting, setSubmitting] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const topLevelComments = comments.filter((c) => !c.parent_comment_id);
@@ -39,27 +38,25 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
     const getReplies = (parentId: number): BlogComment[] =>
         comments.filter((c) => c.parent_comment_id === parentId);
 
-    const handleSubmit = async () => {
-        if (!content.trim()) return;
-
-        setSubmitting(true);
-        try {
-            await httpRequest('/api/comments', {
-                method: 'POST',
-                body: {
-                    content,
-                    blog_id: blogId,
-                    ...(replyTo && { parent_comment_id: replyTo }),
-                },
-            });
+    const { mutate: postComment, isPending: submitting } = useApiMutation<
+        unknown,
+        { content: string; blog_id: number; parent_comment_id?: number }
+    >('/api/comments', 'POST', {
+        onSuccess: () => {
             setContent('');
             setReplyTo(null);
             router.refresh();
-        } catch (error) {
-            console.error('Failed to post comment:', error);
-        } finally {
-            setSubmitting(false);
-        }
+        },
+        onError: (error) => console.error('Failed to post comment:', error),
+    });
+
+    const handleSubmit = () => {
+        if (!content.trim()) return;
+        postComment({
+            content,
+            blog_id: blogId,
+            ...(replyTo && { parent_comment_id: replyTo }),
+        });
     };
 
     const CommentItem = ({ comment, depth = 0 }: CommentItemProps) => {

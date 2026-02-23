@@ -19,12 +19,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import {
     type CloudinaryResponse,
     deleteFromCloudinary,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
+import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import {
     type ProjectFormData,
@@ -48,10 +48,12 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     // State management
     const [techStackItems, setTechStackItems] = useState(defaultValues?.tech_stack || []);
     const [techStackInput, setTechStackInput] = useState('');
-    const [skills, setSkills] = useState<SelectSkill[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [features, setFeatures] = useState<string[]>(defaultValues?.features || ['']);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Fetch skills via TanStack Query
+    const { data: skills = [] } = useApiQuery<SelectSkill[]>(['skills'], '/api/skills');
 
     // Image state - track individual files for better control
     const [faviconFile, setFaviconFile] = useState<File | null>(null);
@@ -273,19 +275,6 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
             );
         }
     }, [defaultValues]);
-
-    // Fetch skills on mount
-    useEffect(() => {
-        const fetchSkills = async () => {
-            try {
-                const { data } = await httpRequest<SelectSkill[]>('/api/skills');
-                if (data) setSkills(data);
-            } catch (error) {
-                console.error('Failed to fetch skills:', error);
-            }
-        };
-        fetchSkills();
-    }, []);
 
     return (
         <Form {...form}>

@@ -13,8 +13,8 @@ import { TagCategorySelector } from '@/components/misc/tag-category-selector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 /**
@@ -32,9 +32,22 @@ export default function NewBlogPage() {
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [uploadingCover, setUploadingCover] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [tagIds, setTagIds] = useState<number[]>([]);
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
+
+    const { mutate: createBlog, isPending } = useApiMutation<
+        { slug: string },
+        Record<string, unknown>
+    >('/api/blogs', 'POST', {
+        invalidateKeys: ['blogs'],
+        onSuccess: (data) => {
+            router.push(data?.slug ? `/blogs/${data.slug}` : '/blogs');
+        },
+        onError: async () => {
+            if (publicId) await deleteFromCloudinary(publicId);
+            toast.error('Failed to create blog. Please try again.');
+        },
+    });
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -67,11 +80,9 @@ export default function NewBlogPage() {
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) return;
 
-        setSubmitting(true);
-        try {
-            let finalCoverImage = coverImage;
+        let finalCoverImage = coverImage;
 
-            // Upload cover image if pending
+        try {
             if (pendingCoverFile) {
                 setUploadingCover(true);
                 const { public_id, url } = await uploadToCloudinary(
@@ -85,39 +96,21 @@ export default function NewBlogPage() {
                 setCoverPreview(null);
                 setUploadingCover(false);
             }
-
-            const { data } = await httpRequest<{ slug: string }, Record<string, unknown>>(
-                '/api/blogs',
-                {
-                    method: 'POST',
-                    body: {
-                        title,
-                        content,
-                        excerpt: excerpt || undefined,
-                        cover_image: finalCoverImage || undefined,
-                        is_published: isPublished,
-                        tag_ids: tagIds.length > 0 ? tagIds : undefined,
-                        category_ids: categoryIds.length > 0 ? categoryIds : undefined,
-                    },
-                }
-            );
-
-            if (data?.slug) {
-                router.push(`/blogs/${data.slug}`);
-            } else {
-                router.push('/blogs');
-            }
-        } catch (error) {
-            console.error('Failed to create blog:', error);
-
-            if (publicId) {
-                await deleteFromCloudinary(publicId);
-            }
-
-            toast.error('Failed to create blog. Please try again.');
-        } finally {
-            setSubmitting(false);
+        } catch {
+            toast.error('Failed to upload image. Please try again.');
+            setUploadingCover(false);
+            return;
         }
+
+        createBlog({
+            title,
+            content,
+            excerpt: excerpt || undefined,
+            cover_image: finalCoverImage || undefined,
+            is_published: isPublished,
+            tag_ids: tagIds.length > 0 ? tagIds : undefined,
+            category_ids: categoryIds.length > 0 ? categoryIds : undefined,
+        });
     };
 
     return (
@@ -253,11 +246,17 @@ export default function NewBlogPage() {
                         </label>
 
                         <Button
-                            disabled={!title.trim() || !content.trim() || submitting}
+                            disabled={
+                                !title.trim() || !content.trim() || isPending || uploadingCover
+                            }
                             onClick={handleSubmit}
                         >
                             <Save className="mr-2 h-4 w-4" />
-                            {submitting ? 'Saving...' : isPublished ? 'Publish' : 'Save Draft'}
+                            {isPending || uploadingCover
+                                ? 'Saving...'
+                                : isPublished
+                                  ? 'Publish'
+                                  : 'Save Draft'}
                         </Button>
                     </div>
                 </div>

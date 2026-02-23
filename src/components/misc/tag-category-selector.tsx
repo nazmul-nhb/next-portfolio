@@ -1,12 +1,12 @@
 'use client';
 
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
 
 interface Option {
@@ -43,36 +43,38 @@ export function TagCategorySelector({
     placeholder = 'Search...',
 }: TagCategorySelectorProps) {
     const [open, setOpen] = useState(false);
-    const [options, setOptions] = useState<Option[]>([]);
     const [search, setSearch] = useState('');
-    const [creating, setCreating] = useState(false);
-    const [loaded, setLoaded] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const fetchOptions = useCallback(async () => {
-        try {
-            const { data } = await httpRequest<Option[]>(endpoint, { method: 'GET' });
-            if (data) {
-                setOptions(data);
-                setLoaded(true);
-            }
-        } catch {
-            // Silently fail — user can retry by reopening
-        }
-    }, [endpoint]);
+    const {
+        data: options = [],
+        refetch: refetchOptions,
+        isLoading,
+    } = useApiQuery<Option[]>([endpoint], endpoint, { staleTime: 30_000 });
 
-    useEffect(() => {
-        fetchOptions();
-    }, [fetchOptions]);
+    const { mutate: createOption, isPending: isCreating } = useApiMutation<
+        Option,
+        { title: string }
+    >(endpoint, 'POST', {
+        invalidateKeys: [endpoint],
+        onSuccess: (data) => {
+            if (data) {
+                onChange([...selectedIds, data.id]);
+                setSearch('');
+                toast.success(`${label.slice(0, -1)} "${data.title}" created!`);
+            }
+        },
+        onError: () => toast.error(`Failed to create ${label.toLowerCase().slice(0, -1)}.`),
+    });
 
     /** Focus the search input when the popover opens */
     useEffect(() => {
         if (open) {
             // Refetch options when popover opens to get latest
-            fetchOptions();
+            refetchOptions();
             setTimeout(() => inputRef.current?.focus(), 0);
         }
-    }, [open, fetchOptions]);
+    }, [open, refetchOptions]);
 
     const filtered = options.filter((opt) =>
         opt.title.toLowerCase().includes(search.toLowerCase())
@@ -93,27 +95,10 @@ export function TagCategorySelector({
     };
 
     /** Create a new tag/category inline */
-    const handleCreate = async () => {
+    const handleCreate = () => {
         const title = search.trim();
         if (!title) return;
-
-        setCreating(true);
-        try {
-            const { data } = await httpRequest<Option, { title: string }>(endpoint, {
-                method: 'POST',
-                body: { title },
-            });
-            if (data) {
-                setOptions((prev) => [...prev, data]);
-                onChange([...selectedIds, data.id]);
-                setSearch('');
-                toast.success(`${label.slice(0, -1)} "${title}" created!`);
-            }
-        } catch {
-            toast.error(`Failed to create ${label.toLowerCase().slice(0, -1)}.`);
-        } finally {
-            setCreating(false);
-        }
+        createOption({ title });
     };
 
     const noResults = filtered.length === 0 && search.trim().length > 0;
@@ -177,22 +162,22 @@ export function TagCategorySelector({
                         {noResults && allowCreate && (
                             <button
                                 className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-primary hover:bg-accent disabled:opacity-50"
-                                disabled={creating}
+                                disabled={isCreating}
                                 onClick={handleCreate}
                                 type="button"
                             >
                                 <Plus className="h-3.5 w-3.5" />
-                                {creating ? 'Creating...' : `Create "${search.trim()}"`}
+                                {isCreating ? 'Creating...' : `Create "${search.trim()}"`}
                             </button>
                         )}
 
-                        {!loaded && options.length === 0 && (
+                        {isLoading && options.length === 0 && (
                             <p className="px-2 py-3 text-center text-sm text-muted-foreground">
                                 Loading {label.toLowerCase()}...
                             </p>
                         )}
 
-                        {loaded && options.length === 0 && !search && (
+                        {!isLoading && options.length === 0 && !search && (
                             <p className="px-2 py-3 text-center text-sm text-muted-foreground">
                                 No {label.toLowerCase()} yet.
                                 {allowCreate && ' Type to create one.'}
@@ -224,7 +209,7 @@ export function TagCategorySelector({
             )}
 
             {/* Show count notice when options haven't loaded yet but IDs are selected */}
-            {!loaded && selectedIds.length > 0 && selectedOptions.length === 0 && (
+            {isLoading && selectedIds.length > 0 && selectedOptions.length === 0 && (
                 <p className="text-xs text-muted-foreground">
                     {selectedIds.length} {label.toLowerCase()} selected (loading names...)
                 </p>

@@ -1,9 +1,21 @@
-import { db } from '@/lib/drizzle';
-import { education } from '@/lib/drizzle/schema';
+import { notFound } from 'next/navigation';
+import { httpRequest } from '@/lib/actions/baseRequest';
+import type { SelectEducation } from '@/types/career';
 import { EducationClient } from './_components/EducationClient';
 
 export default async function EducationPage() {
-    const allEducation = await db.select().from(education).orderBy(education.start_date);
+    try {
+        let allEducation: SelectEducation[] = [];
 
-    return <EducationClient initialEducation={allEducation} />;
+        const { data } = await httpRequest<SelectEducation[]>('/api/education');
+
+        if (data) {
+            allEducation = data;
+        }
+
+        return <EducationClient initialEducation={allEducation} />;
+    } catch (error) {
+        console.error('Error fetching education:', error);
+        notFound();
+    }
 }

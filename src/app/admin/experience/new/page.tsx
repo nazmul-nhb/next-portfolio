@@ -1,35 +1,24 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import { ExperienceForm } from '@/components/forms/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertExperience, UpdateExperience } from '@/types/career';
 
 export default function NewExperiencePage() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (data: InsertExperience | UpdateExperience) => {
-        setIsLoading(true);
-        try {
-            await httpRequest('/api/experiences', {
-                method: 'POST',
-                body: data,
-            });
-
-            toast.success('Experience created successfully');
-            router.push('/admin/experience');
-            router.refresh();
-        } catch (error) {
-            console.error('Failed to create experience:', error);
-            toast.error('Failed to create experience. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const { mutate, isPending: isLoading } = useApiMutation<
+        InsertExperience,
+        InsertExperience | UpdateExperience
+    >('/api/experiences', 'POST', {
+        successMessage: 'Experience created successfully',
+        errorMessage: 'Failed to create experience. Please try again.',
+        invalidateKeys: ['experiences'],
+        onSuccess: () => router.push('/admin/experience'),
+        onError: (error) => console.error('Failed to create experience:', error),
+    });
 
     return (
         <div className="space-y-6">
@@ -43,7 +32,7 @@ export default function NewExperiencePage() {
                     <CardTitle>Experience Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ExperienceForm isLoading={isLoading} onSubmit={handleSubmit} />
+                    <ExperienceForm isLoading={isLoading} onSubmit={mutate} />
                 </CardContent>
             </Card>
         </div>

@@ -1,16 +1,18 @@
 'use client';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 
 interface Conversation {
@@ -45,52 +47,76 @@ interface UserResult {
 export default function MessagesPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
-    const [conversations, setConversations] = useState<Conversation[]>([]);
+    const queryClient = useQueryClient();
+
     const [activeConversation, setActiveConversation] = useState<number | null>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const [sending, setSending] = useState(false);
     const [recipientSearch, setRecipientSearch] = useState('');
-    const [searchResults, setSearchResults] = useState<UserResult[]>([]);
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [selectedRecipient, setSelectedRecipient] = useState<UserResult | null>(null);
-    const [searching, setSearching] = useState(false);
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const fetchConversations = useCallback(async () => {
-        try {
-            const { data } = await httpRequest<Conversation[]>('/api/messages/conversations');
-            if (data) setConversations(data);
-        } catch {
-            // No conversations yet
-        }
-    }, []);
+    const { data: conversations = [] } = useApiQuery<Conversation[]>(
+        ['conversations'],
+        '/api/messages/conversations',
+        { enabled: status === 'authenticated', refetchInterval: 10000 }
+    );
 
-    const fetchMessages = useCallback(async (conversationId: number) => {
-        try {
-            const { data } = await httpRequest<Message[]>(
-                `/api/messages/conversations/${conversationId}`
-            );
-            if (data) setMessages(data);
-        } catch {
-            // Error loading messages
+    const { data: messages = [] } = useApiQuery<Message[]>(
+        ['messages', activeConversation ?? 0],
+        `/api/messages/conversations/${activeConversation}`,
+        { enabled: !!activeConversation, refetchInterval: 10000 }
+    );
+
+    const { data: searchResults = [], isFetching: searching } = useApiQuery<UserResult[]>(
+        ['user-search', debouncedSearch],
+        `/api/users/search?q=${encodeURIComponent(debouncedSearch)}`,
+        { enabled: debouncedSearch.length >= 2, staleTime: 10000 }
+    );
+
+    const { mutate: sendMsg, isPending: sending } = useApiMutation<null, { content: string }>(
+        `/api/messages/conversations/${activeConversation ?? 0}`,
+        'POST',
+        {
+            invalidateKeys: ['messages', 'conversations'],
+            onSuccess: () => setNewMessage(''),
+            onError: (error) => console.error('Failed to send message:', error),
         }
-    }, []);
+    );
+
+    /** Combined create-conversation + send-first-message mutation */
+    const { mutate: createAndSend, isPending: creatingConversation } = useMutation({
+        mutationFn: async ({ email, message }: { email: string; message: string }) => {
+            const { data: conv } = await httpRequest<Conversation, { email: string }>(
+                '/api/messages/conversations',
+                { method: 'POST', body: { email } }
+            );
+
+            if (!conv) throw new Error('Failed to create conversation');
+
+            await httpRequest<null, { content: string }>(
+                `/api/messages/conversations/${conv.id}`,
+                { method: 'POST', body: { content: message } }
+            );
+            return conv;
+        },
+        onSuccess: (conv) => {
+            setActiveConversation(conv.id);
+            setSelectedRecipient(null);
+            setRecipientSearch('');
+            setDebouncedSearch('');
+            setNewMessage('');
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['messages', conv.id] });
+        },
+        onError: (error) => console.error('Failed to create conversation:', error),
+    });
 
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/auth/login');
-        } else if (status === 'authenticated') {
-            fetchConversations();
         }
-    }, [status, router, fetchConversations]);
-
-    useEffect(() => {
-        if (activeConversation) {
-            fetchMessages(activeConversation);
-            const interval = setInterval(() => fetchMessages(activeConversation), 10000);
-            return () => clearInterval(interval);
-        }
-    }, [activeConversation, fetchMessages]);
+    }, [status, router]);
 
     // Debounced user search
     const handleRecipientSearch = (value: string) => {
@@ -102,75 +128,25 @@ export default function MessagesPage() {
         }
 
         if (value.trim().length < 2) {
-            setSearchResults([]);
+            setDebouncedSearch('');
             return;
         }
 
-        searchTimeoutRef.current = setTimeout(async () => {
-            setSearching(true);
-            try {
-                const { data } = await httpRequest<UserResult[]>(
-                    `/api/users/search?q=${encodeURIComponent(value.trim())}`
-                );
-                if (data) setSearchResults(data);
-            } catch {
-                setSearchResults([]);
-            } finally {
-                setSearching(false);
-            }
-        }, 300);
+        searchTimeoutRef.current = setTimeout(() => setDebouncedSearch(value.trim()), 300);
     };
 
     const selectRecipient = (user: UserResult) => {
         setSelectedRecipient(user);
         setRecipientSearch(user.email);
-        setSearchResults([]);
+        setDebouncedSearch('');
     };
 
-    const handleSend = async () => {
+    const handleSend = () => {
         if (!newMessage.trim()) return;
-        setSending(true);
-        try {
-            // If there's an active conversation, send to that conversation
-            if (activeConversation) {
-                await httpRequest<null, Record<string, unknown>>(
-                    `/api/messages/conversations/${activeConversation}`,
-                    {
-                        method: 'POST',
-                        body: { content: newMessage },
-                    }
-                );
-                setNewMessage('');
-                fetchMessages(activeConversation);
-            } else if (selectedRecipient) {
-                // Create a new conversation using email
-                const { data } = await httpRequest<Conversation, Record<string, unknown>>(
-                    '/api/messages/conversations',
-                    {
-                        method: 'POST',
-                        body: { email: selectedRecipient.email },
-                    }
-                );
-                if (data) {
-                    setActiveConversation(data.id);
-                    setSelectedRecipient(null);
-                    setRecipientSearch('');
-                    // Send the message
-                    await httpRequest<null, Record<string, unknown>>(
-                        `/api/messages/conversations/${data.id}`,
-                        {
-                            method: 'POST',
-                            body: { content: newMessage },
-                        }
-                    );
-                    setNewMessage('');
-                    fetchConversations();
-                }
-            }
-        } catch (error) {
-            console.error('Failed to send message:', error);
-        } finally {
-            setSending(false);
+        if (activeConversation) {
+            sendMsg({ content: newMessage });
+        } else if (selectedRecipient) {
+            createAndSend({ email: selectedRecipient.email, message: newMessage });
         }
     };
 
@@ -333,7 +309,7 @@ export default function MessagesPage() {
                                 </div>
                                 <div className="flex gap-2 border-t border-border/50 p-4">
                                     <Input
-                                        disabled={sending}
+                                        disabled={sending || creatingConversation}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         onKeyDown={(e) =>
                                             e.key === 'Enter' && !e.shiftKey && handleSend()
@@ -342,7 +318,11 @@ export default function MessagesPage() {
                                         value={newMessage}
                                     />
                                     <Button
-                                        disabled={!newMessage.trim() || sending}
+                                        disabled={
+                                            !newMessage.trim() ||
+                                            sending ||
+                                            creatingConversation
+                                        }
                                         onClick={handleSend}
                                         size="icon"
                                     >
@@ -378,7 +358,7 @@ export default function MessagesPage() {
                                 </div>
                                 <div className="flex gap-2 border-t border-border/50 p-4">
                                     <Input
-                                        disabled={sending}
+                                        disabled={sending || creatingConversation}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         onKeyDown={(e) =>
                                             e.key === 'Enter' && !e.shiftKey && handleSend()
@@ -387,7 +367,11 @@ export default function MessagesPage() {
                                         value={newMessage}
                                     />
                                     <Button
-                                        disabled={!newMessage.trim() || sending}
+                                        disabled={
+                                            !newMessage.trim() ||
+                                            sending ||
+                                            creatingConversation
+                                        }
                                         onClick={handleSend}
                                         size="icon"
                                     >
