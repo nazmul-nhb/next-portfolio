@@ -7,10 +7,18 @@ export async function proxy(req: NextRequest) {
     const session = await auth();
 
     const hasUser = !!session?.user;
+    // `active` is false when an admin has deleted or deactivated the account.
+    // The jwt callback sets this flag on every periodic DB re-verification.
+    const isActive = session?.user?.active !== false;
 
     const authRedirect = new URL(`/auth/login?redirectTo=${pathname}`, req.url);
 
     const protectedPaths = ['/settings', '/messages', '/blogs/new', '/blogs/edit'] as const;
+
+    // Force-sign-out any user whose account has been deleted or deactivated
+    if (hasUser && !isActive) {
+        return NextResponse.redirect(new URL('/auth/force-signout', req.url));
+    }
 
     // Admin routes - require admin role
     if (isAdminPath(pathname)) {

@@ -19,7 +19,7 @@ import {
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, hasErrorMessage } from '@/lib/utils';
 
 /**
  * Settings page client component with profile editing and email verification.
@@ -63,16 +63,13 @@ export function SettingsClient() {
     >('/api/auth/otp', 'POST', {
         successMessage: 'OTP sent to your email!',
         errorMessage: 'Failed to send OTP',
+        invalidateKeys: ['user-profile'],
         onSuccess: () => {
             setOtpSent(true);
             setOtpMessage('OTP sent to your email!');
         },
         onError: (err) => {
-            const msg =
-                typeof err === 'object' && err !== null && 'message' in err
-                    ? String((err as { message: string }).message)
-                    : 'Failed to send OTP';
-            setOtpMessage(msg);
+            setOtpMessage(hasErrorMessage(err) ? err.message : 'Failed to send OTP');
         },
     });
 
@@ -82,9 +79,9 @@ export function SettingsClient() {
     >('/api/auth/otp', 'PUT', {
         successMessage: 'Email verified successfully!',
         errorMessage: 'Invalid or expired OTP',
+        invalidateKeys: ['user-profile'],
         onSuccess: () => {
             setOtpMessage('Email verified successfully!');
-            window.location.reload();
         },
         onError: () => setOtpMessage('Invalid or expired OTP'),
     });

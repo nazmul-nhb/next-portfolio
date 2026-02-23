@@ -29,7 +29,6 @@ export function EditProjectClient({ project }: Props) {
             onSuccess: async () => {
                 await deleteOldCloudFile(project.favicon, data.favicon);
                 router.push('/admin/projects');
-                router.refresh();
             },
             onError: (error) => {
                 console.error('Failed to update project:', error);

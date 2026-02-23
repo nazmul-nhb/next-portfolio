@@ -29,6 +29,7 @@ export async function GET() {
                 role: users.role,
                 provider: users.provider,
                 email_verified: users.email_verified,
+                is_active: users.is_active,
                 created_at: users.created_at,
             })
             .from(users)
@@ -39,7 +40,14 @@ export async function GET() {
             return sendErrorResponse('User not found', 404);
         }
 
-        return sendResponse('User', 'GET', user);
+        if (!user.is_active) {
+            return sendErrorResponse('Account has been deactivated', 403);
+        }
+
+        // Strip internal field before sending to client
+        const { is_active: _, ...profile } = user;
+
+        return sendResponse('User', 'GET', profile);
     } catch (error) {
         return sendErrorResponse(error);
     }

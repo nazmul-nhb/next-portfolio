@@ -32,7 +32,6 @@ export function EditExperienceClient({ experience }: Props) {
             onSuccess: async () => {
                 await deleteOldCloudFile(experience.company_logo, data.company_logo);
                 router.push('/admin/experience');
-                router.refresh();
             },
         });
     };

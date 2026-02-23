@@ -1,26 +1,62 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useQuery } from '@tanstack/react-query';
+import { signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
-import { useUserStore } from '@/lib/store/user-store';
+import { httpRequest } from '@/lib/actions/baseRequest';
+import { type UserProfile, useUserStore } from '@/lib/store/user-store';
 
 /**
- * Syncs NextAuth session with Zustand user store
- * Add this component to your root layout
+ * Single source of truth: syncs the Zustand store from /api/users/me (DB),
+ * never from stale JWT claims.
+ *
+ * - Fetches fresh profile from the DB whenever the session is authenticated.
+ * - staleTime: 0 ensures react-query re-validates on every window focus /
+ *   route change, keeping the store current without manual polling.
+ * - On 401 / 403 / 404 (deleted or deactivated account) it immediately
+ *   clears the store and calls signOut(), complementing the proxy-level check.
  */
 export function AuthSync() {
-    const { data: session, status } = useSession();
-    const { syncFromSession, clearProfile } = useUserStore();
+    const { status } = useSession();
+    const { setProfile, clearProfile } = useUserStore();
 
+    const isAuthenticated = status === 'authenticated';
+
+    const { data, isError, error } = useQuery({
+        // Share the cache key with useUserProfile() so both always see fresh data
+        queryKey: ['user-profile'],
+        queryFn: async () => {
+            const res = await httpRequest<UserProfile>('/api/users/me', { method: 'GET' });
+            return res.data;
+        },
+        enabled: isAuthenticated,
+        staleTime: 0, // Always re-validate on window focus / navigation
+        retry: false, // Auth failures (401/403/404) are definitive — don't retry
+    });
+
+    // Sync fresh DB data into the store
     useEffect(() => {
         if (status === 'loading') return;
 
-        if (status === 'authenticated' && session) {
-            syncFromSession(session);
-        } else {
+        if (status === 'unauthenticated') {
             clearProfile();
+            return;
         }
-    }, [session, status, syncFromSession, clearProfile]);
+
+        if (isAuthenticated && data) {
+            setProfile(data);
+        }
+    }, [status, isAuthenticated, data, setProfile, clearProfile]);
+
+    // Force sign-out if account is deleted or deactivated
+    useEffect(() => {
+        if (!isError) return;
+        const statusCode = (error as { status?: number })?.status;
+        if (statusCode === 401 || statusCode === 403 || statusCode === 404) {
+            clearProfile();
+            signOut({ redirectTo: '/auth/login?reason=account-deactivated' });
+        }
+    }, [isError, error, clearProfile]);
 
     return null;
 }

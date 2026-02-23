@@ -1,4 +1,3 @@
-import type { Session } from 'next-auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -20,7 +19,6 @@ interface UserState {
     // Actions
     setProfile: (profile: UserProfile | null) => void;
     updateProfile: (updates: Partial<UserProfile>) => void;
-    syncFromSession: (session: Session | null) => void;
     clearProfile: () => void;
 }
 
@@ -44,24 +42,6 @@ export const useUserStore = create<UserState>()(
                     set({
                         profile: { ...currentProfile, ...updates },
                     });
-                }
-            },
-
-            syncFromSession: (session) => {
-                if (session?.user) {
-                    const profile: UserProfile = {
-                        id: +session.user.id,
-                        name: session.user.name,
-                        email: session.user.email,
-                        bio: null, // Will be loaded from API
-                        profile_image: session.user.image || null,
-                        role: session.user.role,
-                        email_verified: session.user.email_verified,
-                        provider: session.user.provider,
-                    };
-                    set({ profile, isInitialized: true });
-                } else {
-                    set({ profile: null, isInitialized: true });
                 }
             },
 

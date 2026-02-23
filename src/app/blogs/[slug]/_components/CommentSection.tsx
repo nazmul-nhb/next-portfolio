@@ -3,7 +3,6 @@
 import { Reply as ReplyIcon, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useRef, useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
@@ -28,7 +27,6 @@ interface CommentItemProps {
  */
 export function CommentSection({ blogId, comments }: CommentSectionProps) {
     const { data: session } = useSession();
-    const router = useRouter();
     const [content, setContent] = useState('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -42,10 +40,10 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
         unknown,
         { content: string; blog_id: number; parent_comment_id?: number }
     >('/api/comments', 'POST', {
+        invalidateKeys: ['blog', 'blogs', 'comments', `blog-${blogId}`],
         onSuccess: () => {
             setContent('');
             setReplyTo(null);
-            router.refresh();
         },
         onError: (error) => console.error('Failed to post comment:', error),
     });

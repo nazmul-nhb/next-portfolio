@@ -38,7 +38,6 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
         'POST',
         {
             invalidateKeys: ['blog', 'blogs'],
-            onSuccess: () => router.refresh(),
             onError: (error) => console.error('Reaction failed:', error),
         }
     );

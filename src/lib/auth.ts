@@ -7,6 +7,11 @@ import { ENV } from '@/configs/env';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
 
+/** Re-verify the user against the DB every 5 minutes inside the jwt callback.
+ * Catches deletions/suspensions without requiring a new sign-in.
+ * Adjust lower for tighter security at the cost of more DB queries. */
+const DB_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+
 declare module 'next-auth' {
     interface Session {
         user: {
@@ -17,6 +22,8 @@ declare module 'next-auth' {
             role: 'admin' | 'user';
             email_verified: boolean;
             provider: 'credentials' | 'google';
+            /** false when the account has been deleted or deactivated by an admin */
+            active: boolean;
         };
     }
 
@@ -62,6 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     .limit(1);
 
                 if (!user || !user.password) return null;
+                if (!user.is_active) return null; // blocked/deactivated account
 
                 const isValid = await compare(password, user.password);
 
@@ -89,6 +97,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     .from(users)
                     .where(eq(users.email, email))
                     .limit(1);
+
+                if (existingUser && !existingUser.is_active) {
+                    // Reject deactivated/deleted accounts on OAuth sign-in
+                    return false;
+                }
 
                 if (!existingUser) {
                     const [newUser] = await db
@@ -127,17 +140,64 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
 
         async jwt({ token, user, trigger, session }) {
+            // ── Initial sign-in: stamp custom claims ──
             if (user) {
                 token.id = user.id as string;
-                token.role = user.role || 'user';
+                token.role = user.role ?? 'user';
                 token.email_verified = user.email_verified ?? false;
-                token.provider = user.provider || 'credentials';
+                token.provider = user.provider ?? 'credentials';
+                token.active = true;
+                token.lastDbCheck = Date.now();
+                return token;
             }
 
-            // Handle session updates from client (updateSession call)
+            // ── Client-side session update (profile edit, etc.) ──
             if (trigger === 'update' && session) {
                 if (session.name) token.name = session.name;
-                if (session.image !== undefined) token.picture = session.image;
+                if (session.image) token.picture = session.image;
+                token.lastDbCheck = Date.now();
+                return token;
+            }
+
+            // ── Periodic DB liveness check ──
+            // Re-verify on every request older than DB_CHECK_INTERVAL_MS.
+            // Catches: deleted accounts, deactivations, role changes.
+            const now = Date.now();
+            const needsCheck =
+                !token.lastDbCheck ||
+                now - (token.lastDbCheck as number) > DB_CHECK_INTERVAL_MS;
+
+            if (token.id && needsCheck) {
+                try {
+                    const [dbUser] = await db
+                        .select({
+                            id: users.id,
+                            name: users.name,
+                            role: users.role,
+                            is_active: users.is_active,
+                            email_verified: users.email_verified,
+                        })
+                        .from(users)
+                        .where(eq(users.id, +token.id))
+                        .limit(1);
+
+                    if (!dbUser || !dbUser.is_active) {
+                        // Account deleted or suspended — poison the token.
+                        // proxy.ts and AuthSync will force an immediate sign-out.
+                        token.active = false;
+                        // Do NOT bump lastDbCheck so every subsequent request re-checks.
+                    } else {
+                        // Sync any admin-mutable fields (role, name, email_verified)
+                        token.active = true;
+                        token.role = dbUser.role;
+                        token.email_verified = dbUser.email_verified;
+                        token.name = dbUser.name;
+                        token.lastDbCheck = now;
+                    }
+                } catch {
+                    // DB temporarily unreachable — preserve current state;
+                    // never false-lock-out users due to transient DB errors.
+                }
             }
 
             return token;
@@ -148,9 +208,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             session.user.name = token.name as string;
             session.user.email = token.email as string;
             session.user.image = token.picture as string | null | undefined;
-            session.user.role = token.role as 'admin' | 'user';
-            session.user.email_verified = token.email_verified as boolean;
-            session.user.provider = token.provider as 'credentials' | 'google';
+            session.user.role = (token.role ?? 'user') as 'admin' | 'user';
+            session.user.email_verified = (token.email_verified ?? false) as boolean;
+            session.user.provider = (token.provider ?? 'credentials') as
+                | 'credentials'
+                | 'google';
+            // Exposed to client so AuthSync / proxy can react immediately
+            session.user.active = token.active !== false;
 
             return session;
         },

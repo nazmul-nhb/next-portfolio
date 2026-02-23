@@ -29,7 +29,6 @@ export function EditSkillClient({ skill }: Props) {
             onSuccess: async () => {
                 await deleteOldCloudFile(skill.icon, data.icon);
                 router.push('/admin/skills');
-                router.refresh();
             },
             onError: (error) => {
                 console.error('Failed to update skill:', error);
