@@ -37,7 +37,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                     {skills.map((skill) => (
                         <ScaleInItem key={skill.id}>
                             <div className="group flex cursor-default flex-col items-center justify-center gap-3 rounded-xl border border-border/50 bg-card p-5 text-center transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/5">
-                                <div className="relative h-10 w-10 transition-transform duration-300 group-hover:scale-110">
+                                <div className="relative size-10 transition-transform duration-300 group-hover:scale-110">
                                     <Image
                                         alt={skill.title}
                                         className="object-contain"

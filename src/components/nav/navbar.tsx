@@ -14,7 +14,7 @@ import NavMobileDrawer from '@/components/nav/nav-mobile';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
-import type { TabItem } from '@/types';
+import type { Tab } from '@/types';
 
 /** Main navigation bar with animated tabs, search, and responsive drawer. */
 export default function Navbar() {
@@ -70,8 +70,8 @@ export default function Navbar() {
     );
 
     // Split nav items at the separator
-    const primaryNav: Extract<TabItem, { path: string }>[] = [];
-    const secondaryNav: Extract<TabItem, { path: string }>[] = [];
+    const primaryNav: Tab[] = [];
+    const secondaryNav: Tab[] = [];
 
     let pastSeparator = false;
     for (const item of siteConfig.navItems) {

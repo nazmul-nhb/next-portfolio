@@ -8,17 +8,21 @@ import StarterKit from '@tiptap/starter-kit';
 import {
     Bold,
     Code,
+    Code2,
     Heading1,
     Heading2,
     Heading3,
+    Heading4,
+    Heading5,
     ImageIcon,
     Italic,
-    Link2,
+    LinkIcon,
     List,
     ListOrdered,
     Quote,
     Redo,
     Strikethrough,
+    Underline,
     Undo,
 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -38,7 +42,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
         extensions: [
             StarterKit.configure({
                 heading: {
-                    levels: [1, 2, 3],
+                    levels: [1, 2, 3, 4, 5],
                 },
             }),
             Link.configure({
@@ -172,6 +176,14 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     <Italic className="size-4" />
                 </Button>
                 <Button
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    size="sm"
+                    type="button"
+                    variant={editor.isActive('underline') ? 'default' : 'ghost'}
+                >
+                    <Underline className="size-4" />
+                </Button>
+                <Button
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     size="sm"
                     type="button"
@@ -179,6 +191,9 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 >
                     <Strikethrough className="size-4" />
                 </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
                 <Button
                     onClick={() => editor.chain().focus().toggleCode().run()}
                     size="sm"
@@ -186,6 +201,14 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     variant={editor.isActive('code') ? 'default' : 'ghost'}
                 >
                     <Code className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                    size="sm"
+                    type="button"
+                    variant={editor.isActive('codeBlock') ? 'default' : 'ghost'}
+                >
+                    <Code2 className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -213,6 +236,22 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     variant={editor.isActive('heading', { level: 3 }) ? 'default' : 'ghost'}
                 >
                     <Heading3 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+                    size="sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 4 }) ? 'default' : 'ghost'}
+                >
+                    <Heading4 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+                    size="sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 5 }) ? 'default' : 'ghost'}
+                >
+                    <Heading5 className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -245,7 +284,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 <div className="mx-1 w-px bg-border" />
 
                 <Button onClick={addLink} size="sm" type="button" variant="ghost">
-                    <Link2 className="size-4" />
+                    <LinkIcon className="size-4" />
                 </Button>
                 <Button onClick={addImage} size="sm" type="button" variant="ghost">
                     <ImageIcon className="size-4" />
@@ -254,7 +293,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 <div className="mx-1 w-px bg-border" />
 
                 <Button
-                    disabled={!editor.can().undo()}
+                    // disabled={!editor.can().undo()}
                     onClick={() => editor.chain().focus().undo().run()}
                     size="sm"
                     type="button"
@@ -263,7 +302,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     <Undo className="size-4" />
                 </Button>
                 <Button
-                    disabled={!editor.can().redo()}
+                    // disabled={!editor.can().redo()}
                     onClick={() => editor.chain().focus().redo().run()}
                     size="sm"
                     type="button"
