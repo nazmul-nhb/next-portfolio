@@ -75,6 +75,7 @@ export interface ReorderItem {
     sort_order: number;
 }
 
+/** Utility type to replace `Date` properties with `string` in a given type `T` */
 export type ReplaceDate<T extends GenericObject> = {
     [K in keyof T]: T[K] extends Date ? string : T[K];
 };

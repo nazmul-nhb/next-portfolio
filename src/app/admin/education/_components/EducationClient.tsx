@@ -3,14 +3,12 @@
 import { GraduationCap, Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectEducation } from '@/types/career';
 
@@ -19,36 +17,40 @@ interface EducationClientProps {
 }
 
 export function EducationClient({ initialEducation }: EducationClientProps) {
-    const router = useRouter();
-    const [education, setEducation] = useState(initialEducation);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+
+    const { data: education = initialEducation } = useApiQuery<SelectEducation[]>(
+        ['education'],
+        '/api/education'
+    );
+
+    const { mutate: deleteEdu } = useApiMutation<SelectEducation>(
+        `/api/education?id=${deletingId}`,
+        'DELETE',
+        {
+            successMessage: 'Education deleted successfully',
+            errorMessage: 'Failed to delete education',
+            invalidateKeys: ['education'],
+            onError: (error) => {
+                console.error('Failed to delete education:', error);
+            },
+        }
+    );
 
     const handleDelete = async (edu: SelectEducation) => {
         const { degree, id, institution_logo } = edu;
 
         confirmToast({
-            onConfirm: async () => {
+            onConfirm: () => {
                 setDeletingId(id);
-                try {
-                    const { success } = await httpRequest(`/api/education?id=${id}`, {
-                        method: 'DELETE',
-                    });
-                    if (success) {
-                        setEducation(education.filter((e) => e.id !== id));
-
+                deleteEdu(null, {
+                    onSuccess: async () => {
                         if (institution_logo) {
                             await deleteFromCloudinary(institution_logo);
                         }
-
-                        toast.success('Education deleted successfully');
-                        router.refresh();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete education:', error);
-                    toast.error('Failed to delete education');
-                } finally {
-                    setDeletingId(null);
-                }
+                    },
+                    onSettled: () => setDeletingId(null),
+                });
             },
             title: `Delete "${degree}"?`,
             description: 'This action cannot be undone!',

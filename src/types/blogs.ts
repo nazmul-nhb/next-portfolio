@@ -1,4 +1,5 @@
 import type { categories } from '@/lib/drizzle/schema';
+import type { ReplaceDate } from '@/types';
 
 export interface SingleBlogRes {
     blog: BlogDetails;
@@ -54,4 +55,4 @@ export interface BLogReactions {
     dislike: number[];
 }
 
-export type SelectCategory = typeof categories.$inferSelect;
+export type SelectCategory = ReplaceDate<typeof categories.$inferSelect>;

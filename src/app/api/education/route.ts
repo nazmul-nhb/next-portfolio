@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const body = await req.json();
+        const body: z.infer<typeof EducationCreationSchema> = await req.json();
         const parsed = await validateRequest(EducationCreationSchema, body);
 
         if (!parsed.success) {

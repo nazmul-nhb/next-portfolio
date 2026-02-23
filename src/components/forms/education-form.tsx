@@ -32,7 +32,7 @@ type EducationFormData = z.infer<typeof EducationFormSchema>;
 type EducationFormUpdateData = z.infer<typeof EducationFormUpdateSchema>;
 
 interface EducationFormProps {
-    onSubmit: (data: InsertEducation | UpdateEducation) => void;
+    onSubmit: ((data: InsertEducation) => void) | ((data: UpdateEducation) => void);
     defaultValues?: SelectEducation;
     isLoading?: boolean;
 }
@@ -122,7 +122,7 @@ export function EducationForm({
                 achievements: achievements.filter((a) => a.trim()),
             };
 
-            onSubmit(payload);
+            onSubmit(payload as InsertEducation);
         } catch (error) {
             console.error('Form submission error:', error);
             if (logoRes?.public_id) {
