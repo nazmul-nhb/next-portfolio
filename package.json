@@ -1,6 +1,6 @@
 {
   "name": "next-portfolio",
-  "version": "1.6.30",
+  "version": "1.6.40",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -54,6 +54,7 @@
     "nodemailer": "^8.0.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
+    "react-day-picker": "^9.13.2",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.71.1",
     "react-markdown": "^10.1.0",

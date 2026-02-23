@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Image from 'next/image';
 import { AuthSync } from '@/components/auth-sync';
+import DateTimeCalendar from '@/components/misc/datetime-calendar';
 import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
@@ -88,6 +89,7 @@ export default function RootLayout({ children }: RootProps) {
                                 <Navbar />
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                                 <Footer />
+                                <DateTimeCalendar />
                                 <ThemeToggler />
                                 <Toaster />
                             </TooltipProvider>
