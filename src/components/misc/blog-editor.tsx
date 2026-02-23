@@ -3,7 +3,13 @@
 import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { EditorContent, useEditor } from '@tiptap/react';
+import type { NodeViewProps } from '@tiptap/react';
+import {
+    EditorContent,
+    NodeViewWrapper,
+    ReactNodeViewRenderer,
+    useEditor,
+} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import {
     Bold,
@@ -25,8 +31,10 @@ import {
     Underline,
     Undo,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
@@ -51,11 +59,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     class: 'text-primary underline',
                 },
             }),
-            TiptapImage.configure({
-                HTMLAttributes: {
-                    class: 'rounded-lg max-w-full h-auto',
-                },
-            }),
+            ResizableImageExtension,
             Placeholder.configure({
                 placeholder: placeholder || 'Start writing your blog post...',
             }),
@@ -63,7 +67,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
         content,
         editorProps: {
             attributes: {
-                class: 'prose prose-neutral dark:prose-invert max-w-none min-h-[400px] focus:outline-none p-4 rounded-md border border-border bg-background',
+                class: 'prose prose-neutral dark:prose-invert max-w-none min-h-full focus:outline-none p-4 bg-background',
             },
         },
         onUpdate: ({ editor }) => {
@@ -156,9 +160,12 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
     };
 
     return (
-        <div className="space-y-2">
+        <div
+            className="flex flex-col rounded-md border border-border overflow-hidden"
+            style={{ height: '480px' }}
+        >
             {/* Toolbar */}
-            <div className="flex flex-wrap gap-1 rounded-md border border-border bg-muted/50 p-2">
+            <div className="shrink-0 flex flex-wrap gap-1 border-b border-border bg-muted/50 p-2">
                 <Button
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     size="sm"
@@ -313,7 +320,137 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             </div>
 
             {/* Editor */}
-            <EditorContent editor={editor} />
+            <div className="flex-1 custom-scroll overflow-y-auto min-h-0">
+                <EditorContent className="h-full" editor={editor} />
+            </div>
         </div>
     );
 }
+
+// ─── Resizable Image ────────────────────────────────────────────────────────
+
+function ResizableImageView({ node, updateAttributes, selected }: NodeViewProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const startResize = (e: React.MouseEvent, direction: 'e' | 'w' | 'se' | 'sw') => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const startX = e.clientX;
+        const startWidth =
+            containerRef.current?.offsetWidth ??
+            (typeof node.attrs.width === 'number' ? node.attrs.width : 300);
+
+        const onMouseMove = (ev: MouseEvent) => {
+            const dx = ev.clientX - startX;
+            // west-side handles shrink when dragging right
+            const delta = direction === 'w' || direction === 'sw' ? -dx : dx;
+            const newWidth = Math.max(32, startWidth + delta);
+            updateAttributes({ width: newWidth });
+        };
+
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    };
+
+    const handleClass =
+        'absolute size-3 rounded-sm bg-primary shadow-sm appearance-none p-0 focus:outline-none';
+
+    return (
+        <NodeViewWrapper
+            className="inline-block max-w-full"
+            style={{
+                width: node.attrs.width ? `${node.attrs.width}px` : 'auto',
+                maxWidth: '100%',
+            }}
+        >
+            <div className="relative select-none" ref={containerRef}>
+                {/* biome-ignore lint: Tiptap NodeView requires a native img element for user-provided image URLs */}
+                <img
+                    alt={node.attrs.alt || ''}
+                    className={cn('block w-full', { 'ring ring-primary': selected })}
+                    draggable={false}
+                    src={node.attrs.src}
+                />
+                {selected && (
+                    <Fragment>
+                        {/* selection border */}
+                        <div className="pointer-events-none absolute inset-0" />
+
+                        {/* corner handles */}
+                        <button
+                            aria-label="Resize from top-left"
+                            className={`${handleClass} -left-1.5 -top-1.5 cursor-nw-resize`}
+                            onMouseDown={(e) => startResize(e, 'w')}
+                            type="button"
+                        />
+                        <button
+                            aria-label="Resize from top-right"
+                            className={`${handleClass} -right-1.5 -top-1.5 cursor-ne-resize`}
+                            onMouseDown={(e) => startResize(e, 'e')}
+                            type="button"
+                        />
+                        <button
+                            aria-label="Resize from bottom-left"
+                            className={`${handleClass} -bottom-1.5 -left-1.5 cursor-sw-resize`}
+                            onMouseDown={(e) => startResize(e, 'sw')}
+                            type="button"
+                        />
+                        <button
+                            aria-label="Resize from bottom-right"
+                            className={`${handleClass} -bottom-1.5 -right-1.5 cursor-se-resize`}
+                            onMouseDown={(e) => startResize(e, 'se')}
+                            type="button"
+                        />
+
+                        {/* edge handles */}
+                        <button
+                            aria-label="Resize from left"
+                            className={`${handleClass} -left-1.5 top-1/2 -translate-y-1/2 cursor-w-resize`}
+                            onMouseDown={(e) => startResize(e, 'w')}
+                            type="button"
+                        />
+                        <button
+                            aria-label="Resize from right"
+                            className={`${handleClass} -right-1.5 top-1/2 -translate-y-1/2 cursor-e-resize`}
+                            onMouseDown={(e) => startResize(e, 'e')}
+                            type="button"
+                        />
+                    </Fragment>
+                )}
+            </div>
+        </NodeViewWrapper>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ResizableImageExtension = TiptapImage.extend({
+    addAttributes() {
+        return {
+            ...this.parent?.(),
+            width: {
+                default: null,
+                renderHTML: (attrs) => {
+                    if (!attrs.width) return {};
+                    return { width: attrs.width, style: `width: ${attrs.width}px` };
+                },
+                parseHTML: (el) => {
+                    const w = el.getAttribute('width');
+                    const s = el.style.width;
+                    if (w) return Number(w);
+                    if (s) return Number(s);
+                    return null;
+                },
+            },
+        };
+    },
+    addNodeView() {
+        return ReactNodeViewRenderer(ResizableImageView);
+    },
+});

@@ -128,3 +128,41 @@
 		cursor: pointer;
 	}
 }
+
+
+/* Override the browser default and customize the scrollbar (slim width, matching color) for input[type='number'] tags */
+html,
+.custom-scroll {
+	--sb-track-color: #8da7ff40;
+	--sb-thumb-color: #9eb4fbbd;
+	--sb-size: 4px;
+}
+
+html,
+.custom-scroll {
+	--sb-size: 6px;
+}
+
+html::-webkit-scrollbar,
+.custom-scroll::-webkit-scrollbar {
+	width: var(--sb-size);
+}
+
+html::-webkit-scrollbar-track,
+.custom-scroll::-webkit-scrollbar-track {
+	background: var(--sb-track-color);
+}
+
+html::-webkit-scrollbar-thumb,
+.custom-scroll::-webkit-scrollbar-thumb {
+	background: var(--sb-thumb-color);
+	border-radius: 2px;
+	border: 0.5px solid #9eb4fb;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	html,
+	.custom-scroll {
+		scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+	}
+}
