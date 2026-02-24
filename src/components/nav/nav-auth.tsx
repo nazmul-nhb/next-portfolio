@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
+import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ type Props = {
 export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
     // Use Zustand store for profile image (updates immediately)
     const { profile, clearProfile } = useUserStore();
+    const [open, setOpen] = useState(false);
 
     // Prefer Zustand profile over session for profile image (for real-time updates)
     const displayName = profile?.name || user?.name;
@@ -29,6 +31,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
     const handleLogout = async () => {
         clearProfile();
         await signOut();
+        setOpen(false);
     };
 
     return (
@@ -53,7 +56,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                             <span>Admin</span>
                         </Link>
                     )}
-                    <Popover>
+                    <Popover onOpenChange={setOpen} open={open}>
                         <PopoverTrigger asChild>
                             <button
                                 className="flex items-center rounded-full p-0.5 transition-all hover:ring-2 hover:ring-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -83,7 +86,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                     </p>
                                 </div>
                                 <div className="h-px bg-border" />
-                                <Link href="/blogs/my">
+                                <Link href="/blogs/my" onClick={() => setOpen(false)}>
                                     <Button
                                         className={`w-full justify-start gap-2 text-sm font-normal ${pathname === ('/blogs/my') ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
                                         variant="ghost"
@@ -92,7 +95,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                         My Blogs
                                     </Button>
                                 </Link>
-                                <Link href="/settings">
+                                <Link href="/settings" onClick={() => setOpen(false)}>
                                     <Button
                                         className={`w-full justify-start gap-2 text-sm font-normal ${pathname === '/settings' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
                                         variant="ghost"

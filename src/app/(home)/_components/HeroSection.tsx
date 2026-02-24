@@ -1,7 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Camera, Cat, Github, Linkedin } from 'lucide-react';
+import {
+    ArrowRight,
+    Camera,
+    Cat,
+    Github,
+    Linkedin,
+    LucideMailQuestionMark,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -35,11 +42,15 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
     const [heroImage, setHeroImage] = useState(adminImage || null);
     const [uploading, setUploading] = useState(false);
 
-    const updateUser = useApiMutation<UserProfile, UpdateProfile>('/api/users/me', 'PATCH', {
-        successMessage: 'Hero image updated successfully',
-        errorMessage: 'Failed to update hero image',
-        invalidateKeys: 'user-profile',
-    });
+    const { mutate: updateImage, isPending } = useApiMutation<UserProfile, UpdateProfile>(
+        '/api/users/me',
+        'PATCH',
+        {
+            successMessage: 'Hero image updated successfully',
+            errorMessage: 'Failed to update hero image',
+            invalidateKeys: ['user-profile'],
+        }
+    );
 
     const { updateProfile } = useUserStore();
 
@@ -53,7 +64,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
 
             setHeroImage(url);
 
-            updateUser.mutate(
+            updateImage(
                 { profile_image: url },
                 {
                     onError: async (error) => {
@@ -135,6 +146,12 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             <Button size="lg" variant="outline">
                                 <Link href="/blogs">Read My Blog</Link>
                             </Button>
+                            <Button asChild size="lg">
+                                <Link href="/contact">
+                                    Send a Message{' '}
+                                    <LucideMailQuestionMark className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
                         </div>
 
                         <div className="flex items-center gap-3 pt-2">
@@ -202,7 +219,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                         <Camera className="h-8 w-8 text-white opacity-0 transition-opacity group-hover:opacity-100" />
                                     </div>
                                 )}
-                                {uploading && (
+                                {(uploading || isPending) && (
                                     <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
                                         <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     </div>
