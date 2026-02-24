@@ -1,4 +1,4 @@
-import { formatQueryParams } from 'nhb-toolbox';
+import { formatQueryParams, isBrowser } from 'nhb-toolbox';
 import type { QueryObject } from 'nhb-toolbox/object/types';
 import { siteConfig } from '@/configs/site';
 import type { ServerResponse, TMethod } from '@/types';
@@ -60,19 +60,11 @@ export async function httpRequest<R = null, B = null>(
  * @returns Full URL ready for fetch
  */
 function buildUrl(endpoint: string, queryString = ''): string {
-    const isServer = typeof window === 'undefined';
-
     const isAbsoluteUrl = /^https?:\/\//i.test(endpoint);
 
-    if (isAbsoluteUrl) {
+    if (isAbsoluteUrl || isBrowser()) {
         return endpoint.concat(queryString);
     }
 
-    if (isServer) {
-        // On server, need absolute URL
-        return siteConfig.baseUrl.concat(endpoint).concat(queryString);
-    }
-
-    // On client, relative URL is fine
-    return endpoint.concat(queryString);
+    return siteConfig.baseUrl.concat(endpoint, queryString);
 }

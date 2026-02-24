@@ -3,6 +3,8 @@ import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectEducation } from '@/types/career';
 import { EducationClient } from './_components/EducationClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EducationPage() {
     try {
         let allEducation: SelectEducation[] = [];

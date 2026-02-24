@@ -1,16 +1,16 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { isBrowser } from 'nhb-toolbox';
+import { siteConfig } from '@/configs/site';
 
 /** * Builds headers with token from cookies if running on server */
 export async function buildHeaders(headers?: HeadersInit) {
-    const isServer = typeof window === 'undefined';
-
-    if (!isServer) return headers || {};
+    if (isBrowser()) return headers || {};
 
     const cookieStore = await cookies();
 
-    const token = cookieStore.get('nhb-token')?.value;
+    const token = cookieStore.get(siteConfig.tokenName)?.value;
 
     if (token) {
         return {
