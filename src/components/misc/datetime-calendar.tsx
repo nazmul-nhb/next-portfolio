@@ -1,11 +1,13 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useClock, useMount } from 'nhb-hooks';
+import { useBreakPoint, useClock, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { banglaPlugin } from 'nhb-toolbox/plugins/banglaPlugin';
 import { relativeTimePlugin } from 'nhb-toolbox/plugins/relativeTimePlugin';
+import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
 import { useCallback, useMemo, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -13,6 +15,7 @@ import { cn } from '@/lib/utils';
 // Register plugins once at module level
 Chronos.register(banglaPlugin);
 Chronos.register(relativeTimePlugin);
+Chronos.register(seasonPlugin);
 
 /** Bangla weekday header abbreviations — Sun→Sat order (matches JS getDay()) */
 const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
@@ -87,18 +90,17 @@ interface BanglaMonthViewProps {
 }
 
 function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
-    const { monthYear, startDow, days } = useMemo(
-        () => buildBanglaMonth(gregYear, gregMonth),
-        [gregYear, gregMonth]
-    );
+    const { monthYear, startDow, days } = useMemo(() => {
+        return buildBanglaMonth(gregYear, gregMonth);
+    }, [gregYear, gregMonth]);
 
     return (
-        <div className="w-50 shrink-0">
+        <div className="w-full min-w-52 flex-1 shrink-0">
             {/* Bangla month + year heading */}
             <div className="text-center text-lg mb-2 px-2">{monthYear}</div>
 
             {/* Weekday header row */}
-            <div className="grid grid-cols-7 mb-1">
+            <div className="grid grid-cols-7 gap-px mb-1">
                 {BANGLA_WEEKDAYS.map((w) => (
                     <div
                         className="text-sm text-muted-foreground text-center h-7 flex items-center justify-center font-medium"
@@ -110,14 +112,14 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
             </div>
 
             {/* Day grid — leading empty cells then Bangla day numbers */}
-            <div className="grid grid-cols-7">
+            <div className="grid grid-cols-7 gap-px">
                 {Array.from({ length: startDow }, (_, i) => (
                     <div className="w-7" key={`e${i}`} />
                 ))}
                 {days.map(({ bDay, isToday }, i) => (
                     <div
                         className={cn(
-                            'w-7 flex items-center justify-center rounded-md text-lg select-none',
+                            'size-7.5 flex items-center justify-center rounded-md text-lg select-none',
                             isToday
                                 ? 'bg-accent text-accent-foreground font-bold'
                                 : 'hover:bg-muted'
@@ -138,11 +140,19 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
 
 export default function DateTimeCalendar() {
     const [open, setOpen] = useState(false);
-    const [isBangla, setIsBangla] = useState(false);
+    const [isBnCal, setIsBnCal] = useState(false);
+    const [isBnTime, setIsBnTime] = useState(false);
     const [month, setMonth] = useState<Date>(() => new Date());
 
-    // useClock returns { time: Chronos, formatted: string }
+    const { mobile } = useBreakPoint();
+
     const { time, formatted } = useClock({ interval: 'frame', format: 'HH:mm' });
+
+    const clockTime = useMemo(() => {
+        return isBnTime
+            ? time.formatBangla('ddd, DD mmmm (S), YYYY hh:mm:ss (A)')
+            : time.format(`dd, mmm DD [(${time.season()})], YYYY hh:mm:ss a`);
+    }, [time, isBnTime]);
 
     const nextMonth = useMemo(() => shiftMonth(month, 1), [month]);
 
@@ -159,7 +169,7 @@ export default function DateTimeCalendar() {
                         'size-11 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
-                        'transition-transform duration-150 hover:scale-105',
+                        'transition-all duration-200 hover:scale-105',
                         'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
                     )}
                     type="button"
@@ -175,8 +185,8 @@ export default function DateTimeCalendar() {
 
             {/* ── Popover ── */}
             <PopoverContent
-                align="end"
-                className="w-auto p-0 overflow-hidden"
+                align={mobile ? 'start' : 'end'}
+                className="w-auto p-0 min-w-80 overflow-hidden"
                 side="top"
                 sideOffset={10}
             >
@@ -192,20 +202,19 @@ export default function DateTimeCalendar() {
                     </button>
 
                     <div className="flex flex-col items-center gap-1.5">
-                        <p className="text-sm text-muted-foreground font-medium">
-                            {time.format('ddd, mmmm DD, YYYY hh:mm:ss a')}
-                        </p>
-
                         {/* Gregorian / বাংলা pill toggle */}
                         <div className="flex rounded-md overflow-hidden border text-sm">
                             <button
                                 className={cn(
                                     'px-3 py-1 transition-colors',
-                                    !isBangla
+                                    !isBnCal
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-muted'
                                 )}
-                                onClick={() => setIsBangla(false)}
+                                onClick={() => {
+                                    setIsBnCal(false);
+                                    setIsBnTime(true);
+                                }}
                                 type="button"
                             >
                                 Gregorian
@@ -213,11 +222,14 @@ export default function DateTimeCalendar() {
                             <button
                                 className={cn(
                                     'px-3 py-1 transition-colors border-l text-base',
-                                    isBangla
+                                    isBnCal
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-muted'
                                 )}
-                                onClick={() => setIsBangla(true)}
+                                onClick={() => {
+                                    setIsBnCal(true);
+                                    setIsBnTime(false);
+                                }}
                                 type="button"
                             >
                                 বাংলা
@@ -237,32 +249,56 @@ export default function DateTimeCalendar() {
 
                 {/* Calendar body */}
                 <div className="p-3">
-                    {!isBangla ? (
+                    {isBnCal ? (
+                        <Fragment>
+                            <div className="flex gap-4 md:flex-row flex-col">
+                                <BanglaMonthView
+                                    gregMonth={month.getMonth()}
+                                    gregYear={month.getFullYear()}
+                                />
+                                {/* <div className="w-px bg-border self-stretch" /> */}
+                                <BanglaMonthView
+                                    gregMonth={nextMonth.getMonth()}
+                                    gregYear={nextMonth.getFullYear()}
+                                />
+                            </div>
+
+                            <div
+                                className={cn(
+                                    'border-t mt-2 text-muted-foreground text-center select-none',
+                                    isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
+                                )}
+                                onClick={() => setIsBnTime((t) => !t)}
+                            >
+                                {clockTime}
+                            </div>
+                        </Fragment>
+                    ) : (
                         <Calendar
-                            className="p-0"
+                            className="w-full p-0"
+                            classNames={{
+                                months: 'w-full flex flex-col sm:flex-row gap-4',
+                                month: 'w-full flex flex-col gap-4',
+                                weekdays: 'flex w-full justify-between',
+                                week: 'flex w-full mt-2 justify-between',
+                            }}
+                            footer={
+                                <div
+                                    className={cn(
+                                        'border-t mt-2 text-muted-foreground text-center select-none',
+                                        isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
+                                    )}
+                                    onClick={() => setIsBnTime((t) => !t)}
+                                >
+                                    {clockTime}
+                                </div>
+                            }
                             hideNavigation
                             month={month}
-                            numberOfMonths={2}
+                            numberOfMonths={1}
                             onMonthChange={setMonth}
                         />
-                    ) : (
-                        <div className="flex gap-4">
-                            <BanglaMonthView
-                                gregMonth={month.getMonth()}
-                                gregYear={month.getFullYear()}
-                            />
-                            {/* <div className="w-px bg-border self-stretch" /> */}
-                            <BanglaMonthView
-                                gregMonth={nextMonth.getMonth()}
-                                gregYear={nextMonth.getFullYear()}
-                            />
-                        </div>
                     )}
-                </div>
-
-                {/* Footer — full Bangla datetime string for today */}
-                <div className="border-t bg-muted/30 px-4 py-2 text-sm text-muted-foreground">
-                    {time.formatBangla()}
                 </div>
             </PopoverContent>
         </Popover>

@@ -2,6 +2,7 @@ import type { LucideProps } from 'lucide-react';
 import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 type IconType = React.ForwardRefExoticComponent<
     Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
@@ -14,7 +15,7 @@ export type FloatingButtonProps = {
     /** The icon to render. */
     icon?: IconType;
     /** Optional label to show next to the icon. If omitted, the button will render icon-only. */
-    label?: string;
+    label?: ReactNode;
     /** Shape of the button. */
     shape?: 'circle' | 'square';
     /** Size of the button. */
@@ -84,12 +85,12 @@ export default function FloatingButton({
 }: FloatingButtonProps) {
     const isIconOnly = !label && !showLabel;
 
-    const baseWrapper = cn(`fixed z-50`, className, positionClasses(position));
+    const baseWrapper = cn(`fixed z-50`, positionClasses(position), className);
 
     const btnSize = sizeClasses(size);
     const btnShape = shapeClasses(shape);
 
-    const ariaLabel = label ?? (Icon ? 'floating action' : 'button');
+    const ariaLabel = label ? String(label) : (Icon ? 'floating action' : 'button');
 
     return (
         <div className={baseWrapper} style={{ pointerEvents: 'auto' }} suppressHydrationWarning>

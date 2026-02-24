@@ -31,10 +31,10 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
 				weekdays: 'flex',
 				weekday: 'text-muted-foreground rounded-md w-8 font-normal text-[0.8rem] text-center',
 				week: 'flex w-full mt-2',
-				day: 'relative w-8 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-range-end)]:rounded-r-md',
+				day: 'relative size-8 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-range-end)]:rounded-r-md hover:bg-muted select-none rounded-lg flex items-center justify-center',
 				day_button: cn(
 					buttonVariants({ variant: 'ghost' }),
-					'size-8 p-0 font-normal aria-selected:opacity-100',
+					'size-7 p-0 font-normal aria-selected:opacity-100',
 				),
 				range_end: 'day-range-end',
 				selected:

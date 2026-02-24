@@ -30,7 +30,9 @@
         "rules": {
             "recommended": true,
             "a11y": {
-                "useButtonType": "info"
+                "useButtonType": "info",
+                "useKeyWithClickEvents": "off",
+                "noStaticElementInteractions": "off"
             },
             "suspicious": {
                 "noUnknownAtRules": "warn",
