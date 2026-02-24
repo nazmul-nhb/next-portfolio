@@ -83,7 +83,7 @@ export async function PATCH(req: NextRequest) {
                 role: users.role,
             });
 
-        return sendResponse('User', 'PATCH', updated);
+        return sendResponse('User', 'PATCH', updated, 'Profile updated successfully');
     } catch (error) {
         return sendErrorResponse(error);
     }

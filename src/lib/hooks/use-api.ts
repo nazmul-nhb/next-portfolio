@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { isArray } from 'nhb-toolbox';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
@@ -49,7 +48,6 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
     }
 ) {
     const queryClient = useQueryClient();
-    const [message, setMessage] = useState<string>();
 
     return useMutation({
         mutationFn: async (variables: TVariables) => {
@@ -58,12 +56,10 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
                 body: variables,
             });
 
-            setMessage(res.message);
-
-            return res.data;
+            return res;
         },
         onSuccess: (data) => {
-            toast.success(message || options?.successMessage || 'Operation successful');
+            toast.success(data?.message || options?.successMessage || 'Operation successful');
 
             if (options?.invalidateKeys) {
                 const keys = isArray<QueryKey>(options.invalidateKeys)
@@ -74,7 +70,7 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
                     queryClient.invalidateQueries({ queryKey: [key] });
                 }
             }
-            data && options?.onSuccess?.(data);
+            data?.data && options?.onSuccess?.(data.data);
         },
         onError: (error) => {
             const message = error?.message || options?.errorMessage || 'An error occurred';

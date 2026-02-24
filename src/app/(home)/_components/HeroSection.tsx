@@ -77,7 +77,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                     onSuccess: async () => {
                         updateProfile({ profile_image: url });
                         updateSession({ image: url });
-                        await deleteOldCloudFile(adminImage, heroImage);
+                        await deleteOldCloudFile(adminImage, url);
                     },
                 }
             );
@@ -87,12 +87,6 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
             setUploading(false);
         }
     };
-
-    const imageUrl = heroImage
-        ? heroImage.startsWith('http')
-            ? heroImage
-            : buildCloudinaryUrl(heroImage)
-        : null;
 
     return (
         <section className="relative flex min-h-[85vh] items-center overflow-hidden">
@@ -202,13 +196,13 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 onClick={() => isAdmin && fileInputRef.current?.click()}
                                 type="button"
                             >
-                                {imageUrl ? (
+                                {heroImage ? (
                                     <Image
                                         alt={siteConfig.name}
                                         className="size-80 rounded-full object-cover"
                                         height={512}
                                         quality={100}
-                                        src={imageUrl}
+                                        src={buildCloudinaryUrl(heroImage)}
                                         width={512}
                                     />
                                 ) : (
