@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { formatDate } from 'nhb-toolbox';
 import { useEffect } from 'react';
 import {
     FadeInUp,
@@ -129,14 +130,10 @@ export default function MyBlogsPage() {
                                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <Calendar className="h-3 w-3" />
-                                            {new Date(blog.created_at).toLocaleDateString(
-                                                'en-US',
-                                                {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric',
-                                                }
-                                            )}
+                                            {formatDate({
+                                                date: blog.published_date || blog.created_at,
+                                                format: 'mmm DD, yyyy',
+                                            })}
                                         </span>
                                         <span className="flex items-center gap-1">
                                             <Eye className="h-3 w-3" />

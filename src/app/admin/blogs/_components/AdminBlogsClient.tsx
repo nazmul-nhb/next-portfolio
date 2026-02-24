@@ -5,10 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { confirmToast } from '@/components/confirm';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import { formatDate } from 'nhb-toolbox';
 
 interface AdminBlog {
     id: number;
@@ -127,7 +129,10 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                                         <span>by {blog.author.name}</span>
                                         <span className="flex items-center gap-1">
                                             <Calendar className="h-3 w-3" />
-                                            {new Date(blog.created_at).toLocaleDateString()}
+                                            {formatDate({
+                                                date: blog.created_at,
+                                                format: 'mmm DD, yyyy',
+                                            })}
                                         </span>
                                         <span className="flex items-center gap-1">
                                             <Eye className="h-3 w-3" />
@@ -151,24 +156,28 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                                         disabled={isToggling}
                                         onClick={() => handleTogglePublish(blog)}
                                         size="sm"
-                                        title={
-                                            blog.is_published
-                                                ? 'Unpublish'
-                                                : 'Approve & Publish'
-                                        }
                                         variant={blog.is_published ? 'outline' : 'default'}
                                     >
-                                        {blog.is_published ? (
-                                            <>
-                                                <X className="mr-1 h-3 w-3" />
-                                                Unpublish
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Check className="mr-1 h-3 w-3" />
-                                                Approve
-                                            </>
-                                        )}
+                                        <SmartTooltip
+                                            content={
+                                                blog.is_published
+                                                    ? 'Unpublish'
+                                                    : 'Approve & Publish'
+                                            }
+                                            trigger={
+                                                blog.is_published ? (
+                                                    <span className="flex items-center">
+                                                        <X className="mr-1 h-3 w-3" />
+                                                        Unpublish
+                                                    </span>
+                                                ) : (
+                                                    <span className="flex items-center">
+                                                        <Check className="mr-1 h-3 w-3" />
+                                                        Approve
+                                                    </span>
+                                                )
+                                            }
+                                        />
                                     </Button>
                                     <Button
                                         disabled={deletingId === blog.id && isDeleting}

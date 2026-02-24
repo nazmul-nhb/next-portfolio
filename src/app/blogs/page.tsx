@@ -14,6 +14,7 @@ import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import { formatDate } from 'nhb-toolbox';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
@@ -272,12 +273,9 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                                 {blog.published_date && (
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="h-3 w-3" />
-                                                        {new Date(
-                                                            blog.published_date
-                                                        ).toLocaleDateString('en-US', {
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                            year: 'numeric',
+                                                        {formatDate({
+                                                            date: blog.published_date,
+                                                            format: 'mmm DD, yyyy',
                                                         })}
                                                     </span>
                                                 )}

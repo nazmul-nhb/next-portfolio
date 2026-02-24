@@ -13,8 +13,10 @@ import {
     UserCheck,
 } from 'lucide-react';
 import Image from 'next/image';
+import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/confirm';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,26 +25,13 @@ import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 import type { UserRole } from '@/types';
+import type { RawUser } from '@/types/users';
 
-interface AdminUser {
-    id: number;
-    name: string;
-    email: string;
-    profile_image: string | null;
-    bio: string | null;
-    role: UserRole;
-    provider: 'credentials' | 'google';
-    email_verified: boolean;
-    is_active: boolean;
-    created_at: string | Date;
-    updated_at: string | Date;
-}
-
-export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
+export function UsersClient({ initialData }: { initialData: RawUser[] }) {
     const [search, setSearch] = useState('');
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: users } = useApiQuery<AdminUser[]>('admin-users', '/api/users/admin');
+    const { data: users } = useApiQuery<RawUser[]>('admin-users', '/api/users/admin');
     const allUsers = users ?? initialData;
 
     const { mutate: updateUser, isPending: isUpdating } = useApiMutation<
@@ -64,7 +53,7 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
         }
     );
 
-    const handleToggleRole = (user: AdminUser) => {
+    const handleToggleRole = (user: RawUser) => {
         const newRole = user.role === 'admin' ? 'user' : 'admin';
 
         confirmToast({
@@ -78,7 +67,7 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
         });
     };
 
-    const handleToggleActive = (user: AdminUser) => {
+    const handleToggleActive = (user: RawUser) => {
         const action = user.is_active ? 'Deactivate' : 'Activate';
 
         confirmToast({
@@ -94,7 +83,7 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
         });
     };
 
-    const handleDelete = (user: AdminUser) => {
+    const handleDelete = (user: RawUser) => {
         setDeletingId(user.id);
 
         confirmToast({
@@ -207,7 +196,10 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
                                         </span>
                                         <span className="hidden text-xs md:inline">
                                             Joined{' '}
-                                            {new Date(user.created_at).toLocaleDateString()}
+                                            {formatDate({
+                                                date: user.created_at,
+                                                format: 'mmm DD, yyyy',
+                                            })}
                                         </span>
                                     </div>
                                 </div>
@@ -218,31 +210,39 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
                                         disabled={isUpdating}
                                         onClick={() => handleToggleRole(user)}
                                         size="icon-sm"
-                                        title={
-                                            user.role === 'admin'
-                                                ? 'Remove admin'
-                                                : 'Make admin'
-                                        }
                                         variant="ghost"
                                     >
-                                        {user.role === 'admin' ? (
-                                            <ShieldOff className="h-4 w-4" />
-                                        ) : (
-                                            <Shield className="h-4 w-4" />
-                                        )}
+                                        <SmartTooltip
+                                            content={
+                                                user.role === 'admin'
+                                                    ? 'Remove admin'
+                                                    : 'Make admin'
+                                            }
+                                            trigger={
+                                                user.role === 'admin' ? (
+                                                    <ShieldOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Shield className="h-4 w-4" />
+                                                )
+                                            }
+                                        />
                                     </Button>
                                     <Button
                                         disabled={isUpdating}
                                         onClick={() => handleToggleActive(user)}
                                         size="icon-sm"
-                                        title={user.is_active ? 'Deactivate' : 'Activate'}
                                         variant="ghost"
                                     >
-                                        {user.is_active ? (
-                                            <Ban className="h-4 w-4" />
-                                        ) : (
-                                            <UserCheck className="h-4 w-4" />
-                                        )}
+                                        <SmartTooltip
+                                            content={user.is_active ? 'Deactivate' : 'Activate'}
+                                            trigger={
+                                                user.is_active ? (
+                                                    <Ban className="h-4 w-4" />
+                                                ) : (
+                                                    <UserCheck className="h-4 w-4" />
+                                                )
+                                            }
+                                        />
                                     </Button>
                                     <Button
                                         disabled={deletingId === user.id && isDeleting}

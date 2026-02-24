@@ -1,10 +1,12 @@
 'use client';
 
 import { Check, Clock, Mail, MailOpen, Trash2, User, X } from 'lucide-react';
+import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
 import { confirmToast } from '@/components/confirm';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -143,8 +145,6 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             {/* Message list */}
             <div className="space-y-2">
                 {messages.map((message) => (
-                    // biome-ignore lint/a11y/noStaticElementInteractions: needs to be clickable for opening modal
-                    // biome-ignore lint/a11y/useKeyWithClickEvents: same as above
                     <div
                         className={cn(
                             'group relative flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-all hover:shadow-md cursor-pointer z-10',
@@ -210,23 +210,31 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                     handleToggleRead(e, message.id, message.is_read)
                                 }
                                 size="icon-sm"
-                                title={message.is_read ? 'Mark unread' : 'Mark read'}
                                 variant="ghost"
                             >
-                                {message.is_read ? (
-                                    <MailOpen className="h-3.5 w-3.5" />
-                                ) : (
-                                    <Check className="h-3.5 w-3.5" />
-                                )}
+                                <SmartTooltip
+                                    content={message.is_read ? 'Mark unread' : 'Mark read'}
+                                    trigger={
+                                        message.is_read ? (
+                                            <MailOpen className="h-3.5 w-3.5" />
+                                        ) : (
+                                            <Check className="h-3.5 w-3.5" />
+                                        )
+                                    }
+                                />
                             </Button>
                             <Button
                                 disabled={processingId === message.id}
                                 onClick={(e) => handleDelete(e, message.id, message.name)}
                                 size="icon-sm"
-                                title="Delete"
                                 variant="ghost"
                             >
-                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                <SmartTooltip
+                                    content="Delete"
+                                    trigger={
+                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                    }
+                                />
                             </Button>
                         </div>
                     </div>
@@ -257,17 +265,10 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                     </a>
                                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                         <Clock className="h-3 w-3" />
-                                        {new Date(selectedMessage.created_at).toLocaleString(
-                                            'en-US',
-                                            {
-                                                weekday: 'short',
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            }
-                                        )}
+                                        {formatDate({
+                                            date: selectedMessage.created_at,
+                                            format: 'mmm DD, yyyy [at] hh:mm:ss a',
+                                        })}
                                     </span>
                                 </DialogDescription>
                             </DialogHeader>

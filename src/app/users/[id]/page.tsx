@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { formatDate } from 'nhb-toolbox';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
@@ -135,9 +136,9 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                             <span className="flex items-center gap-1">
                                 <Calendar className="h-3.5 w-3.5" />
                                 Joined{' '}
-                                {new Date(user.created_at).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    year: 'numeric',
+                                {formatDate({
+                                    date: user.created_at,
+                                    format: 'mmm DD, yyyy',
                                 })}
                             </span>
                             <span className="flex items-center gap-1">
@@ -188,12 +189,9 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                                             <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                                 {post.published_date && (
                                                     <span>
-                                                        {new Date(
-                                                            post.published_date
-                                                        ).toLocaleDateString('en-US', {
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                            year: 'numeric',
+                                                        {formatDate({
+                                                            date: post.published_date,
+                                                            format: 'mmm DD, yyyy',
                                                         })}
                                                     </span>
                                                 )}

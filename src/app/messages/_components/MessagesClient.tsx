@@ -1,6 +1,7 @@
 'use client';
 
 import { MessageCircle, Send } from 'lucide-react';
+import { formatDate } from 'nhb-toolbox';
 import { useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { FadeInUp } from '@/components/misc/animations';
@@ -103,9 +104,10 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {conv.last_message_at
-                                                        ? new Date(
-                                                              conv.last_message_at
-                                                          ).toLocaleDateString()
+                                                        ? formatDate({
+                                                              date: conv.last_message_at,
+                                                              format: 'mmm DD, yyyy',
+                                                          })
                                                         : 'No messages'}
                                                 </p>
                                             </div>
@@ -148,9 +150,10 @@ export function MessagesClient({ userId }: MessagesClientProps) {
                                                             : 'text-muted-foreground'
                                                     }`}
                                                 >
-                                                    {new Date(
-                                                        msg.created_at
-                                                    ).toLocaleTimeString()}
+                                                    {formatDate({
+                                                        date: msg.created_at,
+                                                        format: 'hh:mm A',
+                                                    })}
                                                 </p>
                                             </div>
                                         </div>

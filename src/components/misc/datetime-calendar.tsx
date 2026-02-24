@@ -265,7 +265,7 @@ export default function DateTimeCalendar() {
 
                             <div
                                 className={cn(
-                                    'border-t mt-2 text-muted-foreground text-center select-none',
+                                    'border-t mt-2 text-muted-foreground text-center select-none pb-1',
                                     isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
                                 )}
                                 onClick={() => setIsBnTime((t) => !t)}
@@ -285,7 +285,7 @@ export default function DateTimeCalendar() {
                             footer={
                                 <div
                                     className={cn(
-                                        'border-t mt-2 text-muted-foreground text-center select-none',
+                                        'border-t mt-2 text-muted-foreground text-center select-none pb-1',
                                         isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
                                     )}
                                     onClick={() => setIsBnTime((t) => !t)}

@@ -4,6 +4,7 @@ import { Reply as ReplyIcon, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { formatDate } from 'nhb-toolbox';
 import { useRef, useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
@@ -85,9 +86,9 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
                                 {comment.author.name}
                             </Link>
                             <span className="text-xs text-muted-foreground">
-                                {new Date(comment.created_at).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
+                                {formatDate({
+                                    date: comment.created_at,
+                                    format: 'mmm DD, yyyy [at] hh:mm a',
                                 })}
                             </span>
                         </div>
