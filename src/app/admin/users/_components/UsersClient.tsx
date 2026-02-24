@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import type { UserRole } from '@/types';
 
 interface AdminUser {
     id: number;
@@ -29,7 +30,7 @@ interface AdminUser {
     email: string;
     profile_image: string | null;
     bio: string | null;
-    role: 'admin' | 'user';
+    role: UserRole;
     provider: 'credentials' | 'google';
     email_verified: boolean;
     is_active: boolean;
@@ -46,7 +47,7 @@ export function UsersClient({ initialData }: { initialData: AdminUser[] }) {
 
     const { mutate: updateUser, isPending: isUpdating } = useApiMutation<
         unknown,
-        { user_id: number; role?: 'admin' | 'user'; is_active?: boolean }
+        { user_id: number; role?: UserRole; is_active?: boolean }
     >('/api/users/admin', 'PATCH', {
         successMessage: 'User updated successfully!',
         errorMessage: 'Failed to update user.',

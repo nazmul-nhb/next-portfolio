@@ -12,7 +12,7 @@ export interface UpdateProfile {
  * Fetch current user profile
  */
 export function useUserProfile() {
-    return useApiQuery<UserProfile>('user-profile', '/api/users/me');
+    return useApiQuery<UserProfile>(['user-profile'], '/api/users/me');
 }
 
 /**
@@ -25,7 +25,7 @@ export function useUpdateProfile() {
     return useApiMutation<UserProfile, UpdateProfile>('/api/users/me', 'PATCH', {
         successMessage: 'Profile updated successfully',
         errorMessage: 'Failed to update profile',
-        invalidateKeys: 'user-profile',
+        invalidateKeys: ['user-profile'],
         onSuccess: (data) => {
             // Sync with Zustand store immediately
             updateProfile({

@@ -1,6 +1,7 @@
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
 import type { GenericObject } from 'nhb-toolbox/object/types';
 import type { ReactNode, SVGProps } from 'react';
+import type { SiteConfig } from '@/configs/site';
 
 export type Uncertain<T> = T | null | undefined;
 
@@ -28,6 +29,8 @@ export type TCollection =
     | 'Message'
     | 'Conversation'
     | 'OTP';
+
+export type UserRole = SiteConfig['userRoles'][number];
 
 export type TMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'OK';
 

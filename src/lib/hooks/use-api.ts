@@ -73,7 +73,7 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
             data && options?.onSuccess?.(data);
         },
         onError: (error) => {
-            const message = options?.errorMessage || error?.message || 'An error occurred';
+            const message = error?.message || options?.errorMessage || 'An error occurred';
             toast.error(message);
             options?.onError?.(error);
         },

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { UserRole } from '@/types';
 
 export interface UserProfile {
     id: number;
@@ -7,7 +8,7 @@ export interface UserProfile {
     email: string;
     bio: string | null;
     profile_image: string | null;
-    role: 'admin' | 'user';
+    role: UserRole;
     email_verified: boolean;
     provider: 'credentials' | 'google';
 }

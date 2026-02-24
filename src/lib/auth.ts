@@ -6,6 +6,7 @@ import Google from 'next-auth/providers/google';
 import { ENV } from '@/configs/env';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
+import type { UserRole } from '@/types';
 
 /** Re-verify the user against the DB every 5 minutes inside the jwt callback.
  * Catches deletions/suspensions without requiring a new sign-in.
@@ -19,7 +20,7 @@ declare module 'next-auth' {
             name: string;
             email: string;
             image?: string | null;
-            role: 'admin' | 'user';
+            role: UserRole;
             email_verified: boolean;
             provider: 'credentials' | 'google';
             /** false when the account has been deleted or deactivated by an admin */
@@ -28,7 +29,7 @@ declare module 'next-auth' {
     }
 
     interface User {
-        role?: 'admin' | 'user';
+        role?: UserRole;
         email_verified?: boolean;
         provider?: 'credentials' | 'google';
     }
@@ -208,7 +209,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             session.user.name = token.name as string;
             session.user.email = token.email as string;
             session.user.image = token.picture as string | null | undefined;
-            session.user.role = (token.role ?? 'user') as 'admin' | 'user';
+            session.user.role = (token.role ?? 'user') as UserRole;
             session.user.email_verified = (token.email_verified ?? false) as boolean;
             session.user.provider = (token.provider ?? 'credentials') as
                 | 'credentials'

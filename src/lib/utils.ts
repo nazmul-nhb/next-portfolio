@@ -2,7 +2,8 @@ import { type ClassValue, clsx } from 'clsx';
 import { formatDate, getLastArrayElement, isObjectWithKeys, isString } from 'nhb-toolbox';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
-import type { Uncertain } from '@/types';
+import { siteConfig } from '@/configs/site';
+import type { Uncertain, UserRole } from '@/types';
 
 /** Utility function to combine and merge Tailwind CSS class names. */
 export function cn(...inputs: ClassValue[]) {
@@ -16,6 +17,10 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function isAdminPath(pathname: string) {
     return pathname.startsWith('/admin');
+}
+
+export function isValidRole(role: Uncertain<string>): role is UserRole {
+    return isString(role) && ([...siteConfig.userRoles] as string[]).includes(role);
 }
 
 /** Utility function to build full Cloudinary image URL from DB path. */

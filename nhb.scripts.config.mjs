@@ -6,6 +6,9 @@ export default defineScriptConfig({
     commit: {
         runFormatter: false,
         emojiBeforePrefix: true,
+        commitTypes: {
+            custom: [{ type: 'types', emoji: '🔧' }],
+        },
     },
     count: {
         defaultPath: '.',

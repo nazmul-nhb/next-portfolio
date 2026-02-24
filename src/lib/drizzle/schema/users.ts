@@ -7,9 +7,10 @@ import {
     timestamp,
     varchar,
 } from 'drizzle-orm/pg-core';
+import { siteConfig } from '@/configs/site';
 
 /** Enum for user roles */
-export const userRoleEnum = pgEnum('user_role', ['admin', 'user']);
+export const userRoleEnum = pgEnum('user_role', siteConfig.userRoles);
 
 /** Enum for auth providers */
 export const authProviderEnum = pgEnum('auth_provider', ['credentials', 'google']);

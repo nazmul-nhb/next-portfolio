@@ -55,8 +55,9 @@ export const siteConfig = {
     tokenName: 'nhb-token',
     logoSvg: '/logo.svg',
     favicon: '/favicon.png',
-    /** 1 Minute */
+    /** 1 Minute in MS */
     staleTime: 60000,
+    userRoles: ['admin', 'user'],
 } as const;
 
 export type SiteConfig = typeof siteConfig;

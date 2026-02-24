@@ -9,6 +9,7 @@ import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { UserRole } from '@/types';
 
 /** Generate metadata for user profile page. */
 export async function generateMetadata({
@@ -40,7 +41,7 @@ type UserProfile = {
     name: string;
     profile_image: string | null;
     bio: string | null;
-    role: 'admin' | 'user';
+    role: UserRole;
     created_at: Date;
 };
 

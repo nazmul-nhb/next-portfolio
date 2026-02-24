@@ -34,7 +34,7 @@ export function LoginForm() {
         });
 
         if (result?.error) {
-            setError('Invalid email or password');
+            setError('Invalid credentials. Please try again.');
             setLoading(false);
         } else {
             router.push(redirectTo);

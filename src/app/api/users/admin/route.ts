@@ -1,10 +1,12 @@
 import { desc, eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { isBoolean } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
+import type { UserRole } from '@/types';
 
 /**
  * GET /api/users/admin — Get all users (admin only).
@@ -42,7 +44,7 @@ export async function GET() {
 
 /**
  * PATCH /api/users/admin — Update user role or active status (admin only).
- * Body: { user_id: number, role?: 'admin' | 'user', is_active?: boolean }
+ * Body: { user_id: number, role?: UserRole, is_active?: boolean }
  */
 export async function PATCH(req: NextRequest) {
     try {
@@ -52,12 +54,15 @@ export async function PATCH(req: NextRequest) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const body = await req.json();
-        const { user_id, role, is_active } = body as {
+        type RequestBody = {
             user_id: number;
-            role?: 'admin' | 'user';
+            role?: UserRole;
             is_active?: boolean;
         };
+
+        const body = (await req.json()) as RequestBody;
+
+        const { user_id, role, is_active } = body;
 
         if (!user_id) {
             return sendErrorResponse('User ID is required', 400);
@@ -65,12 +70,12 @@ export async function PATCH(req: NextRequest) {
 
         // Prevent admin from modifying themselves
         if (user_id === +session.user.id) {
-            return sendErrorResponse('Cannot modify your own account', 400);
+            return sendErrorResponse('Cannot modify status your own account', 400);
         }
 
-        const updates: Record<string, unknown> = {};
+        const updates: Omit<RequestBody, 'user_id'> = {};
         if (role !== undefined) updates.role = role;
-        if (is_active !== undefined) updates.is_active = is_active;
+        if (isBoolean(is_active)) updates.is_active = is_active;
 
         if (Object.keys(updates).length === 0) {
             return sendErrorResponse('No updates provided', 400);
