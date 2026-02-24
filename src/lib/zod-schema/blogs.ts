@@ -8,7 +8,10 @@ export const CreateBlogSchema = z
             .min(3, 'Title must be at least 3 characters')
             .max(256, 'Title must be at most 256 characters'),
         content: z.string().min(10, 'Content must be at least 10 characters'),
-        cover_image: z.url('Must be a valid URL').optional(),
+        cover_image: z
+            .string()
+            .min(13, 'Cover image URL cannot be less than 13 characters')
+            .optional(),
         excerpt: z.string().max(500, 'Excerpt must be at most 500 characters').optional(),
         is_published: z.boolean().default(false),
         tag_ids: z.array(z.number()).optional(),
