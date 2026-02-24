@@ -9,7 +9,7 @@ export default async function ExperiencePage() {
     try {
         let allExperiences: SelectExperience[] = [];
 
-        const { data } = await httpRequest<SelectExperience[]>('/api/experience');
+        const { data } = await httpRequest<SelectExperience[]>('/api/experiences');
 
         if (data) {
             allExperiences = data;
