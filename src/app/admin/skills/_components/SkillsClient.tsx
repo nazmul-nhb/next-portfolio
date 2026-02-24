@@ -163,6 +163,10 @@ export function SkillsClient({ initialData }: Props) {
         successMessage: 'Skill updated successfully!',
         errorMessage: 'Failed to update skill.',
         invalidateKeys: ['skills'],
+        onSuccess: () => {
+            setDialogOpen(false);
+            setEditingSkill(null);
+        },
     });
 
     const handleAdd = () => {
@@ -181,11 +185,10 @@ export function SkillsClient({ initialData }: Props) {
 
     const handleEditSubmit = (data: UpdateSkill) => {
         if (!editingSkill) return;
+
         updateSkill(data, {
             onSuccess: async () => {
                 await deleteOldCloudFile(editingSkill.icon, data.icon);
-                setDialogOpen(false);
-                setEditingSkill(null);
             },
         });
     };
