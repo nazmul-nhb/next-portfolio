@@ -53,7 +53,9 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
     const [isUploading, setIsUploading] = useState(false);
 
     // Fetch skills via TanStack Query
-    const { data: skills = [] } = useApiQuery<SelectSkill[]>(['skills'], '/api/skills');
+    const { data: skills = [] } = useApiQuery<SelectSkill[]>('/api/skills', {
+        queryKey: ['skills'],
+    });
 
     // Image state - track individual files for better control
     const [faviconFile, setFaviconFile] = useState<File | null>(null);

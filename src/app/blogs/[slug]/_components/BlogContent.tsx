@@ -4,8 +4,8 @@ import { Calendar, Edit, Eye, ThumbsDown, ThumbsUp, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
+import { useState } from 'react';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
@@ -14,6 +14,7 @@ import remarkGfm from 'remark-gfm';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { useApiMutation } from '@/lib/hooks/use-api';
+import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
 
@@ -27,26 +28,63 @@ interface BlogContentProps {
  * Blog post content with markdown rendering and reaction buttons.
  */
 export function BlogContent({ blog, tags, categories }: BlogContentProps) {
-    const { data: session } = useSession();
+    const { profile } = useUserStore();
     const router = useRouter();
     const reactions = blog.reactions || {};
-    const likes = reactions.like || [];
-    const dislikes = reactions.dislike || [];
+    const [likes, setLikes] = useState(new Set(reactions.like));
+    const [dislikes, setDislikes] = useState(new Set(reactions.dislike));
 
     const { mutate: reactToBlog } = useApiMutation<unknown, { type: 'like' | 'dislike' }>(
         `/api/blogs/${blog.slug}/react`,
         'POST',
         {
             invalidateKeys: ['blog', blog.slug],
+            silentSuccessMessage: true,
             onError: (error) => console.error('Reaction failed:', error),
         }
     );
 
     const handleReact = (type: 'like' | 'dislike') => {
-        if (!session?.user) {
+        if (!profile) {
             router.push(`/auth/login?redirectTo=/blogs/${blog.slug}`);
             return;
         }
+
+        // Optimistically update UI
+        if (type === 'like') {
+            setLikes((prev) => {
+                const next = new Set(prev);
+                if (next.has(profile.id)) {
+                    next.delete(profile.id);
+                } else {
+                    next.add(profile.id);
+                    setDislikes((d) => {
+                        const nd = new Set(d);
+                        nd.delete(profile.id);
+                        return nd;
+                    });
+                }
+                return next;
+            });
+        }
+
+        if (type === 'dislike') {
+            setDislikes((prev) => {
+                const next = new Set(prev);
+                if (next.has(profile.id)) {
+                    next.delete(profile.id);
+                } else {
+                    next.add(profile.id);
+                    setLikes((l) => {
+                        const nl = new Set(l);
+                        nl.delete(profile.id);
+                        return nl;
+                    });
+                }
+                return next;
+            });
+        }
+
         reactToBlog({ type });
     };
 
@@ -88,18 +126,16 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                     </h1>
 
                     {/* Edit button - visible to author and admin */}
-                    {session?.user &&
-                        (blog.author.id === +session.user.id ||
-                            session.user.role === 'admin') && (
-                            <div className="mb-4">
-                                <Button asChild size="sm" variant="outline">
-                                    <Link href={`/blogs/${blog.slug}/edit`}>
-                                        <Edit className="mr-2 h-3.5 w-3.5" />
-                                        Edit Post
-                                    </Link>
-                                </Button>
-                            </div>
-                        )}
+                    {profile && (blog.author.id === profile.id || profile.role === 'admin') && (
+                        <div className="mb-4">
+                            <Button asChild size="sm" variant="outline">
+                                <Link href={`/blogs/${blog.slug}/edit`}>
+                                    <Edit className="mr-2 h-3.5 w-3.5" />
+                                    Edit Post
+                                </Link>
+                            </Button>
+                        </div>
+                    )}
 
                     {/* Author & meta */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -173,27 +209,21 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         className="gap-2"
                         onClick={() => handleReact('like')}
                         size="sm"
-                        variant={
-                            session?.user && likes.includes(+session.user.id)
-                                ? 'default'
-                                : 'outline'
-                        }
+                        variant={profile && likes.has(profile.id) ? 'default' : 'outline'}
                     >
                         <ThumbsUp className="h-4 w-4" />
-                        {likes.length}
+                        {likes.size}
                     </Button>
                     <Button
                         className="gap-2"
                         onClick={() => handleReact('dislike')}
                         size="sm"
                         variant={
-                            session?.user && dislikes.includes(+session.user.id)
-                                ? 'destructive'
-                                : 'outline'
+                            profile && dislikes.has(profile.id) ? 'destructive' : 'outline'
                         }
                     >
                         <ThumbsDown className="h-4 w-4" />
-                        {dislikes.length}
+                        {dislikes.size}
                     </Button>
                 </div>
             </FadeInUp>

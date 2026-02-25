@@ -50,7 +50,7 @@ export function TagCategorySelector({
         data: options = [],
         refetch: refetchOptions,
         isLoading,
-    } = useApiQuery<Option[]>([endpoint], endpoint, { staleTime: 30_000 });
+    } = useApiQuery<Option[]>(endpoint, { staleTime: 30_000, queryKey: [endpoint] });
 
     const { mutate: createOption, isPending: isCreating } = useApiMutation<
         Option,

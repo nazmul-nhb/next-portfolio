@@ -38,10 +38,9 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     const [processingId, setProcessingId] = useState<number | null>(null);
     const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
 
-    const { data: messages = initialMessages } = useApiQuery<ContactMessage[]>(
-        ['contact-messages'],
-        '/api/contact'
-    );
+    const { data: messages = initialMessages } = useApiQuery<ContactMessage[]>('/api/contact', {
+        queryKey: ['contact-messages'],
+    });
 
     const { mutate: toggleRead } = useApiMutation<ContactMessage, { is_read: boolean }>(
         `/api/contact/${processingId}`,

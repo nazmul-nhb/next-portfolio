@@ -47,8 +47,9 @@ export default function EditBlogPage() {
         data: blogData,
         isLoading,
         isError,
-    } = useApiQuery<SingleBlogRes>(['blog', slug], `/api/blogs/${slug}`, {
+    } = useApiQuery<SingleBlogRes>(`/api/blogs/${slug}`, {
         enabled: status === 'authenticated' && !!slug,
+        queryKey: ['blog', slug],
     });
 
     const { mutate: updateBlog, isPending: submitting } = useApiMutation<

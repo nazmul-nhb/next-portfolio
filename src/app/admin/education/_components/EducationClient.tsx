@@ -20,8 +20,10 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: education = initialEducation } = useApiQuery<SelectEducation[]>(
-        ['education'],
-        '/api/education'
+        '/api/education',
+        {
+            queryKey: ['education'],
+        }
     );
 
     const { mutate: deleteEdu } = useApiMutation<SelectEducation>(

@@ -31,10 +31,9 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
     const [search, setSearch] = useState('');
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: users = initialData } = useApiQuery<RawUser[]>(
-        'admin-users',
-        '/api/users/admin'
-    );
+    const { data: users = initialData } = useApiQuery<RawUser[]>('/api/users/admin', {
+        queryKey: ['admin-users'],
+    });
 
     const { mutate: updateUser, isPending: isUpdating } = useApiMutation<
         unknown,

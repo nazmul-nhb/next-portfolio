@@ -21,8 +21,10 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: projects = initialProjects } = useApiQuery<SelectProject[]>(
-        ['projects'],
-        '/api/projects'
+        '/api/projects',
+        {
+            queryKey: ['projects'],
+        }
     );
 
     const { mutate: deleteProject } = useApiMutation<SelectProject>(

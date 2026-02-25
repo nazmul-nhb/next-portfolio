@@ -12,7 +12,9 @@ export interface UpdateProfile {
  * Fetch current user profile
  */
 export function useUserProfile() {
-    return useApiQuery<UserProfile>(['user-profile'], '/api/users/me');
+    return useApiQuery<UserProfile>('/api/users/me', {
+        queryKey: ['user-profile'],
+    });
 }
 
 /**

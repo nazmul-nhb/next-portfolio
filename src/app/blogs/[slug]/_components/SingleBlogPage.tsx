@@ -12,10 +12,9 @@ type Props = {
 };
 
 export default function SingleBlogPage({ slug }: Props) {
-    const { data, isLoading } = useApiQuery<SingleBlogRes>(
-        ['blog', slug],
-        `/api/blogs/${slug}`
-    );
+    const { data, isLoading } = useApiQuery<SingleBlogRes>(`/api/blogs/${slug}`, {
+        queryKey: ['blog', slug],
+    });
 
     if (isLoading) return <Loading />;
 

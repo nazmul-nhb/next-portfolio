@@ -58,21 +58,30 @@ export default function MessagesPage() {
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const { data: conversations = [] } = useApiQuery<Conversation[]>(
-        ['conversations'],
         '/api/messages/conversations',
-        { enabled: status === 'authenticated', refetchInterval: 10000 }
+        {
+            enabled: status === 'authenticated',
+            refetchInterval: 10000,
+            queryKey: ['conversations'],
+        }
     );
 
     const { data: messages = [] } = useApiQuery<Message[]>(
-        ['messages', activeConversation ?? 0],
         `/api/messages/conversations/${activeConversation}`,
-        { enabled: !!activeConversation, refetchInterval: 10000 }
+        {
+            enabled: !!activeConversation,
+            refetchInterval: 10000,
+            queryKey: ['messages', activeConversation],
+        }
     );
 
     const { data: searchResults = [], isFetching: searching } = useApiQuery<UserResult[]>(
-        ['user-search', debouncedSearch],
         `/api/users/search?q=${encodeURIComponent(debouncedSearch)}`,
-        { enabled: debouncedSearch.length >= 2, staleTime: 10000 }
+        {
+            enabled: debouncedSearch.length >= 2,
+            staleTime: 10000,
+            queryKey: ['user-search', debouncedSearch],
+        }
     );
 
     const { mutate: sendMsg, isPending: sending } = useApiMutation<null, { content: string }>(

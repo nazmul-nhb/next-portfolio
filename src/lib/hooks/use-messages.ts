@@ -26,21 +26,21 @@ export interface Conversation {
  * Fetch all conversations
  */
 export function useConversations() {
-    return useApiQuery<Conversation[]>('conversations', '/api/messages/conversations');
+    return useApiQuery<Conversation[]>('/api/messages/conversations', {
+        queryKey: ['conversations'],
+        refetchInterval: 10000, // Poll every 10 seconds for new conversations
+    });
 }
 
 /**
  * Fetch messages for a specific conversation
  */
 export function useConversationMessages(conversationId: number | null) {
-    return useApiQuery<Message[]>(
-        ['conversation-messages', String(conversationId)],
-        `/api/messages/conversations/${conversationId}`,
-        {
-            enabled: conversationId !== null,
-            refetchInterval: 5000, // Poll every 5 seconds for new messages
-        }
-    );
+    return useApiQuery<Message[]>(`/api/messages/conversations/${conversationId}`, {
+        enabled: conversationId !== null,
+        refetchInterval: 5000, // Poll every 5 seconds for new messages,
+        queryKey: ['conversation-messages', conversationId],
+    });
 }
 
 /**

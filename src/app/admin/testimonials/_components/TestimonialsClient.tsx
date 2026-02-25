@@ -20,8 +20,10 @@ export function TestimonialsClient({ initialData }: Props) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: testimonials = initialData } = useApiQuery<SelectTestimonial[]>(
-        ['testimonials'],
-        '/api/testimonials'
+        '/api/testimonials',
+        {
+            queryKey: ['testimonials'],
+        }
     );
 
     const { mutate, isPending } = useApiMutation<{ id: number }, undefined>(

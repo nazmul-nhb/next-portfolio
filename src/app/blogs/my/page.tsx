@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
 import { useEffect } from 'react';
+import Loading from '@/components/loading';
 import {
     FadeInUp,
     MotionCard,
@@ -16,7 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import Loading from '@/components/loading';
 
 interface MyBlog {
     id: number;
@@ -34,8 +34,9 @@ export default function MyBlogsPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    const { data: blogs, isLoading } = useApiQuery<MyBlog[]>('my-blogs', '/api/blogs/my', {
+    const { data: blogs, isLoading } = useApiQuery<MyBlog[]>('/api/blogs/my', {
         enabled: status === 'authenticated',
+        queryKey: ['my-blogs'],
     });
 
     useEffect(() => {

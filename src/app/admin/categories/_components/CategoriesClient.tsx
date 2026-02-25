@@ -22,8 +22,10 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: categories = initialData } = useApiQuery<SelectCategory[]>(
-        'categories',
-        '/api/categories'
+        '/api/categories',
+        {
+            queryKey: ['categories'],
+        }
     );
 
     const { mutate: createCategory, isPending: isCreating } = useApiMutation<

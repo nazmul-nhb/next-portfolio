@@ -20,8 +20,10 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: experiences = initialExperiences } = useApiQuery<SelectExperience[]>(
-        ['experiences'],
-        '/api/experiences'
+        '/api/experiences',
+        {
+            queryKey: ['experiences'],
+        }
     );
 
     const { mutate: deleteExp } = useApiMutation<SelectExperience>(

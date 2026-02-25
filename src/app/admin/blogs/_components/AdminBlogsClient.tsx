@@ -33,10 +33,9 @@ interface AdminBlog {
 export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: blogs = initialData } = useApiQuery<AdminBlog[]>(
-        'admin-blogs',
-        '/api/blogs/admin'
-    );
+    const { data: blogs = initialData } = useApiQuery<AdminBlog[]>('/api/blogs/admin', {
+        queryKey: ['admin-blogs'],
+    });
 
     const { mutate: togglePublish, isPending: isToggling } = useApiMutation<
         unknown,
