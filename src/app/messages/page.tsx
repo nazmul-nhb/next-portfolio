@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
 import { useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -150,13 +151,7 @@ export default function MessagesPage() {
         }
     };
 
-    if (status === 'loading') {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (status === 'loading') return <Loading />;
 
     if (!session?.user) return null;
 

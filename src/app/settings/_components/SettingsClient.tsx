@@ -20,6 +20,7 @@ import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl, hasErrorMessage } from '@/lib/utils';
+import Loading from '@/components/loading';
 
 /**
  * Settings page client component with profile editing and email verification.
@@ -177,13 +178,7 @@ export function SettingsClient() {
     };
 
     // ✅ Loading state from TanStack Query
-    if (status === 'loading' || isLoading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (status === 'loading' || isLoading) return <Loading />;
 
     // ✅ No profile check - TanStack Query handles this
     if (!profile) {

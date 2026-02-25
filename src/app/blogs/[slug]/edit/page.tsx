@@ -7,13 +7,18 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { BlogEditor } from '@/components/misc/blog-editor';
 import { TagCategorySelector } from '@/components/misc/tag-category-selector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
+import {
+    deleteFromCloudinary,
+    deleteOldCloudFile,
+    uploadToCloudinary,
+} from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SingleBlogRes } from '@/types/blogs';
@@ -40,7 +45,7 @@ export default function EditBlogPage() {
 
     const {
         data: blogData,
-        isLoading: loading,
+        isLoading,
         isError,
     } = useApiQuery<SingleBlogRes>(['blog', slug], `/api/blogs/${slug}`, {
         enabled: status === 'authenticated' && !!slug,
@@ -51,13 +56,7 @@ export default function EditBlogPage() {
         Record<string, unknown>
     >(`/api/blogs/${slug}`, 'PATCH', {
         successMessage: 'Blog post updated!',
-        invalidateKeys: ['blog', 'blogs'],
-        onSuccess: (data) => {
-            router.push(data?.slug ? `/blogs/${data.slug}` : `/blogs/${slug}`);
-        },
-        onError: async () => {
-            if (publicId) await deleteFromCloudinary(publicId);
-        },
+        invalidateKeys: ['blog', blogData?.blog?.slug, 'blogs'],
     });
 
     useEffect(() => {
@@ -95,13 +94,7 @@ export default function EditBlogPage() {
         setCategoryIds(categories.map((c) => c.id));
     }, [blogData, session, slug, router]);
 
-    if (status === 'loading' || loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (status === 'loading' || isLoading) return <Loading />;
 
     if (!session?.user) return null;
 
@@ -142,15 +135,29 @@ export default function EditBlogPage() {
             return;
         }
 
-        updateBlog({
-            title,
-            content,
-            excerpt: excerpt || undefined,
-            cover_image: finalCoverImage || undefined,
-            is_published: isPublished,
-            tag_ids: tagIds,
-            category_ids: categoryIds,
-        });
+        updateBlog(
+            {
+                title,
+                content,
+                excerpt: excerpt || undefined,
+                cover_image: finalCoverImage || undefined,
+                is_published: isPublished,
+                tag_ids: tagIds,
+                category_ids: categoryIds,
+            },
+            {
+                onSuccess: async (data) => {
+                    await deleteOldCloudFile(blogData?.blog?.cover_image, finalCoverImage);
+                    router.push(
+                        data?.data?.slug ? `/blogs/${data?.data.slug}` : `/blogs/${slug}`
+                    );
+                },
+
+                onError: async () => {
+                    if (publicId) await deleteFromCloudinary(publicId);
+                },
+            }
+        );
     };
 
     return (
@@ -205,7 +212,7 @@ export default function EditBlogPage() {
                             />
                             {uploadingCover && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Upload className="h-4 w-4 animate-pulse" />
+                                    <Upload className="size-4 animate-pulse" />
                                     Uploading cover image...
                                 </div>
                             )}
@@ -278,7 +285,7 @@ export default function EditBlogPage() {
                         <label className="flex cursor-pointer items-center gap-2 text-sm">
                             <input
                                 checked={isPublished}
-                                className="h-4 w-4 rounded border-border accent-primary"
+                                className="size-4 rounded border-border accent-primary"
                                 onChange={(e) => setIsPublished(e.target.checked)}
                                 type="checkbox"
                             />
@@ -289,10 +296,11 @@ export default function EditBlogPage() {
                             disabled={
                                 !title.trim() || !content.trim() || submitting || uploadingCover
                             }
+                            loading={submitting || uploadingCover}
                             onClick={handleSubmit}
                         >
-                            <Save className="mr-2 h-4 w-4" />
-                            {submitting || uploadingCover ? 'Saving...' : 'Update Post'}
+                            <Save className="size-4 mb-px" />
+                            Update Post
                         </Button>
                     </div>
                 </div>

@@ -15,6 +15,7 @@ import type { BlogComment } from '@/types/blogs';
 
 interface CommentSectionProps {
     blogId: number;
+    blogSlug: string;
     comments: BlogComment[];
 }
 
@@ -26,7 +27,7 @@ interface CommentItemProps {
 /**
  * Comment section for blog posts with threaded replies.
  */
-export function CommentSection({ blogId, comments }: CommentSectionProps) {
+export function CommentSection({ blogId, blogSlug, comments }: CommentSectionProps) {
     const { data: session } = useSession();
     const [content, setContent] = useState('');
     const [replyTo, setReplyTo] = useState<number | null>(null);
@@ -34,14 +35,15 @@ export function CommentSection({ blogId, comments }: CommentSectionProps) {
 
     const topLevelComments = comments.filter((c) => !c.parent_comment_id);
 
-    const getReplies = (parentId: number): BlogComment[] =>
-        comments.filter((c) => c.parent_comment_id === parentId);
+    const getReplies = (parentId: number): BlogComment[] => {
+        return comments.filter((c) => c.parent_comment_id === parentId);
+    };
 
     const { mutate: postComment, isPending: submitting } = useApiMutation<
         unknown,
         { content: string; blog_id: number; parent_comment_id?: number }
     >('/api/comments', 'POST', {
-        invalidateKeys: ['blog', 'blogs', 'comments', `blog-${blogId}`],
+        invalidateKeys: ['blog', blogSlug],
         onSuccess: () => {
             setContent('');
             setReplyTo(null);

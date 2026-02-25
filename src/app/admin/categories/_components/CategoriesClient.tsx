@@ -21,8 +21,10 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
     const [editingCategory, setEditingCategory] = useState<SelectCategory | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: categories } = useApiQuery<SelectCategory[]>('categories', '/api/categories');
-    const allCategories = categories ?? initialData;
+    const { data: categories = initialData } = useApiQuery<SelectCategory[]>(
+        'categories',
+        '/api/categories'
+    );
 
     const { mutate: createCategory, isPending: isCreating } = useApiMutation<
         SelectCategory,
@@ -103,7 +105,7 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
                 </Button>
             </div>
 
-            {allCategories.length === 0 ? (
+            {categories.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No categories yet</p>
@@ -115,7 +117,7 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
                 </Card>
             ) : (
                 <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    {allCategories.map((category) => (
+                    {categories.map((category) => (
                         <Card className="relative" key={category.id}>
                             <CardContent className="flex items-center justify-between p-4">
                                 <div className="min-w-0 flex-1">

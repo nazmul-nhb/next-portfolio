@@ -45,7 +45,7 @@ export function SkillsClient({ initialData }: Props) {
     const [editingSkill, setEditingSkill] = useState<SelectSkill | null>(null);
     const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const { data: skills } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
+    const { data: skills = initialData } = useApiQuery<SelectSkill[]>('skills', '/api/skills');
 
     // Sync query data into local state when it updates (but not during drag)
     useEffect(() => {

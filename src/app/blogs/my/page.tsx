@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import Loading from '@/components/loading';
 
 interface MyBlog {
     id: number;
@@ -43,13 +44,7 @@ export default function MyBlogsPage() {
         }
     }, [status, router]);
 
-    if (status === 'loading' || isLoading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (status === 'loading' || isLoading) return <Loading />;
 
     if (!session?.user) return null;
 

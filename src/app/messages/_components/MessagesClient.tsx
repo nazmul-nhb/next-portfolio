@@ -4,6 +4,7 @@ import { MessageCircle, Send } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
 import { useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -57,13 +58,7 @@ export function MessagesClient({ userId }: MessagesClientProps) {
     };
 
     // ✅ Loading state from TanStack Query
-    if (isLoading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (isLoading) return <Loading />;
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-12">

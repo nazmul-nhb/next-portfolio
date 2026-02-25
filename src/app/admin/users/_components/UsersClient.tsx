@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { formatDate } from 'nhb-toolbox';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { confirmToast } from '@/components/confirm';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Badge } from '@/components/ui/badge';
@@ -31,8 +31,10 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
     const [search, setSearch] = useState('');
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: users } = useApiQuery<RawUser[]>('admin-users', '/api/users/admin');
-    const allUsers = users ?? initialData;
+    const { data: users = initialData } = useApiQuery<RawUser[]>(
+        'admin-users',
+        '/api/users/admin'
+    );
 
     const { mutate: updateUser, isPending: isUpdating } = useApiMutation<
         unknown,
@@ -105,21 +107,24 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
         });
     };
 
-    const filtered = allUsers.filter(
-        (u) =>
-            u.name.toLowerCase().includes(search.toLowerCase()) ||
-            u.email.toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = useMemo(() => {
+        return users.filter((user) => {
+            return (
+                user.name.toLowerCase().includes(search.toLowerCase()) ||
+                user.email.toLowerCase().includes(search.toLowerCase())
+            );
+        });
+    }, [search, users]);
 
-    const adminCount = allUsers.filter((u) => u.role === 'admin').length;
-    const activeCount = allUsers.filter((u) => u.is_active).length;
+    const adminCount = users.filter((u) => u.role === 'admin').length;
+    const activeCount = users.filter((u) => u.is_active).length;
 
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold">Users</h1>
                 <p className="text-muted-foreground">
-                    {allUsers.length} total &middot; {adminCount} admins &middot; {activeCount}{' '}
+                    {users.length} total &middot; {adminCount} admins &middot; {activeCount}{' '}
                     active
                 </p>
             </div>

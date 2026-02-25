@@ -2,14 +2,11 @@ import { eq } from 'drizzle-orm';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { truncateString } from 'nhb-toolbox';
-import { BlogContent } from '@/app/blogs/[slug]/_components/BlogContent';
-import { CommentSection } from '@/app/blogs/[slug]/_components/CommentSection';
 import { siteConfig } from '@/configs/site';
-import { httpRequest } from '@/lib/actions/baseRequest';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import type { SingleBlogRes } from '@/types/blogs';
+import SingleBlogPage from './_components/SingleBlogPage';
 
 export async function generateMetadata({
     params,
@@ -48,24 +45,14 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: PageProps<'/blogs/[slug]'>) {
-    const { slug } = await params;
-
     try {
-        const { success, data } = await httpRequest<SingleBlogRes>(`/api/blogs/${slug}`, {
-            method: 'GET',
-            cache: 'no-store',
-        });
+        const { slug } = await params;
 
-        if (!success || !data) {
+        if (!slug) {
             notFound();
         }
 
-        return (
-            <article className="mx-auto max-w-4xl px-4 py-12">
-                <BlogContent blog={data.blog} categories={data.categories} tags={data.tags} />
-                <CommentSection blogId={data.blog.id} comments={data.comments} />
-            </article>
-        );
+        return <SingleBlogPage slug={slug} />;
     } catch (error) {
         console.error('Failed to fetch blog post:', error);
         notFound();

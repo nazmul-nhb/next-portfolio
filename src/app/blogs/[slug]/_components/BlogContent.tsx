@@ -37,14 +37,14 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
         `/api/blogs/${blog.slug}/react`,
         'POST',
         {
-            invalidateKeys: ['blog', 'blogs'],
+            invalidateKeys: ['blog', blog.slug],
             onError: (error) => console.error('Reaction failed:', error),
         }
     );
 
     const handleReact = (type: 'like' | 'dislike') => {
         if (!session?.user) {
-            router.push('/auth/login');
+            router.push(`/auth/login?redirectTo=/blogs/${blog.slug}`);
             return;
         }
         reactToBlog({ type });

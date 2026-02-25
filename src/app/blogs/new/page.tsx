@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import Loading from '@/components/loading';
 
 /**
  * Blog post editor with rich text editor.
@@ -55,13 +56,7 @@ export default function NewBlogPage() {
         }
     }, [status, router]);
 
-    if (status === 'loading') {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-        );
-    }
+    if (status === 'loading') return <Loading />;
 
     if (!session?.user) return null;
 

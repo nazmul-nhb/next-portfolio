@@ -4,8 +4,9 @@ import { isArray } from 'nhb-toolbox';
 import { toast } from 'sonner';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
+import type { Uncertain } from '@/types';
 
-type $QueryKey = string | number | Array<string | number>;
+type $QueryKey = Uncertain<string | number | Array<string | number>>;
 
 export type QueryKey = $QueryKey | Array<$QueryKey>;
 

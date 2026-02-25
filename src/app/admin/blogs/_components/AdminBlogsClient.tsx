@@ -3,6 +3,7 @@
 import { Calendar, Check, Eye, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/confirm';
 import SmartTooltip from '@/components/smart-tooltip';
@@ -10,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import { formatDate } from 'nhb-toolbox';
 
 interface AdminBlog {
     id: number;
@@ -33,8 +33,10 @@ interface AdminBlog {
 export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const { data: blogs } = useApiQuery<AdminBlog[]>('admin-blogs', '/api/blogs/admin');
-    const allBlogs = blogs ?? initialData;
+    const { data: blogs = initialData } = useApiQuery<AdminBlog[]>(
+        'admin-blogs',
+        '/api/blogs/admin'
+    );
 
     const { mutate: togglePublish, isPending: isToggling } = useApiMutation<
         unknown,
@@ -78,20 +80,20 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
         });
     };
 
-    const publishedCount = allBlogs.filter((b) => b.is_published).length;
-    const draftCount = allBlogs.filter((b) => !b.is_published).length;
+    const publishedCount = blogs.filter((b) => b.is_published).length;
+    const draftCount = blogs.filter((b) => !b.is_published).length;
 
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold">Blog Management</h1>
                 <p className="text-muted-foreground">
-                    {allBlogs.length} total &middot; {publishedCount} published &middot;{' '}
+                    {blogs.length} total &middot; {publishedCount} published &middot;{' '}
                     {draftCount} drafts
                 </p>
             </div>
 
-            {allBlogs.length === 0 ? (
+            {blogs.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="text-muted-foreground">No blog posts yet.</p>
@@ -99,7 +101,7 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                 </Card>
             ) : (
                 <div className="space-y-3">
-                    {allBlogs.map((blog) => (
+                    {blogs.map((blog) => (
                         <Card key={blog.id}>
                             <CardContent className="flex items-center gap-4 p-4">
                                 {/* Cover thumbnail */}
