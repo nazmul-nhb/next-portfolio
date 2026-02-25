@@ -46,7 +46,7 @@ export async function generateMetadata({
                     ? getTimestamp(data.blog.updated_at)
                     : undefined,
                 authors: author.name,
-                tags: data.tags.map((tag) => tag.title),
+                tags: data.tags.map((tag) => tag.slug),
                 locale: 'en_US',
             },
         };

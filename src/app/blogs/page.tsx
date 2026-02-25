@@ -18,12 +18,16 @@ import { buildCloudinaryUrl } from '@/lib/utils';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
-export const generateMetadata = (): Metadata => {
-    return {
+const description =
+    'Read articles about programming, web development, technology, literature and more.';
+
+export const metadata: Metadata = {
+    title: 'Blogs',
+    description,
+    openGraph: {
         title: 'Blogs',
-        description:
-            'Read articles about programming, web development, technology, literature and more.',
-    };
+        description,
+    },
 };
 
 interface ParamProps {
@@ -117,9 +121,9 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
             </div>
             <SectionHeading
                 className="mb-12"
-                subtitle="Articles about web development, technology, and other topics."
+                subtitle="Articles about programming, web development, technology, literature and other topics."
             >
-                Blog
+                Blogs
             </SectionHeading>
 
             {/* Active filters */}
