@@ -5,7 +5,7 @@ import { truncateString } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
 import SingleBlogPage from './_components/SingleBlogPage';
 
 export async function generateMetadata({
@@ -30,19 +30,19 @@ export async function generateMetadata({
         return {
             title: blog.title,
             description: blog.excerpt || truncateString(blog.content, 160),
+            icons: {
+                icon: siteConfig.favicon,
+                shortcut: siteConfig.favicon,
+            },
+            authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
             openGraph: {
                 title: blog.title,
-                description: blog.excerpt || undefined,
-                images: blog.cover_image
-                    ? [
-                          {
-                              url: buildCloudinaryUrl(blog.cover_image),
-                              width: 1200,
-                              height: 630,
-                              alt: blog.title,
-                          },
-                      ]
-                    : [{ url: siteConfig.favicon, alt: siteConfig.name }],
+                description: blog.excerpt || truncateString(blog.content, 160),
+                images: buildOpenGraphImages(
+                    blog.cover_image && buildCloudinaryUrl(blog.cover_image),
+                    siteConfig.logoSvg,
+                    siteConfig.favicon
+                ),
             },
         };
     } catch (error) {

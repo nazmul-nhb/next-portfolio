@@ -1,5 +1,12 @@
 import { type ClassValue, clsx } from 'clsx';
-import { formatDate, getLastArrayElement, isObjectWithKeys, isString } from 'nhb-toolbox';
+import {
+    formatDate,
+    getLastArrayElement,
+    isArrayOfType,
+    isObjectWithKeys,
+    isString,
+} from 'nhb-toolbox';
+import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
@@ -107,4 +114,18 @@ export function hasErrorMessage(error: unknown): error is { message: string } {
 /** Utility function to get the current year. */
 export function getCurrentYear() {
     return new Date().getFullYear();
+}
+
+/** Utility function to build Open Graph image objects for metadata. */
+export function buildOpenGraphImages(...urls: ValidArray<Uncertain<string>>) {
+    if (isArrayOfType(urls, isString)) {
+        return urls.map((url) => {
+            return {
+                url: url as string,
+                alt: siteConfig.name,
+                width: 1200,
+                height: 630,
+            };
+        });
+    }
 }

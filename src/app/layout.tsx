@@ -10,6 +10,7 @@ import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { siteConfig } from '@/configs/site';
+import { buildOpenGraphImages } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
         'next.js',
         'react',
     ],
-    authors: [{ name: siteConfig.name }],
+    authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
     icons: {
         icon: siteConfig.favicon,
         shortcut: siteConfig.favicon,
@@ -50,20 +51,7 @@ export const metadata: Metadata = {
         description: siteConfig.description,
         url: siteConfig.baseUrl,
         siteName: siteConfig.name,
-        images: [
-            {
-                url: siteConfig.logoSvg,
-                alt: `${siteConfig.name} Logo`,
-                width: 1200,
-                height: 630,
-            },
-            {
-                url: siteConfig.favicon,
-                alt: `${siteConfig.name} Logo`,
-                width: 1200,
-                height: 630,
-            },
-        ],
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         type: 'website',
     },
 };

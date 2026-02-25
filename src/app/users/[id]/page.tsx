@@ -10,7 +10,7 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
 import type { UserRole } from '@/types';
 
 /** Generate metadata for user profile page. */
@@ -31,19 +31,19 @@ export async function generateMetadata({
         return {
             title: user.name,
             description: user.bio || `Profile of ${user.name}`,
+            authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
+            icons: {
+                icon: siteConfig.favicon,
+                shortcut: siteConfig.favicon,
+            },
             openGraph: {
                 title: user.name,
                 description: user.bio || `Profile of ${user.name}`,
-                images: user.profile_image
-                    ? [
-                          {
-                              url: buildCloudinaryUrl(user.profile_image),
-                              width: 400,
-                              height: 400,
-                              alt: user.name,
-                          },
-                      ]
-                    : [{ url: siteConfig.favicon, alt: siteConfig.name }],
+                images: buildOpenGraphImages(
+                    user.profile_image && buildCloudinaryUrl(user.profile_image),
+                    siteConfig.logoSvg,
+                    siteConfig.favicon
+                ),
             },
         };
     } catch (error) {
