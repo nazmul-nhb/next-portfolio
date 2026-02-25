@@ -1,5 +1,13 @@
+import {
+    getFromLocalStorage,
+    parseJSON,
+    removeFromLocalStorage,
+    saveToLocalStorage,
+} from 'nhb-toolbox';
+import { Cipher } from 'nhb-toolbox/hash';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, type StorageValue } from 'zustand/middleware';
+import { ENV } from '@/configs/env';
 import type { UserRole } from '@/types';
 
 export interface UserProfile {
@@ -22,6 +30,10 @@ interface UserState {
     updateProfile: (updates: Partial<UserProfile>) => void;
     clearProfile: () => void;
 }
+
+type StoredValue = StorageValue<{ profile: UserProfile | null }>;
+
+const cipher = new Cipher(ENV.cipherSecret);
 
 /**
  * Global user state store using Zustand
@@ -52,10 +64,26 @@ export const useUserStore = create<UserState>()(
         }),
         {
             name: 'user-storage',
-            partialize: (state) => ({
-                profile: state.profile,
-                // Don't persist isInitialized to force session sync on reload
-            }),
+            partialize: ({ profile }) => ({ profile }),
+            storage: {
+                setItem(name, value) {
+                    saveToLocalStorage(name, value, (state) => {
+                        const stringified = JSON.stringify(state);
+                        return cipher.encrypt(stringified);
+                    });
+                },
+
+                getItem(name) {
+                    return getFromLocalStorage<StoredValue>(name, (stored) => {
+                        const decrypted = cipher.decrypt(stored);
+                        return parseJSON<StoredValue>(decrypted, false);
+                    });
+                },
+
+                removeItem(name) {
+                    removeFromLocalStorage(name);
+                },
+            },
         }
     )
 );

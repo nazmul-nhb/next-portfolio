@@ -47,7 +47,10 @@ export const metadata: Metadata = {
         shortcut: siteConfig.favicon,
     },
     openGraph: {
-        title: siteConfig.name,
+        title: {
+            default: siteConfig.name,
+            template: `%s | ${siteConfig.name}`,
+        },
         description: siteConfig.description,
         url: siteConfig.baseUrl,
         siteName: siteConfig.name,

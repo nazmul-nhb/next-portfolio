@@ -11,10 +11,11 @@ import {
     StaggerContainer,
 } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Blogs',
         description,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
     },
 };
 
