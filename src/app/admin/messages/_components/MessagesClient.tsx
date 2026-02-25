@@ -183,14 +183,14 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                     {message.name}
                                 </span>
                                 {message.subject && (
-                                    <>
+                                    <Fragment>
                                         <span className="text-muted-foreground/40">
                                             &middot;
                                         </span>
                                         <span className="truncate text-sm text-muted-foreground">
                                             {message.subject}
                                         </span>
-                                    </>
+                                    </Fragment>
                                 )}
                             </div>
                             <p className="mt-0.5 truncate text-sm text-muted-foreground">
@@ -309,10 +309,10 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                                 Mark Unread
                                             </Fragment>
                                         ) : (
-                                            <>
+                                            <Fragment>
                                                 <Check className="mr-1.5 h-3.5 w-3.5" />
                                                 Mark Read
-                                            </>
+                                            </Fragment>
                                         )}
                                     </Button>
                                     <Button asChild size="sm" variant="outline">
