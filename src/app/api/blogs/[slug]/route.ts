@@ -10,6 +10,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import {
     blogCategories,
+    blogReactions,
     blogs,
     blogTags,
     categories,
@@ -39,7 +40,6 @@ export async function GET(_req: Request, { params }: Params) {
                 is_published: blogs.is_published,
                 published_date: blogs.published_date,
                 views: blogs.views,
-                reactions: blogs.reactions,
                 created_at: blogs.created_at,
                 updated_at: blogs.updated_at,
                 author: {
@@ -62,6 +62,17 @@ export async function GET(_req: Request, { params }: Params) {
             .update(blogs)
             .set({ views: sql`${blogs.views} + 1` })
             .where(eq(blogs.id, blog.id));
+
+        // Fetch reactions from relational table
+        const reactionRows = await db
+            .select({ user_id: blogReactions.user_id, type: blogReactions.type })
+            .from(blogReactions)
+            .where(eq(blogReactions.blog_id, blog.id));
+
+        const reactions = {
+            like: reactionRows.filter((r) => r.type === 'like').map((r) => r.user_id),
+            dislike: reactionRows.filter((r) => r.type === 'dislike').map((r) => r.user_id),
+        };
 
         // Fetch tags
         const blogTagList = await db
@@ -100,7 +111,7 @@ export async function GET(_req: Request, { params }: Params) {
         revalidatePath('/(home)', 'page');
 
         return sendResponse('Blog', 'GET', {
-            blog,
+            blog: { ...blog, reactions },
             tags: blogTagList,
             categories: blogCategoryList,
             comments: blogComments,

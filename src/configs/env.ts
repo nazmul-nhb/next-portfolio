@@ -13,7 +13,7 @@ export const ENV = {
         address: process.env.EMAIL_ADDRESS as string,
         password: process.env.EMAIL_PASSWORD as string,
     },
-    adminEmail: process.env.ADMIN_EMAIL as string,
+    adminEmail: process.env.NEXT_PUBLIC_ADMIN_EMAIL as string,
     cloudinary: {
         config: {
             cloud_name: process.env.NEXT_PUBLIC_CLOUD_NAME as string,

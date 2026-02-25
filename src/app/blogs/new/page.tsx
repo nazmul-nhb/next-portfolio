@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { BlogEditor } from '@/components/misc/blog-editor';
 import { TagCategorySelector } from '@/components/misc/tag-category-selector';
@@ -16,7 +17,6 @@ import { Label } from '@/components/ui/label';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import Loading from '@/components/loading';
 
 /**
  * Blog post editor with rich text editor.
@@ -244,14 +244,11 @@ export default function NewBlogPage() {
                             disabled={
                                 !title.trim() || !content.trim() || isPending || uploadingCover
                             }
+                            loading={isPending || uploadingCover}
                             onClick={handleSubmit}
                         >
-                            <Save className="mr-2 h-4 w-4" />
-                            {isPending || uploadingCover
-                                ? 'Saving...'
-                                : isPublished
-                                  ? 'Publish'
-                                  : 'Save Draft'}
+                            <Save className="size-4 mb-px" />
+                            {isPublished ? 'Publish' : 'Save Draft'}
                         </Button>
                     </div>
                 </div>

@@ -19,7 +19,7 @@ type Props = {
 export default function ReactionsShare({ blog }: Props) {
     const { profile } = useUserStore();
     const router = useRouter();
-    const reactions = blog.reactions || {};
+    const reactions = blog.reactions ?? { like: [], dislike: [] };
     const [likes, setLikes] = useState(new Set(reactions.like));
     const [dislikes, setDislikes] = useState(new Set(reactions.dislike));
     const [openPopup, setOpenPopup] = useState(false);

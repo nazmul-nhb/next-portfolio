@@ -52,7 +52,7 @@ export default function EditBlogPage() {
         queryKey: ['blog', slug],
     });
 
-    const { mutate: updateBlog, isPending: submitting } = useApiMutation<
+    const { mutate: updateBlog, isPending } = useApiMutation<
         { slug: string },
         Record<string, unknown>
     >(`/api/blogs/${slug}`, 'PATCH', {
@@ -295,9 +295,9 @@ export default function EditBlogPage() {
 
                         <Button
                             disabled={
-                                !title.trim() || !content.trim() || submitting || uploadingCover
+                                !title.trim() || !content.trim() || isPending || uploadingCover
                             }
-                            loading={submitting || uploadingCover}
+                            loading={isPending || uploadingCover}
                             onClick={handleSubmit}
                         >
                             <Save className="size-4 mb-px" />

@@ -11,19 +11,18 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import {
     deleteFromCloudinary,
     deleteOldCloudFile,
     uploadToCloudinary,
 } from '@/lib/actions/cloudinary';
-import { useApiMutation } from '@/lib/hooks/use-api';
-import type { UpdateProfile } from '@/lib/hooks/use-user';
-import { type UserProfile, useUserStore } from '@/lib/store/user-store';
+import { useUpdateProfile } from '@/lib/hooks/use-user';
+import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 
@@ -36,23 +35,14 @@ interface HeroSectionProps {
  * Admin can click the hero image to update it.
  */
 export function HeroSection({ adminImage }: HeroSectionProps) {
-    const { data: session, update: updateSession } = useSession();
-    const isAdmin = session?.user?.role === 'admin';
+    const { profile } = useUserStore();
+    const { mutate: updateProfile, isPending } = useUpdateProfile();
+
+    const isAdmin = profile?.role === 'admin' && profile?.email === ENV.adminEmail;
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [heroImage, setHeroImage] = useState(adminImage || null);
     const [uploading, setUploading] = useState(false);
-
-    const { mutate: updateImage, isPending } = useApiMutation<UserProfile, UpdateProfile>(
-        '/api/users/me',
-        'PATCH',
-        {
-            successMessage: 'Hero image updated successfully',
-            errorMessage: 'Failed to update hero image',
-            invalidateKeys: ['user-profile'],
-        }
-    );
-
-    const { updateProfile } = useUserStore();
 
     const handleImageUpdate = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -64,7 +54,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
 
             setHeroImage(url);
 
-            updateImage(
+            updateProfile(
                 { profile_image: url },
                 {
                     onError: async (error) => {
@@ -75,8 +65,6 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         }
                     },
                     onSuccess: async () => {
-                        updateProfile({ profile_image: url });
-                        updateSession({ image: url });
                         await deleteOldCloudFile(adminImage, url);
                     },
                 }

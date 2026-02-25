@@ -42,7 +42,7 @@ export interface BlogDetails {
     created_at: string;
     updated_at: string;
     views: number;
-    reactions: Record<string, number[]> | null;
+    reactions: BLogReactions | null;
     author: BlogAuthor;
 }
 

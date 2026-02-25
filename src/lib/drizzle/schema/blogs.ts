@@ -2,13 +2,18 @@ import {
     boolean,
     integer,
     jsonb,
+    pgEnum,
     pgTable,
     serial,
     text,
     timestamp,
+    unique,
     varchar,
 } from 'drizzle-orm/pg-core';
 import { users } from './users';
+
+/** Enum for blog reaction types */
+export const reactionTypeEnum = pgEnum('reaction_type', ['like', 'dislike']);
 
 /** Blogs table schema */
 export const blogs = pgTable('blogs', {
@@ -24,7 +29,6 @@ export const blogs = pgTable('blogs', {
     is_published: boolean().default(false).notNull(),
     published_date: timestamp(),
     views: integer().default(0).notNull(),
-    reactions: jsonb().$type<Record<string, number[]>>().default({}),
     created_at: timestamp().defaultNow().notNull(),
     updated_at: timestamp()
         .defaultNow()
@@ -77,6 +81,27 @@ export const blogCategories = pgTable('blog_categories', {
         .notNull()
         .references(() => categories.id, { onDelete: 'cascade' }),
 });
+
+/** Blog reactions table — one row per user per blog */
+export const blogReactions = pgTable(
+    'blog_reactions',
+    {
+        id: serial().primaryKey(),
+        blog_id: integer()
+            .notNull()
+            .references(() => blogs.id, { onDelete: 'cascade' }),
+        user_id: integer()
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        type: reactionTypeEnum().notNull(),
+        created_at: timestamp().defaultNow().notNull(),
+        updated_at: timestamp()
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
+    },
+    (table) => [unique('blog_user_reaction_unique').on(table.blog_id, table.user_id)]
+);
 
 /** Comments table schema */
 export const comments = pgTable('comments', {
