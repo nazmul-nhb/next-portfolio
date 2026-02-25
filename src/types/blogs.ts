@@ -38,7 +38,9 @@ export interface BlogDetails {
     cover_image: string | null;
     excerpt: string | null;
     is_published: boolean;
-    published_date: Date | null;
+    published_date: string | null;
+    created_at: string;
+    updated_at: string;
     views: number;
     reactions: Record<string, number[]> | null;
     author: BlogAuthor;

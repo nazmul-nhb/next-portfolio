@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { truncateString } from 'nhb-toolbox';
+import { getTimestamp, truncateString } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
@@ -26,7 +26,10 @@ export async function generateMetadata({
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,
             },
-            authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
+            authors: [
+                { name: siteConfig.name, url: siteConfig.baseUrl },
+                { name: author.name, url: `${siteConfig.baseUrl}/users/${author.id}` },
+            ],
             openGraph: {
                 title: `${title} by ${author.name}`,
                 description: excerpt || truncateString(content, 160),
@@ -35,6 +38,16 @@ export async function generateMetadata({
                     siteConfig.logoSvg,
                     siteConfig.favicon
                 ),
+                type: 'article',
+                publishedTime: data.blog.published_date
+                    ? getTimestamp(data.blog.published_date)
+                    : undefined,
+                modifiedTime: data.blog.updated_at
+                    ? getTimestamp(data.blog.updated_at)
+                    : undefined,
+                authors: author.name,
+                tags: data.tags.map((tag) => tag.title),
+                locale: 'en_US',
             },
         };
     } catch (error) {

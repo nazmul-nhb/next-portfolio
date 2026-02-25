@@ -54,6 +54,13 @@ export const metadata: Metadata = {
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         type: 'website',
     },
+    twitter: {
+        card: 'summary_large_image',
+        title: siteConfig.name,
+        description: siteConfig.description,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 type RootProps = Readonly<{

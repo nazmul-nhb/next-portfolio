@@ -1,6 +1,8 @@
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import type { Prettify } from 'nhb-toolbox/utils/types';
+import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -133,7 +135,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
             return sendErrorResponse('Forbidden', 403);
         }
 
-        const body = await req.json();
+        type UpdateBlogBody = Prettify<
+            z.infer<typeof UpdateBlogSchema> & Partial<typeof blogs.$inferInsert>
+        >;
+
+        const body = (await req.json()) as UpdateBlogBody;
 
         const validation = await validateRequest(UpdateBlogSchema, body);
 
@@ -143,7 +149,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
         // If publishing for first time, set published_date
         if (updateData.is_published && !blog.is_published) {
-            (updateData as Record<string, unknown>).published_date = new Date();
+            updateData.published_date = new Date();
         }
 
         const [updated] = await db
