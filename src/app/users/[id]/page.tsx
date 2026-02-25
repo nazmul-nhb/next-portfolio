@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { formatDate } from 'nhb-toolbox';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
@@ -20,7 +21,7 @@ export async function generateMetadata({
 
     try {
         const [user] = await db
-            .select({ name: users.name, bio: users.bio })
+            .select({ name: users.name, bio: users.bio, profile_image: users.profile_image })
             .from(users)
             .where(eq(users.id, +id))
             .limit(1);
@@ -30,6 +31,20 @@ export async function generateMetadata({
         return {
             title: user.name,
             description: user.bio || `Profile of ${user.name}`,
+            openGraph: {
+                title: user.name,
+                description: user.bio || `Profile of ${user.name}`,
+                images: user.profile_image
+                    ? [
+                          {
+                              url: buildCloudinaryUrl(user.profile_image),
+                              width: 400,
+                              height: 400,
+                              alt: user.name,
+                          },
+                      ]
+                    : [{ url: siteConfig.favicon, alt: siteConfig.name }],
+            },
         };
     } catch (error) {
         console.error('Failed to fetch user metadata:', error);

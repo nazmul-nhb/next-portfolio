@@ -95,10 +95,10 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                     <div className="mb-8 overflow-hidden rounded-2xl">
                         <Image
                             alt={blog.title}
-                            className="h-auto w-full object-cover"
+                            className="aspect-3/1 object-cover"
                             height={400}
                             src={buildCloudinaryUrl(blog.cover_image)}
-                            width={800}
+                            width={1200}
                         />
                     </div>
                 )}

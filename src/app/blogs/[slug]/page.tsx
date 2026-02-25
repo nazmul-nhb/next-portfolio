@@ -34,8 +34,15 @@ export async function generateMetadata({
                 title: blog.title,
                 description: blog.excerpt || undefined,
                 images: blog.cover_image
-                    ? buildCloudinaryUrl(blog.cover_image)
-                    : [siteConfig.favicon, siteConfig.logoSvg],
+                    ? [
+                          {
+                              url: buildCloudinaryUrl(blog.cover_image),
+                              width: 1200,
+                              height: 630,
+                              alt: blog.title,
+                          },
+                      ]
+                    : [{ url: siteConfig.favicon, alt: siteConfig.name }],
             },
         };
     } catch (error) {

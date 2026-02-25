@@ -41,6 +41,10 @@ export const metadata: Metadata = {
         'react',
     ],
     authors: [{ name: siteConfig.name }],
+    icons: {
+        icon: siteConfig.favicon,
+        shortcut: siteConfig.favicon,
+    },
     openGraph: {
         title: siteConfig.name,
         description: siteConfig.description,
@@ -71,7 +75,7 @@ type RootProps = Readonly<{
 export default function RootLayout({ children }: RootProps) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <link href="favicon.png" rel="shortcut icon" type="image/png" />
+            <link href="/favicon.png" rel="shortcut icon" type="image/png" />
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                 suppressHydrationWarning
