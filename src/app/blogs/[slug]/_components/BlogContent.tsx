@@ -92,7 +92,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
         <div>
             <FadeIn>
                 {blog.cover_image && (
-                    <div className="mb-8 overflow-hidden rounded-2xl">
+                    <div className="mb-8 overflow-hidden rounded-t-2xl">
                         <Image
                             alt={blog.title}
                             className="aspect-3/1 object-cover"
