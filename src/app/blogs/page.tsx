@@ -3,6 +3,7 @@ import { Calendar, Eye, PenTool, X } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { formatDate } from 'nhb-toolbox';
 import {
     FadeInUp,
     MotionCard,
@@ -14,13 +15,15 @@ import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import { formatDate } from 'nhb-toolbox';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
-export const metadata: Metadata = {
-    title: 'Blog',
-    description: 'Read articles about web development, technology, and more.',
+export const generateMetadata = (): Metadata => {
+    return {
+        title: 'Blogs',
+        description:
+            'Read articles about programming, web development, technology, literature and more.',
+    };
 };
 
 interface ParamProps {
@@ -76,10 +79,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
         if (tagFilter) {
             query = query
                 .innerJoin(blogTags, eq(blogs.id, blogTags.blog_id))
-                .innerJoin(
-                    tags,
-                    and(eq(blogTags.tag_id, tags.id), eq(tags.slug, tagFilter))
-                ) as typeof query;
+                .innerJoin(tags, and(eq(blogTags.tag_id, tags.id), eq(tags.slug, tagFilter)));
         }
 
         if (categoryFilter) {
@@ -91,7 +91,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                         eq(blogCategories.category_id, categories.id),
                         eq(categories.slug, categoryFilter)
                     )
-                ) as typeof query;
+                );
         }
 
         if (searchFilter) {
@@ -100,7 +100,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                     eq(blogs.is_published, true),
                     sql`(${blogs.title} ILIKE ${`%${searchFilter}%`} OR ${blogs.excerpt} ILIKE ${`%${searchFilter}%`})`
                 )
-            ) as typeof query;
+            );
         }
 
         allBlogs = await query;
