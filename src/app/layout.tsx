@@ -85,12 +85,7 @@ export default function RootLayout({ children }: RootProps) {
                             themes={['dark', 'light']}
                         >
                             <TooltipProvider>
-                                <NextTopLoader
-                                    color="hsl(var(--primary))"
-                                    height={2}
-                                    shadow={false}
-                                    showSpinner={false}
-                                />
+                                <NextTopLoader color="#4682B4" height={3} zIndex={9999} />
                                 <AuthSync />
                                 <Navbar />
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
