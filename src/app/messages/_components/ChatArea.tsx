@@ -37,6 +37,7 @@ export default function ChatArea({
     const scrollRef = useRef<HTMLDivElement>(null);
     const prevConvRef = useRef<number | null>(null);
     const prevMsgCountRef = useRef(0);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     /** Scroll the messages container to the bottom. */
     const scrollToBottom = useCallback((instant = false) => {
@@ -102,6 +103,8 @@ export default function ChatArea({
         } else if (selectedRecipient) {
             createAndSend({ email: selectedRecipient.email, message: newMessage });
         }
+
+        inputRef?.current?.focus();
     };
 
     // Scroll to bottom: instantly on conversation switch, smoothly on new messages
@@ -121,6 +124,7 @@ export default function ChatArea({
 
         prevConvRef.current = activeConversationId;
         prevMsgCountRef.current = messages.length;
+        inputRef?.current?.focus();
     }, [activeConversationId, messages.length, scrollToBottom]);
 
     // Group messages by date
@@ -340,6 +344,7 @@ export default function ChatArea({
                         }
                     }}
                     placeholder="Write a message..."
+                    ref={inputRef}
                     value={newMessage}
                 />
                 <Button

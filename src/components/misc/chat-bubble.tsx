@@ -17,17 +17,72 @@ import type { Conversation, Message } from '@/types/messages';
 
 /** Edge position CSS map. Avoids bottom-right (clock + theme toggler). */
 const EDGE_POSITIONS: Record<BubbleEdge, string> = {
-    'bottom-left': 'bottom-6 left-6',
+    'bottom-left': 'bottom-19 left-6',
     'top-left': 'top-20 left-6',
     'top-right': 'top-20 right-6',
+    'left-center': 'top-1/2 left-6 -translate-y-1/2',
+    'right-center': 'top-1/2 right-6 -translate-y-1/2',
 };
 
 /** Panel origin based on bubble edge. */
 const PANEL_POSITIONS: Record<BubbleEdge, string> = {
-    'bottom-left': 'bottom-16 left-0',
+    'bottom-left': 'bottom-20 left-0',
     'top-left': 'top-16 left-0',
     'top-right': 'top-16 right-0',
+    'left-center': 'top-1/2 left-16 -translate-y-1/2',
+    'right-center': 'top-1/2 right-16 -translate-y-1/2',
 };
+
+interface DragPosition {
+    x: number;
+    y: number;
+}
+
+interface DragStartRef extends DragPosition {
+    startX: number;
+    startY: number;
+}
+
+/** Get the pixel coordinates (center of bubble) for each edge anchor. */
+function getEdgeAnchor(edge: BubbleEdge): { x: number; y: number } {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const pad = 24 + 6; // half bubble size + spacing (left-6/right-6 = 1.5rem ≈ 24px)
+    switch (edge) {
+        case 'bottom-left':
+            return { x: pad, y: vh - 100 };
+        case 'top-left':
+            return { x: pad, y: 104 };
+        case 'top-right':
+            return { x: vw - pad, y: 104 };
+        case 'left-center':
+            return { x: pad, y: vh / 2 };
+        case 'right-center':
+            return { x: vw - pad, y: vh / 2 };
+    }
+}
+
+/** Find the nearest allowed edge to a given point. */
+function findNearestEdge(cx: number, cy: number): BubbleEdge {
+    const edges: BubbleEdge[] = [
+        'bottom-left',
+        'top-left',
+        'top-right',
+        'left-center',
+        'right-center',
+    ];
+    let best: BubbleEdge = 'bottom-left';
+    let bestDist = Number.POSITIVE_INFINITY;
+    for (const edge of edges) {
+        const a = getEdgeAnchor(edge);
+        const d = Math.hypot(cx - a.x, cy - a.y);
+        if (d < bestDist) {
+            bestDist = d;
+            best = edge;
+        }
+    }
+    return best;
+}
 
 /** The site-wide floating chat bubble + mini chat panel. */
 export default function ChatBubble() {
@@ -55,32 +110,26 @@ export default function ChatBubble() {
 
     // Dragging state
     const [isDragging, setIsDragging] = useState(false);
-    const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
-    const dragStartRef = useRef<{
-        x: number;
-        y: number;
-        startX: number;
-        startY: number;
-    } | null>(null);
+    const [dragPos, setDragPos] = useState<DragPosition | null>(null);
+    /** Snap-animation target: bubble transitions from dragPos → snapTarget then clears. */
+    const [snapTarget, setSnapTarget] = useState<DragPosition | null>(null);
+    const dragStartRef = useRef<DragStartRef | null>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
 
-    const handlePointerDown = useCallback(
-        (e: React.PointerEvent) => {
-            if (isExpanded) return; // Don't drag when panel is open
-            const rect = bubbleRef.current?.getBoundingClientRect();
-            if (!rect) return;
-            setIsDragging(true);
-            dragStartRef.current = {
-                x: e.clientX,
-                y: e.clientY,
-                startX: rect.left + rect.width / 2,
-                startY: rect.top + rect.height / 2,
-            };
-            setDragPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
-            (e.target as HTMLElement).setPointerCapture(e.pointerId);
-        },
-        [isExpanded]
-    );
+    const handlePointerDown = useCallback((e: React.PointerEvent) => {
+        // if (isExpanded) return; // Don't drag when panel is open
+        const rect = bubbleRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        setIsDragging(true);
+        dragStartRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            startX: rect.left + rect.width / 2,
+            startY: rect.top + rect.height / 2,
+        };
+        setDragPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    }, []);
 
     const handlePointerMove = useCallback(
         (e: React.PointerEvent) => {
@@ -116,31 +165,46 @@ export default function ChatBubble() {
             }
 
             // Snap to nearest allowed edge
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const cx = dragPos.x;
-            const cy = dragPos.y;
+            const newEdge = findNearestEdge(dragPos.x, dragPos.y);
+            const target = getEdgeAnchor(newEdge);
 
-            let newEdge: BubbleEdge;
-
-            // Determine quadrant, excluding bottom-right
-            if (cy > vh / 2) {
-                // Bottom half → bottom-left only (bottom-right is reserved)
-                newEdge = 'bottom-left';
-            } else if (cx > vw / 2) {
-                newEdge = 'top-right';
-            } else {
-                newEdge = 'top-left';
-            }
-
-            setEdge(newEdge);
-            edgeStorage.set(newEdge);
+            // Start snap animation: keep inline position, animate to target
             setIsDragging(false);
-            setDragPos(null);
+            setSnapTarget(target);
             dragStartRef.current = null;
+
+            // After the transition ends, commit the edge and clear inline styles
+            setTimeout(() => {
+                setEdge(newEdge);
+                edgeStorage.set(newEdge);
+                setDragPos(null);
+                setSnapTarget(null);
+            }, 300);
         },
         [isDragging, dragPos, setEdge, edgeStorage, toggleExpanded]
     );
+
+    // Compute inline style: dragging freely → snapping to target → static (Tailwind class)
+    const isAnimating = !isDragging && snapTarget && dragPos;
+    const inlineStyle: React.CSSProperties | undefined =
+        isDragging && dragPos
+            ? {
+                  position: 'fixed',
+                  left: dragPos.x - 24,
+                  top: dragPos.y - 24,
+                  zIndex: 9999,
+                  transition: 'none',
+              }
+            : isAnimating
+              ? {
+                    position: 'fixed',
+                    left: snapTarget.x - 24,
+                    top: snapTarget.y - 24,
+                    zIndex: 9999,
+                    transition:
+                        'left 0.3s cubic-bezier(.4,0,.2,1), top 0.3s cubic-bezier(.4,0,.2,1)',
+                }
+              : undefined;
 
     // Don't render if not authenticated or not enabled or not open
     if (status !== 'authenticated' || bubbleEnabled.value === false || !isOpen) {
@@ -149,34 +213,24 @@ export default function ChatBubble() {
 
     return (
         <div
-            className={cn('fixed z-50', !isDragging && EDGE_POSITIONS[edge])}
+            className={cn('fixed z-50', !isDragging && !isAnimating && EDGE_POSITIONS[edge])}
             ref={bubbleRef}
-            style={
-                isDragging && dragPos
-                    ? {
-                          position: 'fixed',
-                          left: dragPos.x - 24,
-                          top: dragPos.y - 24,
-                          zIndex: 9999,
-                          transition: 'none',
-                      }
-                    : undefined
-            }
+            style={inlineStyle}
         >
             {/* Fab button */}
             <button
                 className={cn(
-                    'flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105',
-                    'bg-primary text-primary-foreground',
-                    isDragging && 'scale-110 opacity-80 cursor-grabbing',
-                    !isDragging && 'cursor-grab'
+                    'flex size-12 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105',
+                    'bg-primary text-primary-foreground cursor-pointer',
+                    isDragging && 'scale-110 opacity-80 cursor-grabbing'
+                    // !isDragging && 'cursor-grab'
                 )}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 type="button"
             >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="size-6" />
             </button>
 
             {/* Mini chat panel */}
@@ -211,6 +265,7 @@ function BubbleChatPanel({
     const [newMessage, setNewMessage] = useState('');
     const { profile } = useUserStore();
     const scrollRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const prevMsgCountRef = useRef(0);
 
     // Fetch the conversation list to find the partner
@@ -243,12 +298,14 @@ function BubbleChatPanel({
     const handleSend = () => {
         if (!newMessage.trim() || sending) return;
         sendMsg({ content: newMessage });
+        inputRef?.current?.focus();
     };
 
     const scrollToBottom = useCallback((instant = false) => {
         const el = scrollRef.current;
         if (el) {
             el.scrollTo({ top: el.scrollHeight, behavior: instant ? 'instant' : 'smooth' });
+            inputRef?.current?.focus();
         }
     }, []);
 
@@ -402,6 +459,7 @@ function BubbleChatPanel({
             {/* Input */}
             <div className="flex shrink-0 items-center gap-1.5 border-t border-border/50 px-2 py-1.5">
                 <Input
+                    ref={inputRef}
                     className="h-8 flex-1 text-xs"
                     disabled={sending}
                     onChange={(e) => setNewMessage(e.target.value)}

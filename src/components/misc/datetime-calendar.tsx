@@ -159,7 +159,7 @@ export default function DateTimeCalendar() {
                     aria-label="Open calendar"
                     className={cn(
                         'fixed z-50 right-6 bottom-19 font-source-sans',
-                        'size-11 rounded-full shadow-xl',
+                        'size-12 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
                         'transition-all duration-200 hover:scale-105',

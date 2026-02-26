@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 
-export type BubbleEdge = 'bottom-left' | 'top-left' | 'top-right';
+export type BubbleEdge =
+    | 'bottom-left'
+    | 'top-left'
+    | 'top-right'
+    | 'left-center'
+    | 'right-center';
 
 export interface BubbleState {
     /** Whether the bubble is currently visible. */
