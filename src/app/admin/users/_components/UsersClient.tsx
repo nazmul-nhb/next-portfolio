@@ -151,7 +151,7 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
                 <div className="space-y-3">
                     {filtered.map((user) => (
                         <Card className={cn(!user.is_active && 'opacity-60')} key={user.id}>
-                            <CardContent className="flex items-center gap-4 p-4">
+                            <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">
                                 {/* Avatar */}
                                 {user.profile_image ? (
                                     <Image
