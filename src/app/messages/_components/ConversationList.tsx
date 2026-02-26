@@ -1,14 +1,13 @@
 'use client';
 
-import { Search, User, X } from 'lucide-react';
-import Image from 'next/image';
+import { Search, X } from 'lucide-react';
 import { useDebouncedValue } from 'nhb-hooks';
-import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
+import UserAvatar from '@/components/misc/user-avatar';
 import { ConversationItemSkeleton } from '@/components/skeletons';
 import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import { cn, formatRelativeTime } from '@/lib/utils';
 import type { Conversation, UserResult } from '@/types/messages';
 
 type Props = {
@@ -161,6 +160,9 @@ export default function ConversationList({
                                         {formatRelativeTime(conv.last_message_at)}
                                     </span>
                                 </div>
+                                <p className="truncate text-xs text-muted-foreground">
+                                    {conv.otherUser.email}
+                                </p>
                             </div>
                         </button>
                     ))
@@ -169,61 +171,3 @@ export default function ConversationList({
         </div>
     );
 }
-
-/** Reusable avatar component. */
-function UserAvatar({
-    image,
-    name,
-    size = 'md',
-}: {
-    image: string | null;
-    name: string;
-    size?: 'sm' | 'md' | 'lg';
-}) {
-    const sizes = {
-        sm: 'h-8 w-8',
-        md: 'h-11 w-11',
-        lg: 'h-14 w-14',
-    };
-    const pixels = { sm: 32, md: 44, lg: 56 };
-
-    return image ? (
-        <Image
-            alt={name}
-            className={cn(sizes[size], 'shrink-0 rounded-full object-cover')}
-            height={pixels[size]}
-            src={buildCloudinaryUrl(image)}
-            width={pixels[size]}
-        />
-    ) : (
-        <div
-            className={cn(
-                sizes[size],
-                'flex shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'
-            )}
-        >
-            <User className="h-1/2 w-1/2" />
-        </div>
-    );
-}
-
-/** Format a date into relative time (e.g., "2m", "3h", "Yesterday", "Mon"). */
-function formatRelativeTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'now';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) {
-        return formatDate({ date: dateStr, format: 'dd' });
-    }
-    return formatDate({ date: dateStr, format: 'DD/MM/YY' });
-}
-
-export { UserAvatar };

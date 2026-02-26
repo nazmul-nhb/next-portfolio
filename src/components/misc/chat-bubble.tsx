@@ -1,10 +1,12 @@
 'use client';
 
-import { MessageCircle, Minus, Send, User, X } from 'lucide-react';
-import Image from 'next/image';
+import { MessageCircle, Minus, Send, X } from 'lucide-react';
+import type { Route } from 'next';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import UserAvatar from '@/components/misc/user-avatar';
 import { BubbleChatPanelSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +14,7 @@ import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import type { BubbleEdge } from '@/lib/store/chat-bubble-store';
 import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, cn, groupMessagesByDate } from '@/lib/utils';
+import { cn, groupMessagesByDate } from '@/lib/utils';
 import type { Conversation, Message } from '@/types/messages';
 
 /** Edge position CSS map. Avoids bottom-right (clock + theme toggler). */
@@ -317,22 +319,17 @@ function BubbleChatPanel({
         <>
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b border-border/50 px-3 py-2">
-                {activeConv?.otherUser.profile_image ? (
-                    <Image
-                        alt={activeConv.otherUser.name}
-                        className="h-7 w-7 shrink-0 rounded-full object-cover"
-                        height={28}
-                        src={buildCloudinaryUrl(activeConv.otherUser.profile_image)}
-                        width={28}
-                    />
-                ) : (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <User className="h-4 w-4" />
-                    </div>
-                )}
-                <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+                <UserAvatar
+                    className="size-7"
+                    image={activeConv?.otherUser.profile_image}
+                    name={activeConv?.otherUser.name}
+                />
+                <Link
+                    className="min-w-0 flex-1 truncate text-sm font-semibold hover:underline active:text-primary"
+                    href={`/messages/?chat=${activeConv?.id as number}` as Route}
+                >
                     {activeConv?.otherUser.name ?? 'Chat'}
-                </p>
+                </Link>
                 <button
                     className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                     onClick={onMinimize}

@@ -3,9 +3,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, ExternalLink, MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import UserAvatar from '@/components/misc/user-avatar';
 import { ChatAreaSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -167,26 +169,21 @@ export default function ChatArea({
                 </button>
                 {chatPartner && (
                     <Fragment>
-                        {chatPartner.profile_image ? (
-                            <Image
-                                alt={chatPartner.name}
-                                className="h-9 w-9 shrink-0 rounded-full object-cover"
-                                height={36}
-                                src={buildCloudinaryUrl(chatPartner.profile_image)}
-                                width={36}
-                            />
-                        ) : (
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <User className="h-5 w-5" />
-                            </div>
-                        )}
+                        <UserAvatar
+                            className="size-9"
+                            image={chatPartner.profile_image}
+                            name={chatPartner.name}
+                        />
                         <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold">{chatPartner.name}</p>
-                            {
-                                <p className="truncate text-xs text-muted-foreground">
-                                    {chatPartner.email}
+                            <Link className="hover:underline" href={`/users/${chatPartner.id}`}>
+                                <p className="truncate text-sm font-semibold">
+                                    {chatPartner.name}
                                 </p>
-                            }
+                            </Link>
+
+                            <p className="truncate text-xs text-muted-foreground">
+                                {chatPartner.email}
+                            </p>
                         </div>
                     </Fragment>
                 )}
