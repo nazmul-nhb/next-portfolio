@@ -4,12 +4,13 @@ import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { SelectTestimonial } from '@/types/testimonials';
 
 /**
  * Testimonials section displaying client feedback.
  */
 export async function TestimonialsSection() {
-    let allTestimonials: (typeof testimonials.$inferSelect)[] = [];
+    let allTestimonials: SelectTestimonial[] = [];
 
     try {
         allTestimonials = await db.select().from(testimonials).limit(6);

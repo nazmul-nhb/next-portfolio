@@ -58,9 +58,10 @@ export async function RecentBlogsSection() {
                     <SectionHeading subtitle="Thoughts, insights, and tutorials">
                         Latest Blog Posts
                     </SectionHeading>
-                    <Button variant="outline">
-                        <Link href="/blogs">View All</Link>
-                    </Button>
+
+                    <Link href="/blogs">
+                        <Button variant="outline">View All </Button>
+                    </Link>
                 </div>
 
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

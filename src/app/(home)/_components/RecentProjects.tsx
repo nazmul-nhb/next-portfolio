@@ -33,9 +33,10 @@ export async function RecentProjectsSection() {
                     <SectionHeading subtitle="Some of my latest work and side projects">
                         Recent Projects
                     </SectionHeading>
-                    <Button variant="outline">
-                        <Link href="/projects">View All</Link>
-                    </Button>
+
+                    <Link href="/projects">
+                        <Button variant="outline">View All</Button>
+                    </Link>
                 </div>
 
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
