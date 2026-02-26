@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
 import { useEffect } from 'react';
-import Loading from '@/components/loading';
 import {
     FadeInUp,
     MotionCard,
     SectionHeading,
     StaggerContainer,
 } from '@/components/misc/animations';
+import { MyBlogsSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -45,7 +45,7 @@ export default function MyBlogsPage() {
         }
     }, [status, router]);
 
-    if (status === 'loading' || isLoading) return <Loading />;
+    if (status === 'loading' || isLoading) return <MyBlogsSkeleton />;
 
     if (!session?.user) return null;
 

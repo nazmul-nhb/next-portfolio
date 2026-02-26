@@ -7,10 +7,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { BlogEditor } from '@/components/misc/blog-editor';
 import { TagCategorySelector } from '@/components/misc/tag-category-selector';
+import { BlogEditorSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -95,7 +95,7 @@ export default function EditBlogPage() {
         setCategoryIds(categories.map((c) => c.id));
     }, [blogData, session, slug, router]);
 
-    if (status === 'loading' || isLoading) return <Loading />;
+    if (status === 'loading' || isLoading) return <BlogEditorSkeleton />;
 
     if (!session?.user) return null;
 

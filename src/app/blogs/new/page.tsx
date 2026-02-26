@@ -7,10 +7,10 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import Loading from '@/components/loading';
 import { FadeInUp } from '@/components/misc/animations';
 import { BlogEditor } from '@/components/misc/blog-editor';
 import { TagCategorySelector } from '@/components/misc/tag-category-selector';
+import { BlogEditorSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,7 +56,7 @@ export default function NewBlogPage() {
         }
     }, [status, router]);
 
-    if (status === 'loading') return <Loading />;
+    if (status === 'loading') return <BlogEditorSkeleton />;
 
     if (!session?.user) return null;
 

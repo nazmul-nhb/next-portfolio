@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { BubbleChatPanelSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
@@ -256,14 +257,16 @@ function BubbleChatPanel({
     const prevMsgCountRef = useRef(0);
 
     // Fetch the conversation list to find the partner
-    const { data: conversations = [] } = useApiQuery<Conversation[]>(
+    const { data: conversations = [], isLoading: convsLoading } = useApiQuery<Conversation[]>(
         '/api/messages/conversations',
-        { queryKey: ['conversations'] }
+        {
+            queryKey: ['conversations'],
+        }
     );
 
     const activeConv = conversations.find((c) => c.id === conversationId);
 
-    const { data: messages = [] } = useApiQuery<Message[]>(
+    const { data: messages = [], isLoading: msgsLoading } = useApiQuery<Message[]>(
         `/api/messages/conversations/${conversationId}`,
         {
             enabled: !!conversationId,
@@ -305,6 +308,10 @@ function BubbleChatPanel({
     }, [messages.length, scrollToBottom]);
 
     const grouped = groupMessagesByDate(messages);
+
+    if (convsLoading || (msgsLoading && messages.length === 0)) {
+        return <BubbleChatPanelSkeleton />;
+    }
 
     return (
         <>

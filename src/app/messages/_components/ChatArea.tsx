@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import { ChatAreaSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
@@ -51,7 +52,7 @@ export default function ChatArea({
     const activeConv = conversations.find((c) => c.id === activeConversationId);
     const chatPartner = activeConv?.otherUser ?? selectedRecipient;
 
-    const { data: messages = [] } = useApiQuery<Message[]>(
+    const { data: messages = [], isLoading: messagesLoading } = useApiQuery<Message[]>(
         `/api/messages/conversations/${activeConversationId}`,
         {
             enabled: !!activeConversationId,
@@ -144,6 +145,11 @@ export default function ChatArea({
                 </p>
             </div>
         );
+    }
+
+    // Show skeleton while messages are loading for the first time
+    if (activeConversationId && messagesLoading && messages.length === 0) {
+        return <ChatAreaSkeleton />;
     }
 
     const isBusy = sending || creatingConversation;

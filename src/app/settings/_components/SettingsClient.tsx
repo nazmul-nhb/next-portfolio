@@ -7,6 +7,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
+import { SettingsSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +21,6 @@ import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl, hasErrorMessage } from '@/lib/utils';
-import Loading from '@/components/loading';
 
 /**
  * Settings page client component with profile editing and email verification.
@@ -178,7 +178,7 @@ export function SettingsClient() {
     };
 
     // ✅ Loading state from TanStack Query
-    if (status === 'loading' || isLoading) return <Loading />;
+    if (status === 'loading' || isLoading) return <SettingsSkeleton />;
 
     // ✅ No profile check - TanStack Query handles this
     if (!profile) {

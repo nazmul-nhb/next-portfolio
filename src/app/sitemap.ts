@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         {
             url: buildCanonicalUrl('/'),
             lastModified: new Date(),
-            changeFrequency: 'weekly',
+            changeFrequency: 'daily',
             priority: 1,
             images: [siteConfig.logoSvg],
         },
@@ -19,14 +19,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: buildCanonicalUrl('/blogs'),
             lastModified: new Date(),
             changeFrequency: 'daily',
-            priority: 0.8,
+            priority: 0.9,
             images: [siteConfig.logoSvg],
         },
         {
             url: buildCanonicalUrl('/projects'),
             lastModified: new Date(),
             changeFrequency: 'weekly',
-            priority: 0.6,
+            priority: 0.7,
             images: [siteConfig.logoSvg],
         },
         {
@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: buildCanonicalUrl('/resume'),
             lastModified: new Date(),
             changeFrequency: 'monthly',
-            priority: 0.4,
+            priority: 0.6,
             images: [siteConfig.logoSvg],
         },
     ];

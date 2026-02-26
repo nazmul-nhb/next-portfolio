@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useDebouncedValue } from 'nhb-hooks';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
+import { ConversationItemSkeleton } from '@/components/skeletons';
 import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
@@ -15,6 +16,7 @@ type Props = {
     activeConversationId: number | null;
     onSelectConversation: (id: number) => void;
     onSelectNewRecipient: (user: UserResult) => void;
+    isLoading?: boolean;
     className?: string;
 };
 
@@ -23,6 +25,7 @@ export default function ConversationList({
     activeConversationId,
     onSelectConversation,
     onSelectNewRecipient,
+    isLoading,
     className,
 }: Props) {
     const [searchText, setSearchText] = useState('');
@@ -122,7 +125,9 @@ export default function ConversationList({
 
             {/* Conversation list */}
             <div className="flex-1 overflow-y-auto custom-scroll">
-                {conversations.length === 0 ? (
+                {isLoading ? (
+                    Array.from({ length: 6 }, (_, i) => <ConversationItemSkeleton key={i} />)
+                ) : conversations.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
                         <p className="text-sm text-muted-foreground">No conversations yet.</p>
                         <p className="mt-1 text-xs text-muted-foreground">

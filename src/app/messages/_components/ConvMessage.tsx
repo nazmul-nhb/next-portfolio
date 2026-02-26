@@ -6,7 +6,7 @@ import { useBreakPoint, useMount } from 'nhb-hooks';
 import { useCallback, useEffect, useState } from 'react';
 import ChatArea from '@/app/messages/_components/ChatArea';
 import ConversationList from '@/app/messages/_components/ConversationList';
-import Loading from '@/components/loading';
+import { MessagesPageSkeleton } from '@/components/skeletons';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
 import type { Uncertain } from '@/types';
@@ -26,14 +26,13 @@ export default function ConvMessage({ chatId }: Props) {
 
     const [selectedRecipient, setSelectedRecipient] = useState<UserResult | null>(null);
 
-    const { data: conversations = [] } = useApiQuery<Conversation[]>(
-        '/api/messages/conversations',
-        {
-            enabled: status === 'authenticated',
-            refetchInterval: 10000,
-            queryKey: ['conversations'],
-        }
-    );
+    const { data: conversations = [], isLoading: conversationsLoading } = useApiQuery<
+        Conversation[]
+    >('/api/messages/conversations', {
+        enabled: status === 'authenticated',
+        refetchInterval: 10000,
+        queryKey: ['conversations'],
+    });
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -94,8 +93,8 @@ export default function ConvMessage({ chatId }: Props) {
     const isChatOpen = !!activeConversationId || !!selectedRecipient;
 
     return useMount(
-        status === 'loading' ? (
-            <Loading />
+        status === 'loading' || conversationsLoading ? (
+            <MessagesPageSkeleton isChatOpen={isChatOpen} mobile={!!mobile} />
         ) : session?.user ? (
             <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl overflow-hidden border-x border-border/30">
                 {/* Left panel — Conversation list */}

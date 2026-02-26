@@ -1,6 +1,6 @@
 {
   "name": "next-portfolio",
-  "version": "1.6.83",
+  "version": "1.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -49,6 +49,7 @@
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
     "next-themes": "^0.4.6",
+    "nextjs-toploader": "^3.9.17",
     "nhb-hooks": "^1.40.21",
     "nhb-toolbox": "^4.28.80",
     "nodemailer": "^8.0.1",

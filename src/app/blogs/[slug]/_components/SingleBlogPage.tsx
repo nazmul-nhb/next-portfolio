@@ -3,7 +3,7 @@
 import { notFound } from 'next/navigation';
 import { BlogContent } from '@/app/blogs/[slug]/_components/BlogContent';
 import { CommentSection } from '@/app/blogs/[slug]/_components/CommentSection';
-import Loading from '@/components/loading';
+import { SingleBlogSkeleton } from '@/components/skeletons';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import type { SingleBlogRes } from '@/types/blogs';
 
@@ -16,7 +16,7 @@ export default function SingleBlogPage({ slug }: Props) {
         queryKey: ['blog', slug],
     });
 
-    if (isLoading) return <Loading />;
+    if (isLoading) return <SingleBlogSkeleton />;
 
     if (!data) return notFound();
 

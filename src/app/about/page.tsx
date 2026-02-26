@@ -1,7 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { Briefcase, Code2, Github, GraduationCap, Heart, Linkedin } from 'lucide-react';
+import { Briefcase, Code2, GraduationCap, Heart } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { FaWhatsapp } from 'react-icons/fa';
+import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import {
     FadeInUp,
     ScaleInItem,
@@ -15,6 +17,8 @@ import { db } from '@/lib/drizzle';
 import { education, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
+import type { SelectEducation } from '@/types/career';
+import type { SelectSkill } from '@/types/skills';
 
 export const metadata: Metadata = {
     title: 'About',
@@ -22,13 +26,13 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-    let allSkills: (typeof skills.$inferSelect)[] = [];
-    let allEdu: (typeof education.$inferSelect)[] = [];
+    let allSkills: SelectSkill[] = [];
+    let allEdu: SelectEducation[] = [];
     let adminImage: string | null = null;
 
     try {
         const [sk, ed, [admin]] = await Promise.all([
-            db.select().from(skills),
+            db.select().from(skills).orderBy(skills.sort_order),
             db.select().from(education).orderBy(education.start_date),
             db
                 .select({ profile_image: users.profile_image })
@@ -216,31 +220,31 @@ export default async function AboutPage() {
                     <div className="flex justify-center gap-4">
                         <a
                             aria-label="GitHub"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
                             href={siteConfig.links.github}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
-                            <Github className="h-5 w-5" />
+                            <FiGithub className="size-5" />
                         </a>
                         <a
                             aria-label="LinkedIn"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
                             href={siteConfig.links.linkedin}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
-                            <Linkedin className="h-5 w-5" />
+                            <FiLinkedin className="size-5" />
                         </a>
-                        {/* <a
-                            aria-label="Twitter"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground"
-                            href={siteConfig.links.twitter}
+                        <a
+                            aria-label="WhatsApp"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
+                            href={siteConfig.links.whatsapp}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
-                            <Twitter className="h-5 w-5" />
-                        </a> */}
+                            <FaWhatsapp className="size-5" />
+                        </a>
                     </div>
                 </div>
             </FadeInUp>

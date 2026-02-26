@@ -1,6 +1,7 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
+import NextTopLoader from 'nextjs-toploader';
 import { AuthSync } from '@/components/auth-sync';
 import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
@@ -84,6 +85,12 @@ export default function RootLayout({ children }: RootProps) {
                             themes={['dark', 'light']}
                         >
                             <TooltipProvider>
+                                <NextTopLoader
+                                    color="hsl(var(--primary))"
+                                    height={2}
+                                    shadow={false}
+                                    showSpinner={false}
+                                />
                                 <AuthSync />
                                 <Navbar />
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
