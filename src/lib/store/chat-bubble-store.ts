@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export type BubbleEdge =
     | 'bottom-left'
@@ -25,19 +26,33 @@ export interface BubbleState {
     setEdge: (edge: BubbleEdge) => void;
 }
 
-export const useChatBubbleStore = create<BubbleState>()((set) => ({
-    isOpen: false,
-    isExpanded: false,
-    conversationId: null,
-    edge: 'bottom-left',
+export const useChatBubbleStore = create<BubbleState>()(
+    persist(
+        (set) => ({
+            isOpen: false,
+            isExpanded: false,
+            conversationId: null,
+            edge: 'bottom-left',
 
-    openBubble: (conversationId) => set({ isOpen: true, isExpanded: true, conversationId }),
+            openBubble: (conversationId) =>
+                set({ isOpen: true, isExpanded: true, conversationId }),
 
-    closeBubble: () => set({ isOpen: false, isExpanded: false, conversationId: null }),
+            closeBubble: () => set({ isOpen: false, isExpanded: false, conversationId: null }),
 
-    toggleExpanded: () => set((s) => ({ isExpanded: !s.isExpanded })),
+            toggleExpanded: () => set((s) => ({ isExpanded: !s.isExpanded })),
 
-    setExpanded: (expanded) => set({ isExpanded: expanded }),
+            setExpanded: (expanded) => set({ isExpanded: expanded }),
 
-    setEdge: (edge) => set({ edge }),
-}));
+            setEdge: (edge) => set({ edge }),
+        }),
+        {
+            name: 'chat-bubble-storage',
+            partialize: ({ edge, isOpen, isExpanded, conversationId }) => ({
+                edge,
+                isOpen,
+                isExpanded,
+                conversationId,
+            }),
+        }
+    )
+);

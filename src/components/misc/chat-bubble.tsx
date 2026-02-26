@@ -3,7 +3,6 @@
 import { MessageCircle, Minus, Send, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { useStorage } from 'nhb-hooks';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -87,8 +86,6 @@ function findNearestEdge(cx: number, cy: number): BubbleEdge {
 /** The site-wide floating chat bubble + mini chat panel. */
 export default function ChatBubble() {
     const { status } = useSession();
-    const bubbleEnabled = useStorage<boolean>({ key: 'chat-bubble-enabled', type: 'session' });
-    const edgeStorage = useStorage<BubbleEdge>({ key: 'chat-bubble-edge', type: 'session' });
 
     const {
         isOpen,
@@ -100,13 +97,6 @@ export default function ChatBubble() {
         setExpanded,
         setEdge,
     } = useChatBubbleStore();
-
-    // Sync edge from session storage on mount
-    useEffect(() => {
-        if (edgeStorage.value) {
-            setEdge(edgeStorage.value);
-        }
-    }, [edgeStorage.value, setEdge]);
 
     // Dragging state
     const [isDragging, setIsDragging] = useState(false);
@@ -176,12 +166,11 @@ export default function ChatBubble() {
             // After the transition ends, commit the edge and clear inline styles
             setTimeout(() => {
                 setEdge(newEdge);
-                edgeStorage.set(newEdge);
                 setDragPos(null);
                 setSnapTarget(null);
             }, 300);
         },
-        [isDragging, dragPos, setEdge, edgeStorage, toggleExpanded]
+        [isDragging, dragPos, setEdge, toggleExpanded]
     );
 
     // Compute inline style: dragging freely → snapping to target → static (Tailwind class)
@@ -207,9 +196,7 @@ export default function ChatBubble() {
               : undefined;
 
     // Don't render if not authenticated or not enabled or not open
-    if (status !== 'authenticated' || bubbleEnabled.value === false || !isOpen) {
-        return null;
-    }
+    if (status !== 'authenticated' || !isOpen) return null;
 
     return (
         <div
@@ -459,7 +446,6 @@ function BubbleChatPanel({
             {/* Input */}
             <div className="flex shrink-0 items-center gap-1.5 border-t border-border/50 px-2 py-1.5">
                 <Input
-                    ref={inputRef}
                     className="h-8 flex-1 text-xs"
                     disabled={sending}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -470,6 +456,7 @@ function BubbleChatPanel({
                         }
                     }}
                     placeholder="Message..."
+                    ref={inputRef}
                     value={newMessage}
                 />
                 <Button
