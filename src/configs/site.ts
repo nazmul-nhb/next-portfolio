@@ -21,7 +21,7 @@ import type { TabItem } from '@/types';
 export const siteConfig = {
     name: 'Nazmul Hassan',
     description:
-        'Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
+        'Programmer, Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
     baseUrl: process.env.NEXT_PUBLIC_SITE_URL as string,
     navItems: [
         { title: 'Home', path: '/', icon: Home },
@@ -50,7 +50,7 @@ export const siteConfig = {
         github: 'https://github.com/nazmul-nhb',
         linkedin: 'https://linkedin.com/in/nazmul-nhb',
         discord: 'https://discord.com/users/831030314528538664',
-        // twitter: 'https://twitter.com/nhb42',
+        whatsapp: 'https://wa.me/8801623732187',
     },
     tokenName: 'nhb-token',
     logoSvg: '/logo.svg',

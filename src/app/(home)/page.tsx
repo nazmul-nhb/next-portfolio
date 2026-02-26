@@ -1,6 +1,7 @@
 import { asc, eq } from 'drizzle-orm';
 import type { Metadata } from 'next';
 import { ENV } from '@/configs/env';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
@@ -14,9 +15,8 @@ import { TestimonialsSection } from './_components/Testimonials';
 export const revalidate = 60; // ISR: revalidate every minute
 
 export const metadata: Metadata = {
-    title: 'Nazmul Hassan | Full-Stack Web Developer',
-    description:
-        'Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
+    title: 'Home',
+    description: siteConfig.description,
 };
 
 export default async function HomePage() {

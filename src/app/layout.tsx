@@ -18,7 +18,7 @@ import { NextThemesProvider } from '@/providers/theme-provider';
 export const metadata: Metadata = {
     title: {
         default: siteConfig.name,
-        template: `%s | ${siteConfig.name}`,
+        template: `%s » ${siteConfig.name}`,
     },
     metadataBase: new URL(siteConfig.baseUrl),
     description: siteConfig.description,
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: {
             default: siteConfig.name,
-            template: `%s | ${siteConfig.name}`,
+            template: `%s » ${siteConfig.name}`,
         },
         description: siteConfig.description,
         url: siteConfig.baseUrl,

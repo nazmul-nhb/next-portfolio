@@ -1,6 +1,9 @@
-import { Github, Linkedin, Mail, MessageSquare } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import type { Metadata } from 'next';
+import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
+import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/misc/animations';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { ContactForm } from './_components/ContactForm';
 
@@ -41,7 +44,7 @@ export default function ContactPage() {
                         <div className="space-y-4">
                             <a
                                 className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
-                                href={`mailto:${siteConfig.links.github.replace('https://github.com/', '')}@gmail.com`}
+                                href={`mailto:${ENV.adminEmail}`}
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                                     <Mail className="h-5 w-5 text-primary" />
@@ -61,7 +64,7 @@ export default function ContactPage() {
                                 target="_blank"
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                    <Github className="h-5 w-5 text-primary" />
+                                    <FiGithub className="h-5 w-5 text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">GitHub</p>
@@ -78,7 +81,7 @@ export default function ContactPage() {
                                 target="_blank"
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                    <Linkedin className="h-5 w-5 text-primary" />
+                                    <FiLinkedin className="h-5 w-5 text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">LinkedIn</p>
@@ -90,21 +93,21 @@ export default function ContactPage() {
 
                             <div className="flex gap-3">
                                 <a
-                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
-                                    href={siteConfig.links.github}
+                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#25D366]/10"
+                                    href={siteConfig.links.whatsapp}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    <Github className="h-5 w-5 text-primary" />
-                                    <span className="text-sm font-medium">GitHub</span>
+                                    <FaWhatsapp className="h-5 w-5 text-primary" />
+                                    <span className="text-sm font-medium">WhatsApp</span>
                                 </a>
                                 <a
-                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
+                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#1877F2]/10"
                                     href={siteConfig.links.discord}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    <MessageSquare className="h-5 w-5 text-primary" />
+                                    <FaDiscord className="h-5 w-5 text-primary" />
                                     <span className="text-sm font-medium">Discord</span>
                                 </a>
                             </div>

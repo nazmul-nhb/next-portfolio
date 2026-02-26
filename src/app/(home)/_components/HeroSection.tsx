@@ -1,17 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-    ArrowRight,
-    Camera,
-    Cat,
-    Github,
-    Linkedin,
-    LucideMailQuestionMark,
-} from 'lucide-react';
+import { ArrowRight, Camera, LucideMailQuestionMark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
+import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ENV } from '@/configs/env';
@@ -139,17 +134,22 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         <div className="flex items-center gap-3 pt-2">
                             {[
                                 {
-                                    icon: Github,
+                                    icon: FiGithub,
                                     href: siteConfig.links.github,
                                     label: 'GitHub',
                                 },
                                 {
-                                    icon: Linkedin,
+                                    icon: FiLinkedin,
                                     href: siteConfig.links.linkedin,
                                     label: 'LinkedIn',
                                 },
                                 {
-                                    icon: Cat,
+                                    icon: FaWhatsapp,
+                                    href: siteConfig.links.whatsapp,
+                                    label: 'WhatsApp',
+                                },
+                                {
+                                    icon: FaDiscord,
                                     href: siteConfig.links.discord,
                                     label: 'Discord',
                                 },
