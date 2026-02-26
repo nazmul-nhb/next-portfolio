@@ -1,7 +1,6 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { AuthSync } from '@/components/auth-sync';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
 import Footer from '@/components/misc/footer';
@@ -10,20 +9,11 @@ import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { siteConfig } from '@/configs/site';
-import { buildOpenGraphImages } from '@/lib/utils';
+import { anekBangla, geistMono, geistSans, sourceSans, tiroBangla } from '@/lib/fonts';
+import { buildOpenGraphImages, cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
-
-const geistSans = Geist({
-    variable: '--font-geist-sans',
-    subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
-    subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
     title: {
@@ -75,7 +65,14 @@ export default function RootLayout({ children }: RootProps) {
         <html lang="en" suppressHydrationWarning>
             <link href="/favicon.png" rel="shortcut icon" type="image/png" />
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={cn(
+                    geistSans.variable,
+                    sourceSans.variable,
+                    geistMono.variable,
+                    tiroBangla.variable,
+                    anekBangla.variable,
+                    'antialiased'
+                )}
                 suppressHydrationWarning
             >
                 <AuthProvider>

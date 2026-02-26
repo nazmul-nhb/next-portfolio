@@ -38,8 +38,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
 				),
 				range_end: 'day-range-end',
 				selected:
-					'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-md',
-				today: 'bg-accent text-accent-foreground rounded-md font-semibold',
+					'bg-primary-foreground text-primary hover:bg-primary-foreground hover:text-primary focus:bg-primary-foreground focus:text-primary rounded-md',
+				today: 'bg-accent-foreground text-accent rounded-md font-semibold',
 				outside:
 					'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground',
 				disabled: 'text-muted-foreground opacity-50',

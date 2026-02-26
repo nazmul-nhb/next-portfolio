@@ -18,7 +18,7 @@ Chronos.register(relativeTimePlugin);
 Chronos.register(seasonPlugin);
 
 /** Bangla weekday header abbreviations — Sun→Sat order (matches JS getDay()) */
-const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'] as const;
 
 // ------------------------------------------------------------------
 // Helpers
@@ -95,15 +95,15 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
     }, [gregYear, gregMonth]);
 
     return (
-        <div className="w-full min-w-52 flex-1 shrink-0">
+        <div className="w-full min-w-52 flex-1 shrink-0 text-sm font-tiro">
             {/* Bangla month + year heading */}
-            <div className="text-center text-lg mb-2 px-2">{monthYear}</div>
+            <div className="text-center text-lg mb-2 px-2 font-anek">{monthYear}</div>
 
             {/* Weekday header row */}
             <div className="grid grid-cols-7 gap-px mb-1">
                 {BANGLA_WEEKDAYS.map((w) => (
                     <div
-                        className="text-sm text-muted-foreground text-center h-7 flex items-center justify-center font-medium"
+                        className="text-muted-foreground text-center h-7 flex items-center justify-center font-medium"
                         key={w}
                     >
                         {w}
@@ -119,9 +119,9 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
                 {days.map(({ bDay, isToday }, i) => (
                     <div
                         className={cn(
-                            'size-7.5 flex items-center justify-center rounded-md text-lg select-none',
+                            'size-7.5 flex items-center justify-center rounded-md select-none',
                             isToday
-                                ? 'bg-accent text-accent-foreground font-bold'
+                                ? 'bg-accent-foreground text-accent font-bold'
                                 : 'hover:bg-muted'
                         )}
                         key={bDay.concat(`${i}`)}
@@ -141,7 +141,7 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
 export default function DateTimeCalendar() {
     const [open, setOpen] = useState(false);
     const [isBnCal, setIsBnCal] = useState(false);
-    const [isBnTime, setIsBnTime] = useState(false);
+    const [isBnTime, setIsBnTime] = useState(!isBnCal);
     const [month, setMonth] = useState<Date>(() => new Date());
 
     const { mobile } = useBreakPoint();
@@ -150,7 +150,7 @@ export default function DateTimeCalendar() {
 
     const clockTime = useMemo(() => {
         return isBnTime
-            ? time.formatBangla('ddd, DD mmmm (S), YYYY hh:mm:ss (A)')
+            ? time.formatBangla('dd, DD mmmm (S), YYYY hh:mm:ss (A)')
             : time.format(`dd, mmm DD [(${time.season()})], YYYY hh:mm:ss a`);
     }, [time, isBnTime]);
 
@@ -165,7 +165,7 @@ export default function DateTimeCalendar() {
                 <button
                     aria-label="Open calendar"
                     className={cn(
-                        'fixed z-50 right-6 bottom-19',
+                        'fixed z-50 right-6 bottom-19 font-source-sans',
                         'size-11 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
@@ -174,10 +174,10 @@ export default function DateTimeCalendar() {
                     )}
                     type="button"
                 >
-                    <span className="text-xs leading-none font-bold tabular-nums">
+                    <span className="text-sm leading-none font-bold tabular-nums">
                         {formatted}
                     </span>
-                    <span className="text-[9px] leading-none opacity-75 tabular-nums">
+                    <span className="text-xs leading-none opacity-75 tabular-nums">
                         {time.format('mmm DD')}
                     </span>
                 </button>
@@ -186,7 +186,7 @@ export default function DateTimeCalendar() {
             {/* ── Popover ── */}
             <PopoverContent
                 align={mobile ? 'start' : 'end'}
-                className="w-auto p-0 min-w-80 overflow-hidden"
+                className="w-auto p-0 min-w-84 overflow-hidden"
                 side="top"
                 sideOffset={10}
             >
@@ -206,7 +206,7 @@ export default function DateTimeCalendar() {
                         <div className="flex rounded-md overflow-hidden border text-sm">
                             <button
                                 className={cn(
-                                    'px-3 py-1 transition-colors',
+                                    'px-3 py-1 transition-colors font-source-sans',
                                     !isBnCal
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-muted'
@@ -221,7 +221,7 @@ export default function DateTimeCalendar() {
                             </button>
                             <button
                                 className={cn(
-                                    'px-3 py-1 transition-colors border-l text-base',
+                                    'px-3 py-1 transition-colors border-l font-anek',
                                     isBnCal
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-muted'
@@ -265,8 +265,8 @@ export default function DateTimeCalendar() {
 
                             <div
                                 className={cn(
-                                    'border-t mt-2 text-muted-foreground text-center select-none pb-1',
-                                    isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
+                                    'border-t mt-2 text-sm text-muted-foreground text-center select-none pb-1 pt-3',
+                                    isBnTime ? 'font-tiro' : 'font-source-sans'
                                 )}
                                 onClick={() => setIsBnTime((t) => !t)}
                             >
@@ -278,15 +278,15 @@ export default function DateTimeCalendar() {
                             className="w-full p-0"
                             classNames={{
                                 months: 'w-full flex flex-col sm:flex-row gap-4',
-                                month: 'w-full flex flex-col gap-4',
+                                month: 'w-full flex flex-col gap-4 font-source-sans',
                                 weekdays: 'flex w-full justify-between',
                                 week: 'flex w-full mt-2 justify-between',
                             }}
                             footer={
                                 <div
                                     className={cn(
-                                        'border-t mt-2 text-muted-foreground text-center select-none pb-1',
-                                        isBnTime ? 'pt-2 text-base' : 'pt-3 text-sm'
+                                        'border-t mt-2 text-sm text-muted-foreground text-center select-none pb-1 pt-3',
+                                        isBnTime ? 'font-tiro' : 'font-source-sans'
                                     )}
                                     onClick={() => setIsBnTime((t) => !t)}
                                 >

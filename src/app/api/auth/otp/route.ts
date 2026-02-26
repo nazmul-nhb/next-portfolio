@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         // Send OTP email
         await sendEmail({
             to: email,
-            subject: 'Verify Your Email - OTP Code',
+            subject: 'OTP to Verify Your Email',
             html: otpEmailTemplate(user.name, code),
         });
 
