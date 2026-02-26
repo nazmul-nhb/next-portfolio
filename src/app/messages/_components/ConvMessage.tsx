@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useBreakPoint } from 'nhb-hooks';
+import { useBreakPoint, useMount } from 'nhb-hooks';
 import { useCallback, useEffect, useState } from 'react';
 import ChatArea from '@/app/messages/_components/ChatArea';
 import ConversationList from '@/app/messages/_components/ConversationList';
@@ -88,46 +88,50 @@ export default function ConvMessage({ chatId }: Props) {
         [setActiveConversation]
     );
 
-    if (status === 'loading') return <Loading />;
-    if (!session?.user) return null;
+    // if (status === 'loading') return <Loading />;
+    // if (!session?.user) return null;
 
     const isChatOpen = !!activeConversationId || !!selectedRecipient;
 
-    return (
-        <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl overflow-hidden border-x border-border/30">
-            {/* Left panel — Conversation list */}
-            <div
-                className={cn(
-                    'h-full shrink-0 border-r border-border/30',
-                    // Mobile: full width when no chat, hidden when chat is open
-                    // Desktop: fixed width, always visible
-                    mobile ? (isChatOpen ? 'hidden' : 'w-full') : 'w-80'
-                )}
-            >
-                <ConversationList
-                    activeConversationId={activeConversationId}
-                    conversations={conversations}
-                    onSelectConversation={handleSelectConversation}
-                    onSelectNewRecipient={handleSelectNewRecipient}
-                />
-            </div>
+    return useMount(
+        status === 'loading' ? (
+            <Loading />
+        ) : session?.user ? (
+            <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl overflow-hidden border-x border-border/30">
+                {/* Left panel — Conversation list */}
+                <div
+                    className={cn(
+                        'h-full shrink-0 border-r border-border/30',
+                        // Mobile: full width when no chat, hidden when chat is open
+                        // Desktop: fixed width, always visible
+                        mobile ? (isChatOpen ? 'hidden' : 'w-full') : 'w-80'
+                    )}
+                >
+                    <ConversationList
+                        activeConversationId={activeConversationId}
+                        conversations={conversations}
+                        onSelectConversation={handleSelectConversation}
+                        onSelectNewRecipient={handleSelectNewRecipient}
+                    />
+                </div>
 
-            {/* Right panel — Chat area */}
-            <div
-                className={cn(
-                    'h-full min-w-0 flex-1',
-                    // Mobile: full width when chat is open, hidden otherwise
-                    mobile ? (isChatOpen ? 'block' : 'hidden') : 'block'
-                )}
-            >
-                <ChatArea
-                    activeConversationId={activeConversationId}
-                    conversations={conversations}
-                    onBack={handleBack}
-                    onConversationCreated={handleConversationCreated}
-                    selectedRecipient={selectedRecipient}
-                />
+                {/* Right panel — Chat area */}
+                <div
+                    className={cn(
+                        'h-full min-w-0 flex-1',
+                        // Mobile: full width when chat is open, hidden otherwise
+                        mobile ? (isChatOpen ? 'block' : 'hidden') : 'block'
+                    )}
+                >
+                    <ChatArea
+                        activeConversationId={activeConversationId}
+                        conversations={conversations}
+                        onBack={handleBack}
+                        onConversationCreated={handleConversationCreated}
+                        selectedRecipient={selectedRecipient}
+                    />
+                </div>
             </div>
-        </div>
+        ) : null
     );
 }
