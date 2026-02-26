@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import type { Route } from 'next';
 import {
+    Chronos,
     formatDate,
     getLastArrayElement,
     isArrayOfType,
@@ -13,6 +14,7 @@ import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import type { Uncertain, UserRole } from '@/types';
+import type { Message } from '@/types/messages';
 
 /** Utility function to combine and merge Tailwind CSS class names. */
 export function cn(...inputs: ClassValue[]) {
@@ -88,6 +90,40 @@ export function formatDuration(startDate: string | Date, endDate: Uncertain<stri
     const end = endDate ? formatDate({ date: endDate, format: 'mmm yyyy' }) : 'Present';
 
     return `${start} - ${end}`;
+}
+
+/** Group messages by date for Telegram-style date separators. */
+export function groupMessagesByDate(messages: Message[]) {
+    const groups: { date: string; msgs: Message[] }[] = [];
+
+    for (const msg of messages) {
+        const dateLabel = getDateLabel(msg.created_at);
+        const lastGroup = groups[groups.length - 1];
+
+        if (lastGroup && lastGroup.date === dateLabel) {
+            lastGroup.msgs.push(msg);
+        } else {
+            groups.push({ date: dateLabel, msgs: [msg] });
+        }
+    }
+
+    return groups;
+}
+
+/** Get a human-readable date label (Today, Yesterday, or full date). */
+export function getDateLabel(dateStr: string): string {
+    const date = new Chronos(dateStr);
+    const now = new Chronos();
+
+    if (date.isToday()) return 'Today';
+    if (date.isYesterday()) return 'Yesterday';
+
+    // Same year
+    if (date.year === now.year) {
+        return date.format('mmm DD');
+    }
+
+    return date.format('mmm DD, YYYY');
 }
 
 /** Format a date as a relative time string */

@@ -3,19 +3,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBreakPoint, useClock, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
-import { banglaPlugin } from 'nhb-toolbox/plugins/banglaPlugin';
-import { relativeTimePlugin } from 'nhb-toolbox/plugins/relativeTimePlugin';
-import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
+
 import { useCallback, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-
-// Register plugins once at module level
-Chronos.register(banglaPlugin);
-Chronos.register(relativeTimePlugin);
-Chronos.register(seasonPlugin);
 
 /** Bangla weekday header abbreviations — Sun→Sat order (matches JS getDay()) */
 const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'] as const;

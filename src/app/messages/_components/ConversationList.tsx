@@ -121,7 +121,7 @@ export default function ConversationList({
             </div>
 
             {/* Conversation list */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scroll">
                 {conversations.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
                         <p className="text-sm text-muted-foreground">No conversations yet.</p>

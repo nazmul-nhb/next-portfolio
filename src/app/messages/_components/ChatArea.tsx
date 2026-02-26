@@ -3,15 +3,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
-import { formatDate } from 'nhb-toolbox';
-import { useEffect, useRef, useState } from 'react';
+import { Chronos, formatDate } from 'nhb-toolbox';
+import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import { buildCloudinaryUrl, cn, groupMessagesByDate } from '@/lib/utils';
 import type { Conversation, Message, UserResult } from '@/types/messages';
 
 type Props = {
@@ -32,8 +32,7 @@ export default function ChatArea({
     const [newMessage, setNewMessage] = useState('');
     const { profile } = useUserStore();
     const queryClient = useQueryClient();
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    // const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Find the other user from the active conversation
     const activeConv = conversations.find((c) => c.id === activeConversationId);
@@ -94,10 +93,9 @@ export default function ChatArea({
     };
 
     // Auto-scroll to bottom on new messages
-    // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on message update
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    // useEffect(() => {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // }, []);
 
     // Group messages by date
     const groupedMessages = groupMessagesByDate(messages);
@@ -159,7 +157,7 @@ export default function ChatArea({
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto px-4 py-3" ref={messagesContainerRef}>
+            <div className="flex-1 overflow-y-auto custom-scroll px-4 py-3">
                 {activeConversationId && messages.length === 0 ? (
                     <div className="flex h-full items-center justify-center">
                         <p className="text-sm text-muted-foreground">
@@ -214,6 +212,13 @@ export default function ChatArea({
                                     const isFirst = !isSameSenderAsPrev;
                                     const isLast = !isSameSenderAsNext;
 
+                                    const isSameMin = nextMsg?.created_at
+                                        ? new Chronos(msg.created_at).isSame(
+                                              nextMsg?.created_at,
+                                              'minute'
+                                          )
+                                        : false;
+
                                     return (
                                         <div
                                             className={cn(
@@ -260,7 +265,7 @@ export default function ChatArea({
                                                 <p className="whitespace-pre-wrap wrap-break-word">
                                                     {msg.content}
                                                 </p>
-                                                {isLast && (
+                                                {isSameMin || (
                                                     <p
                                                         className={cn(
                                                             'mt-0.5 text-[10px]',
@@ -283,7 +288,6 @@ export default function ChatArea({
                         </div>
                     ))
                 )}
-                <div ref={messagesEndRef} />
             </div>
 
             {/* Message input */}
@@ -312,50 +316,4 @@ export default function ChatArea({
             </div>
         </div>
     );
-}
-
-/** Group messages by date for Telegram-style date separators. */
-function groupMessagesByDate(messages: Message[]): { date: string; msgs: Message[] }[] {
-    const groups: { date: string; msgs: Message[] }[] = [];
-
-    for (const msg of messages) {
-        const dateLabel = getDateLabel(msg.created_at);
-        const lastGroup = groups[groups.length - 1];
-
-        if (lastGroup && lastGroup.date === dateLabel) {
-            lastGroup.msgs.push(msg);
-        } else {
-            groups.push({ date: dateLabel, msgs: [msg] });
-        }
-    }
-
-    return groups;
-}
-
-/** Get a human-readable date label (Today, Yesterday, or full date). */
-function getDateLabel(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-
-    const isToday =
-        date.getDate() === now.getDate() &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear();
-
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const isYesterday =
-        date.getDate() === yesterday.getDate() &&
-        date.getMonth() === yesterday.getMonth() &&
-        date.getFullYear() === yesterday.getFullYear();
-
-    if (isToday) return 'Today';
-    if (isYesterday) return 'Yesterday';
-
-    // Same year
-    if (date.getFullYear() === now.getFullYear()) {
-        return formatDate({ date: dateStr, format: 'mmm DD' });
-    }
-
-    return formatDate({ date: dateStr, format: 'mmm DD, YYYY' });
 }
