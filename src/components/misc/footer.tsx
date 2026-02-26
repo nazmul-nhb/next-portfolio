@@ -32,10 +32,10 @@ export default function Footer() {
     return (
         <footer className="border-t border-border/40 bg-background/80 backdrop-blur-sm">
             <div className="mx-auto max-w-7xl px-4 py-12">
-                {/* Main grid */}
-                <div className="mx-auto grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Top section: Brand + Navigation columns */}
+                <div className="flex flex-col items-center gap-10 text-center md:flex-row md:items-start md:justify-between md:text-left">
                     {/* Brand */}
-                    <div className="sm:col-span-2 lg:col-span-1 space-y-4">
+                    <div className="flex max-w-xs flex-col items-center gap-3 md:items-start">
                         <div className="flex items-center gap-2.5">
                             <Image
                                 alt={siteConfig.name}
@@ -47,68 +47,71 @@ export default function Footer() {
                             />
                             <span className="text-lg font-semibold">{siteConfig.name}</span>
                         </div>
-                        <p className="text-sm leading-relaxed text-muted-foreground max-w-xs">
+                        <p className="text-sm leading-relaxed text-muted-foreground">
                             {siteConfig.description}
                         </p>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-                            Quick Links
-                        </h3>
-                        <nav className="flex flex-col gap-2.5 items-start">
-                            {quickLinks.map((link) => (
-                                <Link
-                                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                                    href={link.href}
-                                    key={link.href}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-
-                    {/* Resources */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-                            Resources
-                        </h3>
-                        <nav className="flex flex-col gap-2.5">
-                            {resourceLinks.map((link) => (
-                                <Link
-                                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                                    href={link.href}
-                                    key={link.href}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-
-                    {/* Connect */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-                            Connect
-                        </h3>
-                        <div className="flex flex-col gap-2.5">
-                            {Object.entries(siteConfig.links).map(([name, url]) => {
-                                const Icon = socialIcons[name];
-                                return (
-                                    <a
-                                        className="inline-flex items-center gap-2 text-sm text-muted-foreground capitalize transition-colors hover:text-foreground"
-                                        href={url}
-                                        key={name}
-                                        rel="noopener noreferrer"
-                                        target="_blank"
+                    {/* Navigation columns */}
+                    <div className="flex flex-wrap justify-center gap-12 sm:gap-16 md:justify-end">
+                        {/* Quick Links */}
+                        <div className="flex flex-col items-center md:items-start">
+                            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
+                                Quick Links
+                            </h3>
+                            <nav className="flex flex-col items-center gap-2.5 md:items-start">
+                                {quickLinks.map((link) => (
+                                    <Link
+                                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                        href={link.href}
+                                        key={link.href}
                                     >
-                                        <Icon className="size-4" />
-                                        {name}
-                                    </a>
-                                );
-                            })}
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Resources */}
+                        <div className="flex flex-col items-center md:items-start">
+                            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
+                                Resources
+                            </h3>
+                            <nav className="flex flex-col items-center gap-2.5 md:items-start">
+                                {resourceLinks.map((link) => (
+                                    <Link
+                                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                        href={link.href}
+                                        key={link.href}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Connect */}
+                        <div className="flex flex-col items-center md:items-start">
+                            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
+                                Connect
+                            </h3>
+                            <div className="flex flex-col items-center gap-2.5 md:items-start">
+                                {Object.entries(siteConfig.links).map(([name, url]) => {
+                                    const Icon = socialIcons[name];
+                                    return (
+                                        <a
+                                            className="inline-flex items-center gap-2 text-sm text-muted-foreground capitalize transition-colors hover:text-foreground"
+                                            href={url}
+                                            key={name}
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                        >
+                                            <Icon className="size-4" />
+                                            {name}
+                                        </a>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>

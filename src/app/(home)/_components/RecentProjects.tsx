@@ -27,7 +27,7 @@ export async function RecentProjectsSection() {
     if (!recentProjects.length) return null;
 
     return (
-        <section className="py-20">
+        <section className="py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
                 <div className="mb-12 flex items-center justify-between">
                     <SectionHeading subtitle="Some of my latest work and side projects">

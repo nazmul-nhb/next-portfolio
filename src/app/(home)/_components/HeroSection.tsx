@@ -86,7 +86,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                 transition={{ duration: 10, repeat: 3, ease: 'easeInOut', delay: 2 }}
             />
 
-            <div className="mx-auto max-w-6xl px-4 py-20">
+            <div className="mx-auto max-w-6xl px-4 py-8 sm:py-14 md:py-20">
                 <div className="grid items-center gap-12 lg:grid-cols-2">
                     <motion.div
                         animate={{ opacity: 1, y: 0 }}
@@ -117,7 +117,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         <div className="flex flex-wrap gap-3">
                             <Button asChild size="lg">
                                 <Link href="/projects">
-                                    View Projects <ArrowRight className="ml-2 h-4 w-4" />
+                                    View Projects <ArrowRight className="size-4" />
                                 </Link>
                             </Button>
                             <Button size="lg" variant="outline">
@@ -125,8 +125,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             </Button>
                             <Button asChild size="lg">
                                 <Link href="/contact">
-                                    Send a Message{' '}
-                                    <LucideMailQuestionMark className="ml-2 h-4 w-4" />
+                                    Send a Message <LucideMailQuestionMark className="size-4" />
                                 </Link>
                             </Button>
                         </div>
