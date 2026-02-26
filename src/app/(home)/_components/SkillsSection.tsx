@@ -42,6 +42,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                                         alt={skill.title}
                                         className="object-contain"
                                         fill
+                                        quality={100}
                                         sizes="40px"
                                         src={buildCloudinaryUrl(skill.icon)}
                                     />

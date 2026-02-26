@@ -203,9 +203,13 @@ export default async function AboutPage() {
                 <FadeInUp>
                     <p className="text-muted-foreground leading-relaxed">
                         Beyond coding, I enjoy exploring new technologies, contributing to open
-                        source, writing technical blogs, and helping other developers grow.
-                        I&apos;m always eager to learn and take on new challenges that push the
-                        boundaries of web development.
+                        source, writing technical blogs, and helping other developers grow. I
+                        also have a passion for music, photography, and literature, which often
+                        inspire my creative approach to problem-solving in tech. Classical
+                        mythology and philosophy fascinate me, and I find that they often
+                        provide unique perspectives that I can apply to my work and life.
+                        I&apos;m always eager to connect with like-minded individuals, so feel
+                        free to reach out!
                     </p>
                 </FadeInUp>
             </section>
