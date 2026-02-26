@@ -19,6 +19,7 @@ export interface Conversation {
         id: number;
         name: string;
         profile_image: string | null;
+        email: string;
     };
 }
 

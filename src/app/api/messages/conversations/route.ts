@@ -50,6 +50,7 @@ export async function GET() {
                         id: users.id,
                         name: users.name,
                         profile_image: users.profile_image,
+                        email: users.email,
                     })
                     .from(users)
                     .where(eq(users.id, otherUserId))

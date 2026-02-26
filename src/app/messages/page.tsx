@@ -1,28 +1,27 @@
 'use client';
 
-import { User } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useDebouncedValue } from 'nhb-hooks';
-import { formatDate } from 'nhb-toolbox';
-import { useEffect, useState } from 'react';
+import { useBreakPoint } from 'nhb-hooks';
+import { useCallback, useEffect, useState } from 'react';
 import ChatArea from '@/app/messages/_components/ChatArea';
+import ConversationList from '@/app/messages/_components/ConversationList';
 import Loading from '@/components/loading';
-import { FadeInUp } from '@/components/misc/animations';
-import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import type { Conversation, UserResult } from '@/types/messages';
 
-/** Messages page with conversation list and chat view. */
+/** Messages page — Telegram-style split layout with URL-driven conversation selection. */
 export default function MessagesPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { mobile } = useBreakPoint();
 
-    const [activeConversation, setActiveConversation] = useState<number | null>(null);
-    const [recipientSearch, setRecipientSearch] = useState('');
-    const [debouncedSearch, cancelSearch] = useDebouncedValue(recipientSearch);
+    // Read active conversation from URL `?chat=<id>`
+    const chatParam = searchParams.get('chat');
+    const activeConversationId = chatParam ? +chatParam : null;
+
     const [selectedRecipient, setSelectedRecipient] = useState<UserResult | null>(null);
 
     const { data: conversations = [] } = useApiQuery<Conversation[]>(
@@ -34,172 +33,99 @@ export default function MessagesPage() {
         }
     );
 
-    const { data: searchResults = [], isFetching: searching } = useApiQuery<UserResult[]>(
-        `/api/users/search?q=${encodeURIComponent(debouncedSearch)}`,
-        {
-            enabled: debouncedSearch.length >= 2,
-            staleTime: 10000,
-            queryKey: ['user-search', debouncedSearch],
-        }
-    );
-
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/auth/login');
+            router.push('/auth/login?redirectTo=/messages');
         }
     }, [status, router]);
 
-    // Debounced user search
-    const handleRecipientSearch = (value: string) => {
-        setRecipientSearch(value);
-        setSelectedRecipient(null);
-    };
+    /** Navigate to a conversation via URL. */
+    const setActiveConversation = useCallback(
+        (id: number | null) => {
+            setSelectedRecipient(null);
+            if (id) {
+                router.push(`/messages?chat=${id}`, { scroll: false });
+            } else {
+                router.push('/messages', { scroll: false });
+            }
+        },
+        [router]
+    );
 
-    const selectRecipient = (user: UserResult) => {
-        setSelectedRecipient(user);
-        setRecipientSearch(user.email);
-    };
+    /** When a user is selected from search that has an existing conversation. */
+    const handleSelectConversation = useCallback(
+        (id: number) => {
+            setSelectedRecipient(null);
+            setActiveConversation(id);
+        },
+        [setActiveConversation]
+    );
+
+    /** When a new recipient (no existing conversation) is selected from search. */
+    const handleSelectNewRecipient = useCallback(
+        (user: UserResult) => {
+            // Clear URL param since there's no conversation yet
+            router.push('/messages', { scroll: false });
+            setSelectedRecipient(user);
+        },
+        [router]
+    );
+
+    /** Back button handler — go back to conversation list (mobile). */
+    const handleBack = useCallback(() => {
+        setSelectedRecipient(null);
+        router.push('/messages', { scroll: false });
+    }, [router]);
+
+    /** After a new conversation is created (first message sent). */
+    const handleConversationCreated = useCallback(
+        (convId: number) => {
+            setSelectedRecipient(null);
+            setActiveConversation(convId);
+        },
+        [setActiveConversation]
+    );
 
     if (status === 'loading') return <Loading />;
-
     if (!session?.user) return null;
 
+    const isChatOpen = !!activeConversationId || !!selectedRecipient;
+
     return (
-        <div className="mx-auto max-w-5xl px-4 py-12">
-            <FadeInUp>
-                <div className="mb-8">
-                    <h1 className="mb-2 text-3xl font-bold tracking-tight">Messages</h1>
-                    <p className="text-muted-foreground">
-                        Your private conversations with other users.
-                    </p>
-                </div>
-            </FadeInUp>
+        <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl overflow-hidden border-x border-border/30">
+            {/* Left panel — Conversation list */}
+            <div
+                className={cn(
+                    'h-full shrink-0 border-r border-border/30',
+                    // Mobile: full width when no chat, hidden when chat is open
+                    // Desktop: fixed width, always visible
+                    mobile ? (isChatOpen ? 'hidden' : 'w-full') : 'w-80'
+                )}
+            >
+                <ConversationList
+                    activeConversationId={activeConversationId}
+                    conversations={conversations}
+                    onSelectConversation={handleSelectConversation}
+                    onSelectNewRecipient={handleSelectNewRecipient}
+                />
+            </div>
 
-            <FadeInUp delay={0.1}>
-                <div className="grid gap-6 md:grid-cols-[300px_1fr]">
-                    {/* Conversation list */}
-                    <div className="space-y-2 rounded-xl border border-border/50 bg-card p-4">
-                        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-                            Conversations
-                        </h2>
-
-                        {/* New conversation */}
-                        <div className="border-y border-border/50 py-3">
-                            <p className="mb-2 text-xs text-muted-foreground">
-                                Start new conversation
-                            </p>
-                            <div className="relative">
-                                <Input
-                                    className="h-8 text-xs"
-                                    onChange={(e) => handleRecipientSearch(e.target.value)}
-                                    placeholder="Search by name or email..."
-                                    value={recipientSearch}
-                                />
-                                {/* Search results dropdown */}
-                                {searchResults.length > 0 && (
-                                    <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
-                                        {searchResults.map((user) => (
-                                            <button
-                                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-accent"
-                                                key={user.id}
-                                                onClick={() => selectRecipient(user)}
-                                                type="button"
-                                            >
-                                                {user.profile_image ? (
-                                                    <Image
-                                                        alt={user.name}
-                                                        className="h-6 w-6 rounded-full object-cover"
-                                                        height={24}
-                                                        src={buildCloudinaryUrl(
-                                                            user.profile_image
-                                                        )}
-                                                        width={24}
-                                                    />
-                                                ) : (
-                                                    <User className="h-6 w-6 rounded-full bg-muted p-1" />
-                                                )}
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="truncate font-medium">
-                                                        {user.name}
-                                                    </p>
-                                                    <p className="truncate text-muted-foreground">
-                                                        {user.email}
-                                                    </p>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                                {searching && (
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        Searching...
-                                    </p>
-                                )}
-                                {selectedRecipient && (
-                                    <p className="mt-1 text-xs text-primary">
-                                        Ready to message {selectedRecipient.name}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        {conversations.length === 0 ? (
-                            <p className="py-8 text-center text-sm text-muted-foreground">
-                                No conversations yet.
-                            </p>
-                        ) : (
-                            conversations.map((conv) => (
-                                <button
-                                    className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
-                                        activeConversation === conv.id
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'hover:bg-muted'
-                                    }`}
-                                    key={conv.id}
-                                    onClick={() => {
-                                        setActiveConversation(conv.id);
-                                        cancelSearch();
-                                    }}
-                                    type="button"
-                                >
-                                    {conv.otherUser.profile_image ? (
-                                        <Image
-                                            alt={conv.otherUser.name}
-                                            className="h-9 w-9 rounded-full object-cover"
-                                            height={36}
-                                            src={buildCloudinaryUrl(
-                                                conv.otherUser.profile_image
-                                            )}
-                                            width={36}
-                                        />
-                                    ) : (
-                                        <User className="h-9 w-9 rounded-full bg-muted p-1.5" />
-                                    )}
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-medium">
-                                            {conv.otherUser.name}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {formatDate({
-                                                date: conv.last_message_at,
-                                                format: 'dd, mmm DD, YYYY hh:mm:ss a',
-                                            })}
-                                        </p>
-                                    </div>
-                                </button>
-                            ))
-                        )}
-                    </div>
-
-                    {/* Chat area */}
-                    <ChatArea
-                        activeConversation={activeConversation}
-                        selectedRecipient={selectedRecipient}
-                        setActiveConversation={setActiveConversation}
-                        setRecipientSearch={setRecipientSearch}
-                        setSelectedRecipient={setSelectedRecipient}
-                    />
-                </div>
-            </FadeInUp>
+            {/* Right panel — Chat area */}
+            <div
+                className={cn(
+                    'h-full min-w-0 flex-1',
+                    // Mobile: full width when chat is open, hidden otherwise
+                    mobile ? (isChatOpen ? 'block' : 'hidden') : 'block'
+                )}
+            >
+                <ChatArea
+                    activeConversationId={activeConversationId}
+                    conversations={conversations}
+                    onBack={handleBack}
+                    onConversationCreated={handleConversationCreated}
+                    selectedRecipient={selectedRecipient}
+                />
+            </div>
         </div>
     );
 }
