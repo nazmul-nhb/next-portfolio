@@ -1,15 +1,16 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, MessageSquare, Send, User } from 'lucide-react';
+import { ArrowLeft, ExternalLink, MessageSquare, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import { Chronos, formatDate } from 'nhb-toolbox';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
+import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl, cn, groupMessagesByDate } from '@/lib/utils';
 import type { Conversation, Message, UserResult } from '@/types/messages';
@@ -32,7 +33,18 @@ export default function ChatArea({
     const [newMessage, setNewMessage] = useState('');
     const { profile } = useUserStore();
     const queryClient = useQueryClient();
-    // const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { openBubble: popOutToBubble } = useChatBubbleStore();
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const prevConvRef = useRef<number | null>(null);
+    const prevMsgCountRef = useRef(0);
+
+    /** Scroll the messages container to the bottom. */
+    const scrollToBottom = useCallback((instant = false) => {
+        const el = scrollRef.current;
+        if (el) {
+            el.scrollTo({ top: el.scrollHeight, behavior: instant ? 'instant' : 'smooth' });
+        }
+    }, []);
 
     // Find the other user from the active conversation
     const activeConv = conversations.find((c) => c.id === activeConversationId);
@@ -92,10 +104,24 @@ export default function ChatArea({
         }
     };
 
-    // Auto-scroll to bottom on new messages
-    // useEffect(() => {
-    //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    // }, []);
+    // Scroll to bottom: instantly on conversation switch, smoothly on new messages
+    useEffect(() => {
+        if (!activeConversationId) return;
+
+        const isNewConversation = prevConvRef.current !== activeConversationId;
+        const hasNewMessages = messages.length > prevMsgCountRef.current;
+
+        if (isNewConversation) {
+            // First entering a conversation — instant jump
+            requestAnimationFrame(() => scrollToBottom(true));
+        } else if (hasNewMessages) {
+            // New message arrived or sent — smooth scroll
+            scrollToBottom(false);
+        }
+
+        prevConvRef.current = activeConversationId;
+        prevMsgCountRef.current = messages.length;
+    }, [activeConversationId, messages.length, scrollToBottom]);
 
     // Group messages by date
     const groupedMessages = groupMessagesByDate(messages);
@@ -154,10 +180,21 @@ export default function ChatArea({
                         </div>
                     </Fragment>
                 )}
+                {/* Pop out to bubble */}
+                {activeConversationId && (
+                    <button
+                        className="ml-auto shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        onClick={() => popOutToBubble(activeConversationId)}
+                        title="Pop out to bubble"
+                        type="button"
+                    >
+                        <ExternalLink className="h-4 w-4" />
+                    </button>
+                )}
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto custom-scroll px-4 py-3">
+            <div className="flex-1 overflow-y-auto custom-scroll px-4 py-3" ref={scrollRef}>
                 {activeConversationId && messages.length === 0 ? (
                     <div className="flex h-full items-center justify-center">
                         <p className="text-sm text-muted-foreground">

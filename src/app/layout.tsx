@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { AuthSync } from '@/components/auth-sync';
+import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
 import Footer from '@/components/misc/footer';
 import ThemeToggler from '@/components/misc/theme-toggler';
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: RootProps) {
                                 <Navbar />
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                                 <Footer />
+                                <ChatBubble />
                                 <DateTimeCalendar />
                                 <ThemeToggler />
                                 <Toaster />
