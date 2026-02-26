@@ -1,34 +1,17 @@
 'use client';
 
-import { Check, Clock, Mail, MailOpen, Trash2, User, X } from 'lucide-react';
-import { formatDate } from 'nhb-toolbox';
+import { Check, Mail, MailOpen, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
+import MessageDetails from '@/app/admin/messages/_components/MessageDetails';
 import { confirmToast } from '@/components/confirm';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { cn, formatRelativeTime } from '@/lib/utils';
-
-interface ContactMessage {
-    id: number;
-    name: string;
-    email: string;
-    subject: string | null;
-    message: string;
-    is_read: boolean;
-    is_replied: boolean;
-    created_at: Date;
-}
+import type { ContactMessage } from '@/types/messages';
 
 interface MessagesClientProps {
     initialMessages: ContactMessage[];
@@ -45,13 +28,17 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     const { mutate: toggleRead } = useApiMutation<ContactMessage, { is_read: boolean }>(
         `/api/contact/${processingId}`,
         'PATCH',
-        { invalidateKeys: ['contact-messages'] }
+        { invalidateKeys: ['contact-messages'], silentSuccessMessage: true }
     );
 
     const { mutate: deleteMsg } = useApiMutation<ContactMessage>(
         `/api/contact?id=${processingId}`,
         'DELETE',
-        { invalidateKeys: ['contact-messages'] }
+        {
+            invalidateKeys: ['contact-messages'],
+            successMessage: 'Message has been deleted',
+            errorMessage: 'Failed to delete message',
+        }
     );
 
     const handleToggleRead = (e: React.MouseEvent, id: number, currentStatus: boolean) => {
@@ -68,7 +55,6 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                     }
                     toast.success(currentStatus ? 'Marked as unread' : 'Marked as read');
                 },
-                onError: () => toast.error('Failed to update message'),
                 onSettled: () => setProcessingId(null),
             }
         );
@@ -80,11 +66,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             onConfirm: () => {
                 setProcessingId(id);
                 deleteMsg(null, {
-                    onSuccess: () => {
-                        if (selectedMessage?.id === id) setSelectedMessage(null);
-                        toast.success('Message deleted');
-                    },
-                    onError: () => toast.error('Failed to delete message'),
+                    onSuccess: () => selectedMessage?.id === id && setSelectedMessage(null),
                     onSettled: () => setProcessingId(null),
                 });
             },
@@ -241,107 +223,12 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
             </div>
 
             {/* Message detail modal */}
-            <Dialog
-                onOpenChange={(open) => {
-                    if (!open) setSelectedMessage(null);
-                }}
-                open={!!selectedMessage}
-            >
-                <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
-                    {selectedMessage && (
-                        <Fragment>
-                            <DialogHeader>
-                                <DialogTitle className="flex items-center gap-2">
-                                    <User className="h-5 w-5 text-primary" />
-                                    {selectedMessage.name}
-                                </DialogTitle>
-                                <DialogDescription className="flex flex-col gap-1">
-                                    <a
-                                        className="text-primary hover:underline"
-                                        href={`mailto:${selectedMessage.email}`}
-                                    >
-                                        {selectedMessage.email}
-                                    </a>
-                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <Clock className="h-3 w-3" />
-                                        {formatDate({
-                                            date: selectedMessage.created_at,
-                                            format: 'mmm DD, yyyy [at] hh:mm:ss a',
-                                        })}
-                                    </span>
-                                </DialogDescription>
-                            </DialogHeader>
-
-                            {selectedMessage.subject && (
-                                <div className="rounded-lg bg-muted/50 px-4 py-2">
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Subject
-                                    </p>
-                                    <p className="text-sm font-semibold">
-                                        {selectedMessage.subject}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="rounded-lg border border-border/50 bg-muted/30 p-4">
-                                <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                                    {selectedMessage.message}
-                                </p>
-                            </div>
-
-                            <div className="flex items-center justify-between pt-2">
-                                <div className="flex gap-2">
-                                    <Button
-                                        disabled={processingId === selectedMessage.id}
-                                        onClick={(e) =>
-                                            handleToggleRead(
-                                                e,
-                                                selectedMessage.id,
-                                                selectedMessage.is_read
-                                            )
-                                        }
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        {selectedMessage.is_read ? (
-                                            <Fragment>
-                                                <X className="mr-1.5 h-3.5 w-3.5" />
-                                                Mark Unread
-                                            </Fragment>
-                                        ) : (
-                                            <Fragment>
-                                                <Check className="mr-1.5 h-3.5 w-3.5" />
-                                                Mark Read
-                                            </Fragment>
-                                        )}
-                                    </Button>
-                                    <Button asChild size="sm" variant="outline">
-                                        <a href={`mailto:${selectedMessage.email}`}>
-                                            <Mail className="mr-1.5 h-3.5 w-3.5" />
-                                            Reply
-                                        </a>
-                                    </Button>
-                                </div>
-                                <Button
-                                    disabled={processingId === selectedMessage.id}
-                                    onClick={(e) =>
-                                        handleDelete(
-                                            e,
-                                            selectedMessage.id,
-                                            selectedMessage.name
-                                        )
-                                    }
-                                    size="sm"
-                                    variant="destructive"
-                                >
-                                    <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                                    Delete
-                                </Button>
-                            </div>
-                        </Fragment>
-                    )}
-                </DialogContent>
-            </Dialog>
+            <MessageDetails
+                handleToggleRead={handleToggleRead}
+                processingId={processingId}
+                selectedMessage={selectedMessage}
+                setSelectedMessage={setSelectedMessage}
+            />
         </Fragment>
     );
 }

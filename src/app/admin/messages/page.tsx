@@ -1,9 +1,9 @@
 import { desc } from 'drizzle-orm';
 import { MessageCircle } from 'lucide-react';
 import type { Metadata } from 'next';
-import { MessagesClient } from './_components/MessagesClient';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema';
+import { MessagesClient } from './_components/MessagesClient';
 
 export const metadata: Metadata = {
     title: 'Contact Messages',
@@ -30,9 +30,7 @@ export default async function AdminMessagesPage() {
                 <MessageCircle className="h-8 w-8 text-purple-600" />
                 <div>
                     <h1 className="text-3xl font-bold">Contact Messages</h1>
-                    <p className="text-muted-foreground">
-                        Messages from your portfolio contact form
-                    </p>
+                    <p className="text-muted-foreground">Messages from your contact form</p>
                 </div>
             </div>
 
