@@ -1,5 +1,4 @@
 import type { NextRequest } from 'next/server';
-import { slugifyString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -7,6 +6,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { categories } from '@/lib/drizzle/schema/blogs';
 import { CreateCategorySchema } from '@/lib/zod-schema/blogs';
+import { slugify } from '@/lib/slugify';
 
 /**
  * GET /api/categories - Fetch all categories.
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
         const [newCategory] = await db
             .insert(categories)
-            .values({ title, slug: slugifyString(title) })
+            .values({ title, slug: slugify(title) })
             .returning();
 
         return sendResponse('Category', 'POST', newCategory);

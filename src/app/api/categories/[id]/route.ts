@@ -1,6 +1,5 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
-import { slugifyString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -8,6 +7,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { categories } from '@/lib/drizzle/schema/blogs';
 import { CreateCategorySchema } from '@/lib/zod-schema/blogs';
+import { slugify } from '@/lib/slugify';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 
         const [updated] = await db
             .update(categories)
-            .set({ title, slug: slugifyString(title) })
+            .set({ title, slug: slugify(title) })
             .where(eq(categories.id, categoryId))
             .returning();
 

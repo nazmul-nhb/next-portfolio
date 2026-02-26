@@ -1,7 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
-import { slugifyString } from 'nhb-toolbox';
 import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
@@ -10,6 +9,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
+import { slugify } from '@/lib/slugify';
 import { CreateBlogSchema } from '@/lib/zod-schema/blogs';
 
 /**
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
         const { title, content, cover_image, excerpt, is_published, tag_ids, category_ids } =
             validation.data;
 
-        const slug = slugifyString(title);
+        const slug = slugify(title);
 
         // Check for duplicate slug
         const [existing] = await db

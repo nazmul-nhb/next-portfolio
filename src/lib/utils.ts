@@ -5,10 +5,8 @@ import {
     getLastArrayElement,
     isArrayOfType,
     isNonEmptyString,
-    isNull,
     isObjectWithKeys,
     isString,
-    isUndefined,
 } from 'nhb-toolbox';
 import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
@@ -134,26 +132,21 @@ export function buildOpenGraphImages(...urls: ValidArray<Uncertain<string>>) {
     }
 }
 
-/**
- * Build the canonical absolute URL.
- */
+/** Build the canonical absolute URL. */
 export function buildCanonicalUrl(pathname: Route): string {
     return new URL(pathname, siteConfig.baseUrl).toString();
 }
 
 /** Utility function to strip HTML tags from a string and convert `<br>` to newlines. */
 export function stripHtml(input: unknown) {
-    const html = isNonEmptyString(input)
-        ? input
-        : !(isUndefined(input) || isNull(input))
-          ? input?.toString()
-          : '';
+    const html = input == null ? '' : isNonEmptyString(input) ? input : String(input);
 
     return html
-        .replace(/<br\s*\/?>/gi, '\n') // Replace <br> with newlines
-        .replace(/<\/?[^>]+(>|$)/g, '') // Remove all other HTML tags
-        .replace(/[^\S\n]+/g, ' ') // collapse spaces & tabs ONLY
-        .replace(/\n{3,}/g, '\n\n') // prevent too many blank lines
-        .replace(/\n[^\S\n]/g, '\n') // remove spaces/tabs at the start of lines
-        .trim(); // Trim leading/trailing whitespace
+        .replace(/\r\n?/g, '\n') // normalize line endings FIRST
+        .replace(/<br\s*\/?>/gi, '\n') // <br> → newline
+        .replace(/<\/?[^>]+(>|$)/g, '') // remove HTML tags
+        .replace(/[^\S\n]+/g, ' ') // collapse spaces/tabs only
+        .replace(/\n[^\S\n]+/g, '\n') // remove indentation
+        .replace(/\n{3,}/g, '\n\n') // limit blank lines
+        .trim();
 }

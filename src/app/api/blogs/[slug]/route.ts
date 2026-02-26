@@ -175,7 +175,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
             if (tag_ids.length) {
                 await db
                     .insert(blogTags)
-                    .values(tag_ids.map((tag_id: number) => ({ blog_id: blog.id, tag_id })));
+                    .values(tag_ids.map((tag_id) => ({ blog_id: blog.id, tag_id })));
             }
         }
 
@@ -184,7 +184,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
             await db.delete(blogCategories).where(eq(blogCategories.blog_id, blog.id));
             if (category_ids.length) {
                 await db.insert(blogCategories).values(
-                    category_ids.map((category_id: number) => ({
+                    category_ids.map((category_id) => ({
                         blog_id: blog.id,
                         category_id,
                     }))
