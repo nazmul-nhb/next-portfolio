@@ -18,7 +18,7 @@ export default function NavbarDocked({ active, tab, Icon }: Props) {
             className={`relative flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                 active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground/80'
             }`}
-            href={tab.path as '/'}
+            href={tab.path}
             key={tab.path}
         >
             {active && (

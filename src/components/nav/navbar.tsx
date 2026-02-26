@@ -156,7 +156,7 @@ export default function Navbar() {
                                                 ? 'bg-accent text-accent-foreground'
                                                 : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
                                         }`}
-                                        href={tab.path as '/'}
+                                        href={tab.path}
                                         key={tab.path}
                                     >
                                         <SmartTooltip

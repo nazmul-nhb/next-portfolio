@@ -1,6 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { Calendar, Eye, PenTool, X } from 'lucide-react';
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatDate } from 'nhb-toolbox';
@@ -137,7 +137,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/20"
                                 href={
-                                    `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                                    `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as Route
                                 }
                             >
                                 Category: {categoryFilter}
@@ -148,7 +148,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
                                 href={
-                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${searchFilter ? `${categoryFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${searchFilter ? `${categoryFilter ? '&' : '?'}search=${searchFilter}` : ''}` as Route
                                 }
                             >
                                 Tag: #{tagFilter}
@@ -159,7 +159,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                             <Link
                                 className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
                                 href={
-                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${tagFilter ? `${categoryFilter ? '&' : '?'}tag=${tagFilter}` : ''}` as '/'
+                                    `/blogs${categoryFilter ? `?category=${categoryFilter}` : ''}${tagFilter ? `${categoryFilter ? '&' : '?'}tag=${tagFilter}` : ''}` as Route
                                 }
                             >
                                 Search: &quot;{searchFilter}&quot;
@@ -187,7 +187,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                     : 'bg-muted text-muted-foreground hover:text-foreground'
                             }`}
                             href={
-                                `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as '/'
+                                `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as Route
                             }
                         >
                             All

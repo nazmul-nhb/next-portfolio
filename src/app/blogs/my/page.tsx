@@ -143,7 +143,7 @@ export default function MyBlogsPage() {
                                             size="sm"
                                             variant="outline"
                                         >
-                                            <Link href={`/blogs/${blog.slug}/edit` as '/'}>
+                                            <Link href={`/blogs/${blog.slug}/edit`}>
                                                 <Edit className="h-3 w-3" />
                                                 Edit
                                             </Link>

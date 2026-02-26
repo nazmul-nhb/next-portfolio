@@ -1,5 +1,7 @@
+import type { Route } from 'next';
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
 import type { GenericObject } from 'nhb-toolbox/object/types';
+import type React from 'react';
 import type { ReactNode, SVGProps } from 'react';
 import type { SiteConfig } from '@/configs/site';
 
@@ -56,7 +58,7 @@ export interface ServerResponse<T> {
 export interface Tab {
     title: string;
     icon: React.ComponentType<{ className?: string }>;
-    path: string;
+    path: Route;
     type?: never;
 }
 

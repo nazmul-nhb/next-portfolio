@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTimestamp, truncateString } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages, stripHtml } from '@/lib/utils';
 import type { SingleBlogRes } from '@/types/blogs';
 import SingleBlogPage from './_components/SingleBlogPage';
 
@@ -19,9 +19,11 @@ export async function generateMetadata({
 
         const { author, content, cover_image, excerpt, title } = data?.blog || {};
 
+        const description = excerpt || truncateString(stripHtml(content), 160);
+
         return {
             title: `${title} by ${author.name}`,
-            description: excerpt || truncateString(content, 160),
+            description,
             icons: {
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,
@@ -32,7 +34,7 @@ export async function generateMetadata({
             ],
             openGraph: {
                 title: `${title} by ${author.name}`,
-                description: excerpt || truncateString(content, 160),
+                description,
                 images: buildOpenGraphImages(
                     cover_image && buildCloudinaryUrl(cover_image),
                     siteConfig.logoSvg,

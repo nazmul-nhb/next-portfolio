@@ -2,6 +2,7 @@
 
 import { createTransport, type SendMailOptions } from 'nodemailer';
 import { ENV } from '@/configs/env';
+import { stripHtml } from '@/lib/utils';
 
 /** Options for sending an email */
 export type EmailOptions = Omit<SendMailOptions, 'from'>;
@@ -23,6 +24,6 @@ export async function sendEmail(options: EmailOptions) {
     return await transporter.sendMail({
         ...options,
         from: { name: 'Nazmul Hassan', address: adminEmail },
-        text: options.text || options.html?.toString().replace(/<[^>]+>/g, ''),
+        text: options.text || stripHtml(options.html?.toString()),
     });
 }

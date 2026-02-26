@@ -1,10 +1,14 @@
 import { type ClassValue, clsx } from 'clsx';
+import type { Route } from 'next';
 import {
     formatDate,
     getLastArrayElement,
     isArrayOfType,
+    isNonEmptyString,
+    isNull,
     isObjectWithKeys,
     isString,
+    isUndefined,
 } from 'nhb-toolbox';
 import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
@@ -128,4 +132,28 @@ export function buildOpenGraphImages(...urls: ValidArray<Uncertain<string>>) {
             };
         });
     }
+}
+
+/**
+ * Build the canonical absolute URL.
+ */
+export function buildCanonicalUrl(pathname: Route): string {
+    return new URL(pathname, siteConfig.baseUrl).toString();
+}
+
+/** Utility function to strip HTML tags from a string and convert `<br>` to newlines. */
+export function stripHtml(input: unknown) {
+    const html = isNonEmptyString(input)
+        ? input
+        : !(isUndefined(input) || isNull(input))
+          ? input?.toString()
+          : '';
+
+    return html
+        .replace(/<br\s*\/?>/gi, '\n') // Replace <br> with newlines
+        .replace(/<\/?[^>]+(>|$)/g, '') // Remove all other HTML tags
+        .replace(/[^\S\n]+/g, ' ') // collapse spaces & tabs ONLY
+        .replace(/\n{3,}/g, '\n\n') // prevent too many blank lines
+        .replace(/\n[^\S\n]/g, '\n') // remove spaces/tabs at the start of lines
+        .trim(); // Trim leading/trailing whitespace
 }

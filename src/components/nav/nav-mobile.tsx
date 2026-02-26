@@ -80,7 +80,7 @@ export default function NavMobileDrawer({
                                             ? 'bg-primary text-primary-foreground'
                                             : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                                     }`}
-                                    href={tab.path as '/'}
+                                    href={tab.path}
                                     key={tab.path}
                                     onClick={() => setMobileOpen(false)}
                                 >
@@ -105,7 +105,7 @@ export default function NavMobileDrawer({
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                                             }`}
-                                            href={tab.path as '/'}
+                                            href={tab.path}
                                             key={tab.path}
                                             onClick={() => setMobileOpen(false)}
                                         >

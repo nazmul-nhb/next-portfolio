@@ -1,10 +1,12 @@
 'use client';
 
-import { Chrome, Lock, LogIn, Mail } from 'lucide-react';
+import { Lock, LogIn, Mail } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +18,7 @@ import { Label } from '@/components/ui/label';
 export function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = (searchParams.get('redirectTo') || '/') as '/';
+    const redirectTo = (searchParams.get('redirectTo') || '/') as Route;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -61,7 +63,7 @@ export function LoginForm() {
                         onClick={handleGoogleLogin}
                         variant="outline"
                     >
-                        <Chrome className="h-4 w-4" />
+                        <FaGoogle className="h-4 w-4" />
                         Continue with Google
                     </Button>
 

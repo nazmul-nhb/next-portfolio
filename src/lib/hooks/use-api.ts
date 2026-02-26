@@ -141,7 +141,7 @@ export function useApiMutation<TData = unknown, TVariables = unknown>(
 //                     queryClient.invalidateQueries({ queryKey: [key] });
 //                 }
 //             }
-//             router.push(redirectUrl as '/');
+//             router.push(redirectUrl as Route);
 //         },
 //     });
 // }
