@@ -81,7 +81,7 @@ const DAY_PARTS: $Record<DayPart, string> = {
     evening: 'সন্ধ্যা',
     night: 'রাত',
     lateNight: 'গভীর রাত',
-    midnight: 'মাঝরাত',
+    midnight: 'মধ্যরাত',
 };
 
 // ------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import { desc } from 'drizzle-orm';
-import { ExternalLink } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -137,23 +137,23 @@ export default async function ProjectsPage() {
                                         {/* Links – raised above overlay */}
                                         <div className="relative z-10 mt-auto flex items-center gap-3 border-t border-border/50 pt-4">
                                             <a
-                                                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                                                className="flex items-center gap-1.5 text-sm text-primary hover:underline"
                                                 href={project.live_link}
                                                 rel="noopener noreferrer"
                                                 target="_blank"
                                             >
-                                                <ExternalLink className="size-4" />
+                                                <Globe className="size-4 mb-px" />
                                                 Live Demo
                                             </a>
                                             {repositories.map((repo, idx) => (
                                                 <a
-                                                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                                                    className="flex items-center gap-1.5 text-sm text-primary hover:underline"
                                                     href={repo}
                                                     key={repo}
                                                     rel="noopener noreferrer"
                                                     target="_blank"
                                                 >
-                                                    <FaGitAlt className="size-4" />
+                                                    <FaGitAlt className="size-4 mb-px" />
                                                     {repositories.length > 1
                                                         ? `Repo ${idx + 1}`
                                                         : 'Source Code'}

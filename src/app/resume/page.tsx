@@ -1,7 +1,8 @@
 import { asc, desc, eq } from 'drizzle-orm';
-import { Briefcase, Code2, Github, GraduationCap, Linkedin, Mail } from 'lucide-react';
+import { Briefcase, Code2, GraduationCap, Mail } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import {
     FadeInUp,
     ScaleInItem,
@@ -76,7 +77,7 @@ export default async function ResumePage() {
     }
 
     const summary =
-        'Passionate Full-Stack Web Developer with hands-on experience building modern, performant, and accessible web applications. Proficient in TypeScript, React, Next.js, Node.js, and cloud services. Committed to clean code, open-source contribution, and continuous learning.';
+        'Passionate Full-Stack Web Developer with hands-on experience building modern, performant, and accessible web applications. Proficient in TypeScript, React, Next.js, Node.js, and other web technologies. Committed to clean code, open-source contribution, and continuous learning.';
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
@@ -104,7 +105,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <Github className="h-3.5 w-3.5 shrink-0" />
+                                <FiGithub className="h-3.5 w-3.5 shrink-0" />
                                 GitHub
                             </a>
                             <a
@@ -113,7 +114,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <Linkedin className="h-3.5 w-3.5 shrink-0" />
+                                <FiLinkedin className="h-3.5 w-3.5 shrink-0 mb-0.5" />
                                 LinkedIn
                             </a>
                         </div>

@@ -79,7 +79,7 @@ export default async function AboutPage() {
                         A passionate Full-Stack Web Developer with a love for building modern,
                         performant, and accessible web applications. I specialize in React,
                         Next.js, TypeScript, and Node.js, with expertise in database design and
-                        cloud services.
+                        other web technologies.
                     </p>
                     <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-linear-to-r from-blue-600 to-violet-600" />
                 </div>
