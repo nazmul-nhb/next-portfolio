@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion';
 import { LogIn, LogOut, Settings, X } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import type { Dispatch, SetStateAction } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, isAdminPath } from '@/lib/utils';
+import { isAdminPath } from '@/lib/utils';
 import type { TabItem } from '@/types';
 
 type Props = {
@@ -141,26 +141,18 @@ export default function NavMobileDrawer({
                 <div className="border-t border-border p-4">
                     {user ? (
                         <div className="flex items-center gap-3">
-                            {user.image ? (
-                                <Image
-                                    alt={user?.name || 'User'}
-                                    className="h-10 w-10 rounded-full object-cover ring-1 ring-border"
-                                    height={40}
-                                    src={buildCloudinaryUrl(user.image)}
-                                    width={40}
-                                />
-                            ) : (
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 font-bold text-white">
-                                    {(user.name || 'U').charAt(0).toUpperCase()}
-                                </div>
-                            )}
+                            <UserAvatar
+                                className="size-10 ring-1 ring-border"
+                                image={user.image}
+                                name={user.name}
+                            />
+
                             <div className="min-w-0 flex-1">
                                 <p className="truncate text-sm font-medium">{user.name}</p>
                                 <p className="truncate text-xs text-muted-foreground">
                                     {user.email}
                                 </p>
                             </div>
-
                             <Button
                                 className="h-8 w-8 shrink-0 rounded-full"
                                 onClick={handleLogout}

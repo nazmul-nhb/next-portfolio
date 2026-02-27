@@ -1,9 +1,8 @@
 import { Star } from 'lucide-react';
-import Image from 'next/image';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
-import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectTestimonial } from '@/types/testimonials';
 
 /**
@@ -51,21 +50,11 @@ export async function TestimonialsSection() {
                                     &ldquo;{t.content}&rdquo;
                                 </p>
                                 <div className="flex items-center gap-3 border-t border-border pt-4">
-                                    {t.client_avatar ? (
-                                        <div className="h-10 w-10 overflow-hidden rounded-full border">
-                                            <Image
-                                                alt={t.client_name}
-                                                className="object-cover"
-                                                height={40}
-                                                src={buildCloudinaryUrl(t.client_avatar)}
-                                                width={40}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium">
-                                            {t.client_name.charAt(0).toUpperCase()}
-                                        </div>
-                                    )}
+                                    <UserAvatar
+                                        className="size-10"
+                                        image={t.client_avatar}
+                                        name={t.client_name}
+                                    />
                                     <div>
                                         <p className="text-sm font-medium">{t.client_name}</p>
                                         {t.client_role && (

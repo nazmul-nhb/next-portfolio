@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/performance/noImgElement:img tag is needed for external images */
+
 import { User } from 'lucide-react';
 import Image from 'next/image';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
@@ -9,6 +11,7 @@ type AvatarProps = {
     size?: 'sm' | 'md' | 'lg';
     className?: string;
 };
+
 /** Reusable avatar component. */
 export default function UserAvatar({ image, name, size = 'md', className }: AvatarProps) {
     const sizes = {
@@ -17,16 +20,36 @@ export default function UserAvatar({ image, name, size = 'md', className }: Avat
         lg: 'size-14',
     };
 
-    const pixels = { sm: 32, md: 44, lg: 56 };
+    const imgClasses = cn(sizes[size], 'shrink-0 rounded-full object-cover', className);
 
     return image ? (
-        <Image
-            alt={name ?? 'User Avatar'}
-            className={cn(sizes[size], 'shrink-0 rounded-full object-cover', className)}
-            height={pixels[size]}
-            src={buildCloudinaryUrl(image)}
-            width={pixels[size]}
-        />
+        image.startsWith('http') ? (
+            <img
+                alt={name ?? 'User Avatar'}
+                className={imgClasses}
+                height={128}
+                src={image}
+                width={128}
+            />
+        ) : (
+            <Image
+                alt={name ?? 'User Avatar'}
+                className={imgClasses}
+                height={128}
+                src={buildCloudinaryUrl(image)}
+                width={128}
+            />
+        )
+    ) : name ? (
+        <div
+            className={cn(
+                sizes[size],
+                'flex items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white',
+                className
+            )}
+        >
+            {name.charAt(0).toUpperCase()}
+        </div>
     ) : (
         <div
             className={cn(

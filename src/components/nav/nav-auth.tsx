@@ -1,16 +1,16 @@
 import { LogIn, LogOut, PenTool, Settings } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import type { Maybe } from 'nhb-toolbox/types';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import UserAvatar from '@/components/misc/user-avatar';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, isAdminPath } from '@/lib/utils';
+import { isAdminPath } from '@/lib/utils';
 
 type Props = {
     pathname: string;
@@ -62,19 +62,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                                 className="flex items-center rounded-full p-0.5 transition-all hover:ring-2 hover:ring-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
                                 type="button"
                             >
-                                {displayImage ? (
-                                    <Image
-                                        alt={displayName || 'User'}
-                                        className="size-8 rounded-full object-cover ring-1 ring-border"
-                                        height={32}
-                                        src={buildCloudinaryUrl(displayImage)}
-                                        width={32}
-                                    />
-                                ) : (
-                                    <div className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white">
-                                        {(displayName || 'User').charAt(0).toUpperCase()}
-                                    </div>
-                                )}
+                                <UserAvatar image={displayImage} name={displayName} size="sm" />
                             </button>
                         </PopoverTrigger>
                         <PopoverContent align="end" className="w-56 p-2" sideOffset={8}>

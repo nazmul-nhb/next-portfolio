@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { formatDate } from 'nhb-toolbox';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
@@ -122,19 +123,11 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
             <FadeInUp>
                 <div className="mb-12 flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left sm:gap-8">
                     <div className="mb-4 sm:mb-0">
-                        {user.profile_image ? (
-                            <Image
-                                alt={user.name}
-                                className="h-28 w-28 rounded-full border-4 border-primary/20 object-cover"
-                                height={112}
-                                src={buildCloudinaryUrl(user.profile_image)}
-                                width={112}
-                            />
-                        ) : (
-                            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-linear-to-br from-blue-500/30 to-violet-500/30 text-4xl font-bold text-primary">
-                                {user.name.charAt(0).toUpperCase()}
-                            </div>
-                        )}
+                        <UserAvatar
+                            className="size-28 border-4 border-primary/20"
+                            image={user.profile_image}
+                            name={user.name}
+                        />
                     </div>
                     <div className="flex-1">
                         <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">

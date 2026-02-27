@@ -4,6 +4,7 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import { ENV } from '@/configs/env';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
 import type { UserRole } from '@/types';
@@ -48,8 +49,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     providers: [
         Google({
+            name: 'Google',
             clientId: ENV.google.clientId,
             clientSecret: ENV.google.clientSecret,
+            style: { logo: siteConfig.logoSvg, brandColor: '#4682B4' },
+            allowDangerousEmailAccountLinking: true,
         }),
         Credentials({
             name: 'credentials',

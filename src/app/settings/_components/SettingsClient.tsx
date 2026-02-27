@@ -335,21 +335,28 @@ export function SettingsClient() {
                                 )}
                                 {(imagePreview || profileImage) && !uploadingImage && (
                                     <div className="relative h-24 w-24 overflow-hidden rounded-full border">
-                                        <Image
-                                            alt="Profile preview"
-                                            className="object-cover"
-                                            fill
-                                            src={
-                                                imagePreview
-                                                    ? imagePreview
-                                                    : profileImage.startsWith('http')
-                                                      ? profileImage
-                                                      : buildCloudinaryUrl(profileImage)
-                                            }
-                                        />
+                                        {!imagePreview && profileImage.startsWith('http') ? (
+                                            // biome-ignore lint/performance/noImgElement: needed for external images
+                                            <img
+                                                alt="Profile preview"
+                                                className="object-cover"
+                                                src={profileImage}
+                                            />
+                                        ) : (
+                                            <Image
+                                                alt="Profile preview"
+                                                className="object-cover"
+                                                fill
+                                                src={
+                                                    imagePreview
+                                                        ? imagePreview
+                                                        : buildCloudinaryUrl(profileImage)
+                                                }
+                                            />
+                                        )}
                                         {imagePreview && (
                                             <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 text-center text-[10px] text-white">
-                                                Pending upload
+                                                New
                                             </div>
                                         )}
                                     </div>

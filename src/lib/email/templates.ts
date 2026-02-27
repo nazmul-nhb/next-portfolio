@@ -62,7 +62,7 @@ function emailLayout(title: string, body: string, footerNote?: string): string {
             </div>
             <div style="background:${THEME.pageBg};padding:16px 24px;text-align:center;">
                 <p style="color:${THEME.footerText};font-size:12px;margin:0;">${footer}</p>
-                <p style="${s.muted}font-size:10px;text-align:center;">${getTimestamp()}</p>
+                <p style="${s.muted}font-size:10px;margin-top:8px;text-align:center;">${getTimestamp()}</p>
             </div>
         </div>
     </body>
