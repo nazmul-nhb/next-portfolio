@@ -12,13 +12,13 @@ import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { anekBangla, geistMono, geistSans, sourceSans, tiroBangla } from '@/lib/fonts';
 import { buildOpenGraphImages, cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
-import { ENV } from '@/configs/env';
 
 export const metadata: Metadata = {
     title: {
@@ -72,7 +72,6 @@ export default function RootLayout({ children }: RootProps) {
     return (
         <html lang="en" suppressHydrationWarning>
             <link href="/favicon.png" rel="shortcut icon" type="image/png" />
-            <GoogleAnalytics />
             <body
                 className={cn(
                     geistSans.variable,
@@ -84,6 +83,7 @@ export default function RootLayout({ children }: RootProps) {
                 )}
                 suppressHydrationWarning
             >
+                <GoogleAnalytics />
                 <AuthProvider>
                     <ReactQueryProvider>
                         <NextThemesProvider
