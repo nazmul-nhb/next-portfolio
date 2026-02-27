@@ -6,6 +6,8 @@ import { blogs } from '@/lib/drizzle/schema';
 import { buildCanonicalUrl, buildCloudinaryUrl } from '@/lib/utils';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const logo = buildCanonicalUrl(siteConfig.logoSvg as Route);
+
     // Static pages
     const staticRoutes: MetadataRoute.Sitemap = [
         {
@@ -13,42 +15,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
         {
             url: buildCanonicalUrl('/blogs'),
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 0.9,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
         {
             url: buildCanonicalUrl('/projects'),
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.7,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
         {
             url: buildCanonicalUrl('/about'),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.4,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
         {
             url: buildCanonicalUrl('/contact'),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.4,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
         {
             url: buildCanonicalUrl('/resume'),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.6,
-            images: [siteConfig.logoSvg],
+            images: [logo],
         },
     ];
 
