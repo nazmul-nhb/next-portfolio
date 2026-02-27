@@ -87,7 +87,7 @@ export function otpEmailTemplate(name: string, otp: string): string {
         Use the following code to verify your email address. This code expires in <strong>10 minutes</strong>.
     </p>
 
-    <div style="background:${THEME.accentBg};border:2px dashed ${THEME.accent};border-radius:8px;padding:20px;text-align:center;margin:0 0 24px;">
+    <div style="background:${THEME.accentBg};border:2px dashed ${THEME.accent};border-radius:8px;padding:12px;text-align:center;margin:0 0 24px;">
         <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:${THEME.accent};">${otp}</span>
     </div>
 
@@ -128,7 +128,7 @@ export function contactEmailTemplate(
         </tr>
     </table>
 
-    <div style="background:${THEME.accentBg};border-left:4px solid ${THEME.accent};border-radius:4px;padding:16px;margin:0;">
+    <div style="background:${THEME.accentBg};border-left:4px solid ${THEME.accent};border-radius:4px;padding:8px;margin:0;">
         <p style="color:${THEME.text};font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap;">
             ${message}
         </p>
