@@ -8,6 +8,7 @@ import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import UserAvatar from '@/components/misc/user-avatar';
 import { BubbleChatPanelSkeleton } from '@/components/skeletons';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
@@ -333,18 +334,16 @@ function BubbleChatPanel({
                 <button
                     className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                     onClick={onMinimize}
-                    title="Minimize"
                     type="button"
                 >
-                    <Minus className="h-4 w-4" />
+                    <SmartTooltip content="Minimize" trigger={<Minus className="size-4" />} />
                 </button>
                 <button
                     className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     onClick={onClose}
-                    title="Close"
                     type="button"
                 >
-                    <X className="h-4 w-4" />
+                    <SmartTooltip content="Close" trigger={<X className="size-4" />} />
                 </button>
             </div>
 

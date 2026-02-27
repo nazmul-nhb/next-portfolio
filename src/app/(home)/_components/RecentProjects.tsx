@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { SelectProject } from '@/types/projects';
 
 /**
  * Recent projects section on the homepage.
  */
 export async function RecentProjectsSection() {
-    let recentProjects: (typeof projects.$inferSelect)[] = [];
+    let recentProjects: SelectProject[] = [];
 
     try {
         recentProjects = await db
@@ -42,7 +43,13 @@ export async function RecentProjectsSection() {
                 <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {recentProjects.map((project) => (
                         <MotionCard key={project.id}>
-                            <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+                            <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+                                {/* Stretched link overlay */}
+                                <Link
+                                    aria-label={`View ${project.title}`}
+                                    className="absolute inset-0 z-0"
+                                    href={`/projects/${project.id}`}
+                                />
                                 {project.screenshots[0] && (
                                     <div className="aspect-video overflow-hidden bg-muted">
                                         <Image
@@ -81,12 +88,12 @@ export async function RecentProjectsSection() {
                                         ))}
                                     </div>
                                     <a
-                                        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                                        className="relative z-10 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                                         href={project.live_link}
                                         rel="noopener noreferrer"
                                         target="_blank"
                                     >
-                                        Live Demo <ExternalLink className="h-3.5 w-3.5" />
+                                        Live Demo <ExternalLink className="size-3.5" />
                                     </a>
                                 </div>
                             </div>

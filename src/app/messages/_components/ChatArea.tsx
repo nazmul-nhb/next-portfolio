@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import UserAvatar from '@/components/misc/user-avatar';
 import { ChatAreaSkeleton } from '@/components/skeletons';
+import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
@@ -191,10 +192,12 @@ export default function ChatArea({
                     <button
                         className="ml-auto shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         onClick={() => popOutToBubble(activeConversationId)}
-                        title="Pop out to bubble"
                         type="button"
                     >
-                        <ExternalLink className="h-4 w-4" />
+                        <SmartTooltip
+                            content="Pop out to bubble"
+                            trigger={<ExternalLink className="h-4 w-4" />}
+                        />
                     </button>
                 )}
             </div>

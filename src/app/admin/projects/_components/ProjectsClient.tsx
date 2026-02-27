@@ -5,12 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import { FaGitAlt } from 'react-icons/fa';
 import { confirmToast } from '@/components/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, eliminateEmptyStrings } from '@/lib/utils';
 import type { SelectProject } from '@/types/projects';
 
 interface ProjectsClientProps {
@@ -87,92 +88,108 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                 </Card>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2">
-                    {projects.map((project) => (
-                        <Card key={project.id}>
-                            <CardHeader>
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <Image
-                                            alt={project.title}
-                                            className="rounded"
-                                            height={32}
-                                            src={buildCloudinaryUrl(project.favicon)}
-                                            width={32}
-                                        />
-                                        <CardTitle className="text-lg">
-                                            {project.title}
-                                        </CardTitle>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Link href={`/admin/projects/${project.id}`}>
-                                            <Button size="sm" variant="ghost">
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                        </Link>
-                                        <Button
-                                            disabled={deletingId === project.id}
-                                            onClick={() => handleDelete(project)}
-                                            size="sm"
-                                            variant="ghost"
-                                        >
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <p className="line-clamp-2 text-sm text-muted-foreground">
-                                    {project.description}
-                                </p>
+                    {projects.map((project) => {
+                        const repositories = eliminateEmptyStrings(project.repo_links);
 
-                                <div className="flex flex-wrap gap-2">
-                                    {project.tech_stack.slice(0, 4).map((tech) => (
-                                        <span
-                                            className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-                                            key={tech}
-                                        >
-                                            {tech}
-                                        </span>
-                                    ))}
-                                    {project.tech_stack.length > 4 && (
-                                        <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                                            +{project.tech_stack.length - 4} more
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex gap-2 text-xs text-muted-foreground">
-                                    <span>{project.features.length} features</span>
-                                    <span>•</span>
-                                    <span>{project.screenshots.length} screenshots</span>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <a
-                                        className="text-sm text-primary hover:underline"
-                                        href={project.live_link}
-                                        rel="noopener noreferrer"
-                                        target="_blank"
-                                    >
-                                        Live Demo →
-                                    </a>
-                                    {project.repo_links[0] && (
-                                        <Fragment>
-                                            <span className="text-muted-foreground">•</span>
-                                            <a
-                                                className="text-sm text-primary hover:underline"
-                                                href={project.repo_links[0]}
-                                                rel="noopener noreferrer"
-                                                target="_blank"
+                        return (
+                            <Card key={project.id}>
+                                <CardHeader>
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <Image
+                                                alt={project.title}
+                                                className="rounded"
+                                                height={32}
+                                                src={buildCloudinaryUrl(project.favicon)}
+                                                width={32}
+                                            />
+                                            <CardTitle className="text-lg">
+                                                <Link
+                                                    className="hover:text-primary hover:underline"
+                                                    href={`/projects/${project.id}`}
+                                                >
+                                                    {project.title}
+                                                </Link>
+                                            </CardTitle>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Link href={`/admin/projects/${project.id}`}>
+                                                <Button size="sm" variant="ghost">
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
+                                            <Button
+                                                disabled={deletingId === project.id}
+                                                onClick={() => handleDelete(project)}
+                                                size="sm"
+                                                variant="ghost"
                                             >
-                                                GitHub →
-                                            </a>
-                                        </Fragment>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <p className="line-clamp-2 text-sm text-muted-foreground">
+                                        {project.description}
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-2">
+                                        {project.tech_stack.slice(0, 4).map((tech) => (
+                                            <span
+                                                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                                                key={tech}
+                                            >
+                                                {tech}
+                                            </span>
+                                        ))}
+                                        {project.tech_stack.length > 4 && (
+                                            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                                                +{project.tech_stack.length - 4} more
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-2 text-xs text-muted-foreground">
+                                        <span>{project.features.length} features</span>
+                                        <span>•</span>
+                                        <span>{project.screenshots.length} screenshots</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <a
+                                            className="text-sm text-primary hover:underline"
+                                            href={project.live_link}
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                        >
+                                            Live Demo →
+                                        </a>
+                                        {repositories.map((repoLink, idx) => {
+                                            return (
+                                                <Fragment key={`${repoLink}-${idx}`}>
+                                                    <span className="text-muted-foreground">
+                                                        •
+                                                    </span>
+                                                    <a
+                                                        className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                                                        href={repoLink}
+                                                        rel="noopener noreferrer"
+                                                        target="_blank"
+                                                    >
+                                                        <FaGitAlt className="size-4" />
+                                                        {repositories.length > 1
+                                                            ? `Repo ${idx + 1}`
+                                                            : 'Source Code'}
+                                                    </a>
+                                                </Fragment>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
                 </div>
             )}
         </div>

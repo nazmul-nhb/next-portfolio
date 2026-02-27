@@ -1,4 +1,4 @@
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
 // Define types
 interface Experience {
@@ -42,101 +42,146 @@ interface ResumeData {
     experiences: Experience[];
     education: Education[];
     skills: Skill[];
+    summary?: string;
 }
 
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
+        padding: 36,
         fontFamily: 'Helvetica',
-        fontSize: 11,
-        lineHeight: 1.5,
+        fontSize: 10,
+        lineHeight: 1.4,
+        color: '#1a1a1a',
     },
+    // Header
     header: {
-        marginBottom: 20,
-        borderBottom: 2,
-        borderBottomColor: '#2563eb',
+        marginBottom: 12,
         paddingBottom: 10,
+        borderBottom: 1.5,
+        borderBottomColor: '#333333',
     },
     name: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 5,
-        color: '#1e3a8a',
+        marginBottom: 3,
+        color: '#111111',
+        letterSpacing: 0.3,
     },
-    contact: {
-        fontSize: 10,
-        color: '#64748b',
-        marginBottom: 2,
+    title: {
+        fontSize: 12,
+        color: '#444444',
+        marginBottom: 6,
     },
+    contactRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+    },
+    contactItem: {
+        fontSize: 9,
+        color: '#555555',
+    },
+    contactLink: {
+        fontSize: 9,
+        color: '#1a56db',
+        textDecoration: 'none',
+    },
+    // Sections
     section: {
-        marginTop: 15,
-        marginBottom: 10,
+        marginTop: 14,
     },
     sectionTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: '#1e3a8a',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-    },
-    experienceItem: {
-        marginBottom: 12,
-    },
-    jobTitle: {
         fontSize: 12,
         fontWeight: 'bold',
+        marginBottom: 6,
+        color: '#111111',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        borderBottom: 0.75,
+        borderBottomColor: '#cccccc',
+        paddingBottom: 3,
+    },
+    // Summary
+    summary: {
+        fontSize: 10,
+        color: '#333333',
+        lineHeight: 1.5,
+        marginTop: 2,
+    },
+    // Experience / Education items
+    itemContainer: {
+        marginBottom: 10,
+    },
+    itemHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
         marginBottom: 2,
     },
-    company: {
+    itemTitle: {
         fontSize: 11,
-        color: '#2563eb',
-        marginBottom: 2,
+        fontWeight: 'bold',
+        color: '#111111',
     },
-    date: {
+    itemSubtitle: {
+        fontSize: 10,
+        color: '#1a56db',
+    },
+    itemDate: {
         fontSize: 9,
-        color: '#64748b',
-        marginBottom: 4,
+        color: '#666666',
+        textAlign: 'right',
     },
-    description: {
-        fontSize: 10,
-        marginBottom: 4,
-        color: '#334155',
+    itemDescription: {
+        fontSize: 9.5,
+        color: '#333333',
+        marginTop: 2,
+        lineHeight: 1.5,
     },
+    // Bullet list
     bulletList: {
-        marginLeft: 10,
-        marginTop: 4,
+        marginTop: 3,
+        marginLeft: 8,
     },
-    bullet: {
-        fontSize: 10,
+    bulletItem: {
+        fontSize: 9.5,
         marginBottom: 2,
-        color: '#475569',
+        color: '#333333',
+        lineHeight: 1.4,
     },
-    technologies: {
+    // Technologies
+    techRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 4,
+        gap: 4,
     },
-    tech: {
-        fontSize: 9,
-        backgroundColor: '#e0f2fe',
-        color: '#0369a1',
-        padding: '3 6',
-        marginRight: 5,
-        marginBottom: 3,
-        borderRadius: 3,
+    techTag: {
+        fontSize: 8,
+        backgroundColor: '#f0f0f0',
+        color: '#333333',
+        padding: '2 6',
+        borderRadius: 2,
     },
+    // Skills
     skillsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 6,
+        marginTop: 4,
     },
     skillItem: {
-        fontSize: 10,
-        backgroundColor: '#f1f5f9',
-        padding: '4 8',
-        borderRadius: 4,
-        marginBottom: 4,
+        fontSize: 9.5,
+        backgroundColor: '#f5f5f5',
+        color: '#222222',
+        padding: '3 8',
+        borderRadius: 3,
+    },
+    // Grade
+    grade: {
+        fontSize: 9,
+        color: '#555555',
+        marginTop: 1,
     },
 });
 
@@ -147,30 +192,74 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                 {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.name}>{data.user.name}</Text>
-                    {data.user.email && <Text style={styles.contact}>{data.user.email}</Text>}
-                    <Text style={styles.contact}>Web: https://nazmul-nhb.dev</Text>
+                    <Text style={styles.title}>Full-Stack Web Developer</Text>
+                    <View style={styles.contactRow}>
+                        {data.user.email && (
+                            <Link src={`mailto:${data.user.email}`} style={styles.contactLink}>
+                                {data.user.email}
+                            </Link>
+                        )}
+                        <Link src="https://nazmul-nhb.dev" style={styles.contactLink}>
+                            nazmul-nhb.dev
+                        </Link>
+                        <Link src="https://github.com/nazmul-nhb" style={styles.contactLink}>
+                            github.com/nazmul-nhb
+                        </Link>
+                        <Link
+                            src="https://linkedin.com/in/nazmul-nhb"
+                            style={styles.contactLink}
+                        >
+                            linkedin.com/in/nazmul-nhb
+                        </Link>
+                    </View>
                 </View>
+
+                {/* Summary */}
+                {data.summary && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Professional Summary</Text>
+                        <Text style={styles.summary}>{data.summary}</Text>
+                    </View>
+                )}
+
+                {/* Skills — placed early for ATS scanners */}
+                {data.skills.length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Technical Skills</Text>
+                        <View style={styles.skillsGrid}>
+                            {data.skills.map((skill) => (
+                                <Text key={skill.id} style={styles.skillItem}>
+                                    {skill.title}
+                                </Text>
+                            ))}
+                        </View>
+                    </View>
+                )}
 
                 {/* Experience */}
                 {data.experiences.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Experience</Text>
                         {data.experiences.map((exp) => (
-                            <View key={exp.id} style={styles.experienceItem}>
-                                <Text style={styles.jobTitle}>{exp.position}</Text>
-                                <Text style={styles.company}>
-                                    {exp.company}
-                                    {exp.location && ` • ${exp.location}`}
-                                </Text>
-                                <Text style={styles.date}>
-                                    {exp.start_date} - {exp.end_date || 'Present'}
-                                </Text>
-                                <Text style={styles.description}>{exp.description}</Text>
+                            <View key={exp.id} style={styles.itemContainer}>
+                                <View style={styles.itemHeader}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.itemTitle}>{exp.position}</Text>
+                                        <Text style={styles.itemSubtitle}>
+                                            {exp.company}
+                                            {exp.location && ` — ${exp.location}`}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.itemDate}>
+                                        {exp.start_date} – {exp.end_date || 'Present'}
+                                    </Text>
+                                </View>
+                                <Text style={styles.itemDescription}>{exp.description}</Text>
 
                                 {exp.achievements.length > 0 && (
                                     <View style={styles.bulletList}>
                                         {exp.achievements.map((achievement, idx) => (
-                                            <Text key={idx} style={styles.bullet}>
+                                            <Text key={idx} style={styles.bulletItem}>
                                                 • {achievement}
                                             </Text>
                                         ))}
@@ -178,9 +267,9 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                                 )}
 
                                 {exp.technologies.length > 0 && (
-                                    <View style={styles.technologies}>
+                                    <View style={styles.techRow}>
                                         {exp.technologies.map((tech, idx) => (
-                                            <Text key={idx} style={styles.tech}>
+                                            <Text key={idx} style={styles.techTag}>
                                                 {tech}
                                             </Text>
                                         ))}
@@ -196,23 +285,31 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Education</Text>
                         {data.education.map((edu) => (
-                            <View key={edu.id} style={styles.experienceItem}>
-                                <Text style={styles.jobTitle}>{edu.degree}</Text>
-                                <Text style={styles.company}>
-                                    {edu.institution}
-                                    {edu.location && ` • ${edu.location}`}
-                                </Text>
-                                <Text style={styles.date}>
-                                    {edu.start_date} - {edu.end_date || 'Present'}
-                                    {edu.grade && ` • ${edu.grade}`}
-                                </Text>
+                            <View key={edu.id} style={styles.itemContainer}>
+                                <View style={styles.itemHeader}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.itemTitle}>{edu.degree}</Text>
+                                        <Text style={styles.itemSubtitle}>
+                                            {edu.institution}
+                                            {edu.location && ` — ${edu.location}`}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.itemDate}>
+                                        {edu.start_date} – {edu.end_date || 'Present'}
+                                    </Text>
+                                </View>
+                                {edu.grade && (
+                                    <Text style={styles.grade}>Grade: {edu.grade}</Text>
+                                )}
                                 {edu.description && (
-                                    <Text style={styles.description}>{edu.description}</Text>
+                                    <Text style={styles.itemDescription}>
+                                        {edu.description}
+                                    </Text>
                                 )}
                                 {edu.achievements && edu.achievements.length > 0 && (
                                     <View style={styles.bulletList}>
                                         {edu.achievements.map((achievement, idx) => (
-                                            <Text key={idx} style={styles.bullet}>
+                                            <Text key={idx} style={styles.bulletItem}>
                                                 • {achievement}
                                             </Text>
                                         ))}
@@ -220,20 +317,6 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                                 )}
                             </View>
                         ))}
-                    </View>
-                )}
-
-                {/* Skills */}
-                {data.skills.length > 0 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Skills</Text>
-                        <View style={styles.skillsGrid}>
-                            {data.skills.map((skill) => (
-                                <Text key={skill.id} style={styles.skillItem}>
-                                    {skill.title}
-                                </Text>
-                            ))}
-                        </View>
                     </View>
                 )}
             </Page>

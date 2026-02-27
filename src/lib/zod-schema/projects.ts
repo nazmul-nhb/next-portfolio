@@ -7,6 +7,7 @@ export const ProjectCreationSchema = createInsertSchema(projects)
     .omit({
         id: true,
         created_at: true,
+        live_link: true,
         updated_at: true,
         repo_links: true,
         screenshots: true,
@@ -14,9 +15,10 @@ export const ProjectCreationSchema = createInsertSchema(projects)
         features: true,
     })
     .extend({
+        live_link: z.url('Live link must be a valid URL'),
         repo_links: z.tuple([
             z.url('First Repository link is required'),
-            z.union([z.url(), z.literal('')]).optional(),
+            z.union([z.url('Invalid repository link').optional(), z.literal('')]).optional(),
         ]),
         screenshots: z.tuple([
             z.string('Screenshot 1 is required'),

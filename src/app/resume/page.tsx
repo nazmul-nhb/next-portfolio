@@ -75,23 +75,28 @@ export default async function ResumePage() {
         console.error('Failed to fetch resume data:', error);
     }
 
+    const summary =
+        'Passionate Full-Stack Web Developer with hands-on experience building modern, performant, and accessible web applications. Proficient in TypeScript, React, Next.js, Node.js, and cloud services. Committed to clean code, open-source contribution, and continuous learning.';
+
     return (
-        <div className="mx-auto max-w-3xl px-4 py-12">
+        <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
             {/* Header */}
             <FadeInUp>
-                <div className="mb-10 flex items-start justify-between">
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight">{userData.name}</h1>
-                        <p className="mt-1 text-lg text-muted-foreground">
+                <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                            {userData.name}
+                        </h1>
+                        <p className="mt-1 text-base text-muted-foreground sm:text-lg">
                             Full-Stack Web Developer
                         </p>
-                        <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
                                 href={`mailto:${userData.email}`}
                             >
-                                <Mail className="h-3.5 w-3.5" />
-                                {userData.email}
+                                <Mail className="h-3.5 w-3.5 shrink-0" />
+                                <span className="truncate">{userData.email}</span>
                             </a>
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
@@ -99,7 +104,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <Github className="h-3.5 w-3.5" />
+                                <Github className="h-3.5 w-3.5 shrink-0" />
                                 GitHub
                             </a>
                             <a
@@ -108,7 +113,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <Linkedin className="h-3.5 w-3.5" />
+                                <Linkedin className="h-3.5 w-3.5 shrink-0" />
                                 LinkedIn
                             </a>
                         </div>
@@ -117,28 +122,26 @@ export default async function ResumePage() {
                         education={allEducation}
                         experiences={allExperiences}
                         skills={allSkills}
+                        summary={summary}
                         user={userData}
                     />
                 </div>
             </FadeInUp>
 
-            <hr className="mb-10 border-border/50" />
+            <hr className="mb-8 border-border/50 sm:mb-10" />
 
             {/* Summary */}
             <FadeInUp>
-                <section className="mb-10">
-                    <p className="leading-relaxed text-muted-foreground">
-                        Passionate Full-Stack Web Developer with hands-on experience building
-                        modern, performant, and accessible web applications. Proficient in
-                        TypeScript, React, Next.js, Node.js, and cloud services. Committed to
-                        clean code, open-source contribution, and continuous learning.
+                <section className="mb-8 sm:mb-10">
+                    <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                        {summary}
                     </p>
                 </section>
             </FadeInUp>
 
             {/* Experience */}
             {allExperiences.length > 0 && (
-                <section className="mb-10">
+                <section className="mb-8 sm:mb-10">
                     <SlideInLeft>
                         <div className="mb-6 flex items-center gap-2">
                             <Briefcase className="h-5 w-5 text-primary" />
@@ -150,7 +153,7 @@ export default async function ResumePage() {
                         {allExperiences.map((exp) => (
                             <ScaleInItem key={exp.id}>
                                 <div>
-                                    <div className="mb-1 flex items-start justify-between gap-4">
+                                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                                         <div>
                                             <h3 className="font-semibold">{exp.position}</h3>
                                             <p className="text-sm text-primary">
@@ -159,7 +162,7 @@ export default async function ResumePage() {
                                             </p>
                                         </div>
                                         <span className="shrink-0 text-xs text-muted-foreground">
-                                            {exp.start_date} - {exp.end_date || 'Present'}
+                                            {exp.start_date} – {exp.end_date || 'Present'}
                                         </span>
                                     </div>
                                     <p className="mt-2 text-sm text-muted-foreground">
@@ -198,7 +201,7 @@ export default async function ResumePage() {
 
             {/* Education */}
             {allEducation.length > 0 && (
-                <section className="mb-10">
+                <section className="mb-8 sm:mb-10">
                     <SlideInRight>
                         <div className="mb-6 flex items-center gap-2">
                             <GraduationCap className="h-5 w-5 text-primary" />
@@ -210,7 +213,7 @@ export default async function ResumePage() {
                         {allEducation.map((edu) => (
                             <ScaleInItem key={edu.id}>
                                 <div>
-                                    <div className="mb-1 flex items-start justify-between gap-4">
+                                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                                         <div>
                                             <h3 className="font-semibold">{edu.degree}</h3>
                                             <p className="text-sm text-primary">
@@ -219,7 +222,7 @@ export default async function ResumePage() {
                                             </p>
                                         </div>
                                         <span className="shrink-0 text-xs text-muted-foreground">
-                                            {edu.start_date} - {edu.end_date || 'Present'}
+                                            {edu.start_date} – {edu.end_date || 'Present'}
                                         </span>
                                     </div>
                                     {edu.grade && (
@@ -253,7 +256,7 @@ export default async function ResumePage() {
 
             {/* Skills */}
             {allSkills.length > 0 && (
-                <section className="mb-10">
+                <section className="mb-8 sm:mb-10">
                     <SlideInLeft>
                         <div className="mb-6 flex items-center gap-2">
                             <Code2 className="h-5 w-5 text-primary" />

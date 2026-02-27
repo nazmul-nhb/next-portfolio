@@ -186,3 +186,8 @@ export function stripHtml(input: unknown) {
         .replace(/\n{3,}/g, '\n\n') // limit blank lines
         .trim();
 }
+
+/** Utility function to eliminate empty strings from an array. */
+export function eliminateEmptyStrings(arr: Uncertain<string>[]): string[] {
+    return [...arr].filter(isNonEmptyString);
+}

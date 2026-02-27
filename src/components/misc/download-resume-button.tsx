@@ -1,8 +1,9 @@
 'use client';
 
 import { pdf } from '@react-pdf/renderer';
-import { Download, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { SiAdobeacrobatreader } from 'react-icons/si';
 import { ResumePDF } from './resume-pdf';
 
 interface Experience {
@@ -46,6 +47,7 @@ interface DownloadButtonProps {
     experiences: Experience[];
     education: Education[];
     skills: Skill[];
+    summary?: string;
 }
 
 export function DownloadResumeButton({
@@ -53,6 +55,7 @@ export function DownloadResumeButton({
     experiences,
     education,
     skills,
+    summary,
 }: DownloadButtonProps) {
     const [downloading, setDownloading] = useState(false);
 
@@ -66,6 +69,7 @@ export function DownloadResumeButton({
                         experiences,
                         education,
                         skills,
+                        summary,
                     }}
                 />
             ).toBlob();
@@ -84,7 +88,7 @@ export function DownloadResumeButton({
 
     return (
         <button
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
             disabled={downloading}
             onClick={handleDownload}
             type="button"
@@ -92,7 +96,7 @@ export function DownloadResumeButton({
             {downloading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-                <Download className="h-4 w-4" />
+                <SiAdobeacrobatreader className="h-4 w-4" style={{ color: '#EC1C24' }} />
             )}
             Download PDF
         </button>
