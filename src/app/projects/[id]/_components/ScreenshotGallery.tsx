@@ -1,5 +1,6 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
@@ -9,7 +10,7 @@ interface ScreenshotGalleryProps {
     title: string;
 }
 
-/** Interactive screenshot gallery with thumbnail selection. */
+/** Interactive screenshot gallery with smooth animated transitions. */
 export default function ScreenshotGallery({ screenshots, title }: ScreenshotGalleryProps) {
     const [activeIdx, setActiveIdx] = useState(0);
 
@@ -19,14 +20,25 @@ export default function ScreenshotGallery({ screenshots, title }: ScreenshotGall
         <div className="space-y-3">
             {/* Main image */}
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border/50 bg-muted">
-                <Image
-                    alt={`${title} - Screenshot ${activeIdx + 1}`}
-                    className="h-full w-full object-cover transition-all duration-300"
-                    height={600}
-                    priority={activeIdx === 0}
-                    src={buildCloudinaryUrl(screenshots[activeIdx])}
-                    width={1200}
-                />
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="aspect-video"
+                        exit={{ opacity: 0, scale: 1.02 }}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        key={activeIdx}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    >
+                        <Image
+                            alt={`${title} - Screenshot ${activeIdx + 1}`}
+                            className="aspect-video object-cover"
+                            height={1080}
+                            priority={activeIdx === 0}
+                            src={buildCloudinaryUrl(screenshots[activeIdx])}
+                            width={1920}
+                        />
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
             {/* Thumbnails */}
@@ -46,10 +58,10 @@ export default function ScreenshotGallery({ screenshots, title }: ScreenshotGall
                         >
                             <Image
                                 alt={`${title} - Thumbnail ${idx + 1}`}
-                                className="h-full w-full object-cover"
-                                height={80}
+                                className="aspect-video object-cover"
+                                height={90}
                                 src={buildCloudinaryUrl(screenshot)}
-                                width={140}
+                                width={160}
                             />
                         </button>
                     ))}

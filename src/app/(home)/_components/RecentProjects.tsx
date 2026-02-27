@@ -54,10 +54,10 @@ export async function RecentProjectsSection() {
                                     <div className="aspect-video overflow-hidden bg-muted">
                                         <Image
                                             alt={project.title}
-                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                            height={200}
+                                            className="aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
+                                            height={360}
                                             src={buildCloudinaryUrl(project.screenshots[0])}
-                                            width={360}
+                                            width={640}
                                         />
                                     </div>
                                 )}
