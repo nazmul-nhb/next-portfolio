@@ -1,15 +1,17 @@
-import { and, desc, eq } from 'drizzle-orm';
-import { Calendar, PenTool, Shield } from 'lucide-react';
+import { and, count, desc, eq } from 'drizzle-orm';
+import { Calendar, Eye, FileText, PenTool, Shield } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { formatDate } from 'nhb-toolbox';
+import MessageButton from '@/app/users/[id]/_components/MessageButton';
 import { FadeInUp, ScaleInItem, StaggerContainer } from '@/components/misc/animations';
 import UserAvatar from '@/components/misc/user-avatar';
+import { Badge } from '@/components/ui/badge';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
-import { blogs } from '@/lib/drizzle/schema/blogs';
+import { blogs, comments } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
 import type { UserRole } from '@/types';
@@ -78,6 +80,8 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
 
     let user: UserProfile | undefined;
     let userBlogs: UserBlog[] = [];
+    let totalViews = 0;
+    let commentCount = 0;
 
     try {
         [user] = await db
@@ -113,46 +117,97 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
             .where(and(eq(blogs.author_id, user.id), eq(blogs.is_published, true)))
             .orderBy(desc(blogs.published_date))
             .limit(10);
+
+        totalViews = userBlogs.reduce((sum, post) => sum + post.views, 0);
     } catch (error) {
         console.error('Failed to fetch user blogs:', error);
     }
 
+    try {
+        const [result] = await db
+            .select({ count: count() })
+            .from(comments)
+            .where(eq(comments.author_id, user.id));
+        commentCount = result?.count ?? 0;
+    } catch (error) {
+        console.error('Failed to fetch comment count:', error);
+    }
+
     return (
         <div className="mx-auto max-w-4xl px-4 py-12">
-            {/* Profile header */}
+            {/* Profile header card */}
             <FadeInUp>
-                <div className="mb-12 flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left sm:gap-8">
-                    <div className="mb-4 sm:mb-0">
-                        <UserAvatar
-                            className="size-28 border-4 border-primary/20"
-                            image={user.profile_image}
-                            name={user.name}
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
-                            <h1 className="text-3xl font-bold">{user.name}</h1>
-                            {user.role === 'admin' && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600">
-                                    <Shield className="h-3 w-3" />
-                                    Admin
-                                </span>
-                            )}
+                <div className="mb-8 rounded-2xl border border-border/50 bg-card p-6 shadow-sm sm:p-8">
+                    <div className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left sm:gap-8">
+                        <div className="mb-4 sm:mb-0">
+                            <UserAvatar
+                                className="size-28 border-4 border-primary/20 shadow-lg"
+                                image={user.profile_image}
+                                name={user.name}
+                            />
                         </div>
-                        {user.bio && <p className="mb-3 text-muted-foreground">{user.bio}</p>}
-                        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground sm:justify-start">
-                            <span className="flex items-center gap-1">
-                                <Calendar className="h-3.5 w-3.5" />
-                                Joined{' '}
-                                {formatDate({
-                                    date: user.created_at,
-                                    format: 'mmm DD, yyyy',
-                                })}
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <PenTool className="h-3.5 w-3.5" />
-                                {userBlogs.length} post{userBlogs.length !== 1 ? 's' : ''}
-                            </span>
+                        <div className="flex-1">
+                            <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
+                                <h1 className="text-3xl font-bold">{user.name}</h1>
+                                {user.role === 'admin' && (
+                                    <Badge
+                                        className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
+                                        variant="outline"
+                                    >
+                                        <Shield className="h-3 w-3" />
+                                        Admin
+                                    </Badge>
+                                )}
+                            </div>
+
+                            {user.bio && (
+                                <p className="mb-4 max-w-lg text-muted-foreground">
+                                    {user.bio}
+                                </p>
+                            )}
+
+                            <div className="mb-4 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground sm:justify-start">
+                                <span className="flex items-center gap-1.5">
+                                    <Calendar className="h-3.5 w-3.5" />
+                                    Joined{' '}
+                                    {formatDate({
+                                        date: user.created_at,
+                                        format: 'mmm DD, yyyy',
+                                    })}
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <PenTool className="h-3.5 w-3.5" />
+                                    {userBlogs.length} post{userBlogs.length !== 1 ? 's' : ''}
+                                </span>
+                            </div>
+
+                            {/* Message button */}
+                            <MessageButton userId={user.id} userName={user.name} />
+                        </div>
+                    </div>
+
+                    {/* Stats row */}
+                    <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border/40 pt-6">
+                        <div className="flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-1.5 text-lg font-bold">
+                                <FileText className="h-4 w-4 text-primary" />
+                                {userBlogs.length}
+                            </div>
+                            <span className="text-xs text-muted-foreground">Posts</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-1.5 text-lg font-bold">
+                                <Eye className="h-4 w-4 text-primary" />
+                                {totalViews}
+                            </div>
+                            <span className="text-xs text-muted-foreground">Total views</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-1.5 text-lg font-bold">
+                                <PenTool className="h-4 w-4 text-primary" />
+                                {commentCount}
+                            </div>
+                            <span className="text-xs text-muted-foreground">Comments</span>
                         </div>
                     </div>
                 </div>
@@ -166,9 +221,10 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
 
                 {userBlogs.length === 0 ? (
                     <FadeInUp>
-                        <p className="py-12 text-center text-muted-foreground">
-                            No published posts yet.
-                        </p>
+                        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 py-16">
+                            <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                            <p className="text-muted-foreground">No published posts yet.</p>
+                        </div>
                     </FadeInUp>
                 ) : (
                     <StaggerContainer className="space-y-4">
@@ -203,7 +259,10 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                                                         })}
                                                     </span>
                                                 )}
-                                                <span>{post.views} views</span>
+                                                <span className="flex items-center gap-1">
+                                                    <Eye className="h-3 w-3" />
+                                                    {post.views}
+                                                </span>
                                             </div>
                                         </div>
                                     </article>

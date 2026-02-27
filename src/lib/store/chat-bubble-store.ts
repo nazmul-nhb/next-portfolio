@@ -32,7 +32,7 @@ export const useChatBubbleStore = create<BubbleState>()(
             isOpen: false,
             isExpanded: false,
             conversationId: null,
-            edge: 'bottom-left',
+            edge: 'top-right',
 
             openBubble: (conversationId) =>
                 set({ isOpen: true, isExpanded: true, conversationId }),

@@ -1,109 +1,19 @@
 'use client';
 
-import {
-    Ban,
-    CheckCircle,
-    Crown,
-    Mail,
-    Search,
-    Shield,
-    ShieldOff,
-    Trash2,
-    UserCheck,
-} from 'lucide-react';
-import { formatDate } from 'nhb-toolbox';
+import { Crown, Search, UserCheck, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { confirmToast } from '@/components/confirm';
-import UserAvatar from '@/components/misc/user-avatar';
-import SmartTooltip from '@/components/smart-tooltip';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import UserCard from '@/app/admin/users/_components/UserCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
-import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { cn } from '@/lib/utils';
-import type { UserRole } from '@/types';
+import { useApiQuery } from '@/lib/hooks/use-api';
 import type { RawUser } from '@/types/users';
 
 export function UsersClient({ initialData }: { initialData: RawUser[] }) {
     const [search, setSearch] = useState('');
-    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data: users = initialData } = useApiQuery<RawUser[]>('/api/users/admin', {
         queryKey: ['admin-users'],
     });
-
-    const { mutate: updateUser, isPending: isUpdating } = useApiMutation<
-        unknown,
-        { user_id: number; role?: UserRole; is_active?: boolean }
-    >('/api/users/admin', 'PATCH', {
-        successMessage: 'User updated successfully!',
-        errorMessage: 'Failed to update user.',
-        invalidateKeys: ['admin-users'],
-    });
-
-    const { mutate: deleteUser, isPending: isDeleting } = useApiMutation<unknown, null>(
-        `/api/users/admin?id=${deletingId}`,
-        'DELETE',
-        {
-            successMessage: 'User deleted!',
-            errorMessage: 'Failed to delete user.',
-            invalidateKeys: ['admin-users'],
-        }
-    );
-
-    const handleToggleRole = (user: RawUser) => {
-        const newRole = user.role === 'admin' ? 'user' : 'admin';
-
-        confirmToast({
-            title: `${newRole === 'admin' ? 'Promote' : 'Demote'} "${user.name}"?`,
-            description: `This will ${newRole === 'admin' ? 'grant admin privileges to' : 'remove admin privileges from'} this user.`,
-            confirmText: newRole === 'admin' ? 'Promote' : 'Demote',
-            confirmButtonVariant: newRole === 'admin' ? 'default' : 'destructive',
-            onConfirm: () => {
-                updateUser({ user_id: user.id, role: newRole });
-            },
-        });
-    };
-
-    const handleToggleActive = (user: RawUser) => {
-        const action = user.is_active ? 'Deactivate' : 'Activate';
-
-        confirmToast({
-            title: `${action} "${user.name}"?`,
-            description: user.is_active
-                ? 'This user will no longer be able to log in.'
-                : "This will restore the user's access.",
-            confirmText: action,
-            confirmButtonVariant: user.is_active ? 'destructive' : 'default',
-            onConfirm: () => {
-                updateUser({ user_id: user.id, is_active: !user.is_active });
-            },
-        });
-    };
-
-    const handleDelete = (user: RawUser) => {
-        setDeletingId(user.id);
-
-        confirmToast({
-            title: `Delete "${user.name}"?`,
-            description:
-                'This will permanently delete the user and all their associated data. This cannot be undone.',
-            confirmText: 'Delete',
-            isLoading: deletingId === user.id && isDeleting,
-            onConfirm: () => {
-                deleteUser(null, {
-                    onSettled: () => setDeletingId(null),
-                    onSuccess: async () => {
-                        if (user.profile_image) {
-                            await deleteFromCloudinary(user.profile_image);
-                        }
-                    },
-                });
-            },
-        });
-    };
 
     const filtered = useMemo(() => {
         return users.filter((user) => {
@@ -119,12 +29,31 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Users</h1>
-                <p className="text-muted-foreground">
-                    {users.length} total &middot; {adminCount} admins &middot; {activeCount}{' '}
-                    active
-                </p>
+            {/* Header with stats */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">Users</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Manage user accounts, roles and access
+                    </p>
+                </div>
+                <div className="flex gap-3">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-muted/40 px-3 py-1.5 text-sm">
+                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{users.length}</span>
+                        <span className="text-muted-foreground">total</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-lg border border-amber-200/60 bg-amber-50/50 px-3 py-1.5 text-sm dark:border-amber-800/40 dark:bg-amber-950/30">
+                        <Crown className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                        <span className="font-medium">{adminCount}</span>
+                        <span className="text-muted-foreground">admins</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-lg border border-green-200/60 bg-green-50/50 px-3 py-1.5 text-sm dark:border-green-800/40 dark:bg-green-950/30">
+                        <UserCheck className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+                        <span className="font-medium">{activeCount}</span>
+                        <span className="text-muted-foreground">active</span>
+                    </div>
+                </div>
             </div>
 
             {/* Search */}
@@ -147,112 +76,9 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {filtered.map((user) => (
-                        <Card className={cn(!user.is_active && 'opacity-60')} key={user.id}>
-                            <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">
-                                {/* Avatar */}
-                                <UserAvatar
-                                    className="size-12"
-                                    image={user.profile_image}
-                                    name={user.name}
-                                />
-
-                                {/* User info */}
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <p className="truncate font-medium">{user.name}</p>
-                                        {user.role === 'admin' && (
-                                            <Badge className="gap-1" variant="default">
-                                                <Crown className="h-3 w-3" />
-                                                Admin
-                                            </Badge>
-                                        )}
-                                        {!user.is_active && (
-                                            <Badge variant="destructive">Inactive</Badge>
-                                        )}
-                                        {user.email_verified && (
-                                            <Badge
-                                                className="gap-1 border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
-                                                variant="outline"
-                                            >
-                                                <CheckCircle className="h-3 w-3" />
-                                                Verified
-                                            </Badge>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                        <span className="flex items-center gap-1 truncate">
-                                            <Mail className="h-3.5 w-3.5 shrink-0" />
-                                            {user.email}
-                                        </span>
-                                        <span className="hidden sm:inline">
-                                            via {user.provider}
-                                        </span>
-                                        <span className="hidden text-xs md:inline">
-                                            Joined{' '}
-                                            {formatDate({
-                                                date: user.created_at,
-                                                format: 'mmm DD, yyyy',
-                                            })}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex shrink-0 gap-1">
-                                    <Button
-                                        disabled={isUpdating}
-                                        onClick={() => handleToggleRole(user)}
-                                        size="icon-sm"
-                                        variant="ghost"
-                                    >
-                                        <SmartTooltip
-                                            content={
-                                                user.role === 'admin'
-                                                    ? 'Remove admin'
-                                                    : 'Make admin'
-                                            }
-                                            trigger={
-                                                user.role === 'admin' ? (
-                                                    <ShieldOff className="h-4 w-4" />
-                                                ) : (
-                                                    <Shield className="h-4 w-4" />
-                                                )
-                                            }
-                                        />
-                                    </Button>
-                                    <Button
-                                        disabled={isUpdating}
-                                        onClick={() => handleToggleActive(user)}
-                                        size="icon-sm"
-                                        variant="ghost"
-                                    >
-                                        <SmartTooltip
-                                            content={user.is_active ? 'Deactivate' : 'Activate'}
-                                            trigger={
-                                                user.is_active ? (
-                                                    <Ban className="h-4 w-4" />
-                                                ) : (
-                                                    <UserCheck className="h-4 w-4" />
-                                                )
-                                            }
-                                        />
-                                    </Button>
-                                    <Button
-                                        disabled={deletingId === user.id && isDeleting}
-                                        loading={deletingId === user.id && isDeleting}
-                                        onClick={() => handleDelete(user)}
-                                        size="icon-sm"
-                                        variant="ghost"
-                                    >
-                                        {(deletingId === user.id && isDeleting) || (
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        )}
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <UserCard key={user.id} userData={user} />
                     ))}
                 </div>
             )}
