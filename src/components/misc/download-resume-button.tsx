@@ -100,7 +100,7 @@ export function DownloadResumeButton({
                     className={cn('size-4', { 'animate-spin': downloading })}
                     style={{ color: '#EC1C24' }}
                 />
-                Download This Page
+                Download as PDF
             </button>
             <a
                 className="group inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-linear-to-r from-blue-50 to-sky-50 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition-all hover:from-blue-100 hover:to-sky-100 hover:shadow-md dark:border-blue-800/50 dark:from-blue-600/10 dark:to-sky-600/10 dark:text-blue-400 dark:hover:from-blue-900/30 dark:hover:to-sky-900/30"
@@ -109,7 +109,7 @@ export function DownloadResumeButton({
                 target="_blank"
             >
                 <SiGoogledrive className="size-4 text-[#4285F4]" />
-                Download from Drive
+                View on Drive
                 <ExternalLink className="size-3 opacity-50 transition-opacity group-hover:opacity-100" />
             </a>
         </div>
