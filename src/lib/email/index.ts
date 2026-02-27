@@ -14,10 +14,12 @@ export type EmailOptions = Omit<SendMailOptions, 'from'>;
 export async function sendEmail(options: EmailOptions) {
     const { email, nodeEnv, adminEmail } = ENV;
 
+    const isProduction = nodeEnv === 'production';
+
     const transporter = createTransport({
         host: 'smtp.gmail.com',
-        port: 587,
-        secure: nodeEnv === 'production',
+        port: isProduction ? 465 : 587,
+        secure: isProduction,
         auth: { user: email.address, pass: email.password },
     });
 

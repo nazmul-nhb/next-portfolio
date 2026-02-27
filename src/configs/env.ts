@@ -1,5 +1,5 @@
 export const ENV = {
-    nodeEnv: (process.env.NODE_ENV ?? 'development') as string,
+    nodeEnv: process.env.NODE_ENV ?? 'development',
     dbUrl: process.env.DATABASE_URL as string,
     cipherSecret: process.env.NEXT_PUBLIC_CIPHER_SECRET as string,
     jwtSecret: process.env.JWT_SECRET as string,
