@@ -37,6 +37,7 @@ A modern, full-stack portfolio and blogging platform built with **Next.js 16**, 
 - **Resume** — Dynamic PDF generation with `@react-pdf/renderer`
 - **Contact & Messaging** — Contact form with email notifications, direct messaging between users
 - **Theme Switching** — Light/dark mode with `next-themes`
+- **Live CLock & Calendar** — Real-time clock and calendar for both Gregorian and Bengali dates
 - **Responsive Design** — Mobile-first layout with Tailwind CSS v4
 - **Image Uploads** — Cloudinary integration for media management
 - **SEO Optimized** — Dynamic OpenGraph images, sitemap, and robots.txt
