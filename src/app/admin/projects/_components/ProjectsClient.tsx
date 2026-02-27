@@ -93,7 +93,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         <Image
-                                            alt={`${project.title} favicon`}
+                                            alt={project.title}
                                             className="rounded"
                                             height={32}
                                             src={buildCloudinaryUrl(project.favicon)}

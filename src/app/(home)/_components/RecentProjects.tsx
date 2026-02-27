@@ -58,7 +58,7 @@ export async function RecentProjectsSection() {
                                     <div className="mb-2 flex items-center gap-2">
                                         {project.favicon && (
                                             <Image
-                                                alt=""
+                                                alt={project.title}
                                                 className="h-5 w-5 rounded"
                                                 height={20}
                                                 src={buildCloudinaryUrl(project.favicon)}

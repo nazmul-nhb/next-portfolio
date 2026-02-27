@@ -226,7 +226,7 @@ export default function EditBlogPage() {
                                         src={coverPreview}
                                     />
                                     <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-0.5 text-xs text-white">
-                                        Will upload on submit
+                                        Preview
                                     </div>
                                 </div>
                             )}

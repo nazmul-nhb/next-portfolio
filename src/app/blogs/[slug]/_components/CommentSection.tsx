@@ -1,16 +1,15 @@
 'use client';
 
-import { Reply as ReplyIcon, Send, User } from 'lucide-react';
-import Image from 'next/image';
+import { Reply as ReplyIcon, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
 import { useRef, useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useApiMutation } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
 import type { BlogComment } from '@/types/blogs';
 
 interface CommentSectionProps {
@@ -67,17 +66,11 @@ export function CommentSection({ blogId, blogSlug, comments }: CommentSectionPro
             <div className={`${depth > 0 ? 'ml-8 border-l-2 border-border pl-4' : ''}`}>
                 <div className="flex gap-3 py-3">
                     <Link className="shrink-0" href={`/users/${comment.author.id}`}>
-                        {comment.author.profile_image ? (
-                            <Image
-                                alt={comment.author.name}
-                                className="h-8 w-8 rounded-full object-cover"
-                                height={32}
-                                src={buildCloudinaryUrl(comment.author.profile_image)}
-                                width={32}
-                            />
-                        ) : (
-                            <User className="h-8 w-8 rounded-full bg-muted p-1.5" />
-                        )}
+                        <UserAvatar
+                            className="size-8"
+                            image={comment.author.profile_image}
+                            name={comment.author.name}
+                        />
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-2">

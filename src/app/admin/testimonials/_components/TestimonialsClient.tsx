@@ -102,7 +102,7 @@ export function TestimonialsClient({ initialData }: Props) {
                                 <div className="flex items-start justify-between">
                                     <div className="flex gap-4">
                                         {testimonial.client_avatar && (
-                                            <div className="h-12 w-12 overflow-hidden rounded-full border">
+                                            <div className="size-12 overflow-hidden rounded-full border">
                                                 <Image
                                                     alt={testimonial.client_name}
                                                     className="object-cover"

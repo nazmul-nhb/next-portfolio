@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Edit, Eye, User } from 'lucide-react';
+import { Calendar, Edit, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatDate } from 'nhb-toolbox';
@@ -11,6 +11,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import ReactionsShare from '@/app/blogs/[slug]/_components/ReactionsShare';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -83,17 +84,12 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                             className="flex items-center gap-2 hover:text-foreground"
                             href={`/users/${blog.author.id}`}
                         >
-                            {blog.author.profile_image ? (
-                                <Image
-                                    alt={blog.author.name}
-                                    className="h-8 w-8 rounded-full object-cover"
-                                    height={32}
-                                    src={buildCloudinaryUrl(blog.author.profile_image)}
-                                    width={32}
-                                />
-                            ) : (
-                                <User className="h-8 w-8 rounded-full bg-muted p-1.5" />
-                            )}
+                            <UserAvatar
+                                className="size-8"
+                                image={blog.author.profile_image}
+                                name={blog.author.name}
+                            />
+
                             <span className="font-medium">{blog.author.name}</span>
                         </Link>
 

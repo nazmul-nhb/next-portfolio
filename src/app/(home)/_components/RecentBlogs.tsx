@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatDate } from 'nhb-toolbox';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
@@ -93,17 +94,11 @@ export async function RecentBlogsSection() {
                                     )}
                                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                                         <div className="flex items-center gap-2">
-                                            {blog.author.profile_image && (
-                                                <Image
-                                                    alt={blog.author.name}
-                                                    className="h-5 w-5 rounded-full object-cover"
-                                                    height={20}
-                                                    src={buildCloudinaryUrl(
-                                                        blog.author.profile_image
-                                                    )}
-                                                    width={20}
-                                                />
-                                            )}
+                                            <UserAvatar
+                                                className="size-5"
+                                                image={blog.author.profile_image}
+                                                name={blog.author.name}
+                                            />
                                             <span>{blog.author.name}</span>
                                         </div>
                                         <div className="flex items-center gap-3">

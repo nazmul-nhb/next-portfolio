@@ -1,8 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ExternalLink, MessageSquare, Send, User } from 'lucide-react';
-import Image from 'next/image';
+import { ArrowLeft, ExternalLink, MessageSquare, Send } from 'lucide-react';
 import Link from 'next/link';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,7 +14,7 @@ import { httpRequest } from '@/lib/actions/baseRequest';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, cn, groupMessagesByDate } from '@/lib/utils';
+import { cn, groupMessagesByDate } from '@/lib/utils';
 import type { Conversation, Message, UserResult } from '@/types/messages';
 
 type Props = {
@@ -210,19 +209,11 @@ export default function ChatArea({
                     </div>
                 ) : !activeConversationId && selectedRecipient ? (
                     <div className="flex h-full flex-col items-center justify-center">
-                        {selectedRecipient.profile_image ? (
-                            <Image
-                                alt={selectedRecipient.name}
-                                className="mb-3 h-20 w-20 rounded-full object-cover"
-                                height={80}
-                                src={buildCloudinaryUrl(selectedRecipient.profile_image)}
-                                width={80}
-                            />
-                        ) : (
-                            <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <User className="h-10 w-10" />
-                            </div>
-                        )}
+                        <UserAvatar
+                            className="mb-3 size-20"
+                            image={selectedRecipient.name}
+                            name={selectedRecipient.profile_image}
+                        />
                         <p className="text-base font-semibold">{selectedRecipient.name}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                             {selectedRecipient.email}

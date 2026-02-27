@@ -9,13 +9,12 @@ import {
     Shield,
     ShieldOff,
     Trash2,
-    User,
     UserCheck,
 } from 'lucide-react';
-import Image from 'next/image';
 import { formatDate } from 'nhb-toolbox';
 import { useMemo, useState } from 'react';
 import { confirmToast } from '@/components/confirm';
+import UserAvatar from '@/components/misc/user-avatar';
 import SmartTooltip from '@/components/smart-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import type { UserRole } from '@/types';
 import type { RawUser } from '@/types/users';
 
@@ -153,19 +152,11 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
                         <Card className={cn(!user.is_active && 'opacity-60')} key={user.id}>
                             <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">
                                 {/* Avatar */}
-                                {user.profile_image ? (
-                                    <Image
-                                        alt={user.name}
-                                        className="h-12 w-12 shrink-0 rounded-full object-cover"
-                                        height={48}
-                                        src={buildCloudinaryUrl(user.profile_image)}
-                                        width={48}
-                                    />
-                                ) : (
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted">
-                                        <User className="h-5 w-5 text-muted-foreground" />
-                                    </div>
-                                )}
+                                <UserAvatar
+                                    className="size-12"
+                                    image={user.profile_image}
+                                    name={user.name}
+                                />
 
                                 {/* User info */}
                                 <div className="min-w-0 flex-1">

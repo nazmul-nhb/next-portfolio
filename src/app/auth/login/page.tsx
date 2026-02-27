@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Loading from '@/components/loading';
 import { LoginForm } from './_components/LoginForm';
 
 /**
@@ -6,13 +7,7 @@ import { LoginForm } from './_components/LoginForm';
  */
 export default function LoginPage() {
     return (
-        <Suspense
-            fallback={
-                <div className="flex min-h-[80vh] items-center justify-center">
-                    <div className="text-muted-foreground">Loading...</div>
-                </div>
-            }
-        >
+        <Suspense fallback={<Loading />}>
             <LoginForm />
         </Suspense>
     );

@@ -94,7 +94,7 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
                                 <div className="flex items-start justify-between">
                                     <div className="flex gap-4">
                                         {exp.company_logo && (
-                                            <div className="h-12 w-12 overflow-hidden rounded-lg border">
+                                            <div className="size-12 overflow-hidden rounded-lg border">
                                                 <Image
                                                     alt={exp.company}
                                                     className="object-contain"
