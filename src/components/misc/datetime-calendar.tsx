@@ -3,7 +3,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBreakPoint, useClock, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
-
+import { toTrainCase } from 'nhb-toolbox/change-case';
+import type { DayPart } from 'nhb-toolbox/date/types';
+import type { $Record } from 'nhb-toolbox/object/types';
 import { useCallback, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Calendar } from '@/components/ui/calendar';
@@ -73,6 +75,15 @@ function buildBanglaMonth(gregYear: number, gregMonth: number) {
     };
 }
 
+const DAY_PARTS: $Record<DayPart, string> = {
+    morning: 'সকাল',
+    afternoon: 'বিকেল',
+    evening: 'সন্ধ্যা',
+    night: 'রাত',
+    lateNight: 'গভীর রাত',
+    midnight: 'মাঝরাত',
+};
+
 // ------------------------------------------------------------------
 // BanglaMonthView
 // ------------------------------------------------------------------
@@ -127,6 +138,11 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
     );
 }
 
+function season(str: string) {
+    const match = str.match(/\(([^)]+)\)/);
+    return match ? match[1] : '';
+}
+
 // ------------------------------------------------------------------
 // DateTimeCalendar (main component)
 // ------------------------------------------------------------------
@@ -143,8 +159,12 @@ export default function DateTimeCalendar() {
 
     const clockTime = useMemo(() => {
         return isBnTime
-            ? time.formatBangla('dd, DD mmmm (S), YYYY hh:mm:ss (A)')
-            : time.format(`dd, mmm DD [(${time.season()})], YYYY hh:mm:ss a`);
+            ? time.formatBangla(
+                  `dd, DD mmmm (S), YYYY hh:mm:ss [(${DAY_PARTS[time.getPartOfDay()]})]`
+              )
+            : time.format(
+                  `dd, DD mmm [(${season(time.season({ preset: 'bangladesh' }))})], YYYY hh:mm:ss [(${toTrainCase(time.getPartOfDay())})]`
+              );
     }, [time, isBnTime]);
 
     const nextMonth = useMemo(() => shiftMonth(month, 1), [month]);
