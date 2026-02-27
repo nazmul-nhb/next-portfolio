@@ -1,3 +1,4 @@
+import { getTimestamp } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { getCurrentYear } from '@/lib/utils';
 
@@ -26,6 +27,14 @@ const THEME = {
     font: "'Segoe UI',Tahoma,Geneva,Verdana,sans-serif",
 } as const;
 
+/** Reusable inline style snippets */
+const s = {
+    p: `color:${THEME.text};font-size:16px;line-height:1.6;margin:0 0 16px;`,
+    pLast: `color:${THEME.text};font-size:16px;line-height:1.6;margin:0 0 24px;`,
+    muted: `color:${THEME.mutedText};font-size:14px;line-height:1.5;margin:0;`,
+    btn: `display:inline-block;background-color:${THEME.gradientFallback};background:${THEME.gradient};color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;`,
+} as const;
+
 /**
  * Wraps email body content in a consistent outer layout (html, head, body, card, header, footer).
  * @param title - Header banner text.
@@ -46,27 +55,19 @@ function emailLayout(title: string, body: string, footerNote?: string): string {
     <body style="margin:0;padding:0;background:${THEME.pageBg};font-family:${THEME.font};">
         <div style="max-width:560px;margin:40px auto;background:${THEME.cardBg};border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
             <div style="background-color:${THEME.gradientFallback};background:${THEME.gradient};padding:32px 24px;text-align:center;">
-                <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:700;">${title}</h1>
+                <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">${title}</h1>
             </div>
             <div style="padding:32px 24px;">
                 ${body}
             </div>
             <div style="background:${THEME.pageBg};padding:16px 24px;text-align:center;">
                 <p style="color:${THEME.footerText};font-size:12px;margin:0;">${footer}</p>
+                <p style="${s.muted}font-size:10px;text-align:center;">${getTimestamp()}</p>
             </div>
         </div>
-        <div style="display:none;font-size:0;line-height:0;max-height:0;overflow:hidden;">${Date.now()}</div>
     </body>
     </html>`;
 }
-
-/** Reusable inline style snippets */
-const s = {
-    p: `color:${THEME.text};font-size:16px;line-height:1.6;margin:0 0 16px;`,
-    pLast: `color:${THEME.text};font-size:16px;line-height:1.6;margin:0 0 24px;`,
-    muted: `color:${THEME.mutedText};font-size:14px;line-height:1.5;margin:0;`,
-    btn: `display:inline-block;background-color:${THEME.gradientFallback};background:${THEME.gradient};color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;`,
-} as const;
 
 // ── Templates ───────────────────────────────────────────────────────
 
