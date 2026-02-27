@@ -7,6 +7,13 @@ import SmartTooltip from '@/components/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 
+const WINDOW_SIZE = {
+    full: 'h-[100vh] max-w-full',
+    normal: 'rounded-xl h-[86vh] sm:h-[92vh] max-w-[94%] sm:max-w-[70%]',
+} as const;
+
+type WindowSize = keyof typeof WINDOW_SIZE;
+
 interface MiniBrowserProps {
     favicon?: string;
     url: string;
@@ -18,6 +25,7 @@ interface MiniBrowserProps {
 export default function MiniBrowser({ url, favicon, title, onClose }: MiniBrowserProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [windowSize, setWindowSize] = useState<WindowSize>('normal');
 
     const handleRefresh = useCallback(() => {
         if (iframeRef.current) {
@@ -27,8 +35,13 @@ export default function MiniBrowser({ url, favicon, title, onClose }: MiniBrowse
     }, [url]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-            <div className="flex h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-border bg-background shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div
+                className={cn(
+                    'flex w-full flex-col overflow-hidden border border-border bg-background shadow-2xl',
+                    WINDOW_SIZE[windowSize]
+                )}
+            >
                 {/* Chrome-like title bar */}
                 <div className="flex shrink-0 items-center gap-2 border-b border-border bg-muted/80 px-3 py-2 select-none">
                     {/* Traffic lights */}
@@ -38,13 +51,23 @@ export default function MiniBrowser({ url, favicon, title, onClose }: MiniBrowse
                             onClick={onClose}
                             type="button"
                         />
-                        <div className="size-3 rounded-full bg-yellow-500" />
-                        <div className="size-3 rounded-full bg-green-500" />
+                        <button
+                            className="size-3 rounded-full bg-yellow-500"
+                            onClick={onClose}
+                            type="button"
+                        />
+                        <button
+                            className="size-3 rounded-full bg-green-500"
+                            onClick={() =>
+                                setWindowSize((prev) => (prev === 'normal' ? 'full' : 'normal'))
+                            }
+                            type="button"
+                        />
                     </div>
 
                     {/* Address bar */}
                     <div className="mx-2 flex min-w-0 flex-1 items-center gap-2 rounded-md border border-border/60 bg-background px-3 py-1.5">
-                        {<Globe className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}{' '}
+                        {<Globe className="size-3.5 shrink-0 text-muted-foreground" />}{' '}
                         <span className="truncate text-xs text-muted-foreground">{url}</span>
                     </div>
 
@@ -106,7 +129,7 @@ export default function MiniBrowser({ url, favicon, title, onClose }: MiniBrowse
 
                 {/* Iframe content */}
                 <iframe
-                    className="flex-1 bg-white"
+                    className="flex-1 bg-white custom-scroll"
                     onLoad={() => setIsLoading(false)}
                     ref={iframeRef}
                     src={url}

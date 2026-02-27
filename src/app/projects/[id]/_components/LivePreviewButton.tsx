@@ -2,7 +2,8 @@
 
 import { ExternalLink, Play } from 'lucide-react';
 import { useState } from 'react';
-import MiniBrowser from '@/app/projects/[id]/_components/MiniBrowser';
+import { Fragment } from 'react/jsx-runtime';
+import MiniBrowser from '@/components/misc/mini-browser';
 import { Button } from '@/components/ui/button';
 
 interface LivePreviewButtonProps {
@@ -16,7 +17,7 @@ export default function LivePreviewButton({ url, title, favicon }: LivePreviewBu
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <>
+        <Fragment>
             <Button className="gap-2" onClick={() => setIsOpen(true)}>
                 <Play className="size-4" />
                 Live Preview
@@ -36,6 +37,6 @@ export default function LivePreviewButton({ url, title, favicon }: LivePreviewBu
                     url={url}
                 />
             )}
-        </>
+        </Fragment>
     );
 }

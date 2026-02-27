@@ -135,6 +135,7 @@
 
 /* Override the browser default and customize the scrollbar (slim width, matching color) for input[type='number'] tags */
 html,
+iframe,
 .custom-scroll {
 	--sb-track-color: #8da7ff40;
 	--sb-thumb-color: #9eb4fbbd;
@@ -142,21 +143,25 @@ html,
 }
 
 html,
+iframe,
 .custom-scroll {
 	--sb-size: 6px;
 }
 
 html::-webkit-scrollbar,
+iframe::-webkit-scrollbar,
 .custom-scroll::-webkit-scrollbar {
 	width: var(--sb-size);
 }
 
 html::-webkit-scrollbar-track,
+iframe::-webkit-scrollbar-track,
 .custom-scroll::-webkit-scrollbar-track {
 	background: var(--sb-track-color);
 }
 
 html::-webkit-scrollbar-thumb,
+iframe::-webkit-scrollbar-thumb,
 .custom-scroll::-webkit-scrollbar-thumb {
 	background: var(--sb-thumb-color);
 	border-radius: 2px;
@@ -164,7 +169,7 @@ html::-webkit-scrollbar-thumb,
 }
 
 @supports not selector(::-webkit-scrollbar) {
-	html,
+	html,iframe,
 	.custom-scroll {
 		scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
 	}
