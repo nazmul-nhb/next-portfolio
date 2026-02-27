@@ -1,15 +1,20 @@
 'use client';
 
-import { Chrome, Lock, Mail, User, UserPlus } from 'lucide-react';
+import { Lock, Mail, User, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import type { GenericObject } from 'nhb-toolbox/object/types';
 import { useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+import type z from 'zod';
 import { FadeInUp } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useApiMutation } from '@/lib/hooks/use-api';
+import { hasErrorMessage } from '@/lib/utils';
+import type { RegisterSchema } from '@/lib/zod-schema/users';
 
 /**
  * Registration page for new users.
@@ -21,10 +26,12 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const { mutate: register, isPending: loading } = useApiMutation<
-        unknown,
-        { name: string; email: string; password: string }
+    const { mutate: register, isPending } = useApiMutation<
+        GenericObject,
+        z.infer<typeof RegisterSchema>
     >('/api/auth/register', 'POST', {
+        successMessage: 'Registration successful! Logging in...',
+        prioritizeCustomMessages: true,
         onSuccess: async () => {
             const result = await signIn('credentials', {
                 email,
@@ -34,19 +41,18 @@ export default function RegisterPage() {
             if (result?.ok) {
                 router.push('/settings');
             }
+
+            setError('');
         },
         onError: (err) => {
-            const message =
-                typeof err === 'object' && err !== null && 'message' in err
-                    ? String((err as { message: string }).message)
-                    : 'Registration failed';
+            const message = hasErrorMessage(err) ? err.message : 'Registration failed';
             setError(message);
         },
     });
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        setError('');
+
         register({ name, email, password });
     };
 
@@ -70,7 +76,7 @@ export default function RegisterPage() {
                         onClick={handleGoogleLogin}
                         variant="outline"
                     >
-                        <Chrome className="h-4 w-4" />
+                        <FaGoogle className="size-4" />
                         Continue with Google
                     </Button>
 
@@ -89,7 +95,7 @@ export default function RegisterPage() {
                         <div>
                             <Label htmlFor="name">Full Name</Label>
                             <div className="relative mt-1.5">
-                                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     className="pl-10"
                                     id="name"
@@ -104,7 +110,7 @@ export default function RegisterPage() {
                         <div>
                             <Label htmlFor="email">Email</Label>
                             <div className="relative mt-1.5">
-                                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     className="pl-10"
                                     id="email"
@@ -120,7 +126,7 @@ export default function RegisterPage() {
                         <div>
                             <Label htmlFor="password">Password</Label>
                             <div className="relative mt-1.5">
-                                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     className="pl-10"
                                     id="password"
@@ -138,11 +144,11 @@ export default function RegisterPage() {
 
                         <Button
                             className="w-full"
-                            disabled={loading}
-                            loading={loading}
+                            disabled={isPending}
+                            loading={isPending}
                             type="submit"
                         >
-                            <UserPlus className="mr-2 h-4 w-4" />
+                            <UserPlus className="mr-2 size-4" />
                             {'Create Account'}
                         </Button>
                     </form>
