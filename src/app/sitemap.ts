@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import type { MetadataRoute, Route } from 'next';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
-import { blogs } from '@/lib/drizzle/schema';
+import { blogs, projects } from '@/lib/drizzle/schema';
 import { buildCanonicalUrl, buildCloudinaryUrl } from '@/lib/utils';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -73,5 +73,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         images: blog.image ? [buildCloudinaryUrl(blog.image)] : undefined,
     }));
 
-    return [...staticRoutes, ...blogRoutes];
+    // Dynamic project pages
+    const projectRows = await db
+        .select({
+            id: projects.id,
+            updatedAt: projects.updated_at,
+            screenshots: projects.screenshots,
+        })
+        .from(projects)
+        .orderBy(desc(projects.updated_at));
+
+    const projectRoutes: MetadataRoute.Sitemap = projectRows.map((project) => ({
+        url: buildCanonicalUrl(`/projects/${project.id}` as Route),
+        lastModified: new Date(project.updatedAt),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+        images: project.screenshots.length
+            ? [buildCloudinaryUrl(project.screenshots[0])]
+            : undefined,
+    }));
+
+    return [...staticRoutes, ...blogRoutes, ...projectRoutes];
 }

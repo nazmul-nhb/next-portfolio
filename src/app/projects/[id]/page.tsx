@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                     className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     href="/projects"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="size-4" />
                     All Projects
                 </Link>
             </FadeInUp>
@@ -98,7 +98,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                         {project.favicon && (
                             <Image
                                 alt={project.title}
-                                className="h-10 w-10 rounded-lg sm:h-12 sm:w-12"
+                                className="size-10 rounded-lg sm:size-12"
                                 height={48}
                                 src={buildCloudinaryUrl(project.favicon)}
                                 width={48}
@@ -107,11 +107,12 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                         <div>
                             <h1 className="text-2xl font-bold sm:text-3xl">{project.title}</h1>
                             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
+                                <Calendar className="size-3" />
                                 {formatDate({
                                     date: project.created_at,
                                     format: 'mmm DD, yyyy',
-                                })}
+                                })}{' '}
+                                (Entry time)
                             </p>
                         </div>
                     </div>
