@@ -244,7 +244,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                                 </div>
                                 <div className="flex justify-between">
                                     <dt className="text-muted-foreground">Repositories</dt>
-                                    <dd className="font-medium">{project.repo_links.length}</dd>
+                                    <dd className="font-medium">{repositories.length}</dd>
                                 </div>
                             </dl>
                         </div>

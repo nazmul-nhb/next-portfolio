@@ -151,7 +151,7 @@ export default function DateTimeCalendar() {
     const [open, setOpen] = useState(false);
     const [isBnCal, setIsBnCal] = useState(false);
     const [isBnTime, setIsBnTime] = useState(!isBnCal);
-    const [month, setMonth] = useState<Date>(() => new Date());
+    const [month, setMonth] = useState<Date>(new Date());
 
     const { mobile } = useBreakPoint();
 

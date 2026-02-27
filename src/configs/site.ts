@@ -23,6 +23,7 @@ export const siteConfig = {
     description:
         'Programmer, Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
     baseUrl: process.env.NEXT_PUBLIC_SITE_URL as string,
+    resumeLink: process.env.NEXT_PUBLIC_RESUME_PDF_URL as string,
     navItems: [
         { title: 'Home', path: '/', icon: Home },
         { title: 'Blog', path: '/blogs', icon: PenTool },

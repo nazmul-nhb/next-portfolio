@@ -1,4 +1,5 @@
 import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { siteConfig } from '@/configs/site';
 
 // Define types
 interface Experience {
@@ -70,7 +71,8 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 12,
         color: '#444444',
-        marginBottom: 6,
+        marginTop: 6,
+        marginBottom: 4,
     },
     contactRow: {
         flexDirection: 'row',
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     skillsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 6,
+        gap: 2,
         marginTop: 4,
     },
     skillItem: {
@@ -199,17 +201,14 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                                 {data.user.email}
                             </Link>
                         )}
-                        <Link src="https://nazmul-nhb.dev" style={styles.contactLink}>
-                            nazmul-nhb.dev
+                        <Link src={siteConfig.baseUrl} style={styles.contactLink}>
+                            {siteConfig.baseUrl.replace('https://', '')}
                         </Link>
-                        <Link src="https://github.com/nazmul-nhb" style={styles.contactLink}>
-                            github.com/nazmul-nhb
+                        <Link src={siteConfig.links.github} style={styles.contactLink}>
+                            {siteConfig.links.github.replace('https://', '')}
                         </Link>
-                        <Link
-                            src="https://linkedin.com/in/nazmul-nhb"
-                            style={styles.contactLink}
-                        >
-                            linkedin.com/in/nazmul-nhb
+                        <Link src={siteConfig.links.linkedin} style={styles.contactLink}>
+                            {siteConfig.links.linkedin.replace('https://', '')}
                         </Link>
                     </View>
                 </View>

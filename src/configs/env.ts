@@ -27,4 +27,5 @@ export const ENV = {
             upload_url: process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_UPLOAD_URL as string,
         },
     },
+    resumeLink: process.env.NEXT_PUBLIC_RESUME_PDF_URL as string,
 } as const;
