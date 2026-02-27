@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { FaGitAlt } from 'react-icons/fa';
-import { confirmToast } from '@/components/confirm';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';

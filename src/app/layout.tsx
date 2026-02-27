@@ -2,7 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
-import { AuthSync } from '@/components/auth-sync';
+import { AuthSync } from '@/components/misc/auth-sync';
 import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
 import Footer from '@/components/misc/footer';

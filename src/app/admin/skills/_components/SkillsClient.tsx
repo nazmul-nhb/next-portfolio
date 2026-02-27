@@ -18,8 +18,8 @@ import {
 import { Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import SortableSkillCard from '@/app/admin/skills/_components/SortableSkillCard';
-import { confirmToast } from '@/components/confirm';
 import { SkillForm } from '@/components/forms/skill-form';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {

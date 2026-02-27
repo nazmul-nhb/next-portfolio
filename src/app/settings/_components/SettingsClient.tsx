@@ -7,7 +7,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
-import { SettingsSkeleton } from '@/components/skeletons';
+import { SettingsSkeleton } from '@/components/misc/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -13,7 +13,7 @@ import {
     SectionHeading,
     StaggerContainer,
 } from '@/components/misc/animations';
-import { MyBlogsSkeleton } from '@/components/skeletons';
+import { MyBlogsSkeleton } from '@/components/misc/skeletons';
 import { Button } from '@/components/ui/button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';

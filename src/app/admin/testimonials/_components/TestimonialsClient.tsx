@@ -4,7 +4,7 @@ import { MessageSquareQuote, Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { confirmToast } from '@/components/confirm';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';

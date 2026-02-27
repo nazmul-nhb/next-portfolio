@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import type { ComponentType } from 'react';
-import SmartTooltip from '@/components/smart-tooltip';
+import SmartTooltip from '@/components/misc/smart-tooltip';
 import type { TabItem } from '@/types';
 
 type Props = {

@@ -3,7 +3,7 @@
 import { notFound } from 'next/navigation';
 import { BlogContent } from '@/app/blogs/[slug]/_components/BlogContent';
 import { CommentSection } from '@/app/blogs/[slug]/_components/CommentSection';
-import { SingleBlogSkeleton } from '@/components/skeletons';
+import { SingleBlogSkeleton } from '@/components/misc/skeletons';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import type { SingleBlogRes } from '@/types/blogs';
 

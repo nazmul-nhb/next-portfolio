@@ -14,7 +14,7 @@ import {
 } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { MdOutlineRefresh } from 'react-icons/md';
-import SmartTooltip from '@/components/smart-tooltip';
+import SmartTooltip from '@/components/misc/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 

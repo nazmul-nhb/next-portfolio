@@ -2,8 +2,8 @@
 
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { confirmToast } from '@/components/confirm';
 import { CategoryForm } from '@/components/forms/category-form';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {

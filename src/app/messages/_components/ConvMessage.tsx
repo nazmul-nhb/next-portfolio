@@ -6,7 +6,7 @@ import { useBreakPoint, useMount } from 'nhb-hooks';
 import { useCallback, useEffect, useState } from 'react';
 import ChatArea from '@/app/messages/_components/ChatArea';
 import ConversationList from '@/app/messages/_components/ConversationList';
-import { MessagesPageSkeleton } from '@/components/skeletons';
+import { MessagesPageSkeleton } from '@/components/misc/skeletons';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
 import type { Uncertain } from '@/types';

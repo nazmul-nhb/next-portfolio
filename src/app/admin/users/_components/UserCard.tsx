@@ -13,9 +13,9 @@ import {
 import Link from 'next/link';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
-import { confirmToast } from '@/components/confirm';
+import { confirmToast } from '@/components/misc/confirm';
+import SmartTooltip from '@/components/misc/smart-tooltip';
 import UserAvatar from '@/components/misc/user-avatar';
-import SmartTooltip from '@/components/smart-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

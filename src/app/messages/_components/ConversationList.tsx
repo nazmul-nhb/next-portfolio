@@ -3,8 +3,8 @@
 import { Search, X } from 'lucide-react';
 import { useDebouncedValue } from 'nhb-hooks';
 import { useState } from 'react';
+import { ConversationItemSkeleton } from '@/components/misc/skeletons';
 import UserAvatar from '@/components/misc/user-avatar';
-import { ConversationItemSkeleton } from '@/components/skeletons';
 import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { cn, formatRelativeTime } from '@/lib/utils';

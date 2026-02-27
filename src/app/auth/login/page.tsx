@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Loading from '@/components/loading';
+import Loading from '@/components/misc/loading';
 import { LoginForm } from './_components/LoginForm';
 
 /**
