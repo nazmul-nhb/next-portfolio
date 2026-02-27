@@ -79,12 +79,14 @@ export function SettingsClient() {
         { email: string; code: string }
     >('/api/auth/otp', 'PUT', {
         successMessage: 'Email verified successfully!',
-        errorMessage: 'Invalid or expired OTP',
+        prioritizeCustomMessages: true,
         invalidateKeys: ['user-profile'],
         onSuccess: () => {
             setOtpMessage('Email verified successfully!');
         },
-        onError: () => setOtpMessage('Invalid or expired OTP'),
+        onError: (err) => {
+            setOtpMessage(hasErrorMessage(err) ? err.message : 'Invalid or expired OTP');
+        },
     });
 
     const otpLoading = otpSending || verifyingOTP;
