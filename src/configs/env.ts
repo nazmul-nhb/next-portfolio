@@ -8,6 +8,8 @@ export const ENV = {
     google: {
         clientId: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID as string,
+        gscVerificationId: process.env.NEXT_PUBLIC_GSC_VERIFICATION_ID as string,
     },
     email: {
         address: process.env.EMAIL_ADDRESS as string,
