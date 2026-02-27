@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Globe, Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -158,12 +158,12 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
 
                                     <div className="flex items-center gap-2">
                                         <a
-                                            className="text-sm text-primary hover:underline"
+                                            className="flex items-center gap-1.5 text-sm text-primary hover:underline"
                                             href={project.live_link}
                                             rel="noopener noreferrer"
                                             target="_blank"
                                         >
-                                            Live Demo →
+                                            <Globe className="size-4 mb-px" /> Live Demo →
                                         </a>
                                         {repositories.map((repoLink, idx) => {
                                             return (
@@ -177,7 +177,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                                         rel="noopener noreferrer"
                                                         target="_blank"
                                                     >
-                                                        <FaGitAlt className="size-4" />
+                                                        <FaGitAlt className="size-4 mb-px" />
                                                         {repositories.length > 1
                                                             ? `Repo ${idx + 1}`
                                                             : 'Source Code'}
