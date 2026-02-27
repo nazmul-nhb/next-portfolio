@@ -26,7 +26,7 @@ export const siteConfig = {
     resumeLink: process.env.NEXT_PUBLIC_RESUME_PDF_URL as string,
     navItems: [
         { title: 'Home', path: '/', icon: Home },
-        { title: 'Blog', path: '/blogs', icon: PenTool },
+        { title: 'Blogs', path: '/blogs', icon: PenTool },
         { title: 'Projects', path: '/projects', icon: FolderKanban },
         { title: 'About', path: '/about', icon: Info },
         { title: 'Contact', path: '/contact', icon: Contact },

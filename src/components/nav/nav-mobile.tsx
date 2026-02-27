@@ -141,18 +141,24 @@ export default function NavMobileDrawer({
                 <div className="border-t border-border p-4">
                     {user ? (
                         <div className="flex items-center gap-3">
-                            <UserAvatar
-                                className="size-10 ring-1 ring-border"
-                                image={user.image}
-                                name={user.name}
-                            />
+                            <Link
+                                className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 transition-colors hover:bg-accent"
+                                href={`/users/${user.id}`}
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                <UserAvatar
+                                    className="size-10 ring-1 ring-border"
+                                    image={user.image}
+                                    name={user.name}
+                                />
 
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium">{user.name}</p>
-                                <p className="truncate text-xs text-muted-foreground">
-                                    {user.email}
-                                </p>
-                            </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-sm font-medium">{user.name}</p>
+                                    <p className="truncate text-xs text-muted-foreground">
+                                        {user.email}
+                                    </p>
+                                </div>
+                            </Link>
                             <Button
                                 className="h-8 w-8 shrink-0 rounded-full"
                                 onClick={handleLogout}

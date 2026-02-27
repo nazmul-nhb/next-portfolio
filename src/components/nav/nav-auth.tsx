@@ -67,12 +67,16 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                         </PopoverTrigger>
                         <PopoverContent align="end" className="w-56 p-2" sideOffset={8}>
                             <div className="flex flex-col gap-1">
-                                <div className="px-3 py-2 text-sm">
+                                <Link
+                                    className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
+                                    href={`/users/${user.id}`}
+                                    onClick={() => setOpen(false)}
+                                >
                                     <p className="font-medium">{displayName || 'User'}</p>
                                     <p className="text-xs text-muted-foreground">
                                         {user.email}
                                     </p>
-                                </div>
+                                </Link>
                                 <div className="h-px bg-border" />
                                 <Link href="/blogs/my" onClick={() => setOpen(false)}>
                                     <Button

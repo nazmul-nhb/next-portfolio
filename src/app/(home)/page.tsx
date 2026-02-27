@@ -15,7 +15,9 @@ import { TestimonialsSection } from './_components/Testimonials';
 export const revalidate = 60; // ISR: revalidate every minute
 
 export const metadata: Metadata = {
-    title: 'Home',
+    title: {
+        absolute: siteConfig.name,
+    },
     description: siteConfig.description,
 };
 
