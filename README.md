@@ -1,6 +1,14 @@
 # Portfolio & Blog Site
 
-A modern, full-stack portfolio and blogging platform built with **Next.js 16**, **React 19**, **TailwindCSS**, and **Drizzle ORM**. Features a rich admin dashboard, blog editor, project showcase, resume generator, real-time (almost) messaging, and more.
+A modern, full-stack portfolio and blogging platform built with **Next.js 16**, **React 19**, **TailwindCSS**, and **Drizzle ORM**. Features a rich admin dashboard, blog editor, project showcase, resume generator, real-time (*almost*) messaging, and more.
+
+> This is my personal portfolio and blog site, designed to showcase my projects, skills, experience, and thoughts. It serves as a platform for me to share my work and insights with the world. The code is open-source and can be used as a reference or starting point for your own portfolio or blog projects. However, please note that this project is not licensed for redistribution, so it cannot be used for commercial purposes or shared without permission.
+
+## Live URLs
+
+- [nazmul-nhb.dev](https://nazmul-nhb.dev/)
+- [next.nazmul-nhb.dev](https://next.nazmul-nhb.dev/)
+- [next-nhb.vercel.app](https://next-nhb.vercel.app/)
 
 ---
 
@@ -42,22 +50,25 @@ A modern, full-stack portfolio and blogging platform built with **Next.js 16**, 
 
 ## Tech Stack
 
-| Layer           | Technology                                                                                                        |
-| --------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Framework       | [Next.js 16](https://nextjs.org/) (App Router with React Compiler, Turbopack)                                     |
-| Language        | [TypeScript 5.9](https://www.typescriptlang.org/)                                                                 |
-| UI              | [React 19](https://react.dev/), [Tailwind CSS 4](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/) |
-| State           | [Zustand](https://zustand.docs.pmnd.rs/), [TanStack Query](https://tanstack.com/query)                            |
-| Database        | [Neon](https://neon.tech/) (Serverless PostgreSQL)                                                                |
-| ORM             | [Drizzle ORM](https://orm.drizzle.team/)                                                                          |
-| Auth            | [NextAuth v5](https://authjs.dev/) (Credentials + Google)                                                         |
-| Editor          | [Tiptap](https://tiptap.dev/)                                                                                     |
-| Forms           | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)                                         |
-| Email           | [Nodemailer](https://nodemailer.com/)                                                                             |
-| Media           | [Cloudinary](https://cloudinary.com/)                                                                             |
-| PDF             | [@react-pdf/renderer](https://react-pdf.org/)                                                                     |
-| Format/Linting  | [Biome](https://biomejs.dev/)                                                                                     |
-| Package Manager | [pnpm](https://pnpm.io/)                                                                                          |
+| Layer                    | Technology                                                                                                        |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Framework                | [Next.js 16](https://nextjs.org/) (App Router with React Compiler, Turbopack)                                     |
+| Language                 | [TypeScript 5.9](https://www.typescriptlang.org/)                                                                 |
+| UI                       | [React 19](https://react.dev/), [Tailwind CSS 4](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/) |
+| State                    | [Zustand](https://zustand.docs.pmnd.rs/), [TanStack Query](https://tanstack.com/query)                            |
+| Database                 | [Neon](https://neon.tech/) (Serverless PostgreSQL)                                                                |
+| ORM                      | [Drizzle ORM](https://orm.drizzle.team/)                                                                          |
+| Auth                     | [NextAuth v5](https://authjs.dev/) (Credentials + Google)                                                         |
+| Editor                   | [Tiptap](https://tiptap.dev/)                                                                                     |
+| Forms                    | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)                                         |
+| Email                    | [Nodemailer](https://nodemailer.com/)                                                                             |
+| Media                    | [Cloudinary](https://cloudinary.com/)                                                                             |
+| PDF                      | [@react-pdf/renderer](https://react-pdf.org/)                                                                     |
+| Utilities & Guards       | [nhb-toolbox](https://tools.nazmul.dev/)                                                                          |
+| Hooks                    | [nhb-hooks](https://github.com/nazmul-nhb/nhb-hooks)                                                              |
+| Commit Message Formatter | `nhb-commit` from [nhb-scripts](https://github.com/nazmul-nhb/nhb-scripts)                                        |
+| Format/Linting           | [Biome](https://biomejs.dev/)                                                                                     |
+| Package Manager          | [pnpm](https://pnpm.io/)                                                                                          |
 
 ---
 
@@ -78,13 +89,13 @@ src/
 │   ├── resume/             # Resume viewer with PDF download
 │   ├── settings/           # User settings
 │   └── users/              # User profiles
-├── components/
+├── components/             # Reusable React components
 │   ├── forms/              # Reusable form components (project, skill, blog, etc.)
 │   ├── misc/               # Shared UI (footer, loading, animations, tooltips, etc.)
 │   ├── nav/                # Navbar, sidebar, mobile nav
 │   └── ui/                 # Primitives (button, card, dialog, input, etc.)
 ├── configs/                # Site config & environment variables
-├── lib/
+├── lib/                    # Business logic, utilities & services
 │   ├── actions/            # Server-side request helpers
 │   ├── drizzle/            # Database client & schema definitions
 │   ├── email/              # Email service & templates
