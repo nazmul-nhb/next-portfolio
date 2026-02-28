@@ -4,6 +4,7 @@ import UserAvatar from '@/components/misc/user-avatar';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import type { SelectTestimonial } from '@/types/testimonials';
+import { asc } from 'drizzle-orm';
 
 /**
  * Testimonials section displaying client feedback.
@@ -12,7 +13,11 @@ export async function TestimonialsSection() {
     let allTestimonials: SelectTestimonial[] = [];
 
     try {
-        allTestimonials = await db.select().from(testimonials).limit(6);
+        allTestimonials = await db
+            .select()
+            .from(testimonials)
+            .orderBy(asc(testimonials.created_at))
+            .limit(6);
     } catch (error) {
         console.error('Failed to fetch testimonials:', error);
     }

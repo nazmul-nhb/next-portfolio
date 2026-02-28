@@ -72,7 +72,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
     };
 
     return (
-        <section className="relative flex min-h-[85vh] items-center overflow-hidden">
+        <section className="relative flex min-h-[84vh] items-center overflow-hidden">
             {/* Animated background elements */}
             <div className="absolute inset-0 -z-10 bg-linear-to-br from-blue-500/5 via-transparent to-violet-500/5" />
             <motion.div
