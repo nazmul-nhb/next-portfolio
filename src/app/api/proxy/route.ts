@@ -11,6 +11,16 @@ const SCROLLBAR_CSS = /*html*/ `
 </style>`;
 
 /**
+ * Some third-party pages include PWA bootstrap files (e.g. `registerSW.js`).
+ * When proxied into our origin, those scripts can attempt cross-origin SW
+ * registration and throw SecurityError in the console.
+ */
+const REGISTER_SW_SCRIPT_RE =
+    /<script\b[^>]*\bsrc=(['"])[^'"]*registerSW(?:\.[^'"]+)?\.js[^'"]*\1[^>]*>\s*<\/script>/gi;
+const REGISTER_SW_LINK_RE =
+    /<link\b[^>]*\bhref=(['"])[^'"]*registerSW(?:\.[^'"]+)?\.js[^'"]*\1[^>]*>/gi;
+
+/**
  * Proxy route that fetches external HTML, injects a `<base>` tag
  * (so relative resources resolve against the original domain) and
  * appends custom scrollbar CSS. The iframe loads this same-origin
@@ -47,6 +57,11 @@ export async function GET(req: NextRequest) {
         }
 
         let html = await res.text();
+
+        // Remove known SW bootstrap assets from proxied pages to avoid
+        // cross-origin service-worker registration errors in the iframe.
+        html = html.replaceAll(REGISTER_SW_SCRIPT_RE, '');
+        html = html.replaceAll(REGISTER_SW_LINK_RE, '');
 
         // Inject <base> so relative URLs (CSS, JS, images) still resolve
         // against the original domain. Insert right after <head> if present.
