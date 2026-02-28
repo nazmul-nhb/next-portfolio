@@ -1,5 +1,6 @@
 import './globals.css';
 
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
@@ -7,7 +8,6 @@ import { AuthSync } from '@/components/misc/auth-sync';
 import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
 import Footer from '@/components/misc/footer';
-import GoogleAnalytics from '@/components/misc/google-analytics';
 import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
@@ -84,7 +84,6 @@ export default function RootLayout({ children }: RootProps) {
                 suppressHydrationWarning
             >
                 <AuthProvider>
-                    <GoogleAnalytics />
                     <ReactQueryProvider>
                         <NextThemesProvider
                             attribute="class"
@@ -112,6 +111,7 @@ export default function RootLayout({ children }: RootProps) {
                     </ReactQueryProvider>
                 </AuthProvider>
             </body>
+            <GoogleAnalytics gaId={ENV.google.analyticsId} />
         </html>
     );
 }

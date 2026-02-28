@@ -29,6 +29,7 @@ export default function UserAvatar({ image, name, size = 'md', className }: Avat
                 alt={name ?? 'User Avatar'}
                 className={imgClasses}
                 height={128}
+                loading="eager"
                 src={image}
                 width={128}
             />
@@ -37,6 +38,7 @@ export default function UserAvatar({ image, name, size = 'md', className }: Avat
                 alt={name ?? 'User Avatar'}
                 className={imgClasses}
                 height={128}
+                loading="eager"
                 src={buildCloudinaryUrl(image)}
                 width={128}
             />
