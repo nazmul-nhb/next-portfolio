@@ -20,6 +20,7 @@ export const metadata: Metadata = {
         absolute: siteConfig.name,
     },
     description: siteConfig.description,
+    keywords: [...siteConfig.keywords],
 };
 
 export default async function HomePage() {

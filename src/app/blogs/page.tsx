@@ -25,6 +25,7 @@ const description =
 export const metadata: Metadata = {
     title: 'Blogs',
     description,
+    keywords: [...siteConfig.keywords],
     openGraph: {
         title: 'Blogs',
         description,

@@ -24,6 +24,7 @@ import type { SelectSkill } from '@/types/skills';
 export const metadata: Metadata = {
     title: 'Resume',
     description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
+    keywords: [...siteConfig.keywords],
 };
 
 /** Resume / CV page with downloadable PDF option. */

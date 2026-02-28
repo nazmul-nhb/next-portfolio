@@ -10,6 +10,7 @@ import { ContactForm } from './_components/ContactForm';
 export const metadata: Metadata = {
     title: 'Contact',
     description: 'Get in touch with me. I would love to hear from you!',
+    keywords: [...siteConfig.keywords],
 };
 
 export default function ContactPage() {

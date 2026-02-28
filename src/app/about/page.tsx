@@ -23,6 +23,7 @@ import type { SelectSkill } from '@/types/skills';
 export const metadata: Metadata = {
     title: 'About',
     description: 'Learn more about Nazmul Hassan - Full-Stack Web Developer.',
+    keywords: [...siteConfig.keywords],
 };
 
 export default async function AboutPage() {

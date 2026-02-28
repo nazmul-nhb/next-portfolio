@@ -24,6 +24,11 @@ export async function generateMetadata({
         return {
             title: `${title} by ${author.name}`,
             description,
+            keywords: [
+                ...data.tags.map((tag) => tag.title),
+                ...siteConfig.keywords,
+                ...data.blog.title.split(' '),
+            ],
             icons: {
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,

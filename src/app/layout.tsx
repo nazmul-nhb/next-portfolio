@@ -27,15 +27,7 @@ export const metadata: Metadata = {
     },
     metadataBase: new URL(siteConfig.baseUrl),
     description: siteConfig.description,
-    keywords: [
-        'web developer',
-        'portfolio',
-        'blog',
-        'nazmul hassan',
-        'full-stack developer',
-        'next.js',
-        'react',
-    ],
+    keywords: [...siteConfig.keywords],
     authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
     icons: {
         icon: siteConfig.favicon,

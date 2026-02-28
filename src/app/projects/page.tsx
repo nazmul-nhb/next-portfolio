@@ -11,6 +11,7 @@ import {
     SectionHeading,
     StaggerContainer,
 } from '@/components/misc/animations';
+import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
 import { buildCloudinaryUrl, eliminateEmptyStrings } from '@/lib/utils';
@@ -18,6 +19,7 @@ import { buildCloudinaryUrl, eliminateEmptyStrings } from '@/lib/utils';
 export const metadata: Metadata = {
     title: 'Projects',
     description: 'Explore my portfolio of web development projects.',
+    keywords: [...siteConfig.keywords],
 };
 
 export const revalidate = 60;
