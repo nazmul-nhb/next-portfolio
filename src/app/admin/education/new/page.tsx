@@ -1,18 +1,16 @@
 'use client';
 
-import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
+import { useTitle } from 'nhb-hooks';
 import { EducationForm } from '@/components/forms/education-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertEducation } from '@/types/career';
 
-export const metadata: Metadata = {
-    title: 'Add New Education » Admin Dashboard',
-};
-
 export default function NewEducationPage() {
     const router = useRouter();
+
+    useTitle('Add New Education » Admin Dashboard');
 
     const { mutate, isPending } = useApiMutation<InsertEducation>('/api/education', 'POST', {
         successMessage: 'Education created successfully',

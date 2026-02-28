@@ -1,10 +1,10 @@
 import { desc, eq } from 'drizzle-orm';
+import type { Metadata } from 'next';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import type { AdminBlog } from '@/types/blogs';
 import { AdminBlogsClient } from './_components/AdminBlogsClient';
-import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,18 +1,16 @@
 'use client';
 
-import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
+import { useTitle } from 'nhb-hooks';
 import { SkillForm } from '@/components/forms/skill-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertSkill, SelectSkill } from '@/types/skills';
 
-export const metadata: Metadata = {
-    title: 'Add New Skill » Admin Dashboard',
-};
-
 export default function NewSkillPage() {
     const router = useRouter();
+
+    useTitle('Add New Skill » Admin Dashboard');
 
     const { mutate, isPending } = useApiMutation<SelectSkill, InsertSkill>(
         '/api/skills',

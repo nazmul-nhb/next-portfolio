@@ -1,18 +1,16 @@
 'use client';
 
-import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
+import { useTitle } from 'nhb-hooks';
 import { TestimonialForm } from '@/components/forms/testimonial-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertTestimonial, SelectTestimonial } from '@/types/testimonials';
 
-export const metadata: Metadata = {
-    title: 'Add New Testimonial » Admin Dashboard',
-};
-
 export default function NewTestimonialPage() {
     const router = useRouter();
+
+    useTitle('Add New Testimonial » Admin Dashboard');
 
     const { mutate, isPending } = useApiMutation<SelectTestimonial, InsertTestimonial>(
         '/api/testimonials',
