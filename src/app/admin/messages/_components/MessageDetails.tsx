@@ -33,14 +33,20 @@ export default function MessageDetails({
             open={!!selectedMessage}
         >
             <DialogContent className="max-h-[85vh] overflow-y-auto max-w-80 sm:max-w-lg">
-                {selectedMessage && (
-                    <Fragment>
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
+                <DialogHeader className={selectedMessage ? '' : 'sr-only'}>
+                    <DialogTitle className="flex items-center gap-2">
+                        {selectedMessage ? (
+                            <Fragment>
                                 <User className="h-5 w-5 text-primary" />
                                 {selectedMessage.name}
-                            </DialogTitle>
-                            <DialogDescription className="flex flex-col items-start gap-1">
+                            </Fragment>
+                        ) : (
+                            'Message Details'
+                        )}
+                    </DialogTitle>
+                    <DialogDescription className="flex flex-col items-start gap-1">
+                        {selectedMessage ? (
+                            <Fragment>
                                 <a
                                     className="text-primary hover:underline"
                                     href={`mailto:${selectedMessage.email}`}
@@ -54,9 +60,15 @@ export default function MessageDetails({
                                         format: 'mmm DD, yyyy [at] hh:mm:ss a',
                                     })}
                                 </span>
-                            </DialogDescription>
-                        </DialogHeader>
+                            </Fragment>
+                        ) : (
+                            'No message selected.'
+                        )}
+                    </DialogDescription>
+                </DialogHeader>
 
+                {selectedMessage && (
+                    <Fragment>
                         {selectedMessage.subject && (
                             <div className="rounded-lg bg-muted/50 px-4 py-2">
                                 <p className="text-xs font-medium text-muted-foreground">

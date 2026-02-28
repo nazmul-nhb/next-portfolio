@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -12,7 +12,7 @@ import type { InsertProject, UpdateProject } from '@/types/projects';
 /** Get all projects */
 export async function GET() {
     try {
-        const result = await db.select().from(projects);
+        const result = await db.select().from(projects).orderBy(desc(projects.created_at));
         return sendResponse('Project', 'GET', result);
     } catch (error) {
         console.error(error);
