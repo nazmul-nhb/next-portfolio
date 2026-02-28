@@ -18,6 +18,8 @@ import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCloudinaryUrl } from '@/lib/utils';
+import type { SelectEducation, SelectExperience } from '@/types/career';
+import type { SelectSkill } from '@/types/skills';
 
 export const metadata: Metadata = {
     title: 'Resume',
@@ -29,9 +31,9 @@ export default async function ResumePage() {
     const session = await auth();
 
     // Fetch all data
-    let allSkills: (typeof skills.$inferSelect)[] = [];
-    let allExperiences: (typeof experiences.$inferSelect)[] = [];
-    let allEducation: (typeof education.$inferSelect)[] = [];
+    let allSkills: SelectSkill[] = [];
+    let allExperiences: SelectExperience[] = [];
+    let allEducation: SelectEducation[] = [];
     let userData: {
         name: string;
         email: string;

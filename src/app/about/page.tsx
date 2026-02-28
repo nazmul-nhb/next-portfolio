@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { Briefcase, Code2, GraduationCap, Heart } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -14,10 +14,10 @@ import {
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
-import { education, users } from '@/lib/drizzle/schema';
+import { education, experiences, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
-import type { SelectEducation } from '@/types/career';
+import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
 export const metadata: Metadata = {
@@ -28,12 +28,14 @@ export const metadata: Metadata = {
 export default async function AboutPage() {
     let allSkills: SelectSkill[] = [];
     let allEdu: SelectEducation[] = [];
+    let allExp: SelectExperience[] = [];
     let adminImage: string | null = null;
 
     try {
-        const [sk, ed, [admin]] = await Promise.all([
+        const [sk, ed, exp, [admin]] = await Promise.all([
             db.select().from(skills).orderBy(skills.sort_order),
-            db.select().from(education).orderBy(education.start_date),
+            db.select().from(education).orderBy(desc(education.start_date)),
+            db.select().from(experiences).orderBy(desc(experiences.start_date)),
             db
                 .select({ profile_image: users.profile_image })
                 .from(users)
@@ -43,6 +45,7 @@ export default async function AboutPage() {
 
         allSkills = sk;
         allEdu = ed;
+        allExp = exp;
 
         adminImage = admin?.profile_image;
     } catch (error) {
@@ -96,32 +99,17 @@ export default async function AboutPage() {
                 </SlideInLeft>
 
                 <StaggerContainer className="space-y-6">
-                    {[
-                        {
-                            title: 'Full-Stack Web Developer',
-                            company: 'Freelance',
-                            period: '2023 - Present',
-                            description:
-                                'Building web applications and SaaS products for clients. Specializing in React, Next.js, and TypeScript ecosystems.',
-                        },
-                        {
-                            title: 'Open Source Contributor',
-                            company: 'Various Projects',
-                            period: '2024 - Present',
-                            description:
-                                'Actively contributing to open-source projects and maintaining personal npm packages used by the community.',
-                        },
-                    ].map((exp) => (
-                        <ScaleInItem key={exp.title}>
+                    {allExp.map((exp) => (
+                        <ScaleInItem key={exp.id}>
                             <div className="rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <h3 className="font-semibold">{exp.title}</h3>
+                                    <h3 className="font-semibold">{exp.position}</h3>
                                     <span className="text-xs text-muted-foreground">
-                                        {exp.period}
+                                        {exp.start_date} - {exp.end_date || 'Present'}
                                     </span>
                                 </div>
                                 <p className="mb-2 text-sm font-medium text-primary">
-                                    {exp.company}
+                                    {exp.company} • {exp.location}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
                                     {exp.description}
@@ -133,7 +121,7 @@ export default async function AboutPage() {
             </section>
 
             {/* Education */}
-            <section className="mb-16">
+            <section className="mb-16 space-y-6">
                 <SlideInRight>
                     <div className="mb-8 flex items-center gap-3">
                         <GraduationCap className="h-6 w-6 text-primary" />
@@ -145,7 +133,7 @@ export default async function AboutPage() {
                     <FadeInUp key={edu.id}>
                         <div className="rounded-xl border border-border/50 bg-card p-6">
                             <h3 className="font-semibold">
-                                {edu.degree} - {edu.institution}
+                                {edu.degree} • {edu.institution}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                                 {formatDuration(edu.start_date, edu.end_date)}
@@ -156,7 +144,8 @@ export default async function AboutPage() {
                                 </p>
                             )}
                             <p className="mt-2 text-sm text-muted-foreground">
-                                • {edu.achievements?.join(' • ')}
+                                {/* • {edu.achievements?.join(' • ')} */}
+                                {edu.description}
                             </p>
                         </div>
                     </FadeInUp>
