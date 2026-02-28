@@ -98,7 +98,7 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
         return buildBanglaMonth(gregYear, gregMonth);
     }, [gregYear, gregMonth]);
 
-    return (
+    return useMount(
         <div className="w-full min-w-52 flex-1 shrink-0 text-sm font-tiro">
             {/* Bangla month + year heading */}
             <div className="text-center text-lg mb-2 px-2 font-anek">{monthYear}</div>

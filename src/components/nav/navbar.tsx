@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useMount } from 'nhb-hooks';
 import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import SmartTooltip from '@/components/misc/smart-tooltip';
@@ -89,7 +90,7 @@ export default function Navbar() {
         return pathname.startsWith(path);
     };
 
-    return (
+    return useMount(
         <Fragment>
             <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -98,13 +99,11 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
                         href="/"
                     >
-                        {/* <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-violet-600 text-sm font-bold text-white shadow-md">
-                            NH
-                        </div> */}
                         <Image
                             alt={siteConfig.name}
-                            className="h-8 w-8 rounded-full object-fit"
+                            className="size-8 rounded-full object-fit"
                             height={520}
+                            loading="eager"
                             quality={100}
                             src={siteConfig.logoSvg}
                             width={520}
