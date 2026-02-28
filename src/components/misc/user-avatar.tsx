@@ -2,6 +2,7 @@
 
 import { User } from 'lucide-react';
 import Image from 'next/image';
+import { getColorForInitial } from 'nhb-toolbox';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 
@@ -44,9 +45,12 @@ export default function UserAvatar({ image, name, size = 'md', className }: Avat
         <div
             className={cn(
                 sizes[size],
-                'flex items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-violet-500 text-xs font-bold text-white',
+                'flex items-center justify-center rounded-full text-sm font-bold text-white',
                 className
             )}
+            style={{
+                backgroundColor: getColorForInitial(name),
+            }}
         >
             {name.charAt(0).toUpperCase()}
         </div>

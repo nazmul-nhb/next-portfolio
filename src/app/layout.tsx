@@ -83,8 +83,8 @@ export default function RootLayout({ children }: RootProps) {
                 )}
                 suppressHydrationWarning
             >
-                <GoogleAnalytics />
                 <AuthProvider>
+                    <GoogleAnalytics />
                     <ReactQueryProvider>
                         <NextThemesProvider
                             attribute="class"
