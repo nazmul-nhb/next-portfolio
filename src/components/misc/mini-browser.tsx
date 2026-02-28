@@ -18,21 +18,42 @@ import SmartTooltip from '@/components/misc/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 
+type BrowsingMode = 'direct' | 'proxy';
+
 const MIN_W = 320;
 const MIN_H = 300;
 
 /** Scrollbar CSS injected into same-origin iframes. */
 const SCROLLBAR_CSS = /*css*/ `
-html{--sb-track:#8da7ff40;--sb-thumb:#9eb4fbbd;--sb-size:6px}
-html::-webkit-scrollbar{width:var(--sb-size)}
-html::-webkit-scrollbar-track{background:var(--sb-track)}
-html::-webkit-scrollbar-thumb{background:var(--sb-thumb);border-radius:2px;border:0.5px solid #9eb4fb}
-@supports not selector(::-webkit-scrollbar){html{scrollbar-color:var(--sb-thumb) var(--sb-track)}}
+    html{--sb-track:#8da7ff40;--sb-thumb:#9eb4fbbd;--sb-size:6px}
+    html::-webkit-scrollbar{width:var(--sb-size)}
+    html::-webkit-scrollbar-track{background:var(--sb-track)}
+    html::-webkit-scrollbar-thumb{background:var(--sb-thumb);border-radius:2px;border:0.5px solid #9eb4fb}
+    @supports not selector(::-webkit-scrollbar){html{scrollbar-color:var(--sb-thumb) var(--sb-track)}}
 `;
 
 /** Build the proxied URL so the iframe is same-origin and we can inject CSS. */
 function proxyUrl(url: string) {
     return `/api/proxy?url=${encodeURIComponent(url)}&v=${Date.now()}`;
+}
+
+function modeStorageKey(url: string) {
+    try {
+        return `mini-browser-mode:${new URL(url).host}`;
+    } catch {
+        return `mini-browser-mode:${url}`;
+    }
+}
+
+function readSavedMode(url: string): BrowsingMode {
+    if (typeof window === 'undefined') return 'direct';
+    const saved = window.localStorage.getItem(modeStorageKey(url));
+    return saved === 'direct' ? 'direct' : 'proxy';
+}
+
+function saveMode(url: string, mode: BrowsingMode) {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(modeStorageKey(url), mode);
 }
 
 /** Calculate browser window dimensions from viewport size. */
@@ -86,7 +107,7 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
     const [isLoading, setIsLoading] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
-    const [mode, setMode] = useState<'direct' | 'proxy'>('direct');
+    const [mode, setMode] = useState<BrowsingMode>(() => readSavedMode(url));
     const [iframeSrc, setIframeSrc] = useState(url);
     const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -155,9 +176,15 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
         setIsLoading(true);
         setMode((prev) => {
             const next = prev === 'direct' ? 'proxy' : 'direct';
+            saveMode(url, next);
             setIframeSrc(next === 'proxy' ? proxyUrl(url) : url);
             return next;
         });
+    }, [url]);
+
+    useEffect(() => {
+        const savedMode = readSavedMode(url);
+        setMode(savedMode);
     }, [url]);
 
     useEffect(() => {
@@ -274,7 +301,14 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                             onClick={toggleMode}
                             variant="ghost"
                         >
-                            {mode === 'direct' ? 'Direct' : 'Proxy'}
+                            <SmartTooltip
+                                content={
+                                    mode === 'proxy'
+                                        ? 'Proxy: custom scrollbar. Some apps can fail due to CORS/cookies.'
+                                        : 'Direct: best compatibility. External sites use native scrollbar.'
+                                }
+                                trigger={<span>{mode === 'direct' ? 'Direct' : 'Proxy'}</span>}
+                            />
                         </Button>
                         <Button onClick={handleRefresh} size="icon-sm" variant="ghost">
                             <SmartTooltip
