@@ -32,20 +32,17 @@ export default async function AboutPage() {
     let adminImage: string | null = null;
 
     try {
-        const [sk, ed, exp, [admin]] = await Promise.all([
+        [allSkills, allEdu, allExp] = await Promise.all([
             db.select().from(skills).orderBy(skills.sort_order),
             db.select().from(education).orderBy(desc(education.start_date)),
             db.select().from(experiences).orderBy(desc(experiences.start_date)),
-            db
-                .select({ profile_image: users.profile_image })
-                .from(users)
-                .where(eq(users.email, ENV.adminEmail))
-                .limit(1),
         ]);
 
-        allSkills = sk;
-        allEdu = ed;
-        allExp = exp;
+        const [admin] = await db
+            .select({ profile_image: users.profile_image })
+            .from(users)
+            .where(eq(users.email, ENV.adminEmail))
+            .limit(1);
 
         adminImage = admin?.profile_image;
     } catch (error) {

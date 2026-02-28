@@ -32,7 +32,7 @@ export default async function ResumePage() {
     let allSkills: SelectSkill[] = [];
     let allExperiences: SelectExperience[] = [];
     let allEducation: SelectEducation[] = [];
-    let userData: {
+    let profile: {
         name: string;
         email: string;
         profile_image?: string | null;
@@ -42,18 +42,14 @@ export default async function ResumePage() {
     };
 
     try {
-        allSkills = await db
-            .select()
-            .from(skills)
-            .orderBy(asc(skills.sort_order), asc(skills.title));
-        allExperiences = await db
-            .select()
-            .from(experiences)
-            .orderBy(desc(experiences.start_date));
-        allEducation = await db.select().from(education).orderBy(desc(education.start_date));
+        [allSkills, allExperiences, allEducation] = await Promise.all([
+            db.select().from(skills).orderBy(asc(skills.sort_order), asc(skills.title)),
+            db.select().from(experiences).orderBy(desc(experiences.start_date)),
+            db.select().from(education).orderBy(desc(education.start_date)),
+        ]);
 
         // Get user data if logged in
-        const [user] = await db
+        [profile] = await db
             .select({
                 name: users.name,
                 email: users.email,
@@ -62,13 +58,6 @@ export default async function ResumePage() {
             .from(users)
             .where(eq(users.email, ENV.adminEmail))
             .limit(1);
-        if (user) {
-            userData = {
-                name: user.name || siteConfig.name,
-                email: user.email || ENV.adminEmail,
-                profile_image: user.profile_image,
-            };
-        }
     } catch (error) {
         console.error('Failed to fetch resume data:', error);
     }
@@ -83,7 +72,7 @@ export default async function ResumePage() {
                 <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                            {userData.name}
+                            {profile.name}
                         </h1>
                         <p className="mt-1 text-base text-muted-foreground sm:text-lg">
                             Full-Stack Web Developer
@@ -91,10 +80,10 @@ export default async function ResumePage() {
                         <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
-                                href={`mailto:${userData.email}`}
+                                href={`mailto:${profile.email}`}
                             >
                                 <Mail className="size-3.5 shrink-0" />
-                                <span className="truncate">{userData.email}</span>
+                                <span className="truncate">{profile.email}</span>
                             </a>
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
@@ -121,7 +110,7 @@ export default async function ResumePage() {
                         experiences={allExperiences}
                         skills={allSkills}
                         summary={summary}
-                        user={userData}
+                        user={profile}
                     />
                 </div>
             </FadeInUp>

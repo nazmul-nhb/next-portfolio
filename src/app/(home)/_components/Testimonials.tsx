@@ -20,7 +20,7 @@ export async function TestimonialsSection() {
     if (!allTestimonials.length) return null;
 
     return (
-        <section className="py-8 sm:py-14 md:py-20">
+        <section className="border-t border-border/50 bg-muted/30 py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
                 <SectionHeading
                     align="center"

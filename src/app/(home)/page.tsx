@@ -6,6 +6,7 @@ import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
 import type { SelectSkill } from '@/types/skills';
+import { CareerHighlightsSection } from './_components/CareerHighlights';
 import { HeroSection } from './_components/HeroSection';
 import { RecentBlogsSection } from './_components/RecentBlogs';
 import { RecentProjectsSection } from './_components/RecentProjects';
@@ -46,6 +47,7 @@ export default async function HomePage() {
             <SkillsSection skills={allSkills} />
             <RecentProjectsSection />
             <RecentBlogsSection />
+            <CareerHighlightsSection />
             <TestimonialsSection />
         </div>
     );
