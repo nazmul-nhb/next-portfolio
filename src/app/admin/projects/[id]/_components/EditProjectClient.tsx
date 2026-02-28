@@ -28,6 +28,14 @@ export function EditProjectClient({ project }: Props) {
         mutate(data, {
             onSuccess: async () => {
                 await deleteOldCloudFile(project.favicon, data.favicon);
+
+                for (let i = 0; i < 3; i++) {
+                    const oldSS = project.screenshots[i];
+                    const newSS = data?.screenshots?.[i];
+
+                    await deleteOldCloudFile(oldSS, newSS);
+                }
+
                 router.push('/admin/projects');
             },
             onError: (error) => {

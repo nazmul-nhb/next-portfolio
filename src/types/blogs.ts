@@ -69,3 +69,21 @@ export type RecentBlog = {
     published_date: Date | null;
     author: BlogAuthor;
 };
+
+export interface AdminBlog {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image: string | null;
+    is_published: boolean;
+    published_date: string | Date | null;
+    views: number;
+    created_at: string | Date;
+    author: {
+        id: number;
+        name: string;
+        email: string;
+        profile_image: string | null;
+    };
+}

@@ -2,28 +2,13 @@ import { desc, eq } from 'drizzle-orm';
 import { db } from '@/lib/drizzle';
 import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
+import type { AdminBlog } from '@/types/blogs';
 import { AdminBlogsClient } from './_components/AdminBlogsClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminBlogsPage() {
-    let allBlogs: {
-        id: number;
-        title: string;
-        slug: string;
-        excerpt: string | null;
-        cover_image: string | null;
-        is_published: boolean;
-        published_date: Date | null;
-        views: number;
-        created_at: Date;
-        author: {
-            id: number;
-            name: string;
-            email: string;
-            profile_image: string | null;
-        };
-    }[] = [];
+    let allBlogs: AdminBlog[] = [];
 
     try {
         allBlogs = await db

@@ -9,26 +9,10 @@ import { confirmToast } from '@/components/misc/confirm';
 import SmartTooltip from '@/components/misc/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
-
-interface AdminBlog {
-    id: number;
-    title: string;
-    slug: string;
-    excerpt: string | null;
-    cover_image: string | null;
-    is_published: boolean;
-    published_date: string | Date | null;
-    views: number;
-    created_at: string | Date;
-    author: {
-        id: number;
-        name: string;
-        email: string;
-        profile_image: string | null;
-    };
-}
+import type { AdminBlog } from '@/types/blogs';
 
 export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) {
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -73,6 +57,11 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
             isLoading: deletingId === blog.id && isDeleting,
             onConfirm: () => {
                 deleteBlog(null, {
+                    onSuccess: async () => {
+                        if (blog.cover_image) {
+                            await deleteFromCloudinary(blog.cover_image);
+                        }
+                    },
                     onSettled: () => setDeletingId(null),
                 });
             },

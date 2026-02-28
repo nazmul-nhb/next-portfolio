@@ -45,9 +45,9 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                 deleteProject(null, {
                     onSuccess: async () => {
                         await Promise.all(
-                            [favicon, ...screenshots].map((publicId) =>
-                                deleteFromCloudinary(publicId)
-                            )
+                            [favicon, ...screenshots].map((publicId) => {
+                                return deleteFromCloudinary(publicId);
+                            })
                         );
                     },
                     onSettled: () => setDeletingId(null),
