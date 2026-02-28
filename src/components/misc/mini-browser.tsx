@@ -32,7 +32,7 @@ html::-webkit-scrollbar-thumb{background:var(--sb-thumb);border-radius:2px;borde
 
 /** Build the proxied URL so the iframe is same-origin and we can inject CSS. */
 function proxyUrl(url: string) {
-    return `/api/proxy?url=${encodeURIComponent(url)}`;
+    return `/api/proxy?url=${encodeURIComponent(url)}&v=${Date.now()}`;
 }
 
 /** Calculate browser window dimensions from viewport size. */
@@ -86,6 +86,8 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
     const [isLoading, setIsLoading] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
+    const [mode, setMode] = useState<'direct' | 'proxy'>('direct');
+    const [iframeSrc, setIframeSrc] = useState(url);
     const [size, setSize] = useState({ width: 0, height: 0 });
 
     sizeRef.current = size;
@@ -137,18 +139,31 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                     doc.head.appendChild(style);
                 }
             }
-        } catch (error) {
-            console.error('Failed to inject scrollbar CSS into iframe:', error);
-        }
+        } catch {}
     }, []);
 
     /* ---------- Refresh ---------- */
     const handleRefresh = useCallback(() => {
         if (iframeRef.current) {
             setIsLoading(true);
-            iframeRef.current.src = proxyUrl(url);
+            iframeRef.current.src = mode === 'proxy' ? proxyUrl(url) : url;
         }
+    }, [mode, url]);
+
+    /* ---------- Change browsing mode ---------- */
+    const toggleMode = useCallback(() => {
+        setIsLoading(true);
+        setMode((prev) => {
+            const next = prev === 'direct' ? 'proxy' : 'direct';
+            setIframeSrc(next === 'proxy' ? proxyUrl(url) : url);
+            return next;
+        });
     }, [url]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        setIframeSrc(mode === 'proxy' ? proxyUrl(url) : url);
+    }, [mode, url]);
 
     /* ---------- Edge / corner resize ---------- */
     const handleResize = useCallback((dir: 'e' | 's' | 'se', e: ReactPointerEvent) => {
@@ -254,6 +269,13 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                         className="flex items-center gap-1"
                         onPointerDown={(e) => e.stopPropagation()}
                     >
+                        <Button
+                            className="h-7 px-2 text-[11px]"
+                            onClick={toggleMode}
+                            variant="ghost"
+                        >
+                            {mode === 'direct' ? 'Direct' : 'Proxy'}
+                        </Button>
                         <Button onClick={handleRefresh} size="icon-sm" variant="ghost">
                             <SmartTooltip
                                 content="Refresh"
@@ -314,7 +336,7 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                     draggable
                     onLoad={handleIframeLoad}
                     ref={iframeRef}
-                    src={proxyUrl(url)}
+                    src={iframeSrc}
                     title={title || 'Live Preview'}
                 />
 

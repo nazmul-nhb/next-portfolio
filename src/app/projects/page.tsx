@@ -3,6 +3,7 @@ import { Globe } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { truncateString } from 'nhb-toolbox';
 import { FaGitAlt } from 'react-icons/fa';
 import {
     FadeInUp,
@@ -99,7 +100,7 @@ export default async function ProjectsPage() {
 
                                         {/* Description */}
                                         <p className="mb-4 line-clamp-3 flex-1 text-sm text-muted-foreground">
-                                            {project.description}
+                                            {truncateString(project.description, 216)}
                                         </p>
 
                                         {/* Tech Stack */}

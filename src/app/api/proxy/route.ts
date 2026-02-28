@@ -21,6 +21,53 @@ const REGISTER_SW_LINK_RE =
     /<link\b[^>]*\bhref=(['"])[^'"]*registerSW(?:\.[^'"]+)?\.js[^'"]*\1[^>]*>/gi;
 
 /**
+ * Align iframe location path with the target URL path before SPA boot.
+ * Without this, frameworks may see `/api/proxy` and render their 404 page.
+ */
+function buildHistoryAlignScript(targetUrl: string) {
+    const safe = JSON.stringify(targetUrl);
+
+    return /*html*/ `
+<script data-mini-browser-history>
+    (() => {
+        try {
+            const target = new URL(${safe});
+            const nextPath = target.pathname.concat(target.search, target.hash) || '/';
+
+            const currentPath = window.location.pathname.concat(
+                window.location.search,
+                window.location.hash
+            );
+
+            // Use an absolute same-origin URL. With <base href="https://..."> present,
+            // a relative "/" would resolve to the external origin and throw SecurityError.
+            if (currentPath !== nextPath) {
+                const sameOriginUrl = window.location.origin.concat(
+                    nextPath.startsWith('/') ? nextPath : '/'.concat(nextPath)
+                );
+                history.replaceState(null, '', sameOriginUrl);
+            }
+        } catch {
+            // Do nothing...
+        }
+    })();
+</script>`;
+}
+
+/**
+ * Remove top-level CSP meta from proxied pages so our injected script can run.
+ * Some pages define restrictive `script-src` that blocks inline bootstrap fixes.
+ */
+const CSP_META_RE = /<meta\b[^>]*http-equiv=(['"])Content-Security-Policy\1[^>]*>/gi;
+
+/**
+ * Remove top-level frame-ancestors CSP meta from proxied pages.
+ * It can block iframe embedding even though we're proxying HTML.
+ */
+const FRAME_ANCESTORS_META_RE =
+    /<meta\b[^>]*content=(['"])[^'"]*frame-ancestors[^'"]*\1[^>]*>/gi;
+
+/**
  * Proxy route that fetches external HTML, injects a `<base>` tag
  * (so relative resources resolve against the original domain) and
  * appends custom scrollbar CSS. The iframe loads this same-origin
@@ -62,16 +109,20 @@ export async function GET(req: NextRequest) {
         // cross-origin service-worker registration errors in the iframe.
         html = html.replaceAll(REGISTER_SW_SCRIPT_RE, '');
         html = html.replaceAll(REGISTER_SW_LINK_RE, '');
+        html = html.replaceAll(CSP_META_RE, '');
+        html = html.replaceAll(FRAME_ANCESTORS_META_RE, '');
 
         // Inject <base> so relative URLs (CSS, JS, images) still resolve
         // against the original domain. Insert right after <head> if present.
         const baseTag = `<base href="${url}">`;
+        const historyAlignScript = buildHistoryAlignScript(url);
+        const injectedHead = `${baseTag}${SCROLLBAR_CSS}${historyAlignScript}`;
 
         if (/<head[^>]*>/i.test(html)) {
-            html = html.replace(/(<head[^>]*>)/i, `$1${baseTag}${SCROLLBAR_CSS}`);
+            html = html.replace(/(<head[^>]*>)/i, `$1${injectedHead}`);
         } else {
             // Fallback: prepend to the HTML
-            html = `${baseTag}${SCROLLBAR_CSS}${html}`;
+            html = `${injectedHead}${html}`;
         }
 
         return new NextResponse(html, {
@@ -80,8 +131,8 @@ export async function GET(req: NextRequest) {
                 'Content-Type': 'text/html; charset=utf-8',
                 // Prevent the proxied page from breaking out of the iframe
                 'X-Frame-Options': 'SAMEORIGIN',
-                // Don't cache proxy responses for long
-                'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+                // Avoid stale injected scripts while iterating on proxy behavior.
+                'Cache-Control': 'no-store, max-age=0',
             },
         });
     } catch {
