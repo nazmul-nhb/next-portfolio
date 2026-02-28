@@ -65,6 +65,7 @@ export default async function AboutPage() {
                                 alt={siteConfig.name}
                                 className="size-16 rounded-full object-cover"
                                 height={320}
+                                loading="eager"
                                 src={buildCloudinaryUrl(adminImage)}
                                 width={320}
                             />
@@ -180,6 +181,7 @@ export default async function AboutPage() {
                                         alt={skill.title}
                                         className="h-5 w-5 object-contain"
                                         height={20}
+                                        loading="eager"
                                         src={buildCloudinaryUrl(skill.icon)}
                                         width={20}
                                     />

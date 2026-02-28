@@ -78,6 +78,7 @@ export async function RecentBlogsSection() {
                                             alt={blog.title}
                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={200}
+                                            loading="eager"
                                             src={buildCloudinaryUrl(blog.cover_image)}
                                             width={360}
                                         />

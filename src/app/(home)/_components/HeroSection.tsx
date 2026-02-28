@@ -188,6 +188,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                         alt={siteConfig.name}
                                         className="size-80 rounded-full object-cover"
                                         height={512}
+                                        preload
                                         quality={100}
                                         src={buildCloudinaryUrl(heroImage)}
                                         width={512}

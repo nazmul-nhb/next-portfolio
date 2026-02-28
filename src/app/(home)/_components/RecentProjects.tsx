@@ -56,6 +56,7 @@ export async function RecentProjectsSection() {
                                             alt={project.title}
                                             className="aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={360}
+                                            loading="eager"
                                             src={buildCloudinaryUrl(project.screenshots[0])}
                                             width={640}
                                         />
@@ -68,6 +69,7 @@ export async function RecentProjectsSection() {
                                                 alt={project.title}
                                                 className="h-5 w-5 rounded"
                                                 height={20}
+                                                loading="eager"
                                                 src={buildCloudinaryUrl(project.favicon)}
                                                 width={20}
                                             />

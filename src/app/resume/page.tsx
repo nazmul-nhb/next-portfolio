@@ -276,6 +276,7 @@ export default async function ResumePage() {
                                         alt={skill.title}
                                         className="h-3.5 w-3.5 object-contain"
                                         height={14}
+                                        loading="eager"
                                         src={buildCloudinaryUrl(skill.icon)}
                                         width={14}
                                     />
