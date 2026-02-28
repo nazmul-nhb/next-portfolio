@@ -11,8 +11,8 @@ import {
     StaggerContainer,
 } from '@/components/misc/animations';
 import { DownloadResumeButton } from '@/components/misc/download-resume-button';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
-import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
@@ -23,13 +23,11 @@ import type { SelectSkill } from '@/types/skills';
 
 export const metadata: Metadata = {
     title: 'Resume',
-    description: 'Resume - Full-Stack Web Developer.',
+    description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
 };
 
 /** Resume / CV page with downloadable PDF option. */
 export default async function ResumePage() {
-    const session = await auth();
-
     // Fetch all data
     let allSkills: SelectSkill[] = [];
     let allExperiences: SelectExperience[] = [];
@@ -40,7 +38,7 @@ export default async function ResumePage() {
         profile_image?: string | null;
     } = {
         name: siteConfig.name,
-        email: 'contact@example.com',
+        email: ENV.adminEmail,
     };
 
     try {
@@ -55,24 +53,21 @@ export default async function ResumePage() {
         allEducation = await db.select().from(education).orderBy(desc(education.start_date));
 
         // Get user data if logged in
-        if (session?.user?.id) {
-            const userId = +session.user.id;
-            const [user] = await db
-                .select({
-                    name: users.name,
-                    email: users.email,
-                    profile_image: users.profile_image,
-                })
-                .from(users)
-                .where(eq(users.id, userId))
-                .limit(1);
-            if (user) {
-                userData = {
-                    name: user.name,
-                    email: user.email || 'contact@example.com',
-                    profile_image: user.profile_image,
-                };
-            }
+        const [user] = await db
+            .select({
+                name: users.name,
+                email: users.email,
+                profile_image: users.profile_image,
+            })
+            .from(users)
+            .where(eq(users.email, ENV.adminEmail))
+            .limit(1);
+        if (user) {
+            userData = {
+                name: user.name || siteConfig.name,
+                email: user.email || ENV.adminEmail,
+                profile_image: user.profile_image,
+            };
         }
     } catch (error) {
         console.error('Failed to fetch resume data:', error);
@@ -98,7 +93,7 @@ export default async function ResumePage() {
                                 className="inline-flex items-center gap-1 hover:text-foreground"
                                 href={`mailto:${userData.email}`}
                             >
-                                <Mail className="h-3.5 w-3.5 shrink-0" />
+                                <Mail className="size-3.5 shrink-0" />
                                 <span className="truncate">{userData.email}</span>
                             </a>
                             <a
@@ -107,7 +102,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <FiGithub className="h-3.5 w-3.5 shrink-0" />
+                                <FiGithub className="size-3.5 shrink-0" />
                                 GitHub
                             </a>
                             <a
@@ -116,7 +111,7 @@ export default async function ResumePage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <FiLinkedin className="h-3.5 w-3.5 shrink-0 mb-0.5" />
+                                <FiLinkedin className="size-3.5 shrink-0 mb-0.5" />
                                 LinkedIn
                             </a>
                         </div>
@@ -168,7 +163,7 @@ export default async function ResumePage() {
                                             {exp.start_date} – {exp.end_date || 'Present'}
                                         </span>
                                     </div>
-                                    <p className="mt-2 text-sm text-muted-foreground">
+                                    <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
                                         {exp.description}
                                     </p>
                                     {exp.achievements.length > 0 && (
@@ -234,7 +229,7 @@ export default async function ResumePage() {
                                         </p>
                                     )}
                                     {edu.description && (
-                                        <p className="mt-1 text-sm text-muted-foreground">
+                                        <p className="border-l-8 border-l-secondary pl-2 mt-1 text-sm text-muted-foreground">
                                             {edu.description}
                                         </p>
                                     )}
@@ -276,7 +271,7 @@ export default async function ResumePage() {
                                 >
                                     <Image
                                         alt={skill.title}
-                                        className="h-3.5 w-3.5 object-contain"
+                                        className="size-3.5 object-contain"
                                         height={14}
                                         loading="eager"
                                         src={buildCloudinaryUrl(skill.icon)}

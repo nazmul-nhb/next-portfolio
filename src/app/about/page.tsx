@@ -111,7 +111,7 @@ export default async function AboutPage() {
                                 <p className="mb-2 text-sm font-medium text-primary">
                                     {exp.company} • {exp.location}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="border-l-8 border-l-secondary pl-2 text-sm text-muted-foreground">
                                     {exp.description}
                                 </p>
                             </div>
@@ -143,8 +143,7 @@ export default async function AboutPage() {
                                     Grade: {edu.grade}
                                 </p>
                             )}
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                {/* • {edu.achievements?.join(' • ')} */}
+                            <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
                                 {edu.description}
                             </p>
                         </div>
