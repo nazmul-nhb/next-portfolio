@@ -42,7 +42,7 @@ export async function RecentBlogsSection() {
     if (!recentBlogs.length) return null;
 
     return (
-        <section className="border-t border-border/50 bg-muted/30 py-8 sm:py-14 md:py-20">
+        <section className="py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
                 <div className="mb-12 flex items-center justify-between">
                     <SectionHeading subtitle="Thoughts, insights, and tutorials">

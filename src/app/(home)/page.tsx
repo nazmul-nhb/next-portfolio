@@ -46,8 +46,8 @@ export default async function HomePage() {
             <HeroSection adminImage={adminImage} />
             <SkillsSection skills={allSkills} />
             <RecentProjectsSection />
-            <RecentBlogsSection />
             <CareerHighlightsSection />
+            <RecentBlogsSection />
             <TestimonialsSection />
         </div>
     );

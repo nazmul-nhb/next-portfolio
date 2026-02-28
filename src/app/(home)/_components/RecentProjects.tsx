@@ -2,6 +2,7 @@ import { desc } from 'drizzle-orm';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { truncateString } from 'nhb-toolbox';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
@@ -76,8 +77,8 @@ export async function RecentProjectsSection() {
                                         )}
                                         <h3 className="font-semibold">{project.title}</h3>
                                     </div>
-                                    <p className="mb-4 line-clamp-2 flex-1 text-sm text-muted-foreground">
-                                        {project.description}
+                                    <p className="mb-4 line-clamp-3 flex-1 text-sm text-muted-foreground">
+                                        {truncateString(project.description, 216)}
                                     </p>
                                     <div className="mb-3 flex flex-wrap gap-1.5">
                                         {project.tech_stack.slice(0, 4).map((tech) => (
