@@ -3,6 +3,7 @@
 import { Calendar, Edit, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useMount } from 'nhb-hooks';
 import { formatDate } from 'nhb-toolbox';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
@@ -29,7 +30,7 @@ interface BlogContentProps {
 export function BlogContent({ blog, tags, categories }: BlogContentProps) {
     const { profile } = useUserStore();
 
-    return (
+    return useMount(
         <div>
             <FadeIn>
                 {blog.cover_image && (

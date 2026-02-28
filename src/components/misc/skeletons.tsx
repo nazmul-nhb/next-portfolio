@@ -1,3 +1,4 @@
+import { Fragment } from 'react/jsx-runtime';
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -94,14 +95,13 @@ function ChatAreaSkeleton() {
     );
 }
 
-/** Full messages page skeleton — sidebar + chat area split. */
-function MessagesPageSkeleton({
-    mobile,
-    isChatOpen,
-}: {
+type MessagesPageProps = {
     mobile: boolean;
     isChatOpen: boolean;
-}) {
+};
+
+/** Full messages page skeleton — sidebar + chat area split. */
+function MessagesPageSkeleton({ mobile, isChatOpen }: MessagesPageProps) {
     return (
         <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl overflow-hidden border-x border-border/30">
             <div
@@ -129,7 +129,7 @@ function MessagesPageSkeleton({
 /** Skeleton for the mini chat panel inside the bubble. */
 function BubbleChatPanelSkeleton() {
     return (
-        <>
+        <Fragment>
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b border-border/50 px-3 py-2">
                 <SkeletonCircle className="size-7" size="xs" />
@@ -163,7 +163,7 @@ function BubbleChatPanelSkeleton() {
                 <Skeleton className="h-8 flex-1 rounded-md" />
                 <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
             </div>
-        </>
+        </Fragment>
     );
 }
 

@@ -9,6 +9,7 @@ import { FaGitAlt } from 'react-icons/fa';
 import LivePreviewButton from '@/app/projects/[id]/_components/LivePreviewButton';
 import ScreenshotGallery from '@/app/projects/[id]/_components/ScreenshotGallery';
 import { FadeInUp, SlideInLeft, SlideInRight } from '@/components/misc/animations';
+import ShareButton from '@/components/misc/share-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
@@ -123,6 +124,14 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                             favicon={project.favicon}
                             title={project.title}
                             url={project.live_link}
+                        />
+                        <ShareButton
+                            buttonLabel="Share"
+                            buttonProps={{
+                                size: 'default',
+                            }}
+                            shareLabel="Share this project"
+                            shareText={project.title}
                         />
                     </div>
                 </div>
