@@ -99,7 +99,7 @@ export default async function ProjectsPage() {
                                         </div>
 
                                         {/* Description */}
-                                        <p className="mb-4 line-clamp-3 flex-1 text-sm text-muted-foreground">
+                                        <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">
                                             {truncateString(project.description, 216)}
                                         </p>
 

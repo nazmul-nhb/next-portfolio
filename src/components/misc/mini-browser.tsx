@@ -160,7 +160,9 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                     doc.head.appendChild(style);
                 }
             }
-        } catch {}
+        } catch {
+            // Do nothing...
+        }
     }, []);
 
     /* ---------- Refresh ---------- */
