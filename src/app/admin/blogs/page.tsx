@@ -4,8 +4,13 @@ import { blogs } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import type { AdminBlog } from '@/types/blogs';
 import { AdminBlogsClient } from './_components/AdminBlogsClient';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Manage Blogs » Admin Dashboard',
+};
 
 export default async function AdminBlogsPage() {
     let allBlogs: AdminBlog[] = [];

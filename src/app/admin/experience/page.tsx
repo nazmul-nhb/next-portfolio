@@ -1,9 +1,14 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectExperience } from '@/types/career';
 import { ExperiencesClient } from './_components/ExperiencesClient';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Manage Experiences » Admin Dashboard',
+};
 
 export default async function ExperiencePage() {
     try {

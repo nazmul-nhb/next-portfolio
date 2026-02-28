@@ -1,8 +1,13 @@
 import { desc } from 'drizzle-orm';
+import type { Metadata } from 'next';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import type { SelectTestimonial } from '@/types/testimonials';
 import { TestimonialsClient } from './_components/TestimonialsClient';
+
+export const metadata: Metadata = {
+    title: 'Manage Testimonials » Admin Dashboard',
+};
 
 export default async function TestimonialsPage() {
     let allTestimonials: SelectTestimonial[] = [];

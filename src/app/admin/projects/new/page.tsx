@@ -1,10 +1,15 @@
 'use client';
 
+import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
 import { ProjectForm } from '@/components/forms/project-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertProject } from '@/types/projects';
+
+export const metadata: Metadata = {
+    title: 'Add New Project » Admin Dashboard',
+};
 
 export default function NewProjectPage() {
     const router = useRouter();

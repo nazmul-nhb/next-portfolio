@@ -1,8 +1,13 @@
 import { eq } from 'drizzle-orm';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import { EditTestimonialClient } from './_components/EditTestimonialClient';
+
+export const metadata: Metadata = {
+    title: 'Edit Testimonial » Admin Dashboard',
+};
 
 export default async function EditTestimonialPage({
     params,

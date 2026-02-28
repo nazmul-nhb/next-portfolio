@@ -1,9 +1,14 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { httpRequest } from '@/lib/actions/baseRequest';
 import type { SelectEducation } from '@/types/career';
 import { EducationClient } from './_components/EducationClient';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Manage Education » Admin Dashboard',
+};
 
 export default async function EducationPage() {
     try {

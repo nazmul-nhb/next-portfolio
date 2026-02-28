@@ -1,9 +1,14 @@
 import { eq } from 'drizzle-orm';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { education } from '@/lib/drizzle/schema';
 import type { SelectEducation } from '@/types/career';
 import { EditEducationClient } from './_components/EditEducationClient';
+
+export const metadata: Metadata = {
+    title: 'Edit Education » Admin Dashboard',
+};
 
 export default async function EditEducationPage({
     params,

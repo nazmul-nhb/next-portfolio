@@ -1,10 +1,15 @@
 import { eq } from 'drizzle-orm';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema';
 import { EditSkillClient } from './_components/EditSkillClient';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Edit Skill » Admin Dashboard',
+};
 
 export default async function EditSkillPage({ params }: PageProps<'/admin/skills/[id]'>) {
     const resolvedParams = await params;

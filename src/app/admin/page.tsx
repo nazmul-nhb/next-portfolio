@@ -10,6 +10,7 @@ import {
     Tag,
     Users,
 } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/lib/drizzle';
@@ -26,6 +27,10 @@ import {
 } from '@/lib/drizzle/schema';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+    title: 'Admin Dashboard',
+};
 
 export default async function AdminDashboard() {
     let stats = {

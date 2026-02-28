@@ -1,10 +1,15 @@
 'use client';
 
+import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
 import { ExperienceForm } from '@/components/forms/experience-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { InsertExperience, UpdateExperience } from '@/types/career';
+
+export const metadata: Metadata = {
+    title: 'Add New Experience » Admin Dashboard',
+};
 
 export default function NewExperiencePage() {
     const router = useRouter();
