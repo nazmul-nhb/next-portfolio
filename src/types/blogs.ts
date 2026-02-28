@@ -58,3 +58,14 @@ export interface BLogReactions {
 }
 
 export type SelectCategory = ReplaceDate<typeof categories.$inferSelect>;
+
+export type RecentBlog = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image: string | null;
+    views: number;
+    published_date: Date | null;
+    author: BlogAuthor;
+};

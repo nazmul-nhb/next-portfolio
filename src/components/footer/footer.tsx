@@ -1,12 +1,10 @@
-'use client';
-
 import type { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
+import FooterBottom from '@/components/footer/footer-bottom';
 import { siteConfig } from '@/configs/site';
-import { getCurrentYear } from '@/lib/utils';
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     github: FiGithub,
@@ -41,6 +39,7 @@ export default function Footer() {
                                 alt={siteConfig.name}
                                 className="h-8 w-8 rounded-full object-fit"
                                 height={520}
+                                loading="eager"
                                 quality={100}
                                 src={siteConfig.logoSvg}
                                 width={520}
@@ -98,6 +97,7 @@ export default function Footer() {
                             <div className="flex flex-col items-center gap-2.5 md:items-start">
                                 {Object.entries(siteConfig.links).map(([name, url]) => {
                                     const Icon = socialIcons[name];
+
                                     return (
                                         <a
                                             className="inline-flex items-center gap-2 text-sm text-muted-foreground capitalize transition-colors hover:text-foreground"
@@ -117,14 +117,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-border/40 pt-6 sm:flex-row">
-                    <p className="text-xs text-muted-foreground">
-                        &copy; {getCurrentYear()} {siteConfig.name}. All rights reserved.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                        Built with Next.js & TypeScript
-                    </p>
-                </div>
+                <FooterBottom />
             </div>
         </footer>
     );
