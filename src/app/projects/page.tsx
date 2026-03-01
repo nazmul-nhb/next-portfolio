@@ -138,7 +138,7 @@ export default async function ProjectsPage() {
                                         )}
 
                                         {/* Links – raised above overlay */}
-                                        <div className="relative z-10 mt-auto flex items-center gap-3 border-t border-border/50 pt-4">
+                                        <div className="relative z-10 mt-auto flex flex-wrap items-center gap-3 border-t border-border/50 pt-4">
                                             <a
                                                 className="flex items-center gap-1.5 text-sm text-primary hover:underline"
                                                 href={project.live_link}
