@@ -1,6 +1,7 @@
 import './globals.css';
 
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
@@ -90,6 +91,7 @@ export default function RootLayout({ children }: RootProps) {
                                     zIndex={9999}
                                 />
                                 <SpeedInsights />
+                                <Analytics />
                                 <AuthSync />
                                 <Navbar />
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
