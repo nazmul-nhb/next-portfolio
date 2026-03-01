@@ -1,6 +1,6 @@
 import { asc } from 'drizzle-orm';
-import { Star } from 'lucide-react';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
+import RatingStars from '@/components/misc/rating-stars';
 import UserAvatar from '@/components/misc/user-avatar';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
@@ -39,18 +39,7 @@ export async function TestimonialsSection() {
                     {allTestimonials.map((t) => (
                         <MotionCard key={t.id}>
                             <div className="flex h-full flex-col rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
-                                <div className="mb-4 flex gap-1">
-                                    {Array.from({ length: 5 }).map((_, idx) => (
-                                        <Star
-                                            className={`h-4 w-4 ${
-                                                idx < t.rating
-                                                    ? 'fill-yellow-400 text-yellow-400'
-                                                    : 'text-muted-foreground'
-                                            }`}
-                                            key={idx}
-                                        />
-                                    ))}
-                                </div>
+                                <RatingStars className="mb-4" rating={t.rating} />
                                 <p className="mb-6 flex-1 text-sm leading-relaxed italic text-muted-foreground">
                                     &ldquo;{t.content}&rdquo;
                                 </p>

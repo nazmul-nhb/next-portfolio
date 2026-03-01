@@ -1,9 +1,10 @@
 'use client';
 
-import { MessageSquareQuote, Pencil, Plus, Star, Trash2 } from 'lucide-react';
+import { MessageSquareQuote, Pencil, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
+import RatingStars from '@/components/misc/rating-stars';
 import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -116,18 +117,10 @@ export function TestimonialsClient({ initialData }: Props) {
                                                         ` at ${testimonial.client_company}`}
                                                 </p>
                                             )}
-                                            <div className="mt-1 flex gap-1">
-                                                {Array.from({ length: 5 }).map((_, idx) => (
-                                                    <Star
-                                                        className={`size-4 ${
-                                                            idx < testimonial.rating
-                                                                ? 'fill-yellow-400 text-yellow-400'
-                                                                : 'text-muted-foreground'
-                                                        }`}
-                                                        key={idx}
-                                                    />
-                                                ))}
-                                            </div>
+                                            <RatingStars
+                                                className="mt-1"
+                                                rating={testimonial.rating}
+                                            />
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
