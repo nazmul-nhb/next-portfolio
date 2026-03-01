@@ -148,7 +148,7 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                         </div>
                         <div className="flex-1">
                             <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
-                                <h1 className="text-3xl font-bold">{user.name}</h1>
+                                <h1 className="text-2xl md:text-3xl font-bold">{user.name}</h1>
                                 {user.role === 'admin' && (
                                     <Badge
                                         className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
