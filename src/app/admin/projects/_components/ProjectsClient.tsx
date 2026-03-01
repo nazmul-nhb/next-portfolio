@@ -61,14 +61,14 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Projects</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Projects</h1>
                     <p className="text-muted-foreground">Manage your portfolio projects</p>
                 </div>
                 <Link href="/admin/projects/new">
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="size-4" />
                         Add Project
                     </Button>
                 </Link>
@@ -80,7 +80,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                         <p className="mb-4 text-muted-foreground">No projects yet</p>
                         <Link href={'/admin/projects/new'}>
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="size-4" />
                                 Create Your First Project
                             </Button>
                         </Link>
@@ -156,7 +156,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                         <span>{project.screenshots.length} screenshots</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <a
                                             className="flex items-center gap-1.5 text-sm text-primary hover:underline"
                                             href={project.live_link}

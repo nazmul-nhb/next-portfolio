@@ -166,10 +166,10 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                 </span>
                                 {message.subject && (
                                     <Fragment>
-                                        <span className="text-muted-foreground/40">
+                                        <span className="hidden sm:inline-block text-muted-foreground/40">
                                             &middot;
                                         </span>
-                                        <span className="truncate text-sm text-muted-foreground">
+                                        <span className="hidden sm:inline-block truncate text-sm text-muted-foreground">
                                             {message.subject}
                                         </span>
                                     </Fragment>
@@ -197,9 +197,9 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                                     content={message.is_read ? 'Mark unread' : 'Mark read'}
                                     trigger={
                                         message.is_read ? (
-                                            <MailOpen className="h-3.5 w-3.5" />
+                                            <MailOpen className="size-3.5" />
                                         ) : (
-                                            <Check className="h-3.5 w-3.5" />
+                                            <Check className="size-3.5" />
                                         )
                                     }
                                 />
@@ -212,9 +212,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                             >
                                 <SmartTooltip
                                     content="Delete"
-                                    trigger={
-                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                                    }
+                                    trigger={<Trash2 className="size-3.5 text-destructive" />}
                                 />
                             </Button>
                         </div>

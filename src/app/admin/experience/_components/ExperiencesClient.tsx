@@ -60,14 +60,14 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Experience</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Experience</h1>
                     <p className="text-muted-foreground">Manage your work experience</p>
                 </div>
                 <Link href="/admin/experience/new">
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="size-4" />
                         Add Experience
                     </Button>
                 </Link>
@@ -76,11 +76,11 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
             {experiences.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
-                        <Briefcase className="mb-4 h-12 w-12 text-muted-foreground" />
+                        <Briefcase className="mb-4 size-12 text-muted-foreground" />
                         <p className="mb-4 text-muted-foreground">No experience entries yet</p>
                         <Link href="/admin/experience/new">
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="size-4" />
                                 Add Your First Experience
                             </Button>
                         </Link>
@@ -92,12 +92,12 @@ export function ExperiencesClient({ initialExperiences }: ExperiencesClientProps
                         <Card key={exp.id}>
                             <CardHeader>
                                 <div className="flex items-start justify-between">
-                                    <div className="flex gap-4">
+                                    <div className="flex items-start justify-start gap-2">
                                         {exp.company_logo && (
-                                            <div className="size-12 overflow-hidden rounded-lg border">
+                                            <div className="size-8 sm:size-10 md:size-12 shrink-0 overflow-hidden">
                                                 <Image
                                                     alt={exp.company}
-                                                    className="object-contain"
+                                                    className="size-8 sm:size-10 md:size-12 aspect-square object-contain"
                                                     height={48}
                                                     src={buildCloudinaryUrl(exp.company_logo)}
                                                     width={48}

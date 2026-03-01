@@ -62,14 +62,14 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Education</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Education</h1>
                     <p className="text-muted-foreground">Manage your education history</p>
                 </div>
                 <Link href="/admin/education/new">
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="size-4" />
                         Add Education
                     </Button>
                 </Link>
@@ -78,11 +78,11 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
             {education.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
-                        <GraduationCap className="mb-4 h-12 w-12 text-muted-foreground" />
+                        <GraduationCap className="mb-4 size-12 text-muted-foreground" />
                         <p className="mb-4 text-muted-foreground">No education entries yet</p>
                         <Link href="/admin/education/new">
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="size-4" />
                                 Add Your First Education
                             </Button>
                         </Link>
@@ -94,12 +94,12 @@ export function EducationClient({ initialEducation }: EducationClientProps) {
                         <Card key={edu.id}>
                             <CardHeader>
                                 <div className="flex items-start justify-between">
-                                    <div className="flex gap-4">
+                                    <div className="flex items-start justify-start gap-2">
                                         {edu.institution_logo && (
-                                            <div className="size-12 rounded-lg border">
+                                            <div className="size-8 sm:size-10 md:size-12 shrink-0">
                                                 <Image
                                                     alt={edu.institution}
-                                                    className="object-contain"
+                                                    className="size-8 sm:size-10 md:size-12 object-contain"
                                                     height={48}
                                                     src={buildCloudinaryUrl(
                                                         edu.institution_logo

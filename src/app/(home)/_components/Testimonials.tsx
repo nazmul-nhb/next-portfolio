@@ -1,10 +1,10 @@
+import { asc } from 'drizzle-orm';
 import { Star } from 'lucide-react';
 import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/animations';
 import UserAvatar from '@/components/misc/user-avatar';
 import { db } from '@/lib/drizzle';
 import { testimonials } from '@/lib/drizzle/schema';
 import type { SelectTestimonial } from '@/types/testimonials';
-import { asc } from 'drizzle-orm';
 
 /**
  * Testimonials section displaying client feedback.
@@ -28,7 +28,7 @@ export async function TestimonialsSection() {
         <section className="border-t border-border/50 bg-muted/30 py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
                 <SectionHeading
-                    align="center"
+                    align="left"
                     className="mb-12"
                     subtitle="Feedback from colleagues and clients"
                 >

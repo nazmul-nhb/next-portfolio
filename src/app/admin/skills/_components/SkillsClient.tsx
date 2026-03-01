@@ -197,9 +197,9 @@ export function SkillsClient({ initialData }: Props) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Skills</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Skills</h1>
                     <p className="text-muted-foreground">
                         Manage your skills and technologies
                         {isReordering && (
@@ -208,7 +208,7 @@ export function SkillsClient({ initialData }: Props) {
                     </p>
                 </div>
                 <Button onClick={handleAdd}>
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="size-4" />
                     Add Skill
                 </Button>
             </div>
@@ -218,7 +218,7 @@ export function SkillsClient({ initialData }: Props) {
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No skills yet</p>
                         <Button onClick={handleAdd}>
-                            <Plus className="mr-2 h-4 w-4" />
+                            <Plus className="size-4" />
                             Add Your First Skill
                         </Button>
                     </CardContent>

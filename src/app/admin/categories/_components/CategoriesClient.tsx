@@ -1,11 +1,12 @@
 'use client';
 
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Calendar, CalendarCheck, Pencil, Plus, Trash2 } from 'lucide-react';
+import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { CategoryForm } from '@/components/forms/category-form';
 import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -96,13 +97,13 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Categories</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Categories</h1>
                     <p className="text-muted-foreground">Manage blog categories</p>
                 </div>
                 <Button onClick={handleCreate}>
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="size-4" />
                     Add Category
                 </Button>
             </div>
@@ -112,7 +113,7 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <p className="mb-4 text-muted-foreground">No categories yet</p>
                         <Button onClick={handleCreate}>
-                            <Plus className="mr-2 h-4 w-4" />
+                            <Plus className="size-4" />
                             Add Your First Category
                         </Button>
                     </CardContent>
@@ -149,6 +150,22 @@ export function CategoriesClient({ initialData }: { initialData: SelectCategory[
                                     </Button>
                                 </div>
                             </CardContent>
+                            <CardFooter className="px-4 flex flex-wrap gap-2 items-center text-xs text-muted-foreground">
+                                <p className="flex gap-1 items-center">
+                                    <Calendar className="size-3" />
+                                    {formatDate({
+                                        date: category.created_at,
+                                        format: 'mmm DD, YYYY hh:mm a',
+                                    })}
+                                </p>
+                                <p className="flex gap-1 items-center">
+                                    <CalendarCheck className="size-3" />
+                                    {formatDate({
+                                        date: category.updated_at,
+                                        format: 'mmm DD, YYYY hh:mm a',
+                                    })}
+                                </p>
+                            </CardFooter>
                         </Card>
                     ))}
                 </div>

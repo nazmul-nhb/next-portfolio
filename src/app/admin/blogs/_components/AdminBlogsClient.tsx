@@ -7,11 +7,12 @@ import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
 import SmartTooltip from '@/components/misc/smart-tooltip';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, cn } from '@/lib/utils';
 import type { AdminBlog } from '@/types/blogs';
 
 export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) {
@@ -73,12 +74,28 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Blog Management</h1>
-                <p className="text-muted-foreground">
-                    {blogs.length} total &middot; {publishedCount} published &middot;{' '}
-                    {draftCount} drafts
-                </p>
+            {/* Header with stats */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">Blog Management</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Manage blog posts and publish content
+                    </p>
+                </div>
+                <div className="flex gap-3">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-muted/40 px-3 py-1.5 text-sm">
+                        <span className="font-medium">{blogs.length}</span>
+                        <span className="text-muted-foreground">total</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-lg border border-green-200/60 bg-green-50/50 px-3 py-1.5 text-sm dark:border-green-800/40 dark:bg-green-950/30">
+                        <span className="font-medium">{publishedCount}</span>
+                        <span className="text-muted-foreground">published</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-lg border border-yellow-200/60 bg-yellow-50/50 px-3 py-1.5 text-sm dark:border-yellow-800/40 dark:bg-yellow-950/30">
+                        <span className="font-medium">{draftCount}</span>
+                        <span className="text-muted-foreground">drafts</span>
+                    </div>
+                </div>
             </div>
 
             {blogs.length === 0 ? (
@@ -88,66 +105,80 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {blogs.map((blog) => (
-                        <Card key={blog.id}>
-                            <CardContent className="flex items-center gap-4 p-4">
-                                {/* Cover thumbnail */}
-                                {blog.cover_image ? (
-                                    <Image
-                                        alt={blog.title}
-                                        className="h-16 w-24 shrink-0 rounded-lg object-cover"
-                                        height={64}
-                                        src={buildCloudinaryUrl(blog.cover_image)}
-                                        width={96}
-                                    />
-                                ) : (
-                                    <div className="flex h-16 w-24 shrink-0 items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
-                                        No image
-                                    </div>
+                        <Card
+                            className={cn(
+                                'relative overflow-hidden transition-shadow hover:shadow-md pt-3 pb-0',
+                                !blog.is_published && 'opacity-75'
+                            )}
+                            key={blog.id}
+                        >
+                            {/* Status indicator strip */}
+                            <div
+                                className={cn(
+                                    'absolute inset-x-0 top-0 h-1',
+                                    blog.is_published ? 'bg-green-500' : 'bg-yellow-500'
                                 )}
+                            />
 
-                                {/* Blog info */}
-                                <div className="min-w-0 flex-1">
-                                    <Link
-                                        className="line-clamp-1 font-semibold hover:text-primary"
-                                        href={`/blogs/${blog.slug}`}
-                                    >
-                                        {blog.title}
-                                    </Link>
-                                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                                        <span>by {blog.author.name}</span>
-                                        <span className="flex items-center gap-1">
-                                            <Calendar className="h-3 w-3" />
-                                            {formatDate({
-                                                date: blog.created_at,
-                                                format: 'mmm DD, yyyy',
-                                            })}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Eye className="h-3 w-3" />
-                                            {blog.views}
-                                        </span>
-                                        <span
-                                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                                blog.is_published
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                            }`}
-                                        >
-                                            {blog.is_published ? 'Published' : 'Draft'}
-                                        </span>
-                                    </div>
+                            <CardContent className="p-4 pt-5">
+                                {/* Cover image */}
+                                <div className="mb-3 overflow-hidden rounded-lg">
+                                    {blog.cover_image ? (
+                                        <Image
+                                            alt={blog.title}
+                                            className="h-40 w-full object-cover transition-transform hover:scale-105"
+                                            height={160}
+                                            src={buildCloudinaryUrl(blog.cover_image)}
+                                            width={400}
+                                        />
+                                    ) : (
+                                        <div className="flex h-40 w-full items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
+                                            No cover image
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Actions */}
-                                <div className="flex shrink-0 gap-1">
-                                    <Button
-                                        disabled={isToggling}
-                                        onClick={() => handleTogglePublish(blog)}
-                                        size="sm"
-                                        variant={blog.is_published ? 'outline' : 'default'}
+                                {/* Blog info */}
+                                <Link
+                                    className="group line-clamp-2 font-semibold leading-tight text-foreground transition-colors hover:text-primary"
+                                    href={`/blogs/${blog.slug}`}
+                                >
+                                    {blog.title}
+                                </Link>
+
+                                {/* Meta info */}
+                                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                    <span>by {blog.author.name}</span>
+                                    <span className="flex items-center gap-1">
+                                        <Calendar className="size-3" />
+                                        {formatDate({
+                                            date: blog.created_at,
+                                            format: 'mmm DD',
+                                        })}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Eye className="size-3" />
+                                        {blog.views}
+                                    </span>
+                                </div>
+
+                                {/* Status badge */}
+                                <div className="mt-3 flex items-center justify-between border-t border-border/40 pt-3">
+                                    <Badge
+                                        className={cn(
+                                            blog.is_published
+                                                ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
+                                                : 'border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
+                                        )}
+                                        variant="outline"
                                     >
+                                        {blog.is_published ? 'Published' : 'Draft'}
+                                    </Badge>
+
+                                    {/* Actions */}
+                                    <div className="flex gap-0.5">
                                         <SmartTooltip
                                             content={
                                                 blog.is_published
@@ -155,31 +186,41 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                                                     : 'Approve & Publish'
                                             }
                                             trigger={
-                                                blog.is_published ? (
-                                                    <span className="flex items-center">
-                                                        <X className="mr-1 h-3 w-3" />
-                                                        Unpublish
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center">
-                                                        <Check className="mr-1 h-3 w-3" />
-                                                        Approve
-                                                    </span>
-                                                )
+                                                <Button
+                                                    disabled={isToggling}
+                                                    onClick={() => handleTogglePublish(blog)}
+                                                    size="icon-sm"
+                                                    variant="ghost"
+                                                >
+                                                    {blog.is_published ? (
+                                                        <X className="size-4" />
+                                                    ) : (
+                                                        <Check className="size-4" />
+                                                    )}
+                                                </Button>
                                             }
                                         />
-                                    </Button>
-                                    <Button
-                                        disabled={deletingId === blog.id && isDeleting}
-                                        loading={deletingId === blog.id && isDeleting}
-                                        onClick={() => handleDelete(blog)}
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        {(deletingId === blog.id && isDeleting) || (
-                                            <Trash2 className="h-3 w-3 text-destructive" />
-                                        )}
-                                    </Button>
+                                        <SmartTooltip
+                                            content="Delete blog"
+                                            trigger={
+                                                <Button
+                                                    disabled={
+                                                        deletingId === blog.id && isDeleting
+                                                    }
+                                                    loading={
+                                                        deletingId === blog.id && isDeleting
+                                                    }
+                                                    onClick={() => handleDelete(blog)}
+                                                    size="icon-sm"
+                                                    variant="ghost"
+                                                >
+                                                    {(deletingId === blog.id && isDeleting) || (
+                                                        <Trash2 className="size-4 text-destructive" />
+                                                    )}
+                                                </Button>
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

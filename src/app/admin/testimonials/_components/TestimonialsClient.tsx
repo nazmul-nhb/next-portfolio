@@ -1,15 +1,14 @@
 'use client';
 
 import { MessageSquareQuote, Pencil, Plus, Star, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { buildCloudinaryUrl } from '@/lib/utils';
 import type { SelectTestimonial } from '@/types/testimonials';
 
 interface Props {
@@ -66,16 +65,16 @@ export function TestimonialsClient({ initialData }: Props) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Testimonials</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Testimonials</h1>
                     <p className="text-muted-foreground">
                         Manage client testimonials and feedback
                     </p>
                 </div>
                 <Link href="/admin/testimonials/new">
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="size-4" />
                         Add Testimonial
                     </Button>
                 </Link>
@@ -88,7 +87,7 @@ export function TestimonialsClient({ initialData }: Props) {
                         <p className="mb-4 text-muted-foreground">No testimonials yet</p>
                         <Link href="/admin/testimonials/new">
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="size-4" />
                                 Add Your First Testimonial
                             </Button>
                         </Link>
@@ -100,20 +99,12 @@ export function TestimonialsClient({ initialData }: Props) {
                         <Card key={testimonial.id}>
                             <CardHeader>
                                 <div className="flex items-start justify-between">
-                                    <div className="flex gap-4">
-                                        {testimonial.client_avatar && (
-                                            <div className="size-12 overflow-hidden rounded-full border">
-                                                <Image
-                                                    alt={testimonial.client_name}
-                                                    className="object-cover"
-                                                    height={48}
-                                                    src={buildCloudinaryUrl(
-                                                        testimonial.client_avatar
-                                                    )}
-                                                    width={48}
-                                                />
-                                            </div>
-                                        )}
+                                    <div className="flex items-start justify-start gap-2">
+                                        <UserAvatar
+                                            className="size-9 md:size-12 mt-2 md:mt-0"
+                                            image={testimonial.client_avatar}
+                                            name={testimonial.client_name}
+                                        />
                                         <div>
                                             <CardTitle className="text-xl">
                                                 {testimonial.client_name}

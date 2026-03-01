@@ -106,7 +106,7 @@ export default function UserCard({ userData }: Props) {
     return (
         <Card
             className={cn(
-                'relative overflow-hidden transition-shadow hover:shadow-md',
+                'relative overflow-hidden transition-shadow hover:shadow-md pt-3 pb-0',
                 !userData.is_active && 'opacity-60'
             )}
             key={userData.id}
