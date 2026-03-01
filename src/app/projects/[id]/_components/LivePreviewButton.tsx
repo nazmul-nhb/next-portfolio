@@ -20,7 +20,7 @@ export default function LivePreviewButton({ url, title, favicon }: LivePreviewBu
         <Fragment>
             <Button className="gap-2" onClick={() => setIsOpen(true)}>
                 <Play className="size-4" />
-                Live Preview
+                Preview
             </Button>
             <a href={url} rel="noopener noreferrer" target="_blank">
                 <Button className="gap-2" variant="outline">

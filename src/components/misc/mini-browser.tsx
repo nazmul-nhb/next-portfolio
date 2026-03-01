@@ -1,7 +1,7 @@
 'use client';
 
 import { DndContext, type DragEndEvent, useDraggable } from '@dnd-kit/core';
-import { ExternalLink, Globe, X } from 'lucide-react';
+import { AlertTriangle, ExternalLink, Globe, X } from 'lucide-react';
 import Image from 'next/image';
 import { useWindowResize } from 'nhb-hooks';
 import {
@@ -14,11 +14,17 @@ import {
 } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { MdOutlineRefresh } from 'react-icons/md';
+import Markdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import SmartTooltip from '@/components/misc/smart-tooltip';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 
 const MIN_W = 320;
 const MIN_H = 300;
+const IFRAME_BLOCKED_DOMAINS = ['github.com'];
+const GITHUB_HOSTS = new Set(['github.com', 'www.github.com']);
 
 /** Scrollbar CSS injected into same-origin iframes. */
 const SCROLLBAR_CSS = /*css*/ `
@@ -35,6 +41,75 @@ function calcSize(vw: number, vh: number) {
         width: vw < 640 ? Math.round(vw * 0.96) : Math.round(vw * 0.8),
         height: vw < 640 ? Math.round(vh * 0.86) : Math.round(vh * 0.9),
     };
+}
+
+/** Returns normalized hostname, or null for invalid URLs. */
+function getHostname(rawUrl: string) {
+    try {
+        return new URL(rawUrl).hostname.toLowerCase();
+    } catch {
+        return null;
+    }
+}
+
+/** Returns blocked root domain when known to deny iframe embedding. */
+function getIframeBlockedDomain(rawUrl: string) {
+    const host = getHostname(rawUrl);
+    if (!host) return null;
+
+    return (
+        IFRAME_BLOCKED_DOMAINS.find(
+            (domain) => host === domain || host.endsWith(`.${domain}`)
+        ) ?? null
+    );
+}
+
+interface GitHubRepoRef {
+    owner: string;
+    repo: string;
+}
+
+/** Extracts owner/repo from a GitHub URL. */
+function getGitHubRepoFromUrl(rawUrl: string): GitHubRepoRef | null {
+    try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.toLowerCase();
+        if (!GITHUB_HOSTS.has(host)) return null;
+
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        if (parts.length < 2) return null;
+
+        const owner = parts[0]?.trim();
+        const repo = parts[1]?.replace(/\.git$/i, '').trim();
+        if (!owner || !repo) return null;
+
+        return { owner, repo };
+    } catch {
+        return null;
+    }
+}
+
+/** Decodes base64 to UTF-8 text in the browser runtime. */
+function decodeBase64Utf8(base64: string) {
+    const compact = base64.replace(/\s/g, '');
+    const binary = atob(compact);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+}
+
+interface GitHubReadmeApiResponse {
+    content?: string;
+    encoding?: string;
+    html_url?: string;
+    name?: string;
+}
+
+interface GitHubReadme {
+    owner: string;
+    repo: string;
+    content: string;
+    htmlUrl: string;
+    name: string;
 }
 
 interface MiniBrowserProps {
@@ -76,11 +151,19 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
     const sizeRef = useRef({ width: 0, height: 0 });
     /** Tracks whether user has manually resized via edge handles. */
     const userResizedRef = useRef(false);
+    const githubRepo = getGitHubRepoFromUrl(url);
+    const githubOwner = githubRepo?.owner ?? null;
+    const githubName = githubRepo?.repo ?? null;
+    const isGithubRepo = githubOwner !== null && githubName !== null;
 
     const [isLoading, setIsLoading] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [iframeSrc, setIframeSrc] = useState(url);
+    const [blockedDomain, setBlockedDomain] = useState<string | null>(null);
+    const [githubReadme, setGithubReadme] = useState<GitHubReadme | null>(null);
+    const [githubReadmeError, setGithubReadmeError] = useState<string | null>(null);
+    const [readmeReloadToken, setReadmeReloadToken] = useState(0);
     const [size, setSize] = useState({ width: 0, height: 0 });
 
     sizeRef.current = size;
@@ -138,16 +221,114 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
 
     /* ---------- Refresh ---------- */
     const handleRefresh = useCallback(() => {
+        if (isGithubRepo) {
+            setIsLoading(true);
+            setReadmeReloadToken((token) => token + 1);
+            return;
+        }
+
+        const blocked = getIframeBlockedDomain(url);
+        setBlockedDomain(blocked);
+        if (blocked) {
+            setIsLoading(false);
+            return;
+        }
+
         if (iframeRef.current) {
             setIsLoading(true);
             iframeRef.current.src = url;
+            return;
         }
-    }, [url]);
 
-    useEffect(() => {
         setIsLoading(true);
         setIframeSrc(url);
-    }, [url]);
+    }, [isGithubRepo, url]);
+
+    useEffect(() => {
+        if (isGithubRepo) {
+            setBlockedDomain(null);
+            return;
+        }
+
+        const blocked = getIframeBlockedDomain(url);
+        setBlockedDomain(blocked);
+        setGithubReadme(null);
+        setGithubReadmeError(null);
+        setIsLoading(!blocked);
+        setIframeSrc(url);
+    }, [isGithubRepo, url]);
+
+    useEffect(() => {
+        if (!isGithubRepo || !githubOwner || !githubName) return;
+        // Manual refresh uses this token to trigger this effect again.
+        void readmeReloadToken;
+
+        const abortController = new AbortController();
+
+        setIsLoading(true);
+        setBlockedDomain(null);
+        setGithubReadme(null);
+        setGithubReadmeError(null);
+
+        const owner = githubOwner;
+        const repo = githubName;
+
+        const loadReadme = async () => {
+            try {
+                const endpoint = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/readme`;
+                const response = await fetch(endpoint, {
+                    signal: abortController.signal,
+                    headers: {
+                        Accept: 'application/vnd.github+json',
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('README not found for this repository.');
+                    }
+                    throw new Error(`Failed to load README (${response.status}).`);
+                }
+
+                const data = (await response.json()) as GitHubReadmeApiResponse;
+                if (data.encoding !== 'base64' || typeof data.content !== 'string') {
+                    throw new Error('GitHub returned an unsupported README format.');
+                }
+
+                if (abortController.signal.aborted) return;
+
+                setGithubReadme({
+                    owner,
+                    repo,
+                    content: decodeBase64Utf8(data.content),
+                    htmlUrl: data.html_url ?? url,
+                    name: data.name ?? 'README.md',
+                });
+            } catch (error) {
+                if (abortController.signal.aborted) return;
+
+                setGithubReadmeError(
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to load README from GitHub.'
+                );
+            } finally {
+                if (!abortController.signal.aborted) setIsLoading(false);
+            }
+        };
+
+        void loadReadme();
+
+        return () => {
+            abortController.abort();
+        };
+    }, [githubName, githubOwner, isGithubRepo, readmeReloadToken, url]);
+
+    const handleIframeError = useCallback(() => {
+        if (isGithubRepo) return;
+        setIsLoading(false);
+        setBlockedDomain((prev) => prev ?? getHostname(url));
+    }, [isGithubRepo, url]);
 
     /* ---------- Edge / corner resize ---------- */
     const handleResize = useCallback((dir: 'e' | 's' | 'se', e: ReactPointerEvent) => {
@@ -316,14 +497,91 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                 )}
 
                 {/* Iframe – pointer-events disabled during drag/resize */}
-                <iframe
-                    className={cn('flex-1 bg-white', isInteracting && 'pointer-events-none')}
-                    draggable
-                    onLoad={handleIframeLoad}
-                    ref={iframeRef}
-                    src={iframeSrc}
-                    title={title || 'Live Preview'}
-                />
+                {githubRepo ? (
+                    <div className="flex min-h-0 flex-1 flex-col bg-muted/20">
+                        <div className="flex items-center justify-between border-b border-border/70 bg-background px-4 py-2">
+                            <p className="truncate text-xs text-muted-foreground">
+                                {githubReadme
+                                    ? `${githubReadme.owner}/${githubReadme.repo} · ${githubReadme.name}`
+                                    : `${githubRepo.owner}/${githubRepo.repo} · README`}
+                            </p>
+                            <a
+                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                href={githubReadme?.htmlUrl ?? url}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                <ExternalLink className="size-3" />
+                                Open on GitHub
+                            </a>
+                        </div>
+
+                        <div className="min-h-0 flex-1 overflow-auto px-4 py-3">
+                            {githubReadmeError ? (
+                                <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                                    <AlertTriangle className="size-5 text-amber-500" />
+                                    <p className="max-w-md text-sm text-muted-foreground">
+                                        {githubReadmeError}
+                                    </p>
+                                </div>
+                            ) : githubReadme ? (
+                                <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none prose-a:text-primary prose-pre:border prose-pre:border-border prose-pre:bg-muted">
+                                    <Markdown
+                                        components={{
+                                            a: ({ children, href }) => (
+                                                <a
+                                                    href={href}
+                                                    rel="noopener noreferrer"
+                                                    target="_blank"
+                                                >
+                                                    {children}
+                                                </a>
+                                            ),
+                                        }}
+                                        disallowedElements={['img']}
+                                        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                                        remarkPlugins={[remarkGfm]}
+                                        unwrapDisallowed
+                                    >
+                                        {githubReadme.content}
+                                    </Markdown>
+                                </div>
+                            ) : (
+                                <div className="h-full" />
+                            )}
+                        </div>
+                    </div>
+                ) : blockedDomain ? (
+                    <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-muted/20 p-6 text-center">
+                        <AlertTriangle className="size-5 text-amber-500" />
+                        <p className="max-w-md text-sm text-muted-foreground">
+                            {blockedDomain} blocks iframe embedding via Content Security Policy
+                            or X-Frame-Options.
+                        </p>
+                        <a
+                            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-sm hover:bg-accent"
+                            href={url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            <ExternalLink className="size-3.5" />
+                            Open in new tab
+                        </a>
+                    </div>
+                ) : (
+                    <iframe
+                        className={cn(
+                            'flex-1 bg-white',
+                            isInteracting && 'pointer-events-none'
+                        )}
+                        draggable
+                        onError={handleIframeError}
+                        onLoad={handleIframeLoad}
+                        ref={iframeRef}
+                        src={iframeSrc}
+                        title={title || 'Live Preview'}
+                    />
+                )}
 
                 {/* Resize handles (hidden in fullscreen) */}
                 {!isFullscreen && (
