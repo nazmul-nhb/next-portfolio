@@ -5,12 +5,27 @@ import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/misc/animations';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
+import { buildOpenGraphImages } from '@/lib/utils';
 import { ContactForm } from './_components/ContactForm';
 
 export const metadata: Metadata = {
     title: 'Contact',
-    description: 'Get in touch with me. I would love to hear from you!',
+    description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
     keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
+    openGraph: {
+        title: `Contact ${siteConfig.name}`,
+        description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
+        url: `${siteConfig.baseUrl}/contact`,
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: siteConfig.name,
+        description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 export default function ContactPage() {

@@ -18,14 +18,28 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages, formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
 export const metadata: Metadata = {
     title: 'Resume',
     description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
-    keywords: [...siteConfig.keywords],
+    keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
+    openGraph: {
+        title: `Resume of ${siteConfig.name}`,
+        description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
+        url: `${siteConfig.baseUrl}/resume`,
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: siteConfig.name,
+        description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 /** Resume / CV page with downloadable PDF option. */

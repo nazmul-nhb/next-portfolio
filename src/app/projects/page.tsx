@@ -14,12 +14,26 @@ import {
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { buildCloudinaryUrl, eliminateEmptyStrings } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages, eliminateEmptyStrings } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Projects',
-    description: 'Explore my portfolio of web development projects.',
+    description: `Explore ${siteConfig.name}'s projects.`,
     keywords: [...siteConfig.keywords],
+    openGraph: {
+        title: `${siteConfig.name}'s Projects`,
+        description: `Explore ${siteConfig.name}'s projects.`,
+        url: `${siteConfig.baseUrl}/projects`,
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: siteConfig.name,
+        description: `Explore ${siteConfig.name}'s projects.`,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 export const revalidate = 60;
