@@ -13,7 +13,7 @@ export function WatermarkContent({ logo, children }: WatermarkContentProps) {
             {logo && (
                 <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-2 bottom-2 right-2 opacity-30 grayscale dark:opacity-15"
+                    className="pointer-events-none absolute inset-x-0 top-2 bottom-2 right-2 opacity-20 dark:opacity-10"
                     style={{
                         backgroundImage: `url('${buildCloudinaryUrl(logo)}')`,
                         backgroundSize: 'contain',

@@ -10,6 +10,7 @@ import { FadeInUp } from '@/components/misc/animations';
 import { SettingsSkeleton } from '@/components/misc/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -59,11 +60,11 @@ export function SettingsClient() {
     const [otpMessage, setOtpMessage] = useState('');
 
     const { mutate: requestOTP, isPending: otpSending } = useApiMutation<
-        unknown,
+        null,
         { email: string }
     >('/api/auth/otp', 'POST', {
         successMessage: 'OTP sent to your email!',
-        errorMessage: 'Failed to send OTP',
+        prioritizeCustomMessages: true,
         invalidateKeys: ['user-profile'],
         onSuccess: () => {
             setOtpSent(true);
@@ -75,7 +76,7 @@ export function SettingsClient() {
     });
 
     const { mutate: verifyOTP, isPending: verifyingOTP } = useApiMutation<
-        unknown,
+        null,
         { email: string; code: string }
     >('/api/auth/otp', 'PUT', {
         successMessage: 'Email verified successfully!',
@@ -197,7 +198,7 @@ export function SettingsClient() {
                 <div className="mb-8 flex items-center justify-between">
                     <h1 className="text-3xl font-bold">Settings</h1>
                     <Button onClick={handleLogout} size="sm" variant="ghost">
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOut className="mr-2 size-4" />
                         Sign Out
                     </Button>
                 </div>
@@ -221,27 +222,38 @@ export function SettingsClient() {
                                 {!otpSent ? (
                                     <Button
                                         disabled={otpLoading}
+                                        loading={otpLoading}
                                         onClick={handleRequestOTP}
                                         size="sm"
                                         variant="outline"
                                     >
-                                        <Mail className="mr-2 h-4 w-4" />
+                                        <Mail className="mr-2 size-4" />
                                         {otpLoading ? 'Sending...' : 'Send Verification Code'}
                                     </Button>
                                 ) : (
                                     <div className="flex gap-2">
-                                        <Input
-                                            className="max-w-40"
+                                        <InputOTP
+                                            id="otp-verification"
                                             maxLength={6}
-                                            onChange={(e) => setOtp(e.target.value)}
-                                            placeholder="Enter OTP"
+                                            onChange={setOtp}
+                                            placeholder="Enter your OTP"
+                                            required
                                             value={otp}
-                                        />
+                                        >
+                                            <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-10 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
+                                                <InputOTPSlot index={0} />
+                                                <InputOTPSlot index={1} />
+                                                <InputOTPSlot index={2} />
+                                                <InputOTPSlot index={3} />
+                                                <InputOTPSlot index={4} />
+                                                <InputOTPSlot index={5} />
+                                            </InputOTPGroup>
+                                        </InputOTP>
                                         <Button
                                             disabled={otp.length !== 6 || otpLoading}
                                             loading={otpLoading}
                                             onClick={handleVerifyOTP}
-                                            size="sm"
+                                            size="lg"
                                         >
                                             Verify
                                         </Button>
@@ -329,7 +341,7 @@ export function SettingsClient() {
                                 />
                                 {uploadingImage && (
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <Upload className="h-4 w-4 animate-pulse" />
+                                        <Upload className="size-4 animate-pulse" />
                                         Uploading image...
                                     </div>
                                 )}
@@ -369,7 +381,7 @@ export function SettingsClient() {
                             loading={updateProfile.isPending || uploadingImage}
                             onClick={handleSave}
                         >
-                            <Save className="mr-2 h-4 w-4" />
+                            <Save className="mr-2 size-4" />
                             Save Changes
                         </Button>
                     </div>
