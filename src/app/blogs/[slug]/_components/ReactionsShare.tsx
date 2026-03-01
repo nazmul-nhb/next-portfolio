@@ -97,7 +97,10 @@ export default function ReactionsShare({ blog }: Props) {
                     {dislikes.size}
                 </Button>
 
-                <ShareButton shareText={`${blog.title} by ${blog.author.name}`} />
+                <ShareButton
+                    route={`/blogs/${blog.slug}`}
+                    shareText={`${blog.title} by ${blog.author.name}`}
+                />
             </div>
         </FadeInUp>
     );

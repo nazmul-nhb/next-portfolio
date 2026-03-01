@@ -130,6 +130,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                             buttonProps={{
                                 size: 'default',
                             }}
+                            route={`/projects/${project.id}`}
                             shareLabel="Share this project"
                             shareText={project.title}
                         />
@@ -167,10 +168,10 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                             <section className="mb-8">
                                 <h2 className="mb-3 text-lg font-semibold">Features</h2>
                                 <ul className="grid gap-2 sm:grid-cols-2">
-                                    {project.features.map((feature) => (
+                                    {project.features.map((feature, idx) => (
                                         <li
                                             className="flex items-start gap-2 text-sm text-muted-foreground"
-                                            key={feature}
+                                            key={`${feature}-${idx}`}
                                         >
                                             <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
                                             <span>{feature}</span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Copy, Share2 } from 'lucide-react';
+import type { Route } from 'next';
 import { useCopyText, useMount } from 'nhb-hooks';
 import { isBrowser } from 'nhb-toolbox';
 import { Fragment, useMemo, useState } from 'react';
@@ -8,13 +9,14 @@ import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 
 type Props = {
+    /* The route to share, used to construct the sharable URL. Should be the path part of the URL (e.g., '/blogs/my-post'). */
+    route: `${Route}/${string | number}`;
     /* Optional text to include when sharing to WhatsApp. */
     shareText?: string;
-    /* Optional URL to share. Defaults to current page URL. */
-    shareUrl?: string;
     /* Optional label for the share button, used for accessibility. Defaults to 'Share this post'. */
     shareLabel?: string;
     /* Optional additional CSS classes for the share button icon. */
@@ -29,12 +31,12 @@ type Props = {
 
 export default function ShareButton({
     shareText,
-    shareUrl,
     className,
     showIcon = true,
     shareLabel = 'Share this post',
     buttonProps,
     buttonLabel,
+    route,
 }: Props) {
     const [openPopup, setOpenPopup] = useState(false);
 
@@ -43,17 +45,25 @@ export default function ShareButton({
         onError: (msg) => toast.error(msg),
     });
 
-    const sharableUrl = useMemo(() => (isBrowser() ? window.location.href : ''), []);
+    const sharableUrl = useMemo(
+        () =>
+            siteConfig.baseUrl
+                ? siteConfig.baseUrl.concat(route)
+                : isBrowser()
+                  ? window.location.href
+                  : '',
+        [route]
+    );
 
     const handleShareFacebook = () => {
-        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl || sharableUrl)}`;
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharableUrl)}`;
         window.open(url, '_blank', 'noopener,noreferrer,width=600,height=400');
         setOpenPopup(false);
     };
 
     const handleShareWhatsApp = () => {
-        const text = `${shareText} - ${shareUrl || sharableUrl}`;
-        const url = `https://wa.me/?text=${encodeURIComponent(shareText ? text : shareUrl || sharableUrl)}`;
+        const text = `${shareText} - ${sharableUrl}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(shareText ? text : sharableUrl)}`;
         window.open(url, '_blank', 'noopener,noreferrer');
         setOpenPopup(false);
     };
