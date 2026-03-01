@@ -69,7 +69,7 @@ export function DownloadResumeButton({
                     data={{
                         user,
                         experiences,
-                        education,
+                        education: education.slice(0, 2), // Limit to top 2 education entries
                         skills,
                         summary,
                     }}

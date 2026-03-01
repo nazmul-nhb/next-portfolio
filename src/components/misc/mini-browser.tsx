@@ -15,10 +15,7 @@ import {
 import { Fragment } from 'react/jsx-runtime';
 import { MdOutlineRefresh } from 'react-icons/md';
 import SmartTooltip from '@/components/misc/smart-tooltip';
-import { Button } from '@/components/ui/button';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
-
-type BrowsingMode = 'direct' | 'proxy';
 
 const MIN_W = 320;
 const MIN_H = 300;
@@ -32,34 +29,10 @@ const SCROLLBAR_CSS = /*css*/ `
     @supports not selector(::-webkit-scrollbar){html{scrollbar-color:var(--sb-thumb) var(--sb-track)}}
 `;
 
-/** Build the proxied URL so the iframe is same-origin and we can inject CSS. */
-function proxyUrl(url: string) {
-    return `/api/proxy?url=${encodeURIComponent(url)}&v=${Date.now()}`;
-}
-
-function modeStorageKey(url: string) {
-    try {
-        return `mini-browser-mode:${new URL(url).host}`;
-    } catch {
-        return `mini-browser-mode:${url}`;
-    }
-}
-
-function readSavedMode(url: string): BrowsingMode {
-    if (typeof window === 'undefined') return 'direct';
-    const saved = window.localStorage.getItem(modeStorageKey(url));
-    return saved === 'direct' ? 'direct' : 'proxy';
-}
-
-function saveMode(url: string, mode: BrowsingMode) {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem(modeStorageKey(url), mode);
-}
-
 /** Calculate browser window dimensions from viewport size. */
 function calcSize(vw: number, vh: number) {
     return {
-        width: vw < 640 ? Math.round(vw * 0.96) : Math.round(vw * 0.72),
+        width: vw < 640 ? Math.round(vw * 0.96) : Math.round(vw * 0.8),
         height: vw < 640 ? Math.round(vh * 0.86) : Math.round(vh * 0.9),
     };
 }
@@ -107,7 +80,6 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
     const [isLoading, setIsLoading] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
-    const [mode, setMode] = useState<BrowsingMode>(() => readSavedMode(url));
     const [iframeSrc, setIframeSrc] = useState(url);
     const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -150,9 +122,8 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
         setIsLoading(false);
         try {
             const doc = iframeRef.current?.contentDocument;
+
             if (doc) {
-                // Proxied pages already have injected CSS, but this is a
-                // safety net for any same-origin pages loaded directly.
                 if (!doc.querySelector('style[data-mini-browser]')) {
                     const style = doc.createElement('style');
                     style.setAttribute('data-mini-browser', '');
@@ -160,8 +131,8 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                     doc.head.appendChild(style);
                 }
             }
-        } catch {
-            // Do nothing...
+        } catch (error) {
+            console.error('Error loading iFrame', error);
         }
     }, []);
 
@@ -169,30 +140,14 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
     const handleRefresh = useCallback(() => {
         if (iframeRef.current) {
             setIsLoading(true);
-            iframeRef.current.src = mode === 'proxy' ? proxyUrl(url) : url;
+            iframeRef.current.src = url;
         }
-    }, [mode, url]);
-
-    /* ---------- Change browsing mode ---------- */
-    const toggleMode = useCallback(() => {
-        setIsLoading(true);
-        setMode((prev) => {
-            const next = prev === 'direct' ? 'proxy' : 'direct';
-            saveMode(url, next);
-            setIframeSrc(next === 'proxy' ? proxyUrl(url) : url);
-            return next;
-        });
-    }, [url]);
-
-    useEffect(() => {
-        const savedMode = readSavedMode(url);
-        setMode(savedMode);
     }, [url]);
 
     useEffect(() => {
         setIsLoading(true);
-        setIframeSrc(mode === 'proxy' ? proxyUrl(url) : url);
-    }, [mode, url]);
+        setIframeSrc(url);
+    }, [url]);
 
     /* ---------- Edge / corner resize ---------- */
     const handleResize = useCallback((dir: 'e' | 's' | 'se', e: ReactPointerEvent) => {
@@ -298,21 +253,11 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                         className="flex items-center gap-1"
                         onPointerDown={(e) => e.stopPropagation()}
                     >
-                        <Button
-                            className="h-7 px-2 text-[11px]"
-                            onClick={toggleMode}
-                            variant="ghost"
+                        <button
+                            className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            onClick={handleRefresh}
+                            type="button"
                         >
-                            <SmartTooltip
-                                content={
-                                    mode === 'proxy'
-                                        ? 'Proxy: custom scrollbar. Some apps can fail due to CORS/cookies.'
-                                        : 'Direct: best compatibility. External sites use native scrollbar.'
-                                }
-                                trigger={<span>{mode === 'direct' ? 'Direct' : 'Proxy'}</span>}
-                            />
-                        </Button>
-                        <Button onClick={handleRefresh} size="icon-sm" variant="ghost">
                             <SmartTooltip
                                 content="Refresh"
                                 trigger={
@@ -321,21 +266,25 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                                     />
                                 }
                             />
-                        </Button>
-                        <a href={url} rel="noopener noreferrer" target="_blank">
-                            <Button size="icon-sm" variant="ghost">
-                                <SmartTooltip
-                                    content="Open in new tab"
-                                    trigger={<ExternalLink className="size-3.5" />}
-                                />
-                            </Button>
-                        </a>
-                        <Button onClick={onClose} size="icon-sm" variant="ghost">
+                        </button>
+                        <a
+                            className="rounded-md p-1 mb-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            href={url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
                             <SmartTooltip
-                                content="Close"
-                                trigger={<X className="size-3.5" />}
+                                content="Open in new tab"
+                                trigger={<ExternalLink className="size-3.5" />}
                             />
-                        </Button>
+                        </a>
+                        <button
+                            className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            onClick={onClose}
+                            type="button"
+                        >
+                            <SmartTooltip content="Close" trigger={<X className="size-4" />} />
+                        </button>
                     </div>
                 </div>
 
