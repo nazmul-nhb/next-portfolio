@@ -1,7 +1,7 @@
 'use client';
 
 import { DndContext, type DragEndEvent, useDraggable } from '@dnd-kit/core';
-import { AlertTriangle, ExternalLink, Globe, X } from 'lucide-react';
+import { AlertTriangle, ExternalLink, Globe, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useWindowResize } from 'nhb-hooks';
 import {
@@ -442,9 +442,11 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                             <SmartTooltip
                                 content="Refresh"
                                 trigger={
-                                    <MdOutlineRefresh
-                                        className={cn('size-4', isLoading && 'animate-spin')}
-                                    />
+                                    isLoading ? (
+                                        <Loader2 className="size-3.5 animate-spin" />
+                                    ) : (
+                                        <MdOutlineRefresh className="size-4" />
+                                    )
                                 }
                             />
                         </button>
