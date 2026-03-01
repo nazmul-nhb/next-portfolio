@@ -7,6 +7,7 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
+import { WatermarkContent } from '../../../components/misc/watermark';
 
 /**
  * Compact experience + education highlights for the homepage.
@@ -48,25 +49,29 @@ export async function CareerHighlightsSection() {
                                 <div className="space-y-4">
                                     {recentExperiences.map((exp) => (
                                         <div
-                                            className="border-l-8 border-l-secondary pl-2"
+                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-4 dark:bg-white/5"
                                             key={exp.id}
                                         >
-                                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                                <p className="font-medium">{exp.position}</p>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {formatDuration(
-                                                        exp.start_date,
-                                                        exp.end_date
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-primary">
-                                                {exp.company}
-                                                {exp.location && ` • ${exp.location}`}
-                                            </p>
-                                            <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">
-                                                {exp.description}
-                                            </p>
+                                            <WatermarkContent logo={exp.company_logo}>
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <p className="font-medium">
+                                                        {exp.position}
+                                                    </p>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {formatDuration(
+                                                            exp.start_date,
+                                                            exp.end_date
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm text-primary">
+                                                    {exp.company}
+                                                    {exp.location && ` • ${exp.location}`}
+                                                </p>
+                                                <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">
+                                                    {exp.description}
+                                                </p>
+                                            </WatermarkContent>
                                         </div>
                                     ))}
                                 </div>
@@ -85,27 +90,29 @@ export async function CareerHighlightsSection() {
                                 <div className="space-y-4">
                                     {recentEducation.map((edu) => (
                                         <div
-                                            className="border-l-8 border-l-secondary pl-2"
+                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-4 dark:bg-white/5"
                                             key={edu.id}
                                         >
-                                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                                <p className="font-medium">{edu.degree}</p>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {formatDuration(
-                                                        edu.start_date,
-                                                        edu.end_date
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm text-primary">
-                                                {edu.institution}
-                                                {edu.location && ` • ${edu.location}`}
-                                            </p>
-                                            {edu.description && (
-                                                <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">
-                                                    {edu.description}
+                                            <WatermarkContent logo={edu.institution_logo}>
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <p className="font-medium">{edu.degree}</p>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {formatDuration(
+                                                            edu.start_date,
+                                                            edu.end_date
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm text-primary">
+                                                    {edu.institution}
+                                                    {edu.location && ` • ${edu.location}`}
                                                 </p>
-                                            )}
+                                                {edu.description && (
+                                                    <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">
+                                                        {edu.description}
+                                                    </p>
+                                                )}
+                                            </WatermarkContent>
                                         </div>
                                     ))}
                                 </div>

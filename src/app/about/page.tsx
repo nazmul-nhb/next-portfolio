@@ -11,6 +11,7 @@ import {
     SlideInRight,
     StaggerContainer,
 } from '@/components/misc/animations';
+import { WatermarkContent } from '@/components/misc/watermark';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
@@ -99,19 +100,21 @@ export default async function AboutPage() {
                 <StaggerContainer className="space-y-6">
                     {allExp.map((exp) => (
                         <ScaleInItem key={exp.id}>
-                            <div className="rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <h3 className="font-semibold">{exp.position}</h3>
-                                    <span className="text-xs text-muted-foreground">
-                                        {formatDuration(exp.start_date, exp.end_date)}
-                                    </span>
-                                </div>
-                                <p className="mb-2 text-sm font-medium text-primary">
-                                    {exp.company} • {exp.location}
-                                </p>
-                                <p className="border-l-8 border-l-secondary pl-2 text-sm text-muted-foreground">
-                                    {exp.description}
-                                </p>
+                            <div className="rounded-xl border border-border/50 relative bg-card p-6 transition-all hover:shadow-md">
+                                <WatermarkContent logo={exp.company_logo}>
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <h3 className="font-semibold">{exp.position}</h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {formatDuration(exp.start_date, exp.end_date)}
+                                        </span>
+                                    </div>
+                                    <p className="mb-2 text-sm font-medium text-primary">
+                                        {exp.company} • {exp.location}
+                                    </p>
+                                    <p className="border-l-8 border-l-secondary pl-2 text-sm text-muted-foreground">
+                                        {exp.description}
+                                    </p>
+                                </WatermarkContent>
                             </div>
                         </ScaleInItem>
                     ))}
@@ -129,21 +132,23 @@ export default async function AboutPage() {
 
                 {allEdu.map((edu) => (
                     <FadeInUp key={edu.id}>
-                        <div className="rounded-xl border border-border/50 bg-card p-6">
-                            <h3 className="font-semibold">
-                                {edu.degree} • {edu.institution}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                                {formatDuration(edu.start_date, edu.end_date)}
-                            </p>
-                            {edu.grade && (
-                                <p className="text-sm font-medium text-primary">
-                                    Grade: {edu.grade}
+                        <div className="rounded-xl relative border border-border/50 bg-card p-6">
+                            <WatermarkContent logo={edu.institution_logo}>
+                                <h3 className="font-semibold">
+                                    {edu.degree} • {edu.institution}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {formatDuration(edu.start_date, edu.end_date)}
                                 </p>
-                            )}
-                            <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
-                                {edu.description}
-                            </p>
+                                {edu.grade && (
+                                    <p className="text-sm font-medium text-primary">
+                                        Grade: {edu.grade}
+                                    </p>
+                                )}
+                                <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
+                                    {edu.description}
+                                </p>
+                            </WatermarkContent>
                         </div>
                     </FadeInUp>
                 ))}

@@ -11,6 +11,7 @@ import {
     StaggerContainer,
 } from '@/components/misc/animations';
 import { DownloadResumeButton } from '@/components/misc/download-resume-button';
+import { WatermarkContent } from '@/components/misc/watermark';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
@@ -140,46 +141,50 @@ export default async function ResumePage() {
                     <StaggerContainer className="space-y-8">
                         {allExperiences.map((exp) => (
                             <ScaleInItem key={exp.id}>
-                                <div>
-                                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                                        <div>
-                                            <h3 className="font-semibold">{exp.position}</h3>
-                                            <p className="text-sm text-primary">
-                                                {exp.company}
-                                                {exp.location && ` • ${exp.location}`}
-                                            </p>
+                                <div className="relative">
+                                    <WatermarkContent logo={exp.company_logo}>
+                                        <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                                            <div>
+                                                <h3 className="font-semibold">
+                                                    {exp.position}
+                                                </h3>
+                                                <p className="text-sm text-primary">
+                                                    {exp.company}
+                                                    {exp.location && ` • ${exp.location}`}
+                                                </p>
+                                            </div>
+                                            <span className="shrink-0 text-xs text-muted-foreground">
+                                                {formatDuration(exp.start_date, exp.end_date)}
+                                            </span>
                                         </div>
-                                        <span className="shrink-0 text-xs text-muted-foreground">
-                                            {formatDuration(exp.start_date, exp.end_date)}
-                                        </span>
-                                    </div>
-                                    <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
-                                        {exp.description}
-                                    </p>
-                                    {exp.achievements.length > 0 && (
-                                        <ul className="mt-2 space-y-1">
-                                            {exp.achievements.map((achievement, idx) => (
-                                                <li
-                                                    className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
-                                                    key={idx}
-                                                >
-                                                    {achievement}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                    {exp.technologies.length > 0 && (
-                                        <div className="mt-3 flex flex-wrap gap-2">
-                                            {exp.technologies.map((tech, idx) => (
-                                                <span
-                                                    className="rounded-md bg-primary/10 px-2 py-1 text-xs text-primary"
-                                                    key={idx}
-                                                >
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
+                                        <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
+                                            {exp.description}
+                                        </p>
+                                        {exp.achievements.length > 0 && (
+                                            <ul className="mt-2 space-y-1">
+                                                {exp.achievements.map((achievement, idx) => (
+                                                    <li
+                                                        className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
+                                                        key={idx}
+                                                    >
+                                                        {achievement}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                        {exp.technologies.length > 0 && (
+                                            <div className="mt-3 flex flex-wrap gap-2">
+                                                {exp.technologies.map((tech, idx) => (
+                                                    <span
+                                                        className="rounded-md bg-primary/10 px-2 py-1 text-xs text-primary"
+                                                        key={idx}
+                                                    >
+                                                        {tech}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </WatermarkContent>
                                 </div>
                             </ScaleInItem>
                         ))}
@@ -200,41 +205,43 @@ export default async function ResumePage() {
                     <StaggerContainer className="space-y-6">
                         {allEducation.map((edu) => (
                             <ScaleInItem key={edu.id}>
-                                <div>
-                                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                                        <div>
-                                            <h3 className="font-semibold">{edu.degree}</h3>
-                                            <p className="text-sm text-primary">
-                                                {edu.institution}
-                                                {edu.location && ` • ${edu.location}`}
-                                            </p>
+                                <div className="relative">
+                                    <WatermarkContent logo={edu.institution_logo}>
+                                        <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                                            <div>
+                                                <h3 className="font-semibold">{edu.degree}</h3>
+                                                <p className="text-sm text-primary">
+                                                    {edu.institution}
+                                                    {edu.location && ` • ${edu.location}`}
+                                                </p>
+                                            </div>
+                                            <span className="shrink-0 text-xs text-muted-foreground">
+                                                {formatDuration(edu.start_date, edu.end_date)}
+                                            </span>
                                         </div>
-                                        <span className="shrink-0 text-xs text-muted-foreground">
-                                            {formatDuration(edu.start_date, edu.end_date)}
-                                        </span>
-                                    </div>
-                                    {edu.grade && (
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            Grade: {edu.grade}
-                                        </p>
-                                    )}
-                                    {edu.description && (
-                                        <p className="border-l-8 border-l-secondary pl-2 mt-1 text-sm text-muted-foreground">
-                                            {edu.description}
-                                        </p>
-                                    )}
-                                    {edu.achievements && edu.achievements.length > 0 && (
-                                        <ul className="mt-2 space-y-1">
-                                            {edu.achievements.map((achievement, idx) => (
-                                                <li
-                                                    className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
-                                                    key={idx}
-                                                >
-                                                    {achievement}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                                        {edu.grade && (
+                                            <p className="mt-1 text-xs text-muted-foreground">
+                                                Grade: {edu.grade}
+                                            </p>
+                                        )}
+                                        {edu.description && (
+                                            <p className="border-l-8 border-l-secondary pl-2 mt-1 text-sm text-muted-foreground">
+                                                {edu.description}
+                                            </p>
+                                        )}
+                                        {edu.achievements && edu.achievements.length > 0 && (
+                                            <ul className="mt-2 space-y-1">
+                                                {edu.achievements.map((achievement, idx) => (
+                                                    <li
+                                                        className="text-sm text-muted-foreground before:mr-2 before:text-primary before:content-['▸']"
+                                                        key={idx}
+                                                    >
+                                                        {achievement}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </WatermarkContent>
                                 </div>
                             </ScaleInItem>
                         ))}
