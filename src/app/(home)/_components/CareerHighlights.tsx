@@ -5,6 +5,7 @@ import { MotionCard, SectionHeading, StaggerContainer } from '@/components/misc/
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
+import { formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 
 /**
@@ -53,8 +54,10 @@ export async function CareerHighlightsSection() {
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <p className="font-medium">{exp.position}</p>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {exp.start_date} -{' '}
-                                                    {exp.end_date || 'Present'}
+                                                    {formatDuration(
+                                                        exp.start_date,
+                                                        exp.end_date
+                                                    )}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-primary">
@@ -88,8 +91,10 @@ export async function CareerHighlightsSection() {
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <p className="font-medium">{edu.degree}</p>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {edu.start_date} -{' '}
-                                                    {edu.end_date || 'Present'}
+                                                    {formatDuration(
+                                                        edu.start_date,
+                                                        edu.end_date
+                                                    )}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-primary">

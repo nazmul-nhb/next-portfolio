@@ -1,5 +1,6 @@
 import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { siteConfig } from '@/configs/site';
+import { formatDuration } from '@/lib/utils';
 
 // Define types
 interface Experience {
@@ -250,7 +251,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                                         </Text>
                                     </View>
                                     <Text style={styles.itemDate}>
-                                        {exp.start_date} – {exp.end_date || 'Present'}
+                                        {formatDuration(exp.start_date, exp.end_date)}
                                     </Text>
                                 </View>
                                 <Text style={styles.itemDescription}>{exp.description}</Text>
@@ -294,7 +295,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                                         </Text>
                                     </View>
                                     <Text style={styles.itemDate}>
-                                        {edu.start_date} – {edu.end_date || 'Present'}
+                                        {formatDuration(edu.start_date, edu.end_date)}
                                     </Text>
                                 </View>
                                 {edu.grade && (

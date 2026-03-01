@@ -17,7 +17,7 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
@@ -150,7 +150,7 @@ export default async function ResumePage() {
                                             </p>
                                         </div>
                                         <span className="shrink-0 text-xs text-muted-foreground">
-                                            {exp.start_date} – {exp.end_date || 'Present'}
+                                            {formatDuration(exp.start_date, exp.end_date)}
                                         </span>
                                     </div>
                                     <p className="border-l-8 border-l-secondary pl-2 mt-2 text-sm text-muted-foreground">
@@ -210,7 +210,7 @@ export default async function ResumePage() {
                                             </p>
                                         </div>
                                         <span className="shrink-0 text-xs text-muted-foreground">
-                                            {edu.start_date} – {edu.end_date || 'Present'}
+                                            {formatDuration(edu.start_date, edu.end_date)}
                                         </span>
                                     </div>
                                     {edu.grade && (

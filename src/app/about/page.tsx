@@ -103,7 +103,7 @@ export default async function AboutPage() {
                                 <div className="mb-2 flex items-center justify-between">
                                     <h3 className="font-semibold">{exp.position}</h3>
                                     <span className="text-xs text-muted-foreground">
-                                        {exp.start_date} - {exp.end_date || 'Present'}
+                                        {formatDuration(exp.start_date, exp.end_date)}
                                     </span>
                                 </div>
                                 <p className="mb-2 text-sm font-medium text-primary">
