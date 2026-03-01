@@ -8,7 +8,7 @@ import { SkillsClient } from './_components/SkillsClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Skills » Admin Dashboard',
+    title: 'Manage Skills',
 };
 
 export default async function SkillsPage() {

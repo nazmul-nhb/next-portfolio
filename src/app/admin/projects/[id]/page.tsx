@@ -8,7 +8,7 @@ import { EditProjectClient } from './_components/EditProjectClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Edit Project » Admin Dashboard',
+    title: 'Edit Project',
 };
 
 export default async function EditProjectPage({ params }: PageProps<'/admin/projects/[id]'>) {

@@ -6,7 +6,7 @@ import type { SelectTestimonial } from '@/types/testimonials';
 import { TestimonialsClient } from './_components/TestimonialsClient';
 
 export const metadata: Metadata = {
-    title: 'Manage Testimonials » Admin Dashboard',
+    title: 'Manage Testimonials',
 };
 
 export default async function TestimonialsPage() {

@@ -7,7 +7,7 @@ import { EducationClient } from './_components/EducationClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Education » Admin Dashboard',
+    title: 'Manage Education',
 };
 
 export default async function EducationPage() {

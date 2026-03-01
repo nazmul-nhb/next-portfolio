@@ -6,7 +6,7 @@ import { CategoriesClient } from './_components/CategoriesClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Blog Categories » Admin Dashboard',
+    title: 'Manage Blog Categories',
 };
 
 export default async function CategoriesPage() {

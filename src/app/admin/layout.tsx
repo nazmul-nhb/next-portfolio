@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/nav/admin-sidebar';
 import { auth } from '@/lib/auth';
 import type { ChildrenProp } from '@/types';
+
+export const metadata: Metadata = {
+    title: {
+        // absolute: `Admin Dashboard » ${siteConfig.name}`,
+        default: 'Admin Dashboard',
+        template: '%s » Admin Dashboard',
+    },
+    description: 'Admin dashboard for managing users, blogs and portfolio content',
+};
 
 export default async function AdminLayout({ children }: ChildrenProp) {
     const session = await auth();

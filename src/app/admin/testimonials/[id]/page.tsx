@@ -6,7 +6,7 @@ import { testimonials } from '@/lib/drizzle/schema';
 import { EditTestimonialClient } from './_components/EditTestimonialClient';
 
 export const metadata: Metadata = {
-    title: 'Edit Testimonial » Admin Dashboard',
+    title: 'Edit Testimonial',
 };
 
 export default async function EditTestimonialPage({

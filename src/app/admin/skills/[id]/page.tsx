@@ -8,7 +8,7 @@ import { EditSkillClient } from './_components/EditSkillClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Edit Skill » Admin Dashboard',
+    title: 'Edit Skill',
 };
 
 export default async function EditSkillPage({ params }: PageProps<'/admin/skills/[id]'>) {

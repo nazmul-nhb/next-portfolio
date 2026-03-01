@@ -9,7 +9,7 @@ import { AdminBlogsClient } from './_components/AdminBlogsClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Blogs » Admin Dashboard',
+    title: 'Manage Blogs',
 };
 
 export default async function AdminBlogsPage() {

@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
             {
                 userAgent: '*',
                 allow: '/',
-                disallow: ['/admin', '/api', '/auth'],
+                disallow: ['/admin', '/api', '/auth', '/messages'],
             },
         ],
         sitemap: buildCanonicalUrl('/sitemap.xml' as Route),

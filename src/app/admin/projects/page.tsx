@@ -8,7 +8,7 @@ import { ProjectsClient } from './_components/ProjectsClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Projects » Admin Dashboard',
+    title: 'Manage Projects',
 };
 
 export default async function ProjectsPage() {

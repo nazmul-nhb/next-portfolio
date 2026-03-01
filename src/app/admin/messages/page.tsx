@@ -6,7 +6,7 @@ import { contactMessages } from '@/lib/drizzle/schema';
 import { MessagesClient } from './_components/MessagesClient';
 
 export const metadata: Metadata = {
-    title: 'Contact Messages » Admin Dashboard',
+    title: 'Contact Messages',
     description: 'Manage contact form messages',
 };
 

@@ -8,7 +8,7 @@ import { UsersClient } from './_components/UsersClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Users » Admin Dashboard',
+    title: 'Manage Users',
 };
 
 export default async function UsersPage() {

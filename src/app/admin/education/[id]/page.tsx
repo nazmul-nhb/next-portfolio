@@ -7,7 +7,7 @@ import type { SelectEducation } from '@/types/career';
 import { EditEducationClient } from './_components/EditEducationClient';
 
 export const metadata: Metadata = {
-    title: 'Edit Education » Admin Dashboard',
+    title: 'Edit Education',
 };
 
 export default async function EditEducationPage({

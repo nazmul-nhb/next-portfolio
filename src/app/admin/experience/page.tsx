@@ -7,7 +7,7 @@ import { ExperiencesClient } from './_components/ExperiencesClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: 'Manage Experiences » Admin Dashboard',
+    title: 'Manage Experiences',
 };
 
 export default async function ExperiencePage() {

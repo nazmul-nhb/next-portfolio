@@ -7,7 +7,7 @@ import type { SelectExperience } from '@/types/career';
 import { EditExperienceClient } from './_components/EditExperienceClient';
 
 export const metadata: Metadata = {
-    title: 'Edit Experience » Admin Dashboard',
+    title: 'Edit Experience',
 };
 
 export default async function EditExperiencePage({
