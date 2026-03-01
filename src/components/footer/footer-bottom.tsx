@@ -10,7 +10,9 @@ export default function FooterBottom() {
             <p className="text-xs text-muted-foreground">
                 &copy; {getCurrentYear()} {siteConfig.name}. All rights reserved.
             </p>
-            <p className="text-xs text-muted-foreground">Built with Next.js & TypeScript</p>
+            <p className="text-xs text-muted-foreground">
+                Built with TypeScript, Next.js & Neon Postgres
+            </p>
         </div>
     );
 }

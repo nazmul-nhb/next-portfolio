@@ -2,8 +2,9 @@ import type { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
-import { FiGithub, FiLinkedin } from 'react-icons/fi';
+import { FiGithub, FiLinkedin, FiMail, FiPhone } from 'react-icons/fi';
 import FooterBottom from '@/components/footer/footer-bottom';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -27,6 +28,9 @@ const resourceLinks: { label: string; href: Route }[] = [
 ];
 
 export default function Footer() {
+    const { mobile } = siteConfig;
+    const { adminEmail } = ENV;
+
     return (
         <footer className="border-t border-border/40 bg-background/80 backdrop-blur-sm">
             <div className="mx-auto max-w-7xl px-4 py-12">
@@ -49,6 +53,22 @@ export default function Footer() {
                         <p className="text-sm leading-relaxed text-muted-foreground">
                             {siteConfig.description}
                         </p>
+                        <div className="flex flex-col items-center gap-2.5 md:items-start">
+                            <a
+                                className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                href={`tel:${mobile}`}
+                            >
+                                <FiPhone className="size-4" />
+                                <span>{mobile}</span>
+                            </a>
+                            <a
+                                className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                href={`mailto:${adminEmail}`}
+                            >
+                                <FiMail className="size-4" />
+                                <span>{adminEmail}</span>
+                            </a>
+                        </div>
                     </div>
 
                     {/* Navigation columns */}

@@ -82,6 +82,7 @@ export const siteConfig = {
         discord: 'https://discord.com/users/831030314528538664',
         whatsapp: 'https://wa.me/8801623732187',
     },
+    mobile: '+8801623732187',
     tokenName: 'nhb-token',
     logoSvg: '/logo.svg',
     favicon: '/favicon.png',

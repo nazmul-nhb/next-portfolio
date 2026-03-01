@@ -1,4 +1,4 @@
-import { Mail } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import type { Metadata } from 'next';
 import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
@@ -10,7 +10,7 @@ import { ContactForm } from './_components/ContactForm';
 export const metadata: Metadata = {
     title: 'Contact',
     description: 'Get in touch with me. I would love to hear from you!',
-    keywords: [...siteConfig.keywords],
+    keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
 };
 
 export default function ContactPage() {
@@ -92,9 +92,9 @@ export default function ContactPage() {
                                 </div>
                             </a>
 
-                            <div className="flex gap-3">
+                            <div className="grid gap-3 sm:grid-cols-3">
                                 <a
-                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#25D366]/10"
+                                    className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#25D366]/10"
                                     href={siteConfig.links.whatsapp}
                                     rel="noopener noreferrer"
                                     target="_blank"
@@ -103,13 +103,20 @@ export default function ContactPage() {
                                     <span className="text-sm font-medium">WhatsApp</span>
                                 </a>
                                 <a
-                                    className="flex flex-1 items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#1877F2]/10"
+                                    className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#1877F2]/10"
                                     href={siteConfig.links.discord}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
                                     <FaDiscord className="h-5 w-5 text-primary" />
                                     <span className="text-sm font-medium">Discord</span>
+                                </a>
+                                <a
+                                    className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-primary/10"
+                                    href={`tel:${siteConfig.mobile}`}
+                                >
+                                    <Phone className="h-5 w-5 text-primary" />
+                                    <span className="text-sm font-medium">Call Now</span>
                                 </a>
                             </div>
                         </div>
