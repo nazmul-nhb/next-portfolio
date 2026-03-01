@@ -45,15 +45,13 @@ export default function ShareButton({
         onError: (msg) => toast.error(msg),
     });
 
-    const sharableUrl = useMemo(
-        () =>
-            siteConfig.baseUrl
-                ? siteConfig.baseUrl.concat(route)
-                : isBrowser()
-                  ? window.location.href
-                  : '',
-        [route]
-    );
+    const sharableUrl = useMemo(() => {
+        return siteConfig.baseUrl
+            ? siteConfig.baseUrl.concat(route)
+            : isBrowser()
+              ? window.location.href
+              : '';
+    }, [route]);
 
     const handleShareFacebook = () => {
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharableUrl)}`;
