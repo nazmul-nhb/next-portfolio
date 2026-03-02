@@ -261,7 +261,7 @@ function BubbleChatPanel({
     const prevMsgCountRef = useRef(0);
 
     // Fetch the conversation list to find the partner
-    const { data: conversations = [], isLoading: convsLoading } = useApiQuery<Conversation[]>(
+    const { data: conversations = [], isLoading: isConvLoading } = useApiQuery<Conversation[]>(
         '/api/messages/conversations',
         {
             queryKey: ['conversations'],
@@ -313,7 +313,7 @@ function BubbleChatPanel({
 
     const grouped = groupMessagesByDate(messages);
 
-    if (convsLoading || (msgsLoading && messages.length === 0)) {
+    if (isConvLoading || (msgsLoading && messages.length === 0)) {
         return <BubbleChatPanelSkeleton />;
     }
 
