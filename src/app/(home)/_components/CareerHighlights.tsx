@@ -40,16 +40,16 @@ export async function CareerHighlightsSection() {
                 <StaggerContainer className="grid gap-6 lg:grid-cols-2">
                     {recentExperiences.length > 0 && (
                         <MotionCard>
-                            <div className="h-full rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
+                            <div className="h-full rounded-xl border border-border/50 bg-card py-5 px-3 transition-all hover:shadow-md">
                                 <div className="mb-5 flex items-center gap-2">
-                                    <Briefcase className="h-5 w-5 text-primary" />
+                                    <Briefcase className="size-5 text-primary" />
                                     <h3 className="text-lg font-semibold">Experience</h3>
                                 </div>
 
                                 <div className="space-y-4">
                                     {recentExperiences.map((exp) => (
                                         <div
-                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-4 dark:bg-white/5"
+                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-3 dark:bg-white/5"
                                             key={exp.id}
                                         >
                                             <WatermarkContent logo={exp.company_logo}>
@@ -81,16 +81,16 @@ export async function CareerHighlightsSection() {
 
                     {recentEducation.length > 0 && (
                         <MotionCard>
-                            <div className="h-full rounded-xl border border-border/50 bg-card p-6 transition-all hover:shadow-md">
+                            <div className="h-full rounded-xl border border-border/50 bg-card py-5 px-3 transition-all hover:shadow-md">
                                 <div className="mb-5 flex items-center gap-2">
-                                    <GraduationCap className="h-5 w-5 text-primary" />
+                                    <GraduationCap className="size-5 text-primary" />
                                     <h3 className="text-lg font-semibold">Education</h3>
                                 </div>
 
                                 <div className="space-y-4">
                                     {recentEducation.map((edu) => (
                                         <div
-                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-4 dark:bg-white/5"
+                                            className="relative overflow-hidden rounded-lg border-l-8 border-l-secondary bg-white/50 p-3 dark:bg-white/5"
                                             key={edu.id}
                                         >
                                             <WatermarkContent logo={edu.institution_logo}>

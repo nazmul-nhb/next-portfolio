@@ -80,7 +80,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
     const repositories = eliminateEmptyStrings(project.repo_links);
 
     return (
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
+        <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12 overflow-x-hidden">
             {/* Back link */}
             <FadeInUp>
                 <Link
@@ -119,7 +119,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 text-xs sm:text-base overflow-hidden">
                         <LivePreviewButton
                             favicon={project.favicon}
                             title={project.title}
@@ -128,7 +128,9 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                         <ShareButton
                             buttonLabel="Share"
                             buttonProps={{
-                                size: 'default',
+                                size: 'sm',
+                                variant: 'destructive',
+                                className: 'gap-1 sm:gap-2',
                             }}
                             route={`/projects/${project.id}`}
                             shareLabel="Share this project"

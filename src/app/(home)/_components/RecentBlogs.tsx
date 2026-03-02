@@ -45,13 +45,15 @@ export async function RecentBlogsSection() {
     return (
         <section className="py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
-                <div className="mb-12 flex items-center justify-between">
+                <div className="mb-12 flex items-start justify-between">
                     <SectionHeading subtitle="Thoughts, insights, and tutorials">
                         Latest Blog Posts
                     </SectionHeading>
 
-                    <Link href="/blogs">
-                        <Button variant="outline">View All </Button>
+                    <Link className="mt-1" href="/blogs">
+                        <Button size="sm" variant="default">
+                            View All
+                        </Button>
                     </Link>
                 </div>
 

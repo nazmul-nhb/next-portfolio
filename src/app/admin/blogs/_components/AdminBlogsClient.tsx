@@ -154,7 +154,7 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                                         <Calendar className="size-3" />
                                         {formatDate({
                                             date: blog.created_at,
-                                            format: 'mmm DD',
+                                            format: 'mmm DD, yyyy',
                                         })}
                                     </span>
                                     <span className="flex items-center gap-1">
@@ -200,7 +200,7 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                                             }
                                         />
                                         <SmartTooltip
-                                            content="Delete blog"
+                                            content="Delete"
                                             trigger={
                                                 <Button
                                                     disabled={

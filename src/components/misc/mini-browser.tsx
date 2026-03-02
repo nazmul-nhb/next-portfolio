@@ -13,6 +13,7 @@ import {
     useState,
 } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import { FiGithub } from 'react-icons/fi';
 import { MdOutlineRefresh } from 'react-icons/md';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -474,7 +475,9 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                 {/* Tab bar */}
                 <div className="flex shrink-0 items-center border-b border-border bg-muted/40 px-2">
                     <div className="flex items-center gap-2 rounded-t-md border-x border-t border-border bg-background px-3 py-1.5">
-                        {favicon ? (
+                        {isLoading ? (
+                            <Loader2 className="size-3 animate-spin" />
+                        ) : favicon ? (
                             <Image
                                 alt={title}
                                 className="size-4"
@@ -488,6 +491,13 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                         <span className="max-w-48 truncate text-xs select-none">
                             {title || url}
                         </span>
+                        <button
+                            className="rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            onClick={onClose}
+                            type="button"
+                        >
+                            <SmartTooltip content="Close" trigger={<X className="size-3" />} />
+                        </button>
                     </div>
                 </div>
 
@@ -502,11 +512,20 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                 {githubRepo ? (
                     <div className="flex min-h-0 flex-1 flex-col bg-muted/20">
                         <div className="flex items-center justify-between border-b border-border/70 bg-background px-4 py-2">
-                            <p className="truncate text-xs text-muted-foreground">
-                                {githubReadme
-                                    ? `${githubReadme.owner}/${githubReadme.repo} · ${githubReadme.name}`
-                                    : `${githubRepo.owner}/${githubRepo.repo} · README`}
-                            </p>
+                            <SmartTooltip
+                                content={
+                                    githubReadme
+                                        ? `${githubReadme.owner}/${githubReadme.repo}`
+                                        : `${githubRepo.owner}/${githubRepo.repo}`
+                                }
+                                side="right"
+                                trigger={
+                                    <p className="flex items-center gap-1 select-none text-xs text-muted-foreground">
+                                        <FiGithub />
+                                        {githubReadme ? githubReadme.name : 'README'}
+                                    </p>
+                                }
+                            />
                             <a
                                 className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                 href={githubReadme?.htmlUrl ?? url}
