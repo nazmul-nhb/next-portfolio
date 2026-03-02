@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { BubbleChatPanelSkeleton } from '@/components/misc/skeletons';
 import SmartTooltip from '@/components/misc/smart-tooltip';
 import UserAvatar from '@/components/misc/user-avatar';
@@ -228,7 +229,7 @@ export default function ChatBubble() {
             {isExpanded && conversationId && (
                 <div
                     className={cn(
-                        'absolute w-80 h-112 flex flex-col rounded-xl border border-border bg-card shadow-2xl overflow-hidden',
+                        'absolute w-80 h-112 max-h-[80vh] flex flex-col rounded-xl border border-border bg-card shadow-2xl overflow-hidden',
                         PANEL_POSITIONS[edge]
                     )}
                 >
@@ -317,7 +318,7 @@ function BubbleChatPanel({
     }
 
     return (
-        <>
+        <Fragment>
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b border-border/50 px-3 py-2">
                 <UserAvatar
@@ -463,14 +464,14 @@ function BubbleChatPanel({
                     value={newMessage}
                 />
                 <Button
-                    className="h-8 w-8 shrink-0"
+                    className="size-8 shrink-0"
                     disabled={!newMessage.trim() || sending}
                     onClick={handleSend}
                     size="icon"
                 >
-                    <Send className="h-3.5 w-3.5" />
+                    <Send className="size.5" />
                 </Button>
             </div>
-        </>
+        </Fragment>
     );
 }
