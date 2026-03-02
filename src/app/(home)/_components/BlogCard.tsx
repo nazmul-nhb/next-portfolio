@@ -22,7 +22,7 @@ export default function BlogCard({ blog }: Props) {
                 className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                 href={`/blogs/${blog.slug}`}
             >
-                <div className="aspect-video overflow-hidden bg-muted">
+                <div className="aspect-3/1 overflow-hidden bg-muted">
                     <Image
                         alt={blog.title}
                         className="aspect-3/1 object-cover transition-transform duration-300 group-hover:scale-105"
