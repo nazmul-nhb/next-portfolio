@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useClock, useMediaQuery, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { toTrainCase } from 'nhb-toolbox/change-case';
@@ -10,7 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { cn, isAdminPath } from '@/lib/utils';
 
 /** Bangla weekday header abbreviations — Sun→Sat order (matches JS getDay()) */
 const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'] as const;
@@ -153,6 +154,8 @@ export default function DateTimeCalendar() {
     const [isBnTime, setIsBnTime] = useState(!isBnCal);
     const [month, setMonth] = useState<Date>(new Date());
 
+    const pathname = usePathname();
+
     const isMobile = useMediaQuery({ maxWidth: 480 });
 
     const { time, formatted } = useClock({ interval: 'frame', format: 'HH:mm' });
@@ -178,8 +181,9 @@ export default function DateTimeCalendar() {
                 <button
                     aria-label="Open calendar"
                     className={cn(
-                        'fixed z-50 bottom-19 font-source-sans',
+                        'fixed z-50 font-source-sans',
                         isMobile ? 'left-6' : 'right-6',
+                        isMobile && !isAdminPath(pathname) ? 'bottom-6' : 'bottom-19',
                         'size-12 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
