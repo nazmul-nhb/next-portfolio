@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useBreakPoint, useClock, useMount } from 'nhb-hooks';
+import { useClock, useMediaQuery, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { toTrainCase } from 'nhb-toolbox/change-case';
 import type { DayPart } from 'nhb-toolbox/date/types';
@@ -153,7 +153,7 @@ export default function DateTimeCalendar() {
     const [isBnTime, setIsBnTime] = useState(!isBnCal);
     const [month, setMonth] = useState<Date>(new Date());
 
-    const { mobile } = useBreakPoint();
+    const isMobile = useMediaQuery({ maxWidth: 480 });
 
     const { time, formatted } = useClock({ interval: 'frame', format: 'HH:mm' });
 
@@ -178,7 +178,8 @@ export default function DateTimeCalendar() {
                 <button
                     aria-label="Open calendar"
                     className={cn(
-                        'fixed z-50 right-6 bottom-19 font-source-sans',
+                        'fixed z-50 bottom-19 font-source-sans',
+                        isMobile ? 'left-6' : 'right-6',
                         'size-12 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
@@ -198,7 +199,7 @@ export default function DateTimeCalendar() {
 
             {/* ── Popover ── */}
             <PopoverContent
-                align={mobile ? 'start' : 'end'}
+                align={isMobile ? 'start' : 'end'}
                 className="w-auto p-0 min-w-84 overflow-hidden"
                 side="top"
                 sideOffset={10}
