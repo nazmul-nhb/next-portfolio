@@ -14,6 +14,7 @@ import ReactionsShare from '@/app/blogs/[slug]/_components/ReactionsShare';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
+import { siteConfig } from '@/configs/site';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl } from '@/lib/utils';
 import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
@@ -33,17 +34,20 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
     return useMount(
         <div>
             <FadeIn>
-                {blog.cover_image && (
-                    <div className="mb-8 overflow-hidden rounded-t-2xl">
-                        <Image
-                            alt={blog.title}
-                            className="aspect-3/1 object-cover"
-                            height={400}
-                            src={buildCloudinaryUrl(blog.cover_image)}
-                            width={1200}
-                        />
-                    </div>
-                )}
+                <div className="mb-8 overflow-hidden rounded-t-2xl">
+                    <Image
+                        alt={blog.title}
+                        className="aspect-3/1 object-cover"
+                        height={400}
+                        quality={100}
+                        src={
+                            blog.cover_image
+                                ? buildCloudinaryUrl(blog.cover_image)
+                                : siteConfig.blogCover
+                        }
+                        width={1200}
+                    />
+                </div>
             </FadeIn>
 
             <FadeInUp>

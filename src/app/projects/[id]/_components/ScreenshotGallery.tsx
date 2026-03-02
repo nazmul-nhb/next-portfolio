@@ -22,10 +22,10 @@ export default function ScreenshotGallery({ screenshots, title }: ScreenshotGall
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border/50 bg-muted">
                 <AnimatePresence mode="wait">
                     <motion.div
-                        animate={{ opacity: 1, scale: 1 }}
+                        animate={{ opacity: 1, scale: 0.9 }}
                         className="aspect-video"
-                        exit={{ opacity: 0, scale: 1.02 }}
-                        initial={{ opacity: 0, scale: 0.98 }}
+                        exit={{ opacity: 0, scale: 1 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
                         key={activeIdx}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
@@ -34,6 +34,7 @@ export default function ScreenshotGallery({ screenshots, title }: ScreenshotGall
                             className="aspect-video object-cover"
                             height={1080}
                             priority={activeIdx === 0}
+                            quality={100}
                             src={buildCloudinaryUrl(screenshots[activeIdx])}
                             width={1920}
                         />

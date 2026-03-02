@@ -24,6 +24,7 @@ export async function GET() {
                 title: blogs.title,
                 slug: blogs.slug,
                 excerpt: blogs.excerpt,
+                content: blogs.content,
                 cover_image: blogs.cover_image,
                 is_published: blogs.is_published,
                 published_date: blogs.published_date,

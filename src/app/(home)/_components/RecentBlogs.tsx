@@ -23,6 +23,7 @@ export async function RecentBlogsSection() {
                 excerpt: blogs.excerpt,
                 cover_image: blogs.cover_image,
                 views: blogs.views,
+                content: blogs.content,
                 published_date: blogs.published_date,
                 author: {
                     id: users.id,

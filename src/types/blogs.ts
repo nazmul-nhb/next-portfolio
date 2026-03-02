@@ -65,6 +65,7 @@ export type RecentBlog = {
     slug: string;
     excerpt: string | null;
     cover_image: string | null;
+    content: string;
     views: number;
     published_date: Date | null;
     author: BlogAuthor;

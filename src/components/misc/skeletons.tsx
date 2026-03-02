@@ -222,6 +222,8 @@ function MyBlogsSkeleton() {
 function SingleBlogSkeleton() {
     return (
         <article className="mx-auto max-w-4xl px-4 py-12 space-y-6">
+            {/* Cover image */}
+            <Skeleton className="aspect-3/1 w-full rounded-t-xl rounded-b-none" />
             {/* Title */}
             <div className="space-y-3">
                 <SkeletonLine height="lg" width="full" />
@@ -235,8 +237,6 @@ function SingleBlogSkeleton() {
                     <SkeletonLine height="xs" width="md" />
                 </div>
             </div>
-            {/* Cover image */}
-            <Skeleton className="aspect-video w-full rounded-xl" />
             {/* Content lines */}
             <div className="space-y-3">
                 <SkeletonLine height="sm" width="full" />

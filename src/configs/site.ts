@@ -85,6 +85,7 @@ export const siteConfig = {
     mobile: '+8801623732187',
     tokenName: 'nhb-token',
     logoSvg: '/logo.svg',
+    blogCover: '/default_blog_cover.png',
     favicon: '/favicon.png',
     /** 1 Minute in MS */
     staleTime: 60000,

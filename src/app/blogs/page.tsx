@@ -3,7 +3,7 @@ import { Calendar, Eye, PenTool, X } from 'lucide-react';
 import type { Metadata, Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatDate } from 'nhb-toolbox';
+import { formatDate, truncateString } from 'nhb-toolbox';
 import {
     FadeInUp,
     MotionCard,
@@ -15,7 +15,8 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCloudinaryUrl, buildOpenGraphImages, stripHtml } from '@/lib/utils';
+import type { RecentBlog } from '@/types/blogs';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
@@ -43,16 +44,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
     const categoryFilter = params.category;
     const searchFilter = params.search;
 
-    let allBlogs: {
-        id: number;
-        title: string;
-        slug: string;
-        excerpt: string | null;
-        cover_image: string | null;
-        views: number;
-        published_date: Date | null;
-        author: { id: number; name: string; profile_image: string | null };
-    }[] = [];
+    let allBlogs: RecentBlog[] = [];
 
     // Fetch all categories for filter UI
     let allCategories: { id: number; title: string; slug: string }[] = [];
@@ -68,6 +60,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                 title: blogs.title,
                 slug: blogs.slug,
                 excerpt: blogs.excerpt,
+                content: blogs.content,
                 cover_image: blogs.cover_image,
                 views: blogs.views,
                 published_date: blogs.published_date,
@@ -241,26 +234,27 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                     className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                                     href={`/blogs/${blog.slug}`}
                                 >
-                                    {blog.cover_image && (
-                                        <div className="aspect-video overflow-hidden bg-muted">
-                                            <Image
-                                                alt={blog.title}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                height={200}
-                                                src={buildCloudinaryUrl(blog.cover_image)}
-                                                width={360}
-                                            />
-                                        </div>
-                                    )}
+                                    <div className="aspect-3/1 overflow-hidden bg-muted">
+                                        <Image
+                                            alt={blog.title}
+                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                            height={160}
+                                            src={
+                                                blog.cover_image
+                                                    ? buildCloudinaryUrl(blog.cover_image)
+                                                    : siteConfig.blogCover
+                                            }
+                                            width={400}
+                                        />
+                                    </div>
                                     <div className="flex flex-1 flex-col p-5">
                                         <h2 className="mb-2 line-clamp-2 text-lg font-semibold transition-colors group-hover:text-primary">
                                             {blog.title}
                                         </h2>
-                                        {blog.excerpt && (
-                                            <p className="mb-4 line-clamp-3 flex-1 text-sm text-muted-foreground">
-                                                {blog.excerpt}
-                                            </p>
-                                        )}
+                                        <p className="mb-4 line-clamp-3 flex-1 text-sm text-muted-foreground">
+                                            {blog.excerpt ||
+                                                truncateString(stripHtml(blog.content), 216)}
+                                        </p>
                                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                                             <div className="flex items-center gap-2">
                                                 {blog.author.profile_image && (

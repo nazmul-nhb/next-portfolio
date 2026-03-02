@@ -10,6 +10,7 @@ import SmartTooltip from '@/components/misc/smart-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { siteConfig } from '@/configs/site';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
@@ -125,19 +126,17 @@ export function AdminBlogsClient({ initialData }: { initialData: AdminBlog[] }) 
                             <CardContent className="p-4 pt-5">
                                 {/* Cover image */}
                                 <div className="mb-3 overflow-hidden rounded-lg">
-                                    {blog.cover_image ? (
-                                        <Image
-                                            alt={blog.title}
-                                            className="h-40 w-full object-cover transition-transform hover:scale-105"
-                                            height={160}
-                                            src={buildCloudinaryUrl(blog.cover_image)}
-                                            width={400}
-                                        />
-                                    ) : (
-                                        <div className="flex h-40 w-full items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
-                                            No cover image
-                                        </div>
-                                    )}
+                                    <Image
+                                        alt={blog.title}
+                                        className="aspect-3/1 object-cover transition-transform hover:scale-105"
+                                        height={160}
+                                        src={
+                                            blog.cover_image
+                                                ? buildCloudinaryUrl(blog.cover_image)
+                                                : siteConfig.blogCover
+                                        }
+                                        width={400}
+                                    />
                                 </div>
 
                                 {/* Blog info */}
