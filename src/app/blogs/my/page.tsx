@@ -52,7 +52,7 @@ export default function MyBlogsPage() {
     if (!session?.user) return null;
 
     return (
-        <div className="relative mx-auto max-w-6xl px-4 py-12">
+        <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
                 <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
                 <div className="absolute -bottom-24 right-1/4 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />

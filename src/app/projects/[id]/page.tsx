@@ -119,7 +119,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex flex-wrap gap-2 text-xs sm:text-base overflow-hidden">
+                    <div className="flex flex-wrap gap-2 text-xs sm:text-base">
                         <LivePreviewButton
                             favicon={project.favicon}
                             title={project.title}

@@ -82,7 +82,7 @@ export default async function ResumePage() {
         'Passionate Full-Stack Web Developer with hands-on experience building modern, performant, and accessible web applications. Proficient in TypeScript, React, Next.js, Node.js, and other web technologies. Committed to clean code, open-source contribution, and continuous learning.';
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+        <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 overflow-x-hidden">
             {/* Header */}
             <FadeInUp>
                 <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">

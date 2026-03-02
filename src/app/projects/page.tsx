@@ -49,7 +49,7 @@ export default async function ProjectsPage() {
     }
 
     return (
-        <div className="relative mx-auto max-w-6xl px-4 py-12">
+        <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
                 <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />

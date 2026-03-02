@@ -15,7 +15,7 @@ export default function ForceSignOutPage() {
     }, []);
 
     return (
-        <div className="flex min-h-[70vh] items-center justify-center px-4">
+        <div className="flex min-h-[70vh] items-center justify-center px-4 overflow-x-hidden">
             <FadeInUp>
                 <div className="max-w-md text-center">
                     <h1 className="mb-2 text-2xl font-bold">Session Ended</h1>

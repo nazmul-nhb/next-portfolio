@@ -65,7 +65,7 @@ type RootProps = Readonly<{
 export default function RootLayout({ children }: RootProps) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <link href="/favicon.png" rel="shortcut icon" type="image/png" />
+            <link href={siteConfig.favicon} rel="shortcut icon" type="image/png" />
             <body
                 className={cn(
                     geistSans.variable,

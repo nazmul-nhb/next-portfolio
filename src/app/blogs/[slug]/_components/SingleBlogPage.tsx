@@ -21,7 +21,7 @@ export default function SingleBlogPage({ slug }: Props) {
     if (!data) return notFound();
 
     return (
-        <article className="mx-auto max-w-4xl px-4 py-12">
+        <article className="mx-auto max-w-4xl px-4 py-12 overflow-x-hidden">
             <BlogContent blog={data.blog} categories={data.categories} tags={data.tags} />
             <CommentSection blogId={data.blog.id} blogSlug={slug} comments={data.comments} />
         </article>

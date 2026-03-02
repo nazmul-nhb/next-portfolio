@@ -43,7 +43,7 @@ export default async function HomePage() {
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-x-hidden">
             <HeroSection adminImage={adminImage} />
             <SkillsSection skills={allSkills} />
             <RecentProjectsSection />

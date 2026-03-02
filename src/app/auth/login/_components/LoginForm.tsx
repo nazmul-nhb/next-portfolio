@@ -48,7 +48,7 @@ export function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-[80vh] items-center justify-center px-4">
+        <div className="flex min-h-[80vh] items-center justify-center px-4 overflow-x-hidden">
             <FadeInUp>
                 <div className="w-full max-w-md rounded-2xl border border-border/50 bg-card p-8 shadow-sm">
                     <div className="mb-8 text-center">

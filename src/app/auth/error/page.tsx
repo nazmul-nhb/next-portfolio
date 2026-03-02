@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 /** Auth error page for failed sign-in attempts. */
 export default function AuthErrorPage() {
     return (
-        <div className="flex min-h-[70vh] items-center justify-center px-4">
+        <div className="flex min-h-[70vh] items-center justify-center px-4 overflow-x-hidden">
             <FadeInUp>
                 <div className="max-w-md text-center">
                     <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
