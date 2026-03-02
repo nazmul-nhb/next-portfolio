@@ -1,4 +1,5 @@
 import './globals.css';
+import 'react-photo-view/dist/react-photo-view.css';
 
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';

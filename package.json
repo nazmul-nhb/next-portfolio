@@ -1,6 +1,6 @@
 {
   "name": "next-portfolio",
-  "version": "2.2.43",
+  "version": "2.2.44",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -64,6 +64,7 @@
     "react-hook-form": "^7.71.2",
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
+    "react-photo-view": "^1.2.7",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
