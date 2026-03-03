@@ -201,8 +201,8 @@ function MyBlogsSkeleton() {
         <div className="relative mx-auto max-w-6xl px-4 py-12">
             {/* Section heading */}
             <div className="mb-12 space-y-2 text-left">
-                <SkeletonLine className="mx-auto" height="lg" width="sm" />
-                <SkeletonLine className="mx-auto" height="sm" width="md" />
+                <SkeletonLine height="lg" width="sm" />
+                <SkeletonLine height="sm" width="md" />
             </div>
             {/* Write button */}
             <div className="mb-8 flex justify-end">
