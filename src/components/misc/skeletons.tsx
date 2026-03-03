@@ -200,7 +200,7 @@ function MyBlogsSkeleton() {
     return (
         <div className="relative mx-auto max-w-6xl px-4 py-12">
             {/* Section heading */}
-            <div className="mb-12 space-y-2 text-center">
+            <div className="mb-12 space-y-2 text-left">
                 <SkeletonLine className="mx-auto" height="lg" width="sm" />
                 <SkeletonLine className="mx-auto" height="sm" width="md" />
             </div>

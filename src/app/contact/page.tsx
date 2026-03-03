@@ -75,7 +75,7 @@ export default function ContactPage() {
 
                             <a
                                 className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
-                                href={siteConfig.links.github}
+                                href={siteConfig.links.GitHub}
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
@@ -92,7 +92,7 @@ export default function ContactPage() {
 
                             <a
                                 className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
-                                href={siteConfig.links.linkedin}
+                                href={siteConfig.links.LinkedIn}
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
@@ -110,7 +110,7 @@ export default function ContactPage() {
                             <div className="grid gap-3 sm:grid-cols-3">
                                 <a
                                     className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#25D366]/10"
-                                    href={siteConfig.links.whatsapp}
+                                    href={siteConfig.links.WhatsApp}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
@@ -119,7 +119,7 @@ export default function ContactPage() {
                                 </a>
                                 <a
                                     className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-[#1877F2]/10"
-                                    href={siteConfig.links.discord}
+                                    href={siteConfig.links.Discord}
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >

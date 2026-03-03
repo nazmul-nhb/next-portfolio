@@ -103,7 +103,7 @@ export default async function ResumePage() {
                             </a>
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
-                                href={siteConfig.links.github}
+                                href={siteConfig.links.GitHub}
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
@@ -112,7 +112,7 @@ export default async function ResumePage() {
                             </a>
                             <a
                                 className="inline-flex items-center gap-1 hover:text-foreground"
-                                href={siteConfig.links.linkedin}
+                                href={siteConfig.links.LinkedIn}
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >

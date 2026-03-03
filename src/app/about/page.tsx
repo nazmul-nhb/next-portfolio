@@ -232,7 +232,7 @@ export default async function AboutPage() {
                         <a
                             aria-label="GitHub"
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.github}
+                            href={siteConfig.links.GitHub}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
@@ -241,7 +241,7 @@ export default async function AboutPage() {
                         <a
                             aria-label="LinkedIn"
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.linkedin}
+                            href={siteConfig.links.LinkedIn}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
@@ -250,7 +250,7 @@ export default async function AboutPage() {
                         <a
                             aria-label="WhatsApp"
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.whatsapp}
+                            href={siteConfig.links.WhatsApp}
                             rel="noopener noreferrer"
                             target="_blank"
                         >

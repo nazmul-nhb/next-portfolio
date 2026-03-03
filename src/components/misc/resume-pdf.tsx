@@ -205,11 +205,11 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                         <Link src={siteConfig.baseUrl} style={styles.contactLink}>
                             {siteConfig.baseUrl.replace('https://', '')}
                         </Link>
-                        <Link src={siteConfig.links.github} style={styles.contactLink}>
-                            {siteConfig.links.github.replace('https://', '')}
+                        <Link src={siteConfig.links.GitHub} style={styles.contactLink}>
+                            {siteConfig.links.GitHub.replace('https://', '')}
                         </Link>
-                        <Link src={siteConfig.links.linkedin} style={styles.contactLink}>
-                            {siteConfig.links.linkedin.replace('https://', '')}
+                        <Link src={siteConfig.links.LinkedIn} style={styles.contactLink}>
+                            {siteConfig.links.LinkedIn.replace('https://', '')}
                         </Link>
                     </View>
                 </View>

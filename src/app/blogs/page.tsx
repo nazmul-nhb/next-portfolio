@@ -112,8 +112,8 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
         <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-                <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
-                <div className="absolute -bottom-24 right-1/4 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+                <div className="absolute -top-24 left-1/4 size-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 right-1/4 size-72 rounded-full bg-violet-500/5 blur-3xl" />
             </div>
             <SectionHeading
                 className="mb-12"
@@ -121,6 +121,15 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
             >
                 Blogs
             </SectionHeading>
+
+            <div className="mb-8 flex justify-end">
+                <Button asChild>
+                    <Link href="/blogs/new">
+                        <PenTool className="size-4" />
+                        Write a Post
+                    </Link>
+                </Button>
+            </div>
 
             {/* Active filters */}
             {(tagFilter || categoryFilter || searchFilter) && (
@@ -202,15 +211,6 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                     </div>
                 </FadeInUp>
             )}
-
-            <div className="mb-8 flex justify-end">
-                <Button asChild>
-                    <Link href="/blogs/new">
-                        <PenTool className="mr-2 h-4 w-4" />
-                        Write a Post
-                    </Link>
-                </Button>
-            </div>
 
             {allBlogs.length === 0 ? (
                 <FadeInUp>

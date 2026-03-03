@@ -135,22 +135,22 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             {[
                                 {
                                     icon: FiGithub,
-                                    href: siteConfig.links.github,
+                                    href: siteConfig.links.GitHub,
                                     label: 'GitHub',
                                 },
                                 {
                                     icon: FiLinkedin,
-                                    href: siteConfig.links.linkedin,
+                                    href: siteConfig.links.LinkedIn,
                                     label: 'LinkedIn',
                                 },
                                 {
                                     icon: FaWhatsapp,
-                                    href: siteConfig.links.whatsapp,
+                                    href: siteConfig.links.WhatsApp,
                                     label: 'WhatsApp',
                                 },
                                 {
                                     icon: FaDiscord,
-                                    href: siteConfig.links.discord,
+                                    href: siteConfig.links.Discord,
                                     label: 'Discord',
                                 },
                             ].map(({ icon: Icon, href, label }) => (

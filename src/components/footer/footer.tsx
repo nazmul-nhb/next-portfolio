@@ -120,7 +120,7 @@ export default function Footer() {
 
                                     return (
                                         <a
-                                            className="inline-flex items-center gap-2 text-sm text-muted-foreground capitalize transition-colors hover:text-foreground"
+                                            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                                             href={url}
                                             key={name}
                                             rel="noopener noreferrer"
