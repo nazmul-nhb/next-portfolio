@@ -5,13 +5,18 @@ import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin, FiMail, FiPhone } from 'react-icons/fi';
 import FooterBottom from '@/components/footer/footer-bottom';
 import { ENV } from '@/configs/env';
-import { siteConfig } from '@/configs/site';
+import { type SiteConfig, siteConfig } from '@/configs/site';
 
-const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-    github: FiGithub,
-    linkedin: FiLinkedin,
-    discord: FaDiscord,
-    whatsapp: FaWhatsapp,
+type SocialIcons = Record<
+    keyof SiteConfig['links'],
+    React.ComponentType<{ className?: string }>
+>;
+
+const socialIcons: SocialIcons = {
+    GitHub: FiGithub,
+    LinkedIn: FiLinkedin,
+    Discord: FaDiscord,
+    WhatsApp: FaWhatsapp,
 };
 
 const quickLinks: { label: string; href: Route }[] = [
@@ -116,7 +121,9 @@ export default function Footer() {
                             </h3>
                             <div className="flex flex-col items-center gap-2.5 md:items-start">
                                 {Object.entries(siteConfig.links).map(([name, url]) => {
-                                    const Icon = socialIcons[name];
+                                    const Icon = socialIcons[name as keyof SiteConfig['links']];
+
+                                    if (!Icon) return null;
 
                                     return (
                                         <a

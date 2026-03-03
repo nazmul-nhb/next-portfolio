@@ -6,7 +6,6 @@ import { useClock, useMediaQuery, useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { toTrainCase } from 'nhb-toolbox/change-case';
 import type { DayPart } from 'nhb-toolbox/date/types';
-import type { $Record } from 'nhb-toolbox/object/types';
 import { useCallback, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Calendar } from '@/components/ui/calendar';
@@ -76,7 +75,7 @@ function buildBanglaMonth(gregYear: number, gregMonth: number) {
     };
 }
 
-const DAY_PARTS: $Record<DayPart, string> = {
+const DAY_PARTS: Record<DayPart, string> = {
     morning: 'সকাল',
     afternoon: 'বিকেল',
     evening: 'সন্ধ্যা',
