@@ -83,6 +83,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
+    "csstype": "^3.2.3",
     "drizzle-kit": "^0.31.9",
     "nhb-scripts": "^1.9.2",
     "tailwindcss": "^4.2.1",

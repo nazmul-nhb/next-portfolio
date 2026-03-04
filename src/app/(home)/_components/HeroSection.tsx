@@ -5,12 +5,10 @@ import { ArrowRight, Camera, LucideMailQuestionMark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
-import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ENV } from '@/configs/env';
-import { siteConfig } from '@/configs/site';
+import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
 import {
     deleteFromCloudinary,
     deleteOldCloudFile,
@@ -18,7 +16,7 @@ import {
 } from '@/lib/actions/cloudinary';
 import { useUpdateProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, cn } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 
 interface HeroSectionProps {
@@ -132,28 +130,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         </div>
 
                         <div className="flex items-center gap-3 pt-2">
-                            {[
-                                {
-                                    icon: FiGithub,
-                                    href: siteConfig.links.GitHub,
-                                    label: 'GitHub',
-                                },
-                                {
-                                    icon: FiLinkedin,
-                                    href: siteConfig.links.LinkedIn,
-                                    label: 'LinkedIn',
-                                },
-                                {
-                                    icon: FaWhatsapp,
-                                    href: siteConfig.links.WhatsApp,
-                                    label: 'WhatsApp',
-                                },
-                                {
-                                    icon: FaDiscord,
-                                    href: siteConfig.links.Discord,
-                                    label: 'Discord',
-                                },
-                            ].map(({ icon: Icon, href, label }) => (
+                            {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                                 <motion.a
                                     aria-label={label}
                                     className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
@@ -164,7 +141,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                     whileHover={{ scale: 1.1, y: -2 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <Icon className="h-4 w-4" />
+                                    <Icon className="size-4" />
                                 </motion.a>
                             ))}
                         </div>
@@ -176,10 +153,15 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         initial={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        <div className="relative mx-auto h-80 w-80">
+                        <div className="relative mx-auto size-80">
                             <div className="absolute inset-0 rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 blur-2xl" />
                             <button
-                                className={`relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-border/50 bg-card/50 backdrop-blur-sm ${isAdmin ? 'cursor-pointer group' : ''}`}
+                                className={cn(
+                                    'relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-border/50 bg-card/50 backdrop-blur-sm',
+                                    {
+                                        'cursor-pointer group': isAdmin,
+                                    }
+                                )}
                                 disabled={!isAdmin}
                                 onClick={() => isAdmin && fileInputRef.current?.click()}
                                 type="button"

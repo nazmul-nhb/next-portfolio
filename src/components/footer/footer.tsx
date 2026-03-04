@@ -1,23 +1,10 @@
 import type { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
-import { FiGithub, FiLinkedin, FiMail, FiPhone } from 'react-icons/fi';
+import { FiMail, FiPhone } from 'react-icons/fi';
 import FooterBottom from '@/components/footer/footer-bottom';
 import { ENV } from '@/configs/env';
-import { type SiteConfig, siteConfig } from '@/configs/site';
-
-type SocialIcons = Record<
-    keyof SiteConfig['links'],
-    React.ComponentType<{ className?: string }>
->;
-
-const socialIcons: SocialIcons = {
-    GitHub: FiGithub,
-    LinkedIn: FiLinkedin,
-    Discord: FaDiscord,
-    WhatsApp: FaWhatsapp,
-};
+import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
 
 const quickLinks: { label: string; href: Route }[] = [
     { label: 'Home', href: '/' },
@@ -120,21 +107,17 @@ export default function Footer() {
                                 Connect
                             </h3>
                             <div className="flex flex-col items-center gap-2.5 md:items-start">
-                                {Object.entries(siteConfig.links).map(([name, url]) => {
-                                    const Icon = socialIcons[name as keyof SiteConfig['links']];
-
-                                    if (!Icon) return null;
-
+                                {SOCIAL_LINKS.map(({ Icon, href, label }) => {
                                     return (
                                         <a
                                             className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                                            href={url}
-                                            key={name}
+                                            href={href}
+                                            key={label}
                                             rel="noopener noreferrer"
                                             target="_blank"
                                         >
                                             <Icon className="size-4" />
-                                            {name}
+                                            {label}
                                         </a>
                                     );
                                 })}

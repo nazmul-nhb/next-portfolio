@@ -2,8 +2,6 @@ import { desc, eq } from 'drizzle-orm';
 import { Briefcase, Code2, GraduationCap, Heart } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { FaWhatsapp } from 'react-icons/fa';
-import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import {
     FadeInUp,
     ScaleInItem,
@@ -13,7 +11,7 @@ import {
 } from '@/components/misc/animations';
 import { WatermarkContent } from '@/components/misc/watermark';
 import { ENV } from '@/configs/env';
-import { siteConfig } from '@/configs/site';
+import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { education, experiences, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
@@ -229,33 +227,18 @@ export default async function AboutPage() {
                         I&apos;m always open to new opportunities and collaborations.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <a
-                            aria-label="GitHub"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.GitHub}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                        >
-                            <FiGithub className="size-5" />
-                        </a>
-                        <a
-                            aria-label="LinkedIn"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.LinkedIn}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                        >
-                            <FiLinkedin className="size-5" />
-                        </a>
-                        <a
-                            aria-label="WhatsApp"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
-                            href={siteConfig.links.WhatsApp}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                        >
-                            <FaWhatsapp className="size-5" />
-                        </a>
+                        {SOCIAL_LINKS.map(({ Icon, href, label }) => (
+                            <a
+                                aria-label={label}
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
+                                href={href}
+                                key={label}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                <Icon className="size-5" />
+                            </a>
+                        ))}
                     </div>
                 </div>
             </FadeInUp>

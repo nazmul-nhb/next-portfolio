@@ -16,6 +16,8 @@ import {
     Tag,
     Users,
 } from 'lucide-react';
+import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
+import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import type { TabItem } from '@/types';
 
 export const siteConfig = {
@@ -91,5 +93,28 @@ export const siteConfig = {
     staleTime: 60000,
     userRoles: ['admin', 'user'],
 } as const;
+
+export const SOCIAL_LINKS = [
+    {
+        Icon: FiGithub,
+        href: siteConfig.links.GitHub,
+        label: 'GitHub',
+    },
+    {
+        Icon: FiLinkedin,
+        href: siteConfig.links.LinkedIn,
+        label: 'LinkedIn',
+    },
+    {
+        Icon: FaWhatsapp,
+        href: siteConfig.links.WhatsApp,
+        label: 'WhatsApp',
+    },
+    {
+        Icon: FaDiscord,
+        href: siteConfig.links.Discord,
+        label: 'Discord',
+    },
+] as const;
 
 export type SiteConfig = typeof siteConfig;
