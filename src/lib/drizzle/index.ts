@@ -10,6 +10,7 @@ import {
     tags,
 } from '@/lib/drizzle/schema/blogs';
 import { education, experiences } from '@/lib/drizzle/schema/career';
+import { expenses, loanPayments, loans, receipts } from '@/lib/drizzle/schema/expenses';
 import {
     contactMessages,
     conversations,
@@ -37,6 +38,10 @@ export const db = drizzle(sql, {
         blogTags,
         blogCategories,
         comments,
+        expenses,
+        loans,
+        loanPayments,
+        receipts,
         contactMessages,
         conversations,
         directMessages,

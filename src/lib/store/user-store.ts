@@ -17,6 +17,7 @@ export interface UserProfile {
     bio: string | null;
     profile_image: string | null;
     role: UserRole;
+    preferred_currency?: string;
     email_verified: boolean;
     provider: 'credentials' | 'google';
 }

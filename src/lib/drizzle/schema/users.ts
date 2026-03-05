@@ -25,6 +25,7 @@ export const users = pgTable('users', {
     bio: text(),
     role: userRoleEnum().default('user').notNull(),
     provider: authProviderEnum().default('credentials').notNull(),
+    preferred_currency: varchar({ length: 8 }).default('USD').notNull(),
     email_verified: boolean().default(false).notNull(),
     is_active: boolean().default(true).notNull(),
     created_at: timestamp().defaultNow().notNull(),

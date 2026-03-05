@@ -28,6 +28,10 @@ export type TCollection =
     | 'Comment'
     | 'Tag'
     | 'Category'
+    | 'Expense'
+    | 'Loan'
+    | 'Loan Payment'
+    | 'Receipt'
     | 'Message'
     | 'Conversation'
     | 'OTP';

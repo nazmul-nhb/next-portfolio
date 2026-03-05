@@ -13,7 +13,13 @@ export async function proxy(req: NextRequest) {
 
     const authRedirect = new URL(`/auth/login?redirectTo=${pathname}`, req.url);
 
-    const protectedPaths = ['/settings', '/messages', '/blogs/new', '/blogs/edit'] as const;
+    const protectedPaths = [
+        '/settings',
+        '/messages',
+        '/blogs/new',
+        '/blogs/edit',
+        '/tools',
+    ] as const;
 
     // Force-sign-out any user whose account has been deleted or deactivated
     if (hasUser && !isActive) {
@@ -50,6 +56,7 @@ export const config = {
         '/admin/:path*',
         '/settings/:path*',
         '/messages/:path*',
+        '/tools/:path*',
         '/blogs/new',
         '/blogs/edit/:path*',
     ],
