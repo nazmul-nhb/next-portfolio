@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ToolsSidebar } from '@/components/nav/tools-sidebar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { siteConfig } from '@/configs/site';
 import { auth } from '@/lib/auth';
 import type { ChildrenProp } from '@/types';
 
 export const metadata: Metadata = {
     title: {
         default: 'Tools',
-        template: '%s » Tools',
+        template: `%s » Tools » ${siteConfig.name}`,
     },
     description: 'Personal tool suite for authenticated users.',
 };

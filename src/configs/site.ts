@@ -69,7 +69,14 @@ export const siteConfig = {
         { title: 'Resume', path: '/resume', icon: FileText },
         // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],
-    toolsMenus: [{ href: '/tools/expenses', label: 'Expense Manager', icon: Wallet }],
+    toolsMenus: [
+        {
+            href: '/tools/expenses',
+            label: 'Expense Manager',
+            icon: Wallet,
+            description: ' Track income, expenses, loans, repayments, and net cash in hand.',
+        },
+    ],
     adminMenus: [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },

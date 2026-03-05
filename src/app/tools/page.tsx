@@ -1,10 +1,11 @@
-import { ArrowRight, Wallet } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -26,29 +27,31 @@ export default function ToolsPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                <Card className="transition-shadow hover:shadow-md">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Wallet className="size-5" />
-                            Expense Manager
-                        </CardTitle>
-                        <CardDescription>
-                            Track income, expenses, loans, repayments, and net cash in hand.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Link
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-                            href="/tools/expenses"
-                        >
-                            Open Tool
-                            <ArrowRight className="size-4" />
-                        </Link>
-                    </CardContent>
-                </Card>
+                {siteConfig.toolsMenus.map(({ description, href, icon: Icon, label }) => (
+                    <Card className="transition-shadow hover:shadow-md" key={label}>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Icon className="size-5" />
+                                {label}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <CardDescription>{description}</CardDescription>
+                        </CardContent>
+                        <CardFooter className="border-t">
+                            <Link
+                                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary border-b border-b-transparent hover:border-b-primary hover:text-primary"
+                                href={href}
+                            >
+                                Open Tool
+                                <ArrowRight className="size-4" />
+                            </Link>
+                        </CardFooter>
+                    </Card>
+                ))}
             </div>
 
-            {siteConfig.toolsMenus.length <= 1 && (
+            {siteConfig.toolsMenus.length <= 3 && (
                 <p className="text-xs text-muted-foreground">
                     More tools will appear here as they are added.
                 </p>

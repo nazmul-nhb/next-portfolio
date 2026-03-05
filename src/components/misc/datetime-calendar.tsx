@@ -125,7 +125,7 @@ function BanglaMonthView({ gregYear, gregMonth }: BanglaMonthViewProps) {
                         className={cn(
                             'size-7.5 flex items-center justify-center rounded-md select-none',
                             isToday
-                                ? 'bg-accent-foreground text-accent font-bold'
+                                ? 'bg-accent-foreground hover:text-muted hover:bg-muted-foreground text-accent font-bold'
                                 : 'hover:bg-muted'
                         )}
                         key={bDay.concat(`${i}`)}

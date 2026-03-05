@@ -6,7 +6,6 @@ import type { ChildrenProp } from '@/types';
 
 export const metadata: Metadata = {
     title: {
-        // absolute: `Admin Dashboard » ${siteConfig.name}`,
         default: 'Admin Dashboard',
         template: '%s » Admin Dashboard',
     },
