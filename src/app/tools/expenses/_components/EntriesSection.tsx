@@ -1,5 +1,7 @@
 import { Search } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
+import { useState } from 'react';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +12,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { ExpenseItem } from '@/types/expenses';
 import { ReceiptGallery } from './ReceiptGallery';
 
@@ -19,22 +23,16 @@ type EntriesSectionProps = {
     filter: 'all' | 'income' | 'expense';
     page: number;
     totalPages: number;
-    deletingEntry: boolean;
-    deletingEntryId: number | null;
     money: (value: number) => string;
     setQuery: (value: string) => void;
     setFilter: (value: 'all' | 'income' | 'expense') => void;
     setPage: (updater: (prev: number) => number) => void;
-    onDeleteEntry: (id: number) => void;
 };
 
 export function EntriesSection({
-    deletingEntry,
-    deletingEntryId,
     entries,
     filter,
     money,
-    onDeleteEntry,
     page,
     query,
     setFilter,
@@ -42,6 +40,38 @@ export function EntriesSection({
     setQuery,
     totalPages,
 }: EntriesSectionProps) {
+    const [deletingEntryId, setDeletingEntryId] = useState<number | null>(null);
+
+    const { mutate: deleteEntry, isPending: deletingEntry } = useApiMutation<
+        { receipt_urls?: string[] },
+        null
+    >(`/api/tools/expenses/entries?id=${deletingEntryId}` as `/${string}`, 'DELETE', {
+        invalidateKeys: ['expense-summary', 'expense-entries'],
+    });
+
+    const handleDeleteEntry = (id: number) => {
+        setDeletingEntryId(id);
+        confirmToast({
+            title: 'Delete this entry?',
+            description: 'This action cannot be undone.',
+            confirmText: 'Delete',
+            isLoading: deletingEntry,
+            onConfirm: () => {
+                deleteEntry(null, {
+                    onSuccess: async (response) => {
+                        const urls = response.data?.receipt_urls || [];
+                        if (urls.length > 0) {
+                            await Promise.allSettled(
+                                urls.map((url: string) => deleteFromCloudinary(url))
+                            );
+                        }
+                    },
+                    onSettled: () => setDeletingEntryId(null),
+                });
+            },
+        });
+    };
+
     return (
         <section className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -144,7 +174,7 @@ export function EntriesSection({
                                                     deletingEntry &&
                                                     deletingEntryId === entry.id
                                                 }
-                                                onClick={() => onDeleteEntry(entry.id)}
+                                                onClick={() => handleDeleteEntry(entry.id)}
                                                 size="sm"
                                                 variant="ghost"
                                             >
@@ -203,7 +233,7 @@ export function EntriesSection({
                                             disabled={
                                                 deletingEntry && deletingEntryId === entry.id
                                             }
-                                            onClick={() => onDeleteEntry(entry.id)}
+                                            onClick={() => handleDeleteEntry(entry.id)}
                                             size="sm"
                                             variant="outline"
                                         >

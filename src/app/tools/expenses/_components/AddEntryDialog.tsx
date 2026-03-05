@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import type { UseFormReturn } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -28,41 +30,172 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    type CloudinaryResponse,
+    deleteFromCloudinary,
+    uploadMultipleToCloudinary,
+} from '@/lib/actions/cloudinary';
+import { getCurrentDateTimeLocal, toMinorUnits } from '@/lib/expenses';
+import { useApiMutation } from '@/lib/hooks/use-api';
+import { AddExpenseEntryFormSchema } from '@/lib/zod-schema/expenses';
 import { ReceiptGallery } from './ReceiptGallery';
 import type { AddEntryFormData } from './types';
 
 type AddEntryDialogProps = {
-    open: boolean;
     currency: string;
-    entryKind: AddEntryFormData['entry_kind'];
-    receiptFiles: File[];
-    receiptInputKey: number;
-    creatingEntry: boolean;
-    creatingLoan: boolean;
-    uploadingReceipts: boolean;
-    form: UseFormReturn<AddEntryFormData>;
-    onSubmit: (values: AddEntryFormData) => void;
-    onOpenChange: (open: boolean) => void;
-    onCancel: () => void;
+    isAddOpen: boolean;
+    setIsAddOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export function AddEntryDialog({
-    creatingEntry,
-    creatingLoan,
-    currency,
-    entryKind,
-    form,
-    onCancel,
-    onOpenChange,
-    onSubmit,
-    open,
-    receiptFiles,
-    receiptInputKey,
-    uploadingReceipts,
-}: AddEntryDialogProps) {
+export function AddEntryDialog({ currency, isAddOpen, setIsAddOpen }: AddEntryDialogProps) {
+    const [uploadingReceipts, setUploadingReceipts] = useState(false);
+
+    const [receiptInputKey, setReceiptInputKey] = useState(0);
+
+    const form = useForm<AddEntryFormData>({
+        resolver: zodResolver(AddExpenseEntryFormSchema),
+        defaultValues: {
+            entry_kind: 'expense',
+            title: '',
+            amount_input: '',
+            description: '',
+            counterparty: '',
+            due_date: '',
+            entry_date: getCurrentDateTimeLocal(),
+            receipt_files: [],
+        },
+    });
+
+    const addEntryKind = form.watch('entry_kind');
+    const receiptFiles = form.watch('receipt_files') || [];
+
     const receiptPreviewUrls = useMemo(() => {
         return receiptFiles.map((file) => URL.createObjectURL(file));
     }, [receiptFiles]);
+
+    const { mutate: createEntry, isPending: creatingEntry } = useApiMutation<
+        unknown,
+        {
+            title: string;
+            amount: number;
+            type: 'income' | 'expense';
+            description?: string;
+            entry_date?: string;
+            receipt_urls?: string[];
+        }
+    >('/api/tools/expenses/entries', 'POST', {
+        successMessage: 'Entry added successfully!',
+        invalidateKeys: ['expense-summary', 'expense-entries'],
+    });
+
+    const { mutate: createLoan, isPending: creatingLoan } = useApiMutation<
+        unknown,
+        {
+            title: string;
+            type: 'borrowed' | 'lent';
+            principal_amount: number;
+            counterparty?: string;
+            notes?: string;
+            due_date?: string;
+            start_date?: string;
+            receipt_urls?: string[];
+        }
+    >('/api/tools/expenses/loans', 'POST', {
+        successMessage: 'Loan added successfully!',
+        invalidateKeys: ['expense-summary', 'expense-loans'],
+    });
+
+    const resetAddForm = () => {
+        form.reset({
+            entry_kind: 'expense',
+            title: '',
+            amount_input: '',
+            description: '',
+            counterparty: '',
+            due_date: '',
+            entry_date: getCurrentDateTimeLocal(),
+            receipt_files: [],
+        });
+        setReceiptInputKey((prev) => prev + 1);
+    };
+
+    const handleCreate = async (values: AddEntryFormData) => {
+        const amountMinor = toMinorUnits(values.amount_input);
+        const description = values.description?.trim() || undefined;
+        const entryDate = values.entry_date
+            ? new Date(values.entry_date).toISOString()
+            : undefined;
+        const dueDate = values.due_date ? new Date(values.due_date).toISOString() : undefined;
+        let uploaded: CloudinaryResponse[] = [];
+
+        try {
+            if ((values.receipt_files?.length || 0) > 0) {
+                setUploadingReceipts(true);
+                uploaded = await uploadMultipleToCloudinary(
+                    values.receipt_files || [],
+                    'transaction-receipts'
+                );
+            }
+
+            if (values.entry_kind === 'income' || values.entry_kind === 'expense') {
+                createEntry(
+                    {
+                        title: values.title.trim(),
+                        amount: amountMinor,
+                        type: values.entry_kind,
+                        description,
+                        entry_date: entryDate,
+                        receipt_urls: uploaded.map((item) => item.url),
+                    },
+                    {
+                        onSuccess: () => {
+                            setIsAddOpen(false);
+                            resetAddForm();
+                        },
+                        onError: async () => {
+                            if (uploaded.length > 0) {
+                                await Promise.allSettled(
+                                    uploaded.map((item) => deleteFromCloudinary(item.public_id))
+                                );
+                            }
+                        },
+                        onSettled: () => setUploadingReceipts(false),
+                    }
+                );
+                return;
+            }
+
+            createLoan(
+                {
+                    title: values.title.trim(),
+                    type: values.entry_kind === 'loan_borrowed' ? 'borrowed' : 'lent',
+                    principal_amount: amountMinor,
+                    counterparty: values.counterparty?.trim() || undefined,
+                    notes: description,
+                    due_date: dueDate,
+                    start_date: entryDate,
+                    receipt_urls: uploaded.map((item) => item.url),
+                },
+                {
+                    onSuccess: () => {
+                        setIsAddOpen(false);
+                        resetAddForm();
+                    },
+                    onError: async () => {
+                        if (uploaded.length > 0) {
+                            await Promise.allSettled(
+                                uploaded.map((item) => deleteFromCloudinary(item.public_id))
+                            );
+                        }
+                    },
+                    onSettled: () => setUploadingReceipts(false),
+                }
+            );
+        } catch {
+            setUploadingReceipts(false);
+            toast.error('Failed to upload receipt images');
+        }
+    };
 
     useEffect(() => {
         return () => {
@@ -73,7 +206,13 @@ export function AddEntryDialog({
     }, [receiptPreviewUrls]);
 
     return (
-        <Dialog onOpenChange={onOpenChange} open={open}>
+        <Dialog
+            onOpenChange={(open) => {
+                setIsAddOpen(open);
+                if (!open) resetAddForm();
+            }}
+            open={isAddOpen}
+        >
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Add Entry</DialogTitle>
@@ -83,7 +222,7 @@ export function AddEntryDialog({
                 </DialogHeader>
 
                 <Form {...form}>
-                    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+                    <form className="space-y-4" onSubmit={form.handleSubmit(handleCreate)}>
                         <FormField
                             control={form.control}
                             name="entry_kind"
@@ -126,7 +265,7 @@ export function AddEntryDialog({
                                         <FormControl>
                                             <Input
                                                 placeholder={
-                                                    entryKind.includes('loan')
+                                                    addEntryKind.includes('loan')
                                                         ? 'Loan purpose/title'
                                                         : 'Entry title'
                                                 }
@@ -164,7 +303,7 @@ export function AddEntryDialog({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            {entryKind.includes('loan')
+                                            {addEntryKind.includes('loan')
                                                 ? 'Start Date & Time'
                                                 : 'Entry Date & Time'}
                                         </FormLabel>
@@ -176,7 +315,7 @@ export function AddEntryDialog({
                                 )}
                             />
 
-                            {entryKind.includes('loan') && (
+                            {addEntryKind.includes('loan') && (
                                 <>
                                     <FormField
                                         control={form.control}
@@ -216,7 +355,7 @@ export function AddEntryDialog({
                                 render={({ field }) => (
                                     <FormItem className="sm:col-span-2">
                                         <FormLabel>
-                                            {entryKind.includes('loan')
+                                            {addEntryKind.includes('loan')
                                                 ? 'Notes'
                                                 : 'Description'}
                                         </FormLabel>
@@ -271,7 +410,14 @@ export function AddEntryDialog({
                         </div>
 
                         <DialogFooter>
-                            <Button onClick={onCancel} type="button" variant="outline">
+                            <Button
+                                onClick={() => {
+                                    setIsAddOpen(false);
+                                    resetAddForm();
+                                }}
+                                type="button"
+                                variant="outline"
+                            >
                                 Cancel
                             </Button>
                             <Button

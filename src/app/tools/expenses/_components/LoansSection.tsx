@@ -1,5 +1,7 @@
 import { CalendarDays, HandCoins, Landmark, ReceiptText } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
+import { useState } from 'react';
+import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,6 +10,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
+import { useApiMutation } from '@/lib/hooks/use-api';
 import type { LoanItem } from '@/types/expenses';
 import { ReceiptGallery } from './ReceiptGallery';
 
@@ -16,8 +20,6 @@ type LoansSectionProps = {
     lentLoans: LoanItem[];
     money: (value: number) => string;
     onAddPayment: (loan: LoanItem) => void;
-    onSettleLoan: (loan: LoanItem) => void;
-    onDeleteLoan: (loan: LoanItem) => void;
 };
 
 export function LoansSection({
@@ -25,17 +27,64 @@ export function LoansSection({
     lentLoans,
     money,
     onAddPayment,
-    onDeleteLoan,
-    onSettleLoan,
 }: LoansSectionProps) {
+    const [loanActionId, setLoanActionId] = useState<number | null>(null);
+
+    const { mutate: updateLoan, isPending: updatingLoan } = useApiMutation<
+        unknown,
+        { status?: 'active' | 'settled' }
+    >(`/api/tools/expenses/loans/${loanActionId}` as `/${string}`, 'PATCH', {
+        invalidateKeys: ['expense-summary', 'expense-loans'],
+    });
+
+    const { mutate: deleteLoan, isPending: deletingLoan } = useApiMutation<
+        { receipt_urls?: string[] },
+        null
+    >(`/api/tools/expenses/loans/${loanActionId}` as `/${string}`, 'DELETE', {
+        invalidateKeys: ['expense-summary', 'expense-loans'],
+    });
+
+    const handleSettleLoan = (loan: LoanItem) => {
+        setLoanActionId(loan.id);
+        confirmToast({
+            title: `Mark "${loan.title}" as settled?`,
+            description: 'This will set remaining balance to zero.',
+            confirmText: 'Settle',
+            onConfirm: () => updateLoan({ status: 'settled' }),
+            isLoading: updatingLoan,
+        });
+    };
+
+    const handleDeleteLoan = (loan: LoanItem) => {
+        setLoanActionId(loan.id);
+        confirmToast({
+            title: `Delete "${loan.title}"?`,
+            description: 'All repayment history for this loan will be deleted.',
+            confirmText: 'Delete',
+            onConfirm: () => {
+                deleteLoan(null, {
+                    onSuccess: async (response) => {
+                        const urls = response.data?.receipt_urls || [];
+                        if (urls.length > 0) {
+                            await Promise.allSettled(
+                                urls.map((url: string) => deleteFromCloudinary(url))
+                            );
+                        }
+                    },
+                });
+            },
+            isLoading: deletingLoan,
+        });
+    };
+
     return (
         <section className="grid gap-4 lg:grid-cols-2">
             <LoanColumn
                 emptyMessage="No borrowed loans yet."
                 money={money}
                 onAddPayment={onAddPayment}
-                onDeleteLoan={onDeleteLoan}
-                onSettleLoan={onSettleLoan}
+                onDeleteLoan={handleDeleteLoan}
+                onSettleLoan={handleSettleLoan}
                 title="Borrowed Loans"
                 type="borrowed"
                 values={borrowedLoans}
@@ -44,8 +93,8 @@ export function LoansSection({
                 emptyMessage="No lent loans yet."
                 money={money}
                 onAddPayment={onAddPayment}
-                onDeleteLoan={onDeleteLoan}
-                onSettleLoan={onSettleLoan}
+                onDeleteLoan={handleDeleteLoan}
+                onSettleLoan={handleSettleLoan}
                 title="Lent Loans"
                 type="lent"
                 values={lentLoans}

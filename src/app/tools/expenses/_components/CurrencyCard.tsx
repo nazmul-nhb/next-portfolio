@@ -1,5 +1,7 @@
 import { Wallet } from 'lucide-react';
 import { CURRENCY_CODES } from 'nhb-toolbox/constants';
+import { useEffect, useState } from 'react';
+import type { CurrencyResponse } from '@/app/tools/expenses/_components/types';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -15,22 +17,35 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useApiMutation } from '@/lib/hooks/use-api';
+import type { Uncertain } from '@/types';
 
-type CurrencyPreferenceCardProps = {
-    currencyDraft: string;
-    preferredCurrency?: string;
-    updatingCurrency: boolean;
-    setCurrencyDraft: (value: string) => void;
-    onSave: () => void;
+type Props = {
+    currencyData: Uncertain<CurrencyResponse>;
 };
 
-export function CurrencyPreferenceCard({
-    currencyDraft,
-    onSave,
-    preferredCurrency,
-    setCurrencyDraft,
-    updatingCurrency,
-}: CurrencyPreferenceCardProps) {
+export function CurrencyCard({ currencyData }: Props) {
+    const [currencyDraft, setCurrencyDraft] = useState('BDT');
+
+    const { mutate: updateCurrency, isPending: updatingCurrency } = useApiMutation<
+        CurrencyResponse,
+        CurrencyResponse
+    >('/api/tools/expenses/currency', 'PATCH', {
+        successMessage: 'Currency preference updated!',
+        invalidateKeys: ['expense-summary', 'expense-currency'],
+    });
+
+    useEffect(() => {
+        if (currencyData?.preferred_currency) {
+            setCurrencyDraft(currencyData.preferred_currency);
+        }
+    }, [currencyData?.preferred_currency]);
+
+    const handleSaveCurrency = () => {
+        if (!currencyDraft || currencyDraft === currencyData?.preferred_currency) return;
+        updateCurrency({ preferred_currency: currencyDraft });
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -56,9 +71,11 @@ export function CurrencyPreferenceCard({
                     </SelectContent>
                 </Select>
                 <Button
-                    disabled={updatingCurrency || currencyDraft === preferredCurrency}
+                    disabled={
+                        updatingCurrency || currencyDraft === currencyData?.preferred_currency
+                    }
                     loading={updatingCurrency}
-                    onClick={onSave}
+                    onClick={handleSaveCurrency}
                 >
                     Save Currency
                 </Button>
