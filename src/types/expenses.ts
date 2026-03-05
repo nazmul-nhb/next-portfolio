@@ -34,6 +34,7 @@ export interface ExpenseItem extends SelectExpense {
 export interface LoanItem extends SelectLoan {
     remaining_amount: number;
     payments_count: number;
+    receipts: SelectReceipt[];
 }
 
 export interface PaginatedExpenses {

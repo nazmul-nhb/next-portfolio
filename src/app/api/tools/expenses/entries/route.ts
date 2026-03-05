@@ -78,6 +78,7 @@ export async function GET(req: NextRequest) {
         const receiptMap = new Map<number, typeof receiptRows>();
 
         for (const receipt of receiptRows) {
+            if (!receipt.expense_id) continue;
             const bucket = receiptMap.get(receipt.expense_id) || [];
             bucket.push(receipt);
             receiptMap.set(receipt.expense_id, bucket);
@@ -134,14 +135,11 @@ export async function POST(req: NextRequest) {
 
         if (!newEntry) throw new Error('Failed to create expense entry');
 
-        const receiptValues =
-            payload.type === 'expense'
-                ? (receipt_urls || []).map((url) => ({
-                      user_id: userId,
-                      expense_id: newEntry.id,
-                      image_url: url,
-                  }))
-                : [];
+        const receiptValues = (receipt_urls || []).map((url) => ({
+            user_id: userId,
+            expense_id: newEntry.id,
+            image_url: url,
+        }));
 
         const createdReceipts =
             receiptValues.length > 0

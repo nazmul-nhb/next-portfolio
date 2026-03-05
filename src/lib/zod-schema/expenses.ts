@@ -46,6 +46,7 @@ export const CreateLoanSchema = z
         principal_amount: MoneySchema,
         due_date: z.coerce.date().optional(),
         start_date: z.coerce.date().optional(),
+        receipt_urls: z.array(CloudinaryAssetSchema).max(10).optional(),
     })
     .strict();
 

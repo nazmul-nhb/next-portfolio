@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import type z from 'zod';
@@ -7,7 +7,7 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
-import { loanPayments, loans } from '@/lib/drizzle/schema/expenses';
+import { loanPayments, loans, receipts } from '@/lib/drizzle/schema/expenses';
 import { CreateLoanSchema } from '@/lib/zod-schema/expenses';
 import type { LoanItem } from '@/types/expenses';
 
@@ -60,10 +60,33 @@ export async function GET(req: NextRequest) {
             .where(and(...conditions))
             .orderBy(desc(loans.created_at));
 
+        const loanIds = rows.map((loan) => loan.id);
+        const receiptRows =
+            loanIds.length > 0
+                ? await db
+                      .select()
+                      .from(receipts)
+                      .where(
+                          and(
+                              eq(receipts.user_id, userId),
+                              inArray(receipts.loan_id, loanIds)
+                          )
+                      )
+                : [];
+
+        const receiptMap = new Map<number, typeof receiptRows>();
+        for (const receipt of receiptRows) {
+            if (!receipt.loan_id) continue;
+            const bucket = receiptMap.get(receipt.loan_id) || [];
+            bucket.push(receipt);
+            receiptMap.set(receipt.loan_id, bucket);
+        }
+
         const mapped: LoanItem[] = rows.map((loan) => ({
             ...loan,
             remaining_amount: Number(loan.remaining_amount || 0),
             payments_count: Number(loan.payments_count || 0),
+            receipts: receiptMap.get(loan.id) || [],
         }));
 
         return sendResponse('Loan', 'GET', mapped);
@@ -89,17 +112,30 @@ export async function POST(req: NextRequest) {
 
         if (!validation.success) return validation.response;
 
+        const { receipt_urls, ...payload } = validation.data;
+
         const [newLoan] = await db
             .insert(loans)
             .values({
-                ...validation.data,
+                ...payload,
                 user_id: userId,
-                counterparty: validation.data.counterparty || null,
-                notes: validation.data.notes || null,
+                counterparty: payload.counterparty || null,
+                notes: payload.notes || null,
                 paid_amount: 0,
                 status: 'active',
             })
             .returning();
+
+        const receiptValues = (receipt_urls || []).map((url) => ({
+            user_id: userId,
+            loan_id: newLoan.id,
+            image_url: url,
+        }));
+
+        const createdReceipts =
+            receiptValues.length > 0
+                ? await db.insert(receipts).values(receiptValues).returning()
+                : [];
 
         revalidatePath('/tools/expenses');
 
@@ -107,6 +143,7 @@ export async function POST(req: NextRequest) {
             ...newLoan,
             remaining_amount: newLoan.principal_amount,
             payments_count: 0,
+            receipts: createdReceipts,
         });
     } catch (error) {
         return sendErrorResponse(error);

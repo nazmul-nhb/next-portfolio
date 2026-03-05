@@ -76,9 +76,8 @@ export const loanPayments = pgTable('loan_payments', {
 /** Optional receipt images attached to expense entries. */
 export const receipts = pgTable('receipts', {
     id: serial().primaryKey(),
-    expense_id: integer()
-        .notNull()
-        .references(() => expenses.id, { onDelete: 'cascade' }),
+    expense_id: integer().references(() => expenses.id, { onDelete: 'cascade' }),
+    loan_id: integer().references(() => loans.id, { onDelete: 'cascade' }),
     user_id: integer()
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),

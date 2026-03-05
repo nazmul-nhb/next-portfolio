@@ -7,7 +7,7 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
-import { loans } from '@/lib/drizzle/schema/expenses';
+import { loans, receipts } from '@/lib/drizzle/schema/expenses';
 import { UpdateLoanSchema } from '@/lib/zod-schema/expenses';
 
 type Params = {
@@ -94,6 +94,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
             return sendErrorResponse('Invalid loan id', 400);
         }
 
+        const attachedReceipts = await db
+            .select({ image_url: receipts.image_url })
+            .from(receipts)
+            .where(and(eq(receipts.loan_id, loanId), eq(receipts.user_id, userId)));
+
         const [deleted] = await db
             .delete(loans)
             .where(and(eq(loans.id, loanId), eq(loans.user_id, userId)))
@@ -105,7 +110,10 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
         revalidatePath('/tools/expenses');
 
-        return sendResponse('Loan', 'DELETE', deleted);
+        return sendResponse('Loan', 'DELETE', {
+            ...deleted,
+            receipt_urls: attachedReceipts.map((item) => item.image_url),
+        });
     } catch (error) {
         return sendErrorResponse(error);
     }

@@ -23,6 +23,13 @@ export function formatMoney(value: number, currency: string, locale = 'en-US') {
     }).format(fromMinorUnits(value));
 }
 
+/** Builds a value compatible with `<input type="datetime-local" />`. */
+export function getCurrentDateTimeLocal(date = new Date()) {
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+    const local = new Date(date.getTime() - offsetMs);
+    return local.toISOString().slice(0, 16);
+}
+
 /**
  * Calculates cash-in-hand based on expense + loan movement.
  * borrowed_outstanding = borrowed principal - borrowed repayments
