@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import type { CurrencyResponse } from '@/app/tools/expenses/_components/types';
+import { ExpensePageSkeleton } from '@/components/misc/skeletons';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { formatMoney } from '@/lib/expenses';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import type { ExpenseSummary, LoanItem, PaginatedExpenses } from '@/types/expenses';
@@ -83,20 +83,7 @@ export function ExpensesClient() {
     const money = (value: number) => formatMoney(value, currency);
 
     if (status === 'loading' || (summaryLoading && entriesLoading && loansLoading)) {
-        return (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {Array.from({ length: 4 }, (_, i) => (
-                    <Card key={i}>
-                        <CardHeader>
-                            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-7 w-36 animate-pulse rounded bg-muted" />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        );
+        return <ExpensePageSkeleton />;
     }
 
     if (!session?.user) return null;

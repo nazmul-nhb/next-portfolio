@@ -1,4 +1,5 @@
 import { Fragment } from 'react/jsx-runtime';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -361,6 +362,46 @@ function SettingsSkeleton() {
     );
 }
 
+function ExpensePageSkeleton() {
+    return (
+        <div className="space-y-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                {/* Section heading */}
+                <div className="space-y-2 text-left">
+                    <SkeletonLine height="lg" width="md" />
+                    <SkeletonLine height="sm" width="lg" />
+                </div>
+                {/* Write button */}
+                <div className="flex gap-2">
+                    <Skeleton className="h-9 w-32 rounded-md" />
+                    <Skeleton className="h-9 w-32 rounded-md" />
+                </div>
+            </div>
+            <Card>
+                <CardHeader className="space-y-2">
+                    <div className="h-5 w-24 animate-pulse rounded bg-muted" />
+                    <div className="h-3.5 w-36 animate-pulse rounded bg-muted" />
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <div className="h-8 w-full animate-pulse rounded bg-muted" />
+                </CardContent>
+            </Card>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {Array.from({ length: 4 }, (_, i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-7 w-36 animate-pulse rounded bg-muted" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export {
     BlogCardSkeleton,
     BlogEditorSkeleton,
@@ -368,6 +409,7 @@ export {
     ChatAreaSkeleton,
     ConversationItemSkeleton,
     ConversationListSkeleton,
+    ExpensePageSkeleton,
     MessagesPageSkeleton,
     MyBlogsSkeleton,
     SettingsSkeleton,

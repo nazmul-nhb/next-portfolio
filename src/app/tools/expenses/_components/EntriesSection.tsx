@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, Trash } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
@@ -174,11 +174,18 @@ export function EntriesSection({
                                                     deletingEntry &&
                                                     deletingEntryId === entry.id
                                                 }
+                                                loading={
+                                                    deletingEntry &&
+                                                    deletingEntryId === entry.id
+                                                }
                                                 onClick={() => handleDeleteEntry(entry.id)}
-                                                size="sm"
-                                                variant="ghost"
+                                                size="icon"
+                                                variant="destructive"
                                             >
-                                                Delete
+                                                {(deletingEntry &&
+                                                    deletingEntryId === entry.id) || (
+                                                    <Trash className="size-4" />
+                                                )}
                                             </Button>
                                         </td>
                                     </tr>
@@ -233,10 +240,17 @@ export function EntriesSection({
                                             disabled={
                                                 deletingEntry && deletingEntryId === entry.id
                                             }
+                                            loading={
+                                                deletingEntry && deletingEntryId === entry.id
+                                            }
                                             onClick={() => handleDeleteEntry(entry.id)}
-                                            size="sm"
-                                            variant="outline"
+                                            size="default"
+                                            variant="destructive"
                                         >
+                                            {(deletingEntry &&
+                                                deletingEntryId === entry.id) || (
+                                                <Trash className="size-4 mb-px" />
+                                            )}{' '}
                                             Delete
                                         </Button>
                                     </div>

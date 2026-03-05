@@ -33,14 +33,14 @@ export function LoansSection({
     const { mutate: updateLoan, isPending: updatingLoan } = useApiMutation<
         unknown,
         { status?: 'active' | 'settled' }
-    >(`/api/tools/expenses/loans/${loanActionId}` as `/${string}`, 'PATCH', {
+    >(`/api/tools/expenses/loans/${loanActionId}`, 'PATCH', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
     });
 
     const { mutate: deleteLoan, isPending: deletingLoan } = useApiMutation<
         { receipt_urls?: string[] },
         null
-    >(`/api/tools/expenses/loans/${loanActionId}` as `/${string}`, 'DELETE', {
+    >(`/api/tools/expenses/loans/${loanActionId}`, 'DELETE', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
     });
 

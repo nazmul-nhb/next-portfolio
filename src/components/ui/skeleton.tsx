@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import type { LooseLiteral } from 'nhb-toolbox/utils/types';
 
 type SkeletonProps = React.ComponentProps<'div'>;
 
@@ -37,7 +38,7 @@ function SkeletonLine({
     height = 'sm',
     className,
 }: {
-    width?: 'xs' | 'sm' | 'md' | 'lg' | 'full' | string;
+    width?: LooseLiteral<'xs' | 'sm' | 'md' | 'lg' | 'full'>;
     height?: 'xs' | 'sm' | 'md' | 'lg';
     className?: string;
 }) {
