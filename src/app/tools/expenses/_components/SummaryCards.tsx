@@ -40,7 +40,7 @@ export function SummaryCards({ money, summary }: SummaryCardsProps) {
             </Card>
             <Card>
                 <CardHeader className="pb-2">
-                    <CardDescription>Cash In Hand</CardDescription>
+                    <CardDescription>Cash in Hand</CardDescription>
                     <CardTitle
                         className={`text-2xl ${
                             (summary?.net_balance || 0) >= 0

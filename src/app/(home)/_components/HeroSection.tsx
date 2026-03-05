@@ -123,7 +123,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 <Link href="/blogs">Read My Blog</Link>
                             </Button>
                             <Button asChild size="lg">
-                                <Link href="/contact">
+                                <Link href="/contact#send-message">
                                     Send a Message <LucideMailQuestionMark className="size-4" />
                                 </Link>
                             </Button>

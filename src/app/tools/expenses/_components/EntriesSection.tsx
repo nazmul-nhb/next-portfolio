@@ -1,9 +1,16 @@
-import { Search, Trash } from 'lucide-react';
+import { Search, Trash2, Wallet2 } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -109,11 +116,15 @@ export function EntriesSection({
             </div>
 
             {entries.length === 0 ? (
-                <Card>
-                    <CardContent className="py-10 text-center text-muted-foreground">
-                        No entries found for this filter.
-                    </CardContent>
-                </Card>
+                <Empty className="border border-dashed">
+                    <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                            <Wallet2 />
+                        </EmptyMedia>
+                        <EmptyTitle>No data</EmptyTitle>
+                        <EmptyDescription> No entries found for this filter.</EmptyDescription>
+                    </EmptyHeader>
+                </Empty>
             ) : (
                 <div className="space-y-3">
                     <div className="hidden overflow-x-auto rounded-xl border border-border/60 bg-card md:block">
@@ -184,7 +195,7 @@ export function EntriesSection({
                                             >
                                                 {(deletingEntry &&
                                                     deletingEntryId === entry.id) || (
-                                                    <Trash className="size-4" />
+                                                    <Trash2 className="size-4" />
                                                 )}
                                             </Button>
                                         </td>
@@ -249,7 +260,7 @@ export function EntriesSection({
                                         >
                                             {(deletingEntry &&
                                                 deletingEntryId === entry.id) || (
-                                                <Trash className="size-4 mb-px" />
+                                                <Trash2 className="size-4 mb-px" />
                                             )}{' '}
                                             Delete
                                         </Button>

@@ -139,7 +139,10 @@ export default function ContactPage() {
                 </SlideInLeft>
 
                 <SlideInRight>
-                    <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm sm:p-8">
+                    <div
+                        className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm sm:p-8"
+                        id="send-message"
+                    >
                         <h2 className="mb-6 text-xl font-bold">Send a Message</h2>
                         <ContactForm />
                     </div>

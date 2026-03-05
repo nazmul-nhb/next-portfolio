@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -316,7 +317,7 @@ export function AddEntryDialog({ currency, isAddOpen, setIsAddOpen }: AddEntryDi
                             />
 
                             {addEntryKind.includes('loan') && (
-                                <>
+                                <Fragment>
                                     <FormField
                                         control={form.control}
                                         name="counterparty"
@@ -346,7 +347,7 @@ export function AddEntryDialog({ currency, isAddOpen, setIsAddOpen }: AddEntryDi
                                             </FormItem>
                                         )}
                                     />
-                                </>
+                                </Fragment>
                             )}
 
                             <FormField

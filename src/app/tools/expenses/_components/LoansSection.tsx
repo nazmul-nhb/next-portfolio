@@ -1,6 +1,7 @@
-import { CalendarDays, HandCoins, Landmark, ReceiptText } from 'lucide-react';
+import { CalendarDays, HandCoins, Landmark, ReceiptText, Trash2 } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
 import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { LoanItem } from '@/types/expenses';
@@ -35,6 +43,7 @@ export function LoansSection({
         { status?: 'active' | 'settled' }
     >(`/api/tools/expenses/loans/${loanActionId}`, 'PATCH', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
+        onSuccess: () => setLoanActionId(null),
     });
 
     const { mutate: deleteLoan, isPending: deletingLoan } = useApiMutation<
@@ -42,6 +51,7 @@ export function LoansSection({
         null
     >(`/api/tools/expenses/loans/${loanActionId}`, 'DELETE', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
+        onSuccess: () => setLoanActionId(null),
     });
 
     const handleSettleLoan = (loan: LoanItem) => {
@@ -80,7 +90,9 @@ export function LoansSection({
     return (
         <section className="grid gap-4 lg:grid-cols-2">
             <LoanColumn
+                activeId={loanActionId}
                 emptyMessage="No borrowed loans yet."
+                isLoading={deletingLoan}
                 money={money}
                 onAddPayment={onAddPayment}
                 onDeleteLoan={handleDeleteLoan}
@@ -90,7 +102,9 @@ export function LoansSection({
                 values={borrowedLoans}
             />
             <LoanColumn
+                activeId={loanActionId}
                 emptyMessage="No lent loans yet."
+                isLoading={deletingLoan}
                 money={money}
                 onAddPayment={onAddPayment}
                 onDeleteLoan={handleDeleteLoan}
@@ -104,8 +118,10 @@ export function LoansSection({
 }
 
 type LoanColumnProps = {
+    activeId: number | null;
     title: string;
     type: 'borrowed' | 'lent';
+    isLoading: boolean;
     values: LoanItem[];
     emptyMessage: string;
     money: (value: number) => string;
@@ -115,12 +131,14 @@ type LoanColumnProps = {
 };
 
 function LoanColumn({
+    activeId,
     emptyMessage,
     money,
     onAddPayment,
     onDeleteLoan,
     onSettleLoan,
     title,
+    isLoading,
     type,
     values,
 }: LoanColumnProps) {
@@ -143,7 +161,19 @@ function LoanColumn({
             </CardHeader>
             <CardContent>
                 {values.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                {type === 'borrowed' ? (
+                                    <Landmark className="size-5" />
+                                ) : (
+                                    <HandCoins className="size-5" />
+                                )}
+                            </EmptyMedia>
+                            <EmptyTitle>No data</EmptyTitle>
+                            <EmptyDescription>{emptyMessage}</EmptyDescription>
+                        </EmptyHeader>
+                    </Empty>
                 ) : (
                     <div className="space-y-3">
                         {values.map((loan) => (
@@ -161,7 +191,7 @@ function LoanColumn({
                                         )}
                                     </div>
                                     <span
-                                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                        className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
                                             loan.status === 'settled'
                                                 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                                 : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
@@ -200,7 +230,7 @@ function LoanColumn({
                                 </div>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     {loan.status !== 'settled' && (
-                                        <>
+                                        <Fragment>
                                             <Button
                                                 onClick={() => onAddPayment(loan)}
                                                 size="sm"
@@ -216,13 +246,18 @@ function LoanColumn({
                                             >
                                                 Settle
                                             </Button>
-                                        </>
+                                        </Fragment>
                                     )}
                                     <Button
+                                        disabled={isLoading && activeId === loan.id}
+                                        loading={isLoading && activeId === loan.id}
                                         onClick={() => onDeleteLoan(loan)}
                                         size="sm"
-                                        variant="ghost"
+                                        variant="destructive"
                                     >
+                                        {(isLoading && activeId === loan.id) || (
+                                            <Trash2 className="mb-0.5" />
+                                        )}{' '}
                                         Delete
                                     </Button>
                                 </div>
