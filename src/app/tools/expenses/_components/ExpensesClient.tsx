@@ -1,15 +1,33 @@
 'use client';
 
-import { CalendarDays, HandCoins, Landmark, Plus, ReceiptText, Search, Wallet } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    CalendarDays,
+    HandCoins,
+    Landmark,
+    Plus,
+    ReceiptText,
+    Search,
+    Wallet,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { formatDate } from 'nhb-toolbox';
+import { CURRENCY_CODES } from 'nhb-toolbox/constants';
 import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import type z from 'zod';
 import { confirmToast } from '@/components/misc/confirm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -18,54 +36,81 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-    deleteFromCloudinary,
     type CloudinaryResponse,
+    deleteFromCloudinary,
     uploadMultipleToCloudinary,
 } from '@/lib/actions/cloudinary';
-import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { formatMoney, toMinorUnits } from '@/lib/expenses';
+import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
-import { SUPPORTED_CURRENCIES } from '@/lib/zod-schema/expenses';
+import { AddExpenseEntryFormSchema, LoanRepaymentFormSchema } from '@/lib/zod-schema/expenses';
 import type { ExpenseSummary, LoanItem, PaginatedExpenses } from '@/types/expenses';
-
-type EntryKind = 'income' | 'expense' | 'loan_borrowed' | 'loan_lent';
 
 type CurrencyResponse = {
     preferred_currency: string;
 };
+
+type AddEntryFormData = z.infer<typeof AddExpenseEntryFormSchema>;
+type RepaymentFormData = z.infer<typeof LoanRepaymentFormSchema>;
 
 export function ExpensesClient() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const [entryKind, setEntryKind] = useState<EntryKind>('expense');
-    const [title, setTitle] = useState('');
-    const [amount, setAmount] = useState('');
-    const [description, setDescription] = useState('');
-    const [counterparty, setCounterparty] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [entryDate, setEntryDate] = useState('');
-    const [receiptFiles, setReceiptFiles] = useState<File[]>([]);
-    const [uploadingReceipts, setUploadingReceipts] = useState(false);
-    const [receiptInputKey, setReceiptInputKey] = useState(0);
-
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
     const [page, setPage] = useState(1);
     const [deletingEntryId, setDeletingEntryId] = useState<number | null>(null);
-
     const [repaymentLoan, setRepaymentLoan] = useState<LoanItem | null>(null);
-    const [paymentAmount, setPaymentAmount] = useState('');
-    const [paymentNote, setPaymentNote] = useState('');
-    const [paymentDate, setPaymentDate] = useState('');
     const [loanActionId, setLoanActionId] = useState<number | null>(null);
-
     const [currencyDraft, setCurrencyDraft] = useState('USD');
+    const [receiptInputKey, setReceiptInputKey] = useState(0);
+    const [uploadingReceipts, setUploadingReceipts] = useState(false);
+
+    const addEntryForm = useForm<AddEntryFormData>({
+        resolver: zodResolver(AddExpenseEntryFormSchema),
+        defaultValues: {
+            entry_kind: 'expense',
+            title: '',
+            amount_input: '',
+            description: '',
+            counterparty: '',
+            due_date: '',
+            entry_date: formatDate({ format: 'DD/MM/YYYY' }),
+            receipt_files: [],
+        },
+    });
+
+    const repaymentForm = useForm<RepaymentFormData>({
+        resolver: zodResolver(LoanRepaymentFormSchema),
+        defaultValues: {
+            amount_input: '',
+            payment_date: '',
+            note: '',
+        },
+    });
+
+    const addEntryKind = addEntryForm.watch('entry_kind');
+    const receiptFiles = addEntryForm.watch('receipt_files') || [];
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -73,19 +118,21 @@ export function ExpensesClient() {
         }
     }, [status, router]);
 
+    useEffect(() => {
+        if (addEntryKind !== 'expense') {
+            addEntryForm.setValue('receipt_files', []);
+            setReceiptInputKey((prev) => prev + 1);
+        }
+    }, [addEntryKind, addEntryForm]);
+
     const entriesEndpoint = useMemo(() => {
         const params = new URLSearchParams({
             page: String(page),
             limit: '8',
         });
 
-        if (filter !== 'all') {
-            params.set('type', filter);
-        }
-
-        if (query.trim()) {
-            params.set('search', query.trim());
-        }
+        if (filter !== 'all') params.set('type', filter);
+        if (query.trim()) params.set('search', query.trim());
 
         return `/api/tools/expenses/entries?${params.toString()}` as `/${string}`;
     }, [filter, page, query]);
@@ -98,10 +145,13 @@ export function ExpensesClient() {
         }
     );
 
-    const { data: currencyData } = useApiQuery<CurrencyResponse>('/api/tools/expenses/currency', {
-        enabled: status === 'authenticated',
-        queryKey: ['expense-currency'],
-    });
+    const { data: currencyData } = useApiQuery<CurrencyResponse>(
+        '/api/tools/expenses/currency',
+        {
+            enabled: status === 'authenticated',
+            queryKey: ['expense-currency'],
+        }
+    );
 
     const { data: entriesData, isLoading: entriesLoading } = useApiQuery<PaginatedExpenses>(
         entriesEndpoint,
@@ -130,13 +180,11 @@ export function ExpensesClient() {
     const totalPages = entriesData?.totalPages || 1;
     const loans = loansData || [];
 
-    const borrowedLoans = useMemo(() => {
-        return loans.filter((loan) => loan.type === 'borrowed');
-    }, [loans]);
-
-    const lentLoans = useMemo(() => {
-        return loans.filter((loan) => loan.type === 'lent');
-    }, [loans]);
+    const borrowedLoans = useMemo(
+        () => loans.filter((loan) => loan.type === 'borrowed'),
+        [loans]
+    );
+    const lentLoans = useMemo(() => loans.filter((loan) => loan.type === 'lent'), [loans]);
 
     const { mutate: createEntry, isPending: creatingEntry } = useApiMutation<
         unknown,
@@ -149,7 +197,7 @@ export function ExpensesClient() {
             receipt_urls?: string[];
         }
     >('/api/tools/expenses/entries', 'POST', {
-        silentSuccessMessage: true,
+        successMessage: 'Entry added successfully!',
         invalidateKeys: ['expense-summary', 'expense-entries'],
     });
 
@@ -189,13 +237,7 @@ export function ExpensesClient() {
 
     const { mutate: updateLoan, isPending: updatingLoan } = useApiMutation<
         unknown,
-        {
-            status?: 'active' | 'settled';
-            title?: string;
-            counterparty?: string;
-            notes?: string;
-            due_date?: string | null;
-        }
+        { status?: 'active' | 'settled' }
     >(`/api/tools/expenses/loans/${loanActionId}` as `/${string}`, 'PATCH', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
     });
@@ -216,59 +258,57 @@ export function ExpensesClient() {
         invalidateKeys: ['expense-summary', 'expense-currency'],
     });
 
-    const resetEntryForm = () => {
-        setEntryKind('expense');
-        setTitle('');
-        setAmount('');
-        setDescription('');
-        setCounterparty('');
-        setDueDate('');
-        setEntryDate('');
-        setReceiptFiles([]);
+    const money = (value: number) => formatMoney(value, currency);
+
+    const resetAddForm = () => {
+        addEntryForm.reset({
+            entry_kind: 'expense',
+            title: '',
+            amount_input: '',
+            description: '',
+            counterparty: '',
+            due_date: '',
+            entry_date: '',
+            receipt_files: [],
+        });
         setReceiptInputKey((prev) => prev + 1);
     };
 
-    const money = (value: number) => formatMoney(value, currency);
+    const handleCreate = async (values: AddEntryFormData) => {
+        const amountMinor = toMinorUnits(values.amount_input);
+        const description = values.description?.trim() || undefined;
+        const entryDate = values.entry_date
+            ? new Date(values.entry_date).toISOString()
+            : undefined;
 
-    const handleCreate = async () => {
-        const amountMinor = toMinorUnits(amount);
-
-        if (!title.trim()) {
-            toast.error('Title is required');
-            return;
-        }
-
-        if (!Number.isFinite(amountMinor) || amountMinor <= 0) {
-            toast.error('Enter a valid amount');
-            return;
-        }
-
-        if (entryKind === 'income' || entryKind === 'expense') {
+        if (values.entry_kind === 'income' || values.entry_kind === 'expense') {
             let uploaded: CloudinaryResponse[] = [];
 
             try {
-                if (entryKind === 'expense' && receiptFiles.length > 0) {
+                if (
+                    values.entry_kind === 'expense' &&
+                    (values.receipt_files?.length || 0) > 0
+                ) {
                     setUploadingReceipts(true);
                     uploaded = await uploadMultipleToCloudinary(
-                        receiptFiles,
+                        values.receipt_files || [],
                         'expense-receipts'
                     );
                 }
 
                 createEntry(
                     {
-                        title: title.trim(),
+                        title: values.title.trim(),
                         amount: amountMinor,
-                        type: entryKind,
-                        description: description.trim() || undefined,
-                        entry_date: entryDate ? new Date(entryDate).toISOString() : undefined,
+                        type: values.entry_kind,
+                        description,
+                        entry_date: entryDate,
                         receipt_urls: uploaded.map((item) => item.url),
                     },
                     {
                         onSuccess: () => {
-                            toast.success('Entry added successfully!');
                             setIsAddOpen(false);
-                            resetEntryForm();
+                            resetAddForm();
                         },
                         onError: async () => {
                             if (uploaded.length > 0) {
@@ -277,34 +317,31 @@ export function ExpensesClient() {
                                 );
                             }
                         },
-                        onSettled: () => {
-                            setUploadingReceipts(false);
-                        },
+                        onSettled: () => setUploadingReceipts(false),
                     }
                 );
             } catch {
                 setUploadingReceipts(false);
                 toast.error('Failed to upload receipt images');
             }
-
             return;
         }
 
         createLoan(
             {
-                title: title.trim(),
-                type: entryKind === 'loan_borrowed' ? 'borrowed' : 'lent',
+                title: values.title.trim(),
+                type: values.entry_kind === 'loan_borrowed' ? 'borrowed' : 'lent',
                 principal_amount: amountMinor,
-                counterparty: counterparty.trim() || undefined,
-                notes: description.trim() || undefined,
-                due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
-                start_date: entryDate ? new Date(entryDate).toISOString() : undefined,
+                counterparty: values.counterparty?.trim() || undefined,
+                notes: description,
+                due_date: values.due_date ? new Date(values.due_date).toISOString() : undefined,
+                start_date: entryDate,
             },
             {
                 onSuccess: () => {
                     toast.success('Loan added successfully!');
                     setIsAddOpen(false);
-                    resetEntryForm();
+                    resetAddForm();
                 },
             }
         );
@@ -322,44 +359,38 @@ export function ExpensesClient() {
                 deleteEntry(null, {
                     onSuccess: async (response) => {
                         const urls = response.data?.receipt_urls || [];
-
                         if (urls.length > 0) {
                             await Promise.allSettled(
                                 urls.map((url: string) => deleteFromCloudinary(url))
                             );
                         }
                     },
-                    onSettled: () => {
-                        setDeletingEntryId(null);
-                    },
+                    onSettled: () => setDeletingEntryId(null),
                 });
             },
         });
     };
 
-    const handleAddPayment = () => {
+    const handleAddPayment = (values: RepaymentFormData) => {
         if (!repaymentLoan) return;
-
-        const paymentMinor = toMinorUnits(paymentAmount);
-
-        if (!Number.isFinite(paymentMinor) || paymentMinor <= 0) {
-            toast.error('Enter a valid payment amount');
-            return;
-        }
 
         addRepayment(
             {
-                amount: paymentMinor,
-                note: paymentNote.trim() || undefined,
-                payment_date: paymentDate ? new Date(paymentDate).toISOString() : undefined,
+                amount: toMinorUnits(values.amount_input),
+                note: values.note?.trim() || undefined,
+                payment_date: values.payment_date
+                    ? new Date(values.payment_date).toISOString()
+                    : undefined,
             },
             {
                 onSuccess: () => {
                     toast.success('Repayment added successfully!');
                     setRepaymentLoan(null);
-                    setPaymentAmount('');
-                    setPaymentNote('');
-                    setPaymentDate('');
+                    repaymentForm.reset({
+                        amount_input: '',
+                        payment_date: '',
+                        note: '',
+                    });
                 },
             }
         );
@@ -367,28 +398,22 @@ export function ExpensesClient() {
 
     const handleSettleLoan = (loan: LoanItem) => {
         setLoanActionId(loan.id);
-
         confirmToast({
             title: `Mark "${loan.title}" as settled?`,
             description: 'This will set remaining balance to zero.',
             confirmText: 'Settle',
-            onConfirm: () => {
-                updateLoan({ status: 'settled' });
-            },
+            onConfirm: () => updateLoan({ status: 'settled' }),
             isLoading: updatingLoan,
         });
     };
 
     const handleDeleteLoan = (loan: LoanItem) => {
         setLoanActionId(loan.id);
-
         confirmToast({
             title: `Delete "${loan.title}"?`,
             description: 'All repayment history for this loan will be deleted.',
             confirmText: 'Delete',
-            onConfirm: () => {
-                deleteLoan(null);
-            },
+            onConfirm: () => deleteLoan(null),
             isLoading: deletingLoan,
         });
     };
@@ -400,19 +425,17 @@ export function ExpensesClient() {
 
     if (status === 'loading' || (summaryLoading && entriesLoading && loansLoading)) {
         return (
-            <div className="mx-auto max-w-7xl px-4 py-12">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {Array.from({ length: 4 }, (_, i) => (
-                        <Card key={i}>
-                            <CardHeader>
-                                <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-7 w-36 animate-pulse rounded bg-muted" />
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {Array.from({ length: 4 }, (_, i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-7 w-36 animate-pulse rounded bg-muted" />
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         );
     }
@@ -420,15 +443,14 @@ export function ExpensesClient() {
     if (!session?.user) return null;
 
     return (
-        <div className="mx-auto max-w-7xl px-4 py-10 space-y-8 overflow-x-hidden">
+        <div className="space-y-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Expense Manager</h1>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="mt-1 text-sm text-muted-foreground">
                         Track income, expenses, borrowed loans, lent loans, and cash in hand.
                     </p>
                 </div>
-
                 <div className="flex gap-2">
                     <Button onClick={() => setIsAddOpen(true)}>
                         <Plus className="size-4" />
@@ -451,19 +473,23 @@ export function ExpensesClient() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <select
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:max-w-40"
-                        onChange={(e) => setCurrencyDraft(e.target.value)}
-                        value={currencyDraft}
-                    >
-                        {SUPPORTED_CURRENCIES.map((item) => (
-                            <option key={item} value={item}>
-                                {item}
-                            </option>
-                        ))}
-                    </select>
+                    <Select onValueChange={setCurrencyDraft} value={currencyDraft}>
+                        <SelectTrigger className="w-full sm:w-40">
+                            <SelectValue placeholder="Currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {CURRENCY_CODES.map((item) => (
+                                <SelectItem key={item} value={item}>
+                                    {item}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <Button
-                        disabled={updatingCurrency || currencyDraft === currencyData?.preferred_currency}
+                        disabled={
+                            updatingCurrency ||
+                            currencyDraft === currencyData?.preferred_currency
+                        }
                         loading={updatingCurrency}
                         onClick={handleSaveCurrency}
                     >
@@ -481,7 +507,6 @@ export function ExpensesClient() {
                         </CardTitle>
                     </CardHeader>
                 </Card>
-
                 <Card>
                     <CardHeader className="pb-2">
                         <CardDescription>Total Expense</CardDescription>
@@ -490,7 +515,6 @@ export function ExpensesClient() {
                         </CardTitle>
                     </CardHeader>
                 </Card>
-
                 <Card>
                     <CardHeader className="pb-2">
                         <CardDescription>Active Loans</CardDescription>
@@ -504,7 +528,6 @@ export function ExpensesClient() {
                         </p>
                     </CardHeader>
                 </Card>
-
                 <Card>
                     <CardHeader className="pb-2">
                         <CardDescription>Cash In Hand</CardDescription>
@@ -524,7 +547,6 @@ export function ExpensesClient() {
             <section className="space-y-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <h2 className="text-xl font-semibold">Income & Expense Entries</h2>
-
                     <div className="flex flex-col gap-2 sm:flex-row">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -538,18 +560,22 @@ export function ExpensesClient() {
                                 value={query}
                             />
                         </div>
-                        <select
-                            className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                            onChange={(e) => {
-                                setFilter(e.target.value as 'all' | 'income' | 'expense');
+                        <Select
+                            onValueChange={(value: 'all' | 'income' | 'expense') => {
+                                setFilter(value);
                                 setPage(1);
                             }}
                             value={filter}
                         >
-                            <option value="all">All Types</option>
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-                        </select>
+                            <SelectTrigger className="w-full sm:w-40">
+                                <SelectValue placeholder="Filter" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Types</SelectItem>
+                                <SelectItem value="income">Income</SelectItem>
+                                <SelectItem value="expense">Expense</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
@@ -561,30 +587,47 @@ export function ExpensesClient() {
                     </Card>
                 ) : (
                     <div className="space-y-3">
-                        <div className="hidden md:block overflow-x-auto rounded-xl border border-border/60 bg-card">
-                            <table className="w-full min-w-[760px] text-sm">
+                        <div className="hidden overflow-x-auto rounded-xl border border-border/60 bg-card md:block">
+                            <table className="w-full min-w-190 text-sm">
                                 <thead className="bg-muted/40 text-muted-foreground">
                                     <tr>
-                                        <th className="px-4 py-3 text-left font-medium">Title</th>
-                                        <th className="px-4 py-3 text-left font-medium">Type</th>
-                                        <th className="px-4 py-3 text-left font-medium">Amount</th>
-                                        <th className="px-4 py-3 text-left font-medium">Date</th>
-                                        <th className="px-4 py-3 text-left font-medium">Receipts</th>
-                                        <th className="px-4 py-3 text-right font-medium">Action</th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                            Title
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                            Type
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                            Amount
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                            Date
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                            Receipts
+                                        </th>
+                                        <th className="px-4 py-3 text-right font-medium">
+                                            Action
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {entries.map((entry) => (
-                                        <tr className="border-t border-border/50" key={entry.id}>
+                                        <tr
+                                            className="border-t border-border/50"
+                                            key={entry.id}
+                                        >
                                             <td className="px-4 py-3">
                                                 <p className="font-medium">{entry.title}</p>
                                                 {entry.description && (
-                                                    <p className="text-xs text-muted-foreground line-clamp-1">
+                                                    <p className="line-clamp-1 text-xs text-muted-foreground">
                                                         {entry.description}
                                                     </p>
                                                 )}
                                             </td>
-                                            <td className="px-4 py-3 capitalize">{entry.type}</td>
+                                            <td className="px-4 py-3 capitalize">
+                                                {entry.type}
+                                            </td>
                                             <td
                                                 className={`px-4 py-3 font-semibold ${
                                                     entry.type === 'income'
@@ -606,7 +649,10 @@ export function ExpensesClient() {
                                             </td>
                                             <td className="px-4 py-3 text-right">
                                                 <Button
-                                                    disabled={deletingEntry && deletingEntryId === entry.id}
+                                                    disabled={
+                                                        deletingEntry &&
+                                                        deletingEntryId === entry.id
+                                                    }
                                                     onClick={() => handleDeleteEntry(entry.id)}
                                                     size="sm"
                                                     variant="ghost"
@@ -623,12 +669,12 @@ export function ExpensesClient() {
                         <div className="grid gap-3 md:hidden">
                             {entries.map((entry) => (
                                 <Card key={entry.id}>
-                                    <CardContent className="pt-5 pb-4 space-y-3">
+                                    <CardContent className="space-y-3 pt-5 pb-4">
                                         <div className="flex items-start justify-between gap-2">
                                             <div>
                                                 <p className="font-medium">{entry.title}</p>
                                                 {entry.description && (
-                                                    <p className="text-xs text-muted-foreground line-clamp-2">
+                                                    <p className="line-clamp-2 text-xs text-muted-foreground">
                                                         {entry.description}
                                                     </p>
                                                 )}
@@ -644,7 +690,6 @@ export function ExpensesClient() {
                                                 {money(entry.amount)}
                                             </p>
                                         </div>
-
                                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                                             <span className="capitalize">{entry.type}</span>
                                             <span>
@@ -654,13 +699,14 @@ export function ExpensesClient() {
                                                 })}
                                             </span>
                                         </div>
-
                                         {entry.receipts.length > 0 && (
                                             <div className="flex gap-2 overflow-x-auto pb-1">
                                                 {entry.receipts.slice(0, 4).map((receipt) => (
                                                     <a
                                                         className="shrink-0"
-                                                        href={buildCloudinaryUrl(receipt.image_url)}
+                                                        href={buildCloudinaryUrl(
+                                                            receipt.image_url
+                                                        )}
                                                         key={receipt.id}
                                                         rel="noreferrer"
                                                         target="_blank"
@@ -669,16 +715,20 @@ export function ExpensesClient() {
                                                         <img
                                                             alt="Receipt"
                                                             className="h-14 w-14 rounded-md border object-cover"
-                                                            src={buildCloudinaryUrl(receipt.image_url)}
+                                                            src={buildCloudinaryUrl(
+                                                                receipt.image_url
+                                                            )}
                                                         />
                                                     </a>
                                                 ))}
                                             </div>
                                         )}
-
                                         <div className="flex justify-end">
                                             <Button
-                                                disabled={deletingEntry && deletingEntryId === entry.id}
+                                                disabled={
+                                                    deletingEntry &&
+                                                    deletingEntryId === entry.id
+                                                }
                                                 onClick={() => handleDeleteEntry(entry.id)}
                                                 size="sm"
                                                 variant="outline"
@@ -723,29 +773,28 @@ export function ExpensesClient() {
                     emptyMessage="No borrowed loans yet."
                     handleDeleteLoan={handleDeleteLoan}
                     handleSettleLoan={handleSettleLoan}
+                    money={money}
                     onAddPayment={setRepaymentLoan}
                     title="Borrowed Loans"
                     type="borrowed"
                     values={borrowedLoans}
-                    money={money}
                 />
-
                 <LoanSection
                     emptyMessage="No lent loans yet."
                     handleDeleteLoan={handleDeleteLoan}
                     handleSettleLoan={handleSettleLoan}
+                    money={money}
                     onAddPayment={setRepaymentLoan}
                     title="Lent Loans"
                     type="lent"
                     values={lentLoans}
-                    money={money}
                 />
             </section>
 
             <Dialog
                 onOpenChange={(open) => {
                     setIsAddOpen(open);
-                    if (!open) resetEntryForm();
+                    if (!open) resetAddForm();
                 }}
                 open={isAddOpen}
             >
@@ -757,135 +806,220 @@ export function ExpensesClient() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="entryType">Entry Type</Label>
-                            <select
-                                className="mt-1.5 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                                id="entryType"
-                                onChange={(e) => setEntryKind(e.target.value as EntryKind)}
-                                value={entryKind}
-                            >
-                                <option value="income">Income (Money In)</option>
-                                <option value="expense">Expense (Money Out)</option>
-                                <option value="loan_borrowed">Loan Borrowed (Liability)</option>
-                                <option value="loan_lent">Loan Lent (Asset)</option>
-                            </select>
-                        </div>
-
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="sm:col-span-2">
-                                <Label htmlFor="title">Title</Label>
-                                <Input
-                                    id="title"
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder={
-                                        entryKind.includes('loan')
-                                            ? 'Loan purpose/title'
-                                            : 'Entry title'
-                                    }
-                                    value={title}
-                                />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="amount">Amount ({currency})</Label>
-                                <Input
-                                    id="amount"
-                                    min={0}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    placeholder="0.00"
-                                    step="0.01"
-                                    type="number"
-                                    value={amount}
-                                />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="entry_date">
-                                    {entryKind.includes('loan') ? 'Start Date' : 'Entry Date'}
-                                </Label>
-                                <Input
-                                    id="entry_date"
-                                    onChange={(e) => setEntryDate(e.target.value)}
-                                    type="date"
-                                    value={entryDate}
-                                />
-                            </div>
-
-                            {entryKind.includes('loan') && (
-                                <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <Label htmlFor="counterparty">Counterparty (optional)</Label>
-                                        <Input
-                                            id="counterparty"
-                                            onChange={(e) => setCounterparty(e.target.value)}
-                                            placeholder="Person or organization"
-                                            value={counterparty}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="due_date">Due Date (optional)</Label>
-                                        <Input
-                                            id="due_date"
-                                            onChange={(e) => setDueDate(e.target.value)}
-                                            type="date"
-                                            value={dueDate}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="sm:col-span-2">
-                                <Label htmlFor="description">
-                                    {entryKind.includes('loan') ? 'Notes' : 'Description'}
-                                </Label>
-                                <Textarea
-                                    className="min-h-24"
-                                    id="description"
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Optional details..."
-                                    value={description}
-                                />
-                            </div>
-
-                            {entryKind === 'expense' && (
-                                <div className="sm:col-span-2">
-                                    <Label htmlFor="receipts">Receipts (optional)</Label>
-                                    <Input
-                                        accept="image/*"
-                                        id="receipts"
-                                        key={receiptInputKey}
-                                        multiple
-                                        onChange={(e) =>
-                                            setReceiptFiles(Array.from(e.target.files || []))
-                                        }
-                                        type="file"
-                                    />
-                                    {receiptFiles.length > 0 && (
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            {receiptFiles.length} file(s) selected
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button onClick={() => setIsAddOpen(false)} variant="outline">
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={
-                                creatingEntry || creatingLoan || uploadingReceipts || !title.trim()
-                            }
-                            loading={creatingEntry || creatingLoan || uploadingReceipts}
-                            onClick={handleCreate}
+                    <Form {...addEntryForm}>
+                        <form
+                            className="space-y-4"
+                            onSubmit={addEntryForm.handleSubmit(handleCreate)}
                         >
-                            Save Entry
-                        </Button>
-                    </DialogFooter>
+                            <FormField
+                                control={addEntryForm.control}
+                                name="entry_kind"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Entry Type</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select entry type" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="income">
+                                                    Income (Money In)
+                                                </SelectItem>
+                                                <SelectItem value="expense">
+                                                    Expense (Money Out)
+                                                </SelectItem>
+                                                <SelectItem value="loan_borrowed">
+                                                    Loan Borrowed (Liability)
+                                                </SelectItem>
+                                                <SelectItem value="loan_lent">
+                                                    Loan Lent (Asset)
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <FormField
+                                    control={addEntryForm.control}
+                                    name="title"
+                                    render={({ field }) => (
+                                        <FormItem className="sm:col-span-2">
+                                            <FormLabel>Title</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder={
+                                                        addEntryKind.includes('loan')
+                                                            ? 'Loan purpose/title'
+                                                            : 'Entry title'
+                                                    }
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={addEntryForm.control}
+                                    name="amount_input"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Amount ({currency})</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    min={0}
+                                                    placeholder="0.00"
+                                                    step="0.01"
+                                                    type="number"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={addEntryForm.control}
+                                    name="entry_date"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                {addEntryKind.includes('loan')
+                                                    ? 'Start Date'
+                                                    : 'Entry Date'}
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input type="date" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {addEntryKind.includes('loan') && (
+                                    <>
+                                        <FormField
+                                            control={addEntryForm.control}
+                                            name="counterparty"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Counterparty (optional)
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Person or organization"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={addEntryForm.control}
+                                            name="due_date"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Due Date (optional)</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="date" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </>
+                                )}
+
+                                <FormField
+                                    control={addEntryForm.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem className="sm:col-span-2">
+                                            <FormLabel>
+                                                {addEntryKind.includes('loan')
+                                                    ? 'Notes'
+                                                    : 'Description'}
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    className="min-h-24"
+                                                    placeholder="Optional details..."
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                {addEntryKind === 'expense' && (
+                                    <FormField
+                                        control={addEntryForm.control}
+                                        name="receipt_files"
+                                        render={({ field }) => (
+                                            <FormItem className="sm:col-span-2">
+                                                <FormLabel>Receipts (optional)</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        accept="image/*"
+                                                        key={receiptInputKey}
+                                                        multiple
+                                                        onChange={(e) => {
+                                                            const files = Array.from(
+                                                                e.target.files || []
+                                                            );
+                                                            field.onChange(files);
+                                                        }}
+                                                        type="file"
+                                                    />
+                                                </FormControl>
+                                                {!!receiptFiles.length && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {receiptFiles.length} file(s) selected
+                                                    </p>
+                                                )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+                            </div>
+
+                            <DialogFooter>
+                                <Button
+                                    onClick={() => {
+                                        setIsAddOpen(false);
+                                        resetAddForm();
+                                    }}
+                                    type="button"
+                                    variant="outline"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    disabled={
+                                        creatingEntry || creatingLoan || uploadingReceipts
+                                    }
+                                    loading={creatingEntry || creatingLoan || uploadingReceipts}
+                                    type="submit"
+                                >
+                                    Save Entry
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
                 </DialogContent>
             </Dialog>
 
@@ -893,9 +1027,11 @@ export function ExpensesClient() {
                 onOpenChange={(open) => {
                     if (!open) {
                         setRepaymentLoan(null);
-                        setPaymentAmount('');
-                        setPaymentNote('');
-                        setPaymentDate('');
+                        repaymentForm.reset({
+                            amount_input: '',
+                            payment_date: '',
+                            note: '',
+                        });
                     }
                 }}
                 open={!!repaymentLoan}
@@ -915,50 +1051,75 @@ export function ExpensesClient() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="payment_amount">Amount ({currency})</Label>
-                            <Input
-                                id="payment_amount"
-                                min={0}
-                                onChange={(e) => setPaymentAmount(e.target.value)}
-                                placeholder="0.00"
-                                step="0.01"
-                                type="number"
-                                value={paymentAmount}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="payment_date">Payment Date (optional)</Label>
-                            <Input
-                                id="payment_date"
-                                onChange={(e) => setPaymentDate(e.target.value)}
-                                type="date"
-                                value={paymentDate}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="payment_note">Note (optional)</Label>
-                            <Textarea
-                                id="payment_note"
-                                onChange={(e) => setPaymentNote(e.target.value)}
-                                value={paymentNote}
-                            />
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button onClick={() => setRepaymentLoan(null)} variant="outline">
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={addingRepayment}
-                            loading={addingRepayment}
-                            onClick={handleAddPayment}
+                    <Form {...repaymentForm}>
+                        <form
+                            className="space-y-4"
+                            onSubmit={repaymentForm.handleSubmit(handleAddPayment)}
                         >
-                            Add Payment
-                        </Button>
-                    </DialogFooter>
+                            <FormField
+                                control={repaymentForm.control}
+                                name="amount_input"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Amount ({currency})</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                min={0}
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                type="number"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={repaymentForm.control}
+                                name="payment_date"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Payment Date (optional)</FormLabel>
+                                        <FormControl>
+                                            <Input type="date" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={repaymentForm.control}
+                                name="note"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Note (optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <DialogFooter>
+                                <Button
+                                    onClick={() => setRepaymentLoan(null)}
+                                    type="button"
+                                    variant="outline"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    disabled={addingRepayment}
+                                    loading={addingRepayment}
+                                    type="submit"
+                                >
+                                    Add Payment
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
                 </DialogContent>
             </Dialog>
         </div>
@@ -1032,9 +1193,11 @@ function LoanSection({
                                         {loan.status}
                                     </span>
                                 </div>
-
                                 <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-                                    <InfoRow label="Principal" value={money(loan.principal_amount)} />
+                                    <InfoRow
+                                        label="Principal"
+                                        value={money(loan.principal_amount)}
+                                    />
                                     <InfoRow label="Paid" value={money(loan.paid_amount)} />
                                     <InfoRow
                                         label="Remaining"
@@ -1052,7 +1215,6 @@ function LoanSection({
                                         }
                                     />
                                 </div>
-
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     {loan.status !== 'settled' && (
                                         <>

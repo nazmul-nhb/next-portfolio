@@ -123,37 +123,35 @@ export async function POST(req: NextRequest) {
 
         const { receipt_urls, ...payload } = validation.data;
 
-        const created = await db.transaction(async (tx) => {
-            const [newEntry] = await tx
-                .insert(expenses)
-                .values({
-                    ...payload,
-                    user_id: userId,
-                    description: payload.description || null,
-                })
-                .returning();
+        const [newEntry] = await db
+            .insert(expenses)
+            .values({
+                ...payload,
+                user_id: userId,
+                description: payload.description || null,
+            })
+            .returning();
 
-            if (!newEntry) throw new Error('Failed to create expense entry');
+        if (!newEntry) throw new Error('Failed to create expense entry');
 
-            const receiptValues =
-                payload.type === 'expense'
-                    ? (receipt_urls || []).map((url) => ({
-                          user_id: userId,
-                          expense_id: newEntry.id,
-                          image_url: url,
-                      }))
-                    : [];
+        const receiptValues =
+            payload.type === 'expense'
+                ? (receipt_urls || []).map((url) => ({
+                      user_id: userId,
+                      expense_id: newEntry.id,
+                      image_url: url,
+                  }))
+                : [];
 
-            const createdReceipts =
-                receiptValues.length > 0
-                    ? await tx.insert(receipts).values(receiptValues).returning()
-                    : [];
+        const createdReceipts =
+            receiptValues.length > 0
+                ? await db.insert(receipts).values(receiptValues).returning()
+                : [];
 
-            return {
-                ...newEntry,
-                receipts: createdReceipts,
-            };
-        });
+        const created = {
+            ...newEntry,
+            receipts: createdReceipts,
+        };
 
         revalidatePath('/tools/expenses');
 

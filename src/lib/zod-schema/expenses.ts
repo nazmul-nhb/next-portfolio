@@ -1,17 +1,5 @@
+import { CURRENCY_CODES } from 'nhb-toolbox/constants';
 import z from 'zod';
-
-export const SUPPORTED_CURRENCIES = [
-    'USD',
-    'BDT',
-    'EUR',
-    'GBP',
-    'INR',
-    'JPY',
-    'CAD',
-    'AUD',
-    'SGD',
-    'AED',
-] as const;
 
 const MoneySchema = z
     .number()
@@ -81,6 +69,42 @@ export const PaymentSchema = z
 
 export const CurrencyPreferenceSchema = z
     .object({
-        preferred_currency: z.enum(SUPPORTED_CURRENCIES),
+        preferred_currency: z.enum(CURRENCY_CODES),
+    })
+    .strict();
+
+const AmountInputSchema = z
+    .string()
+    .trim()
+    .min(1, 'Amount is required')
+    .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
+        message: 'Enter a valid amount',
+    });
+
+export const AddExpenseEntryFormSchema = z
+    .object({
+        entry_kind: z.enum(['income', 'expense', 'loan_borrowed', 'loan_lent']),
+        title: z
+            .string()
+            .min(1, 'Title is required')
+            .max(180, 'Title must be at most 180 characters')
+            .trim(),
+        amount_input: AmountInputSchema,
+        description: z
+            .string()
+            .max(2000, 'Description must be at most 2000 characters')
+            .optional(),
+        counterparty: z.string().max(128, 'Counterparty must be at most 128 characters').optional(),
+        due_date: z.string().optional(),
+        entry_date: z.string().optional(),
+        receipt_files: z.array(z.custom<File>()).max(10).optional(),
+    })
+    .strict();
+
+export const LoanRepaymentFormSchema = z
+    .object({
+        amount_input: AmountInputSchema,
+        payment_date: z.string().optional(),
+        note: z.string().max(1000, 'Note must be at most 1000 characters').optional(),
     })
     .strict();

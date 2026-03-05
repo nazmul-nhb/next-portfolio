@@ -38,61 +38,59 @@ export async function POST(req: NextRequest, { params }: Params) {
 
         if (!validation.success) return validation.response;
 
-        const result = await db.transaction(async (tx) => {
-            const [loan] = await tx
-                .select()
-                .from(loans)
-                .where(and(eq(loans.id, loanId), eq(loans.user_id, userId)))
-                .limit(1);
+        const [loan] = await db
+            .select()
+            .from(loans)
+            .where(and(eq(loans.id, loanId), eq(loans.user_id, userId)))
+            .limit(1);
 
-            if (!loan) {
-                throw new Error('Loan not found');
-            }
+        if (!loan) {
+            throw new Error('Loan not found');
+        }
 
-            const remaining = loan.principal_amount - loan.paid_amount;
+        const remaining = loan.principal_amount - loan.paid_amount;
 
-            if (remaining <= 0 || loan.status === 'settled') {
-                throw new Error('Loan is already settled');
-            }
+        if (remaining <= 0 || loan.status === 'settled') {
+            throw new Error('Loan is already settled');
+        }
 
-            if (validation.data.amount > remaining) {
-                throw new Error('Payment amount cannot exceed remaining balance');
-            }
+        if (validation.data.amount > remaining) {
+            throw new Error('Payment amount cannot exceed remaining balance');
+        }
 
-            const [payment] = await tx
-                .insert(loanPayments)
-                .values({
-                    loan_id: loan.id,
-                    user_id: userId,
-                    amount: validation.data.amount,
-                    note: validation.data.note || null,
-                    payment_date: validation.data.payment_date || new Date(),
-                })
-                .returning();
+        const [payment] = await db
+            .insert(loanPayments)
+            .values({
+                loan_id: loan.id,
+                user_id: userId,
+                amount: validation.data.amount,
+                note: validation.data.note || null,
+                payment_date: validation.data.payment_date || new Date(),
+            })
+            .returning();
 
-            const paidAmount = loan.paid_amount + validation.data.amount;
-            const nextStatus = paidAmount >= loan.principal_amount ? 'settled' : 'active';
+        const paidAmount = loan.paid_amount + validation.data.amount;
+        const nextStatus = paidAmount >= loan.principal_amount ? 'settled' : 'active';
 
-            const [updatedLoan] = await tx
-                .update(loans)
-                .set({
-                    paid_amount: paidAmount,
-                    status: nextStatus,
-                })
-                .where(eq(loans.id, loan.id))
-                .returning();
+        const [updatedLoan] = await db
+            .update(loans)
+            .set({
+                paid_amount: paidAmount,
+                status: nextStatus,
+            })
+            .where(eq(loans.id, loan.id))
+            .returning();
 
-            return {
-                payment,
-                loan: {
-                    ...updatedLoan,
-                    remaining_amount: Math.max(
-                        0,
-                        updatedLoan.principal_amount - updatedLoan.paid_amount
-                    ),
-                },
-            };
-        });
+        const result = {
+            payment,
+            loan: {
+                ...updatedLoan,
+                remaining_amount: Math.max(
+                    0,
+                    updatedLoan.principal_amount - updatedLoan.paid_amount
+                ),
+            },
+        };
 
         revalidatePath('/tools/expenses');
 

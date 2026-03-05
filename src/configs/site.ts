@@ -14,6 +14,7 @@ import {
     Newspaper,
     PenTool,
     Tag,
+    ToolCase,
     Users,
     Wallet,
 } from 'lucide-react';
@@ -64,10 +65,11 @@ export const siteConfig = {
         { title: 'Contact', path: '/contact', icon: Contact },
         { type: 'separator' },
         { title: 'Messages', path: '/messages', icon: MessageSquare },
-        { title: 'Tools', path: '/tools/expenses', icon: Wallet },
+        { title: 'Tools', path: '/tools', icon: ToolCase },
         { title: 'Resume', path: '/resume', icon: FileText },
         // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],
+    toolsMenus: [{ href: '/tools/expenses', label: 'Expense Manager', icon: Wallet }],
     adminMenus: [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
