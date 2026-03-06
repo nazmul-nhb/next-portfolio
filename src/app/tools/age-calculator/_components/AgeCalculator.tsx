@@ -182,7 +182,7 @@ export default function AgeCalculator() {
                                 className="space-y-6"
                                 onSubmit={(event) => event.preventDefault()}
                             >
-                                <div className="flex flex-col flex-wrap gap-4 md:flex-row">
+                                <div className="flex items-start flex-col flex-wrap gap-4 md:flex-row">
                                     <FormField
                                         control={form.control}
                                         name="birthDateTime"

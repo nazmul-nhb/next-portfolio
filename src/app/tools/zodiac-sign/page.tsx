@@ -1,39 +1,39 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
 import { buildOpenGraphImages } from '@/lib/utils';
-import AgeCalculator from './_components/AgeCalculator';
+import ZodiacFinder from './_components/ZodiacFinder';
 
 const description =
-    'Calculate your age based on your birthdate, with options for detailed breakdown and future age prediction.';
+    'Find a matching zodiac sign from a birth date using western or vedic presets, with date ranges and traditional sign descriptions.';
 
 export const metadata: Metadata = {
-    title: 'Age Calculator',
+    title: 'Zodiac Sign Finder',
     description,
     keywords: [
         ...siteConfig.keywords,
         ...Object.values(siteConfig.links),
-        'age calculator',
-        'age prediction',
-        'age breakdown',
-        'birthdate age calculator',
-        'future age calculator',
+        'zodiac sign finder',
+        'western zodiac',
+        'vedic zodiac',
+        'birth date zodiac sign',
+        'zodiac preset',
     ],
     openGraph: {
-        title: `Age Calculator from ${siteConfig.name}`,
+        title: `Zodiac Sign Finder from ${siteConfig.name}`,
         description,
-        url: `${siteConfig.baseUrl}/tools/age-calculator`,
+        url: `${siteConfig.baseUrl}/tools/zodiac-sign`,
         siteName: siteConfig.name,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
     },
     twitter: {
         card: 'summary_large_image',
-        title: `Age Calculator from ${siteConfig.name}`,
+        title: `Zodiac Sign Finder from ${siteConfig.name}`,
         description,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         creator: '@nhb42',
     },
 };
 
-export default function AgeCalculatorPage() {
-    return <AgeCalculator />;
+export default function Page() {
+    return <ZodiacFinder />;
 }

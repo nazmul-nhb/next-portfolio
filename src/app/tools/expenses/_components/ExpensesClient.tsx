@@ -1,12 +1,13 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { AlertTriangle, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import type { CurrencyResponse } from '@/app/tools/expenses/_components/types';
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { formatMoney } from '@/lib/expenses';
 import { useApiQuery } from '@/lib/hooks/use-api';
@@ -90,6 +91,23 @@ export function ExpensesClient() {
 
     return (
         <div className="space-y-8">
+            <Alert className="mb-8 border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900 dark:text-yellow-50 select-none">
+                <AlertTriangle />
+                <AlertTitle>Experimental Feature (Under Development)</AlertTitle>
+                <AlertDescription className="inline">
+                    This feature is experimental and still under active development. You may
+                    encounter bugs or incomplete functionality.
+                    <br />
+                    If you notice any issues or have suggestions, please{' '}
+                    <Link
+                        className="border-b border-b-yellow-800 hover:text-primary dark:border-b-yellow-50 hover:dark:border-b-primary hover:dark:text-primary"
+                        href="/contact#send-message"
+                    >
+                        send your feedback
+                    </Link>
+                    .
+                </AlertDescription>
+            </Alert>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Expense Manager</h1>
@@ -107,11 +125,8 @@ export function ExpensesClient() {
                     </Button>
                 </div>
             </div>
-
             <CurrencyCard currencyData={currencyData} />
-
             <SummaryCards money={money} summary={summary} />
-
             <EntriesSection
                 entries={entries}
                 filter={filter}
@@ -123,20 +138,17 @@ export function ExpensesClient() {
                 setQuery={setQuery}
                 totalPages={totalPages}
             />
-
             <LoansSection
                 borrowedLoans={borrowedLoans}
                 lentLoans={lentLoans}
                 money={money}
                 onAddPayment={setRepaymentLoan}
             />
-
             <AddEntryDialog
                 currency={currency}
                 isAddOpen={isAddOpen}
                 setIsAddOpen={setIsAddOpen}
             />
-
             <RepaymentDialog
                 currency={currency}
                 loan={repaymentLoan}

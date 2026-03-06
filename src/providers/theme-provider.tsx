@@ -7,9 +7,11 @@ import { dayPartPlugin } from 'nhb-toolbox/plugins/dayPartPlugin';
 import { durationPlugin } from 'nhb-toolbox/plugins/durationPlugin';
 import { relativeTimePlugin } from 'nhb-toolbox/plugins/relativeTimePlugin';
 import { seasonPlugin } from 'nhb-toolbox/plugins/seasonPlugin';
+import { zodiacPlugin } from 'nhb-toolbox/plugins/zodiacPlugin';
 
 Chronos.register(banglaPlugin);
 Chronos.register(seasonPlugin);
+Chronos.register(zodiacPlugin);
 Chronos.register(dayPartPlugin);
 Chronos.register(durationPlugin);
 Chronos.register(relativeTimePlugin);

@@ -18,6 +18,7 @@ import {
     ToolCase,
     Users,
     Wallet,
+    ZodiacCapricorn,
 } from 'lucide-react';
 import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
@@ -83,6 +84,13 @@ export const siteConfig = {
             icon: Calculator,
             description:
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
+        },
+        {
+            href: '/tools/zodiac-sign',
+            label: 'Zodiac Sign Finder',
+            icon: ZodiacCapricorn,
+            description:
+                'Find a matching zodiac sign from a birth date using western or vedic presets.',
         },
     ],
     adminMenus: [

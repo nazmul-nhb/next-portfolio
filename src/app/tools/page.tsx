@@ -51,7 +51,7 @@ export default function ToolsPage() {
                 ))}
             </div>
 
-            {siteConfig.toolsMenus.length <= 3 && (
+            {siteConfig.toolsMenus.length < 3 && (
                 <p className="text-xs text-muted-foreground">
                     More tools will appear here as they are added.
                 </p>
