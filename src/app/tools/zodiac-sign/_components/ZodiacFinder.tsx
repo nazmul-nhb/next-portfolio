@@ -45,7 +45,6 @@ import {
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -251,15 +250,13 @@ export default function ZodiacFinder() {
                                                         value={field.value || ''}
                                                     />
                                                 </FormControl>
-                                                <FormDescription>
-                                                    <Alert>
-                                                        <Info />
-                                                        <AlertDescription>
-                                                            Use the actual birth date. Time is
-                                                            not needed for this tool.
-                                                        </AlertDescription>
-                                                    </Alert>{' '}
-                                                </FormDescription>
+                                                <Alert>
+                                                    <Info />
+                                                    <AlertDescription>
+                                                        Use the actual birth date. Time is not
+                                                        needed for this tool.
+                                                    </AlertDescription>
+                                                </Alert>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -293,16 +290,14 @@ export default function ZodiacFinder() {
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                <FormDescription>
-                                                    <Alert>
-                                                        <Info />
-                                                        <AlertDescription>
-                                                            Western uses tropical boundaries.
-                                                            <br />
-                                                            Vedic uses sidereal boundaries.
-                                                        </AlertDescription>
-                                                    </Alert>
-                                                </FormDescription>
+                                                <Alert>
+                                                    <Info />
+                                                    <AlertDescription>
+                                                        Western uses tropical boundaries.
+                                                        <br />
+                                                        Vedic uses sidereal boundaries.
+                                                    </AlertDescription>
+                                                </Alert>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

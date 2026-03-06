@@ -1,4 +1,5 @@
 import {
+    Binary,
     Briefcase,
     Calculator,
     Contact,
@@ -73,12 +74,6 @@ export const siteConfig = {
     ] satisfies TabItem[],
     toolsMenus: [
         {
-            href: '/tools/expenses',
-            label: 'Expense Manager',
-            icon: Wallet,
-            description: 'Track income, expenses, loans, repayments, and net cash in hand.',
-        },
-        {
             href: '/tools/age-calculator',
             label: 'Age Calculator',
             icon: Calculator,
@@ -91,6 +86,19 @@ export const siteConfig = {
             icon: ZodiacCapricorn,
             description:
                 'Find a matching zodiac sign from a birth date using western or vedic presets.',
+        },
+        {
+            href: '/tools/binary-conversions',
+            label: 'Binary Conversions',
+            icon: Binary,
+            description:
+                'Provides UTF-8–safe conversions between text, hex, binary, and Base64 representations using byte-level transformations.',
+        },
+        {
+            href: '/tools/expenses',
+            label: 'Expense Manager',
+            icon: Wallet,
+            description: 'Track income, expenses, loans, repayments, and net cash in hand.',
         },
     ],
     adminMenus: [
