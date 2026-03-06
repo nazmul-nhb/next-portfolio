@@ -88,8 +88,8 @@ export const siteConfig = {
                 'Find a matching zodiac sign from a birth date using western or vedic presets.',
         },
         {
-            href: '/tools/binary-conversions',
-            label: 'Binary Conversions',
+            href: '/tools/base-conversions',
+            label: 'Base Conversions',
             icon: Binary,
             description:
                 'Provides UTF-8–safe conversions between text, hex, binary, and Base64 representations using byte-level transformations.',
