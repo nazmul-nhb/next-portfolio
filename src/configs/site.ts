@@ -1,5 +1,6 @@
 import {
     Briefcase,
+    Calculator,
     Contact,
     FileText,
     FolderKanban,
@@ -74,7 +75,14 @@ export const siteConfig = {
             href: '/tools/expenses',
             label: 'Expense Manager',
             icon: Wallet,
-            description: ' Track income, expenses, loans, repayments, and net cash in hand.',
+            description: 'Track income, expenses, loans, repayments, and net cash in hand.',
+        },
+        {
+            href: '/tools/age-calculator',
+            label: 'Age Calculator',
+            icon: Calculator,
+            description:
+                'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
         },
     ],
     adminMenus: [
