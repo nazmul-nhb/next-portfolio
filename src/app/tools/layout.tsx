@@ -1,28 +1,45 @@
 import { AlertTriangleIcon } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { ToolsSidebar } from '@/components/nav/tools-sidebar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { siteConfig } from '@/configs/site';
-import { auth } from '@/lib/auth';
+import { buildOpenGraphImages } from '@/lib/utils';
 import type { ChildrenProp } from '@/types';
+
+const description = 'Utilities for daily productivity and personal management.';
 
 export const metadata: Metadata = {
     title: {
         default: 'Tools',
         template: `%s » Tools » ${siteConfig.name}`,
     },
-    description: 'Personal tool suite for authenticated users.',
+    description,
+    keywords: [
+        ...siteConfig.keywords,
+        ...Object.values(siteConfig.links),
+        'tools',
+        'utilities',
+        'productivity tools',
+        'personal management tools',
+    ],
+    openGraph: {
+        title: `Tools from ${siteConfig.name}`,
+        description,
+        url: `${siteConfig.baseUrl}/resume`,
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: `Tools from ${siteConfig.name}`,
+        description,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
-export default async function ToolsLayout({ children }: ChildrenProp) {
-    const session = await auth();
-
-    if (!session?.user) {
-        redirect('/auth/login?redirectTo=/tools');
-    }
-
+export default function ToolsLayout({ children }: ChildrenProp) {
     return (
         <div className="flex min-h-[calc(100vh-4rem)]">
             <ToolsSidebar />

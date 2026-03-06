@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: siteConfig.name,
+        title: `Resume of ${siteConfig.name}`,
         description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         creator: '@nhb42',

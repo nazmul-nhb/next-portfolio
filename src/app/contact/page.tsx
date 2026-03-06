@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: siteConfig.name,
+        title: `Contact ${siteConfig.name}`,
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         creator: '@nhb42',

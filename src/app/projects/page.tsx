@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: siteConfig.name,
+        title: `${siteConfig.name}'s Projects`,
         description: `Explore ${siteConfig.name}'s projects.`,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
         creator: '@nhb42',

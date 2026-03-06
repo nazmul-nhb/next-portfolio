@@ -182,7 +182,9 @@ export default function DateTimeCalendar() {
                     className={cn(
                         'fixed z-50 font-source-sans',
                         isMobile ? 'left-6' : 'right-6',
-                        isMobile && !isAdminPath(pathname) ? 'bottom-6' : 'bottom-19',
+                        isMobile && !(isAdminPath(pathname) || pathname.startsWith('/tools'))
+                            ? 'bottom-6'
+                            : 'bottom-19',
                         'size-12 rounded-full shadow-xl',
                         'bg-primary text-primary-foreground',
                         'flex flex-col items-center justify-center gap-0.5',
