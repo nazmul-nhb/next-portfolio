@@ -1,10 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeftRight, Binary, Info, TextCursorInput } from 'lucide-react';
+import { ArrowLeftRight, Binary, Check, Copy, Info, TextCursorInput } from 'lucide-react';
+import { useCopyText } from 'nhb-hooks';
 import { TextCodec } from 'nhb-toolbox/hash';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +18,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import {
     Form,
     FormControl,
@@ -184,6 +193,11 @@ export default function BaseConverter() {
             source: 'utf8',
             target: 'hex',
         },
+    });
+
+    const { copiedText, copyToClipboard } = useCopyText({
+        onSuccess: (msg) => toast.success(msg),
+        onError: (msg) => toast.error(msg),
     });
 
     const payload = form.watch('payload');
@@ -477,7 +491,7 @@ export default function BaseConverter() {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 select-none">
                             <Badge variant="outline">{sourceOption.label}</Badge>
                             <Badge variant="outline">{targetOption.label}</Badge>
                             {conversionState.method && <Badge>{conversionState.method}</Badge>}
@@ -491,9 +505,36 @@ export default function BaseConverter() {
                             </Alert>
                         ) : conversionState.output ? (
                             <div className="rounded-xl border bg-muted/20 p-4">
-                                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                    Output
-                                </p>
+                                <div className="flex flex-wrap gap-1 items-center justify-between select-none">
+                                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                        Output
+                                    </span>
+                                    <Button
+                                        onClick={() => {
+                                            copyToClipboard(
+                                                conversionState.output,
+                                                'Result is copied to clipboard!'
+                                            );
+                                        }}
+                                        size="sm"
+                                        type="button"
+                                        variant="outline"
+                                    >
+                                        {copiedText ? (
+                                            <Fragment>
+                                                <Check className="shrink-0 text-green-500" />
+                                                <span className="text-green-500">
+                                                    Result Copied!
+                                                </span>
+                                            </Fragment>
+                                        ) : (
+                                            <Fragment>
+                                                <Copy className="shrink-0" />
+                                                Copy Result
+                                            </Fragment>
+                                        )}
+                                    </Button>
+                                </div>
                                 <pre
                                     className={cn(
                                         'mt-3 max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm',
@@ -504,10 +545,18 @@ export default function BaseConverter() {
                                 </pre>
                             </div>
                         ) : (
-                            <div className="flex min-h-84 items-center justify-center rounded-xl border border-dashed bg-muted/25 p-6 text-center text-sm text-muted-foreground">
-                                Enter a source payload and choose a conversion path to generate
-                                the transformed output.
-                            </div>
+                            <Empty className="border border-dashed">
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <Binary />
+                                    </EmptyMedia>
+                                    <EmptyTitle>Enter text to convert</EmptyTitle>
+                                    <EmptyDescription>
+                                        Enter a source payload and choose a conversion path to
+                                        generate the transformed output.
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                            </Empty>
                         )}
                     </CardContent>
                 </Card>
