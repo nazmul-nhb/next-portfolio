@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ToolsSidebar } from '@/components/nav/tools-sidebar';
 import { siteConfig } from '@/configs/site';
-import { buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import type { ChildrenProp } from '@/types';
 
 const description = 'Utilities for daily productivity and personal management.';
@@ -20,10 +20,11 @@ export const metadata: Metadata = {
         'productivity tools',
         'personal management tools',
     ],
+    alternates: { canonical: buildCanonicalUrl('/tools') },
     openGraph: {
         title: `Tools from ${siteConfig.name}`,
         description,
-        url: `${siteConfig.baseUrl}/tools`,
+        url: buildCanonicalUrl('/tools'),
         siteName: siteConfig.name,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
     },

@@ -18,7 +18,12 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl, buildOpenGraphImages, formatDuration } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    formatDuration,
+} from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
@@ -26,6 +31,7 @@ export const metadata: Metadata = {
     title: 'Resume',
     description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
     keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
+    alternates: { canonical: buildCanonicalUrl('/resume') },
     openGraph: {
         title: `Resume of ${siteConfig.name}`,
         description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,

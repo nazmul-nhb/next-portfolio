@@ -187,7 +187,7 @@ export default function AgeCalculator() {
                                         control={form.control}
                                         name="birthDateTime"
                                         render={({ field }) => (
-                                            <FormItem className="flex-1">
+                                            <FormItem className="flex-1 w-full">
                                                 <FormLabel>Birth Date & Time</FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -211,7 +211,7 @@ export default function AgeCalculator() {
                                         control={form.control}
                                         name="untilDateTime"
                                         render={({ field }) => (
-                                            <FormItem className="flex-1">
+                                            <FormItem className="flex-1 w-full">
                                                 <FormLabel>Until Date & Time</FormLabel>
                                                 <FormControl>
                                                     <Input

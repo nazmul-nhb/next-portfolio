@@ -29,8 +29,9 @@ export const metadata: Metadata = {
     },
     metadataBase: new URL(siteConfig.baseUrl),
     description: siteConfig.description,
-    keywords: [...siteConfig.keywords],
+    keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
     authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
+    alternates: { canonical: new URL(siteConfig.baseUrl) },
     icons: {
         icon: siteConfig.favicon,
         shortcut: siteConfig.favicon,

@@ -10,10 +10,36 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { siteConfig } from '@/configs/site';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+
+const description = 'Utilities for daily productivity and personal management.';
 
 export const metadata: Metadata = {
     title: 'All Tools',
-    description: 'Browse available productivity tools.',
+    description,
+    keywords: [
+        ...siteConfig.keywords,
+        ...Object.values(siteConfig.links),
+        'tools',
+        'utilities',
+        'productivity tools',
+        'personal management tools',
+    ],
+    alternates: { canonical: buildCanonicalUrl('/tools') },
+    openGraph: {
+        title: `Tools from ${siteConfig.name}`,
+        description,
+        url: buildCanonicalUrl('/tools'),
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: `Tools from ${siteConfig.name}`,
+        description,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 export default function ToolsPage() {

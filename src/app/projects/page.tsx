@@ -14,12 +14,18 @@ import {
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { buildCloudinaryUrl, buildOpenGraphImages, eliminateEmptyStrings } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    eliminateEmptyStrings,
+} from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Projects',
     description: `Explore ${siteConfig.name}'s projects.`,
     keywords: [...siteConfig.keywords],
+    alternates: { canonical: buildCanonicalUrl('/projects') },
     openGraph: {
         title: `${siteConfig.name}'s Projects`,
         description: `Explore ${siteConfig.name}'s projects.`,

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -15,7 +15,12 @@ import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema/projects';
-import { buildCloudinaryUrl, buildOpenGraphImages, eliminateEmptyStrings } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    eliminateEmptyStrings,
+} from '@/lib/utils';
 import type { SelectProject } from '@/types/projects';
 
 export const revalidate = 60;
@@ -43,6 +48,7 @@ export async function generateMetadata({
         return {
             title: project.title,
             description: project.description,
+            alternates: { canonical: buildCanonicalUrl(`/projects/${id}` as Route) },
             icons: {
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,

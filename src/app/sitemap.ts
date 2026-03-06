@@ -61,6 +61,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     ];
 
+    const tools: MetadataRoute.Sitemap = siteConfig.toolsMenus.map(({ href }) => ({
+        url: buildCanonicalUrl(href),
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        images: [logo],
+    }));
+
     // Dynamic blog posts (published only)
     const rows = await db
         .select({
@@ -100,5 +108,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             : undefined,
     }));
 
-    return [...staticRoutes, ...blogRoutes, ...projectRoutes];
+    return [...staticRoutes, ...tools, ...blogRoutes, ...projectRoutes];
 }

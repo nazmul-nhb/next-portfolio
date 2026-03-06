@@ -5,13 +5,14 @@ import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/misc/animations';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
-import { buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import { ContactForm } from './_components/ContactForm';
 
 export const metadata: Metadata = {
     title: 'Contact',
     description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
     keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
+    alternates: { canonical: buildCanonicalUrl('/contact') },
     openGraph: {
         title: `Contact ${siteConfig.name}`,
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,

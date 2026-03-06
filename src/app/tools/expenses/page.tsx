@@ -1,11 +1,37 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { siteConfig } from '@/configs/site';
 import { auth } from '@/lib/auth';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import { ExpensesClient } from './_components/ExpensesClient';
+
+const description = 'Track income, expenses, loans, repayments, and cash in hand.';
 
 export const metadata: Metadata = {
     title: 'Expense Manager',
-    description: 'Track income, expenses, loans, repayments, and cash in hand.',
+    description,
+    keywords: [
+        ...siteConfig.keywords,
+        ...Object.values(siteConfig.links),
+        'expense',
+        'loan',
+        'expense manager',
+    ],
+    alternates: { canonical: buildCanonicalUrl('/tools/expenses') },
+    openGraph: {
+        title: `Expense Manager from ${siteConfig.name}`,
+        description,
+        url: buildCanonicalUrl('/tools/expenses'),
+        siteName: siteConfig.name,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: `Expense Manager from ${siteConfig.name}`,
+        description,
+        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        creator: '@nhb42',
+    },
 };
 
 export default async function ExpensesPage() {

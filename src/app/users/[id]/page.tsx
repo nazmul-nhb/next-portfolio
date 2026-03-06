@@ -1,6 +1,6 @@
 import { and, count, desc, eq } from 'drizzle-orm';
 import { Calendar, Eye, FileText, PenTool, Shield } from 'lucide-react';
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,7 +13,7 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs, comments } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl, buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
 import type { UserRole } from '@/types';
 
 /** Generate metadata for user profile page. */
@@ -35,6 +35,7 @@ export async function generateMetadata({
             title: user.name,
             description: user.bio || `Profile of ${user.name}`,
             authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
+            alternates: { canonical: buildCanonicalUrl(`/users/${id}` as Route) },
             icons: {
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,

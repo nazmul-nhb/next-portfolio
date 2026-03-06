@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
-import { buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import ZodiacFinder from './_components/ZodiacFinder';
 
 const description =
@@ -18,10 +18,11 @@ export const metadata: Metadata = {
         'birth date zodiac sign',
         'zodiac preset',
     ],
+    alternates: { canonical: buildCanonicalUrl('/tools/zodiac-sign') },
     openGraph: {
         title: `Zodiac Sign Finder from ${siteConfig.name}`,
         description,
-        url: `${siteConfig.baseUrl}/tools/zodiac-sign`,
+        url: buildCanonicalUrl('/tools/zodiac-sign'),
         siteName: siteConfig.name,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
     },

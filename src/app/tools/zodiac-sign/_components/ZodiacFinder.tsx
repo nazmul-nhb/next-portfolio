@@ -242,11 +242,10 @@ export default function ZodiacFinder() {
                                         control={form.control}
                                         name="birthDate"
                                         render={({ field }) => (
-                                            <FormItem className="flex-1">
+                                            <FormItem className="flex-1 w-full">
                                                 <FormLabel>Birth Date</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        // max={toDateInputValue()}
                                                         type="date"
                                                         {...field}
                                                         value={field.value || ''}
@@ -270,7 +269,7 @@ export default function ZodiacFinder() {
                                         control={form.control}
                                         name="preset"
                                         render={({ field }) => (
-                                            <FormItem className="flex-1">
+                                            <FormItem className="flex-1 w-full">
                                                 <FormLabel>Zodiac Preset</FormLabel>
                                                 <Select
                                                     onValueChange={field.onChange}

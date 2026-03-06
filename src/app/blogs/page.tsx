@@ -15,7 +15,12 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCloudinaryUrl, buildOpenGraphImages, stripHtml } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    stripHtml,
+} from '@/lib/utils';
 import type { RecentBlog } from '@/types/blogs';
 
 export const revalidate = 60; // ISR: revalidate every minute
@@ -27,6 +32,7 @@ export const metadata: Metadata = {
     title: 'Blogs',
     description,
     keywords: [...siteConfig.keywords],
+    alternates: { canonical: buildCanonicalUrl('/blogs') },
     openGraph: {
         title: 'Blogs',
         description,

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
-import { buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import AgeCalculator from './_components/AgeCalculator';
 
 const description =
@@ -18,10 +18,11 @@ export const metadata: Metadata = {
         'birthdate age calculator',
         'future age calculator',
     ],
+    alternates: { canonical: buildCanonicalUrl('/tools/age-calculator') },
     openGraph: {
         title: `Age Calculator from ${siteConfig.name}`,
         description,
-        url: `${siteConfig.baseUrl}/tools/age-calculator`,
+        url: buildCanonicalUrl('/tools/age-calculator'),
         siteName: siteConfig.name,
         images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
     },

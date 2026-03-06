@@ -1,9 +1,14 @@
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import { notFound } from 'next/navigation';
 import { getTimestamp, truncateString } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { buildCloudinaryUrl, buildOpenGraphImages, stripHtml } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    stripHtml,
+} from '@/lib/utils';
 import type { SingleBlogRes } from '@/types/blogs';
 import SingleBlogPage from './_components/SingleBlogPage';
 
@@ -29,6 +34,7 @@ export async function generateMetadata({
                 ...siteConfig.keywords,
                 ...data.blog.title.split(' '),
             ],
+            alternates: { canonical: buildCanonicalUrl(`/blogs/${slug}` as Route) },
             icons: {
                 icon: siteConfig.favicon,
                 shortcut: siteConfig.favicon,

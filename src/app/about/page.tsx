@@ -15,7 +15,12 @@ import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { education, experiences, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
-import { buildCloudinaryUrl, buildOpenGraphImages, formatDuration } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    formatDuration,
+} from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
@@ -23,6 +28,7 @@ export const metadata: Metadata = {
     title: 'About',
     description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
     keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
+    alternates: { canonical: buildCanonicalUrl('/about') },
     openGraph: {
         title: `About ${siteConfig.name}`,
         description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
