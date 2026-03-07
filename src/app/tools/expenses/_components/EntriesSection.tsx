@@ -2,15 +2,9 @@ import { Search, Trash2, Wallet2 } from 'lucide-react';
 import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { confirmToast } from '@/components/misc/confirm';
+import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Empty,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -116,15 +110,11 @@ export function EntriesSection({
             </div>
 
             {entries.length === 0 ? (
-                <Empty className="border border-dashed">
-                    <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                            <Wallet2 />
-                        </EmptyMedia>
-                        <EmptyTitle>No data</EmptyTitle>
-                        <EmptyDescription> No entries found for this filter.</EmptyDescription>
-                    </EmptyHeader>
-                </Empty>
+                <EmptyData
+                    description="No entries found for this filter."
+                    Icon={Wallet2}
+                    title="No data"
+                />
             ) : (
                 <div className="space-y-3">
                     <div className="hidden overflow-x-auto rounded-xl border border-border/60 bg-card md:block">

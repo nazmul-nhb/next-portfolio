@@ -8,6 +8,7 @@ import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,13 +19,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Empty,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty';
 import {
     Form,
     FormControl,
@@ -538,18 +532,11 @@ export default function BaseConverter() {
                                 </pre>
                             </div>
                         ) : (
-                            <Empty className="border border-dashed">
-                                <EmptyHeader>
-                                    <EmptyMedia variant="icon">
-                                        <Binary />
-                                    </EmptyMedia>
-                                    <EmptyTitle>Enter text to convert</EmptyTitle>
-                                    <EmptyDescription>
-                                        Enter a source payload and choose a conversion path to
-                                        generate the transformed output.
-                                    </EmptyDescription>
-                                </EmptyHeader>
-                            </Empty>
+                            <EmptyData
+                                description="Enter a source payload and choose a conversion path to generate the transformed output."
+                                Icon={Binary}
+                                title="Enter text to convert"
+                            />
                         )}
                     </CardContent>
                 </Card>

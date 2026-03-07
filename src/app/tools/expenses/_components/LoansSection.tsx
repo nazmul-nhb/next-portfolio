@@ -3,6 +3,7 @@ import { formatDate } from 'nhb-toolbox';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { confirmToast } from '@/components/misc/confirm';
+import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -11,13 +12,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Empty,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { LoanItem } from '@/types/expenses';
@@ -161,19 +155,11 @@ function LoanColumn({
             </CardHeader>
             <CardContent>
                 {values.length === 0 ? (
-                    <Empty>
-                        <EmptyHeader>
-                            <EmptyMedia variant="icon">
-                                {type === 'borrowed' ? (
-                                    <Landmark className="size-5" />
-                                ) : (
-                                    <HandCoins className="size-5" />
-                                )}
-                            </EmptyMedia>
-                            <EmptyTitle>No data</EmptyTitle>
-                            <EmptyDescription>{emptyMessage}</EmptyDescription>
-                        </EmptyHeader>
-                    </Empty>
+                    <EmptyData
+                        description={emptyMessage}
+                        Icon={type === 'borrowed' ? Landmark : HandCoins}
+                        title="No data"
+                    />
                 ) : (
                     <div className="space-y-3">
                         {values.map((loan) => (

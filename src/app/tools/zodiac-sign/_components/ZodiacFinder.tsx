@@ -25,6 +25,7 @@ import type { MonthDateString, ZodiacSign } from 'nhb-toolbox/date/types';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,13 +35,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Empty,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty';
 import {
     Form,
     FormControl,
@@ -341,7 +335,8 @@ export default function ZodiacFinder() {
                             Matching Sign
                         </CardTitle>
                         <CardDescription>
-                            Result updates as soon as the birth date and preset have valid inputs.
+                            Result updates as soon as the birth date and preset have valid
+                            inputs.
                         </CardDescription>
                     </CardHeader>
 
@@ -393,19 +388,11 @@ export default function ZodiacFinder() {
                                 </div>
                             </div>
                         ) : (
-                            <Empty className="border border-dashed">
-                                <EmptyHeader>
-                                    <EmptyMedia variant="icon">
-                                        <Calendar />
-                                    </EmptyMedia>
-                                    <EmptyTitle>Select a birth date</EmptyTitle>
-                                    <EmptyDescription>
-                                        Select a birth date and preset to see the matching
-                                        zodiac sign, its date window, and a short traditional
-                                        description.
-                                    </EmptyDescription>
-                                </EmptyHeader>
-                            </Empty>
+                            <EmptyData
+                                description="Select a birth date and preset to see the matching zodiac sign, its date window, and a short traditional description."
+                                Icon={Calendar}
+                                title="Select a birth date"
+                            />
                         )}
                     </CardContent>
                 </Card>
