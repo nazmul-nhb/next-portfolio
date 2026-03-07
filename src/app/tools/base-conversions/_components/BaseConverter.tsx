@@ -178,6 +178,12 @@ const BaseConverterFormSchema = z
 
 type BaseConverterFormValues = z.infer<typeof BaseConverterFormSchema>;
 
+type ConversionState = {
+    output: string;
+    method: ConversionMethod | null;
+    error: string | null;
+};
+
 export default function BaseConverter() {
     const form = useForm<BaseConverterFormValues>({
         resolver: zodResolver(BaseConverterFormSchema),
@@ -203,14 +209,14 @@ export default function BaseConverter() {
     const targetOption =
         FORMAT_OPTIONS.find((option) => option.value === target) ?? FORMAT_OPTIONS[1];
 
-    const conversionState = useMemo(() => {
+    const conversionState: ConversionState = useMemo(() => {
         const normalizedPayload = normalizeInput(source, payload);
 
         if (!normalizedPayload) {
             return {
                 output: '',
-                method: null as ConversionMethod | null,
-                error: null as string | null,
+                method: null,
+                error: null,
             };
         }
 
@@ -219,7 +225,7 @@ export default function BaseConverter() {
         if (validationMessage) {
             return {
                 output: '',
-                method: null as ConversionMethod | null,
+                method: null,
                 error: validationMessage,
             };
         }
@@ -227,7 +233,7 @@ export default function BaseConverter() {
         if (source === target) {
             return {
                 output: '',
-                method: null as ConversionMethod | null,
+                method: null,
                 error: 'Choose a different output format.',
             };
         }
@@ -237,7 +243,7 @@ export default function BaseConverter() {
         if (!conversion) {
             return {
                 output: '',
-                method: null as ConversionMethod | null,
+                method: null,
                 error: 'This conversion path is not available.',
             };
         }
@@ -246,7 +252,7 @@ export default function BaseConverter() {
             return {
                 output: conversion.convert(normalizedPayload),
                 method: conversion.method,
-                error: null as string | null,
+                error: null,
             };
         } catch (error) {
             return {

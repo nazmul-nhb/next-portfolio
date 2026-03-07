@@ -12,6 +12,7 @@ import {
     Lightbulb,
     MessageCircle,
     MessageSquare,
+    MessageSquareLock,
     MessageSquareQuote,
     Newspaper,
     PenTool,
@@ -20,6 +21,8 @@ import {
     Wallet,
     ZodiacCapricorn,
 } from 'lucide-react';
+import type { Route } from 'next';
+import type { ComponentType } from 'react';
 import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import type { TabItem } from '@/types';
@@ -94,12 +97,18 @@ export const siteConfig = {
                 'Provides UTF-8–safe conversions between text, hex, binary, and Base64 representations using byte-level transformations.',
         },
         {
+            href: '/tools/encrypt-message',
+            label: 'Encrypt Message',
+            icon: MessageSquareLock,
+            description: 'Encrypt/decrypt text using custom passphrase.',
+        },
+        {
             href: '/tools/expenses',
             label: 'Expense Manager',
             icon: Wallet,
             description: 'Track income, expenses, loans, repayments, and net cash in hand.',
         },
-    ],
+    ] satisfies Array<{ href: Route; label: string; icon: ComponentType; description: string }>,
     adminMenus: [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },

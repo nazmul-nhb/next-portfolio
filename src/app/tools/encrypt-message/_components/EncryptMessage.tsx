@@ -1,0 +1,303 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Binary, Check, Copy, TextCursorInput } from 'lucide-react';
+import { useCopyText } from 'nhb-hooks';
+import { isNonEmptyString } from 'nhb-toolbox';
+import { toTitleCase } from 'nhb-toolbox/change-case';
+import { Cipher } from 'nhb-toolbox/hash';
+import { Fragment, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import EmptyData from '@/components/misc/empty-data';
+import SmartAlert from '@/components/misc/smart-alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { hasErrorMessage } from '@/lib/utils';
+
+const MODE = ['encrypt', 'decrypt'] as const;
+
+const EncryptionSchema = z.object({
+    input: z.string().min(1, 'Text cannot be empty'),
+    passphrase: z.string().min(1, 'Passphrase cannot be empty'),
+    mode: z.enum(MODE),
+});
+
+type EncryptionFormValues = z.infer<typeof EncryptionSchema>;
+
+export default function EncryptMessage() {
+    const form = useForm<EncryptionFormValues>({
+        resolver: zodResolver(EncryptionSchema),
+        mode: 'onChange',
+        defaultValues: {
+            input: '',
+            passphrase: '',
+            mode: 'encrypt',
+        },
+    });
+
+    const input = form.watch('input');
+    const passphrase = form.watch('passphrase');
+    const mode = form.watch('mode');
+
+    const { copiedText, copyToClipboard } = useCopyText({
+        onSuccess: (msg) => toast.success(msg),
+        onError: (msg) => toast.error(msg),
+    });
+
+    const encryptionState = useMemo(() => {
+        if (!isNonEmptyString(passphrase)) {
+            return {
+                output: null,
+                error: null,
+            };
+        }
+        if (!isNonEmptyString(input)) {
+            return {
+                output: null,
+                error: null,
+            };
+        }
+
+        try {
+            const cipher = new Cipher(passphrase);
+
+            const result = cipher[mode](input);
+
+            return {
+                output: result,
+                error: null,
+            };
+        } catch (error) {
+            return {
+                output: null,
+                error: hasErrorMessage(error)
+                    ? error.message
+                    : 'There is omething wrong with your passphrase or input!',
+            };
+        }
+    }, [passphrase, input, mode]);
+
+    return (
+        <div className="space-y-8">
+            <div className="max-w-3xl">
+                <h1 className="text-3xl font-bold tracking-tight">Encrypt/decrypt Message</h1>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Encrypt/decrypt text using custom passphrase.
+                </p>
+            </div>
+
+            <SmartAlert
+                className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100"
+                description={
+                    <Fragment>Must use same passphrase for encryption and decryption!</Fragment>
+                }
+                title="Note on Passphrase"
+            />
+
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <TextCursorInput className="size-5" />
+                            Text to {toTitleCase(mode)}
+                        </CardTitle>
+                        <CardDescription>Provide the text message to {mode}.</CardDescription>
+                    </CardHeader>
+
+                    <CardContent>
+                        <Form {...form}>
+                            <form
+                                className="space-y-6"
+                                onSubmit={(event) => event.preventDefault()}
+                            >
+                                <div className="flex items-start flex-col flex-wrap gap-4 md:flex-row">
+                                    <FormField
+                                        control={form.control}
+                                        name="mode"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1 w-full">
+                                                <FormLabel>Mode</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    value={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select source format" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {MODE.map((option) => (
+                                                            <SelectItem
+                                                                key={option}
+                                                                value={option}
+                                                            >
+                                                                {toTitleCase(option)}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormDescription>
+                                                    {toTitleCase(mode)} text message
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="passphrase"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1 w-full">
+                                                <FormLabel>Passphrase</FormLabel>
+                                                <Input
+                                                    className="resize-y font-cascadia"
+                                                    placeholder={`Enter your passphrase to ${mode}`}
+                                                    type="password"
+                                                    {...field}
+                                                />
+                                                <FormDescription>
+                                                    {`${toTitleCase(mode)}ion key to ${mode}`}
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <FormField
+                                    control={form.control}
+                                    name="input"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Input</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    className="resize-y font-cascadia"
+                                                    placeholder={`${toTitleCase(mode)} your ${mode === 'decrypt' ? 'encrypted' : 'text'} message with provided passphrase`}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Paste your
+                                                {mode === 'decrypt' ? ' encrypted ' : ' text '}
+                                                message here. The result updates live.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <Button
+                                    onClick={() => {
+                                        form.reset();
+                                    }}
+                                    type="button"
+                                    variant="outline"
+                                >
+                                    Reset Tool
+                                </Button>
+                            </form>
+                        </Form>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Binary className="size-5" />
+                            {toTitleCase(mode)}ion Result
+                        </CardTitle>
+                        <CardDescription>
+                            Output is generated using the provided passphrase.
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                        <div className="flex flex-wrap gap-2 select-none">
+                            <Badge>{mode}</Badge>
+                        </div>
+
+                        {encryptionState.error ? (
+                            <SmartAlert
+                                description={encryptionState.error}
+                                title={`${toTitleCase(mode)}ion Error`}
+                                variant="destructive"
+                            />
+                        ) : encryptionState.output ? (
+                            <div className="rounded-xl border bg-muted/20 p-4">
+                                <div className="flex flex-wrap gap-1 items-center justify-between select-none">
+                                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                        Output
+                                    </span>
+                                    <Button
+                                        onClick={() => {
+                                            copyToClipboard(
+                                                encryptionState.output,
+                                                'Result is copied to clipboard!'
+                                            );
+                                        }}
+                                        size="sm"
+                                        type="button"
+                                        variant="outline"
+                                    >
+                                        {copiedText ? (
+                                            <Fragment>
+                                                <Check className="shrink-0 text-green-500" />
+                                                <span className="text-green-500">
+                                                    Result Copied!
+                                                </span>
+                                            </Fragment>
+                                        ) : (
+                                            <Fragment>
+                                                <Copy className="shrink-0" />
+                                                Copy Result
+                                            </Fragment>
+                                        )}
+                                    </Button>
+                                </div>
+                                <pre className="mt-3 max-w-full max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm font-cascadia">
+                                    {encryptionState.output}
+                                </pre>
+                            </div>
+                        ) : (
+                            <EmptyData
+                                description={`Enter your passphrase and message to ${mode}`}
+                                Icon={Binary}
+                                title={`Enter text to ${mode}`}
+                            />
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
