@@ -1,11 +1,41 @@
+'use client';
+
 import { Key, ListX } from 'lucide-react';
+import type { Route } from 'next';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { generateQueryParams } from 'nhb-toolbox';
+import { useEffect, useState } from 'react';
 import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DecodeUUID from './DecodeUUID';
 import GenerateUUID from './GenerateUUID';
 
+const TABS = ['generate', 'decode'] as const;
+
+type TabId = (typeof TABS)[number];
+
 export default function ManageUUID() {
+    const searchParam = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+
+    const tab = searchParam.get('tab') as TabId;
+
+    const [tabId, setTabId] = useState<TabId>(tab);
+
+    useEffect(() => {
+        const query = generateQueryParams({ tab: tabId });
+
+        router.push(pathname.concat(query) as Route);
+    }, [tabId, pathname, router]);
+
+    useEffect(() => {
+        if (tab) {
+            setTabId(tab);
+        }
+    }, [tab]);
+
     return (
         <div className="space-y-8">
             <div>
@@ -44,29 +74,33 @@ export default function ManageUUID() {
                             Use the decoder to analyze any UUID and view its version, variant,
                             and metadata
                         </li>
-                        <li>Decoder remembers the last decoded uuid</li>
+                        <li>Decoder remembers the last decoded uuid in the current session</li>
                     </ul>
                 }
                 title="How it works"
             />
 
-            <Tabs className="w-full" defaultValue="generate">
+            <Tabs
+                className="w-full"
+                defaultValue={tabId}
+                onValueChange={(id) => setTabId(id as TabId)}
+            >
                 <TabsList className="mb-2" variant="line">
-                    <TabsTrigger value="generate">
+                    <TabsTrigger value={TABS[0]}>
                         <Key />
                         Generate UUID
                     </TabsTrigger>
-                    <TabsTrigger value="decode">
+                    <TabsTrigger value={TABS[1]}>
                         <ListX />
                         Decode UUID
                     </TabsTrigger>
                 </TabsList>
                 {/* Generator Section */}
-                <TabsContent value="generate">
+                <TabsContent value={TABS[0]}>
                     <GenerateUUID />
                 </TabsContent>
                 {/* Decoder Section */}
-                <TabsContent value="decode">
+                <TabsContent value={TABS[1]}>
                     <DecodeUUID />
                 </TabsContent>
             </Tabs>

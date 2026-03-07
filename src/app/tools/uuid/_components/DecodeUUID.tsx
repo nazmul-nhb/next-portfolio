@@ -49,6 +49,7 @@ type DecodeUUIDFormValues = z.infer<typeof DecodeUUIDSchema>;
 export default function DecodeUUID() {
     const store = useStorage<string>({
         key: 'nhb-uuid',
+        type: 'session',
         deserialize: (value) => {
             return value;
         },
@@ -109,7 +110,6 @@ export default function DecodeUUID() {
                 <CardContent>
                     <Form {...decodeForm}>
                         <form
-                            //  defaultValue={store.value ? store.value : undefined}
                             className="space-y-6"
                             onSubmit={(event) => event.preventDefault()}
                         >
