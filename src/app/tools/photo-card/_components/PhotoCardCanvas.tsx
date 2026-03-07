@@ -16,11 +16,7 @@ import {
     getAbsoluteLayerPosition,
     getSectionBounds,
 } from '@/lib/photo-card/layout';
-import {
-    measureTextLayer,
-    renderPhotoCardToCanvas,
-    resolvePhotoCardFontFamily,
-} from '@/lib/photo-card/renderer';
+import { measureTextLayer, renderPhotoCardToCanvas } from '@/lib/photo-card/renderer';
 import {
     type ImageLayer,
     PHOTO_CARD_SECTION_LABELS,
@@ -328,7 +324,7 @@ export default function PhotoCardCanvas({
 
                                 {/* Interactive Layers */}
                                 <DndContext autoScroll={false} onDragEnd={handleDragEnd}>
-                                    <div className="absolute inset-0">
+                                    <div className="absolute inset-0 overflow-hidden">
                                         {/* Section Boundaries */}
                                         {(['header', 'canvas', 'footer'] as const).map(
                                             (section) => {
@@ -420,14 +416,7 @@ export default function PhotoCardCanvas({
                                                             y: position.y,
                                                         }}
                                                         selected={activeImageId === layer.id}
-                                                    >
-                                                        {/* biome-ignore lint/performance/noImgElement: layer preview overlay */}
-                                                        <img
-                                                            alt=""
-                                                            className="size-full object-cover pointer-events-none"
-                                                            src={layer.src}
-                                                        />
-                                                    </PhotoCardStageLayer>
+                                                    />
                                                 );
                                             })}
 
@@ -467,22 +456,7 @@ export default function PhotoCardCanvas({
                                                             y: position.y,
                                                         }}
                                                         selected={activeTextId === layer.id}
-                                                    >
-                                                        <div
-                                                            className="pointer-events-none size-full whitespace-pre-wrap wrap-break-word px-1 py-0.5 text-left"
-                                                            style={{
-                                                                color: layer.color,
-                                                                fontFamily:
-                                                                    resolvePhotoCardFontFamily(
-                                                                        layer.fontFamily
-                                                                    ),
-                                                                fontSize: `${layer.fontSize}px`,
-                                                                lineHeight: '1.2',
-                                                            }}
-                                                        >
-                                                            {layer.text || '\u00A0'}
-                                                        </div>
-                                                    </PhotoCardStageLayer>
+                                                    />
                                                 );
                                             })}
                                     </div>

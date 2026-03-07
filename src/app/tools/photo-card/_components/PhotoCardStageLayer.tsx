@@ -3,7 +3,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { GripHorizontal, Move } from 'lucide-react';
-import type { ReactNode } from 'react';
 import { getPhotoCardColorTokens } from '@/lib/photo-card/colors';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +19,7 @@ type Props = {
     selected: boolean;
     onResizePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
     onSelect: () => void;
-    children: ReactNode;
+    children?: React.ReactNode;
 };
 
 /**
@@ -46,22 +45,19 @@ export default function PhotoCardStageLayer({
         <div
             {...attributes}
             {...listeners}
-            aria-label={`${label} layer`}
             className={cn(
-                'absolute touch-none select-none',
-                isDragging && 'z-30',
+                'absolute touch-none select-none cursor-grab',
+                isDragging && 'z-30 cursor-grabbing',
                 selected && 'z-20'
             )}
-            onPointerDown={onSelect}
+            onClick={onSelect}
             ref={setNodeRef}
-            role="img"
             style={{
                 left: rect.x,
                 top: rect.y,
                 width: rect.width,
                 height: rect.height,
                 transform: CSS.Translate.toString(transform),
-                cursor: isDragging ? 'grabbing' : 'grab',
             }}
         >
             <div
@@ -90,21 +86,19 @@ export default function PhotoCardStageLayer({
                 </div>
 
                 {/* Resize Handle - Bottom Right Corner */}
-                <div
-                    className={cn(
-                        'absolute bottom-0 right-0 size-5 cursor-nwse-resize rounded-tl-lg border-l border-t',
-                        'flex items-center justify-center transition-colors hover:bg-opacity-100 active:scale-98',
-                        selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    )}
-                    onPointerDown={onResizePointerDown}
-                    style={{
-                        backgroundColor: tokens.base,
-                        borderColor: tokens.border,
-                    }}
-                    title="Drag to resize"
-                >
-                    <GripHorizontal className="size-3 opacity-70" strokeWidth={3} />
-                </div>
+                {selected && (
+                    <div
+                        className="absolute bottom-0 right-0 size-5 cursor-nwse-resize rounded-tl-lg border-l border-t flex items-center justify-center transition-colors hover:bg-opacity-100"
+                        onPointerDown={onResizePointerDown}
+                        style={{
+                            backgroundColor: tokens.base,
+                            borderColor: tokens.border,
+                        }}
+                        title="Drag to resize"
+                    >
+                        <GripHorizontal className="size-3 opacity-70" strokeWidth={3} />
+                    </div>
+                )}
             </div>
         </div>
     );

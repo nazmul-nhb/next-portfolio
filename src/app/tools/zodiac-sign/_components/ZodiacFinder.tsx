@@ -221,7 +221,7 @@ export default function ZodiacFinder() {
                 title="Interpretation Note"
             />
 
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
+            <div className="grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">

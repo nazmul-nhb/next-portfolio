@@ -200,7 +200,7 @@ export default function TextLayerEditor({
                 </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-0.5">
                 <div className="text-sm font-medium">Color</div>
                 <ColorInputField
                     ariaLabel="Text color"

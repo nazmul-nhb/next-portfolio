@@ -5,7 +5,7 @@ import PhotoCardEditor from './PhotoCardEditor';
 
 export default function ManagePhotoCards() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-full">
             <div>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">

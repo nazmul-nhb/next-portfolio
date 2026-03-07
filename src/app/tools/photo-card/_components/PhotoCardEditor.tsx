@@ -509,7 +509,7 @@ export default function PhotoCardEditor() {
     };
 
     return useMount(
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="mx-auto max-w-full grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <PhotoCardControls
                 activeImageId={activeImageId}
                 activeTextId={activeTextId}

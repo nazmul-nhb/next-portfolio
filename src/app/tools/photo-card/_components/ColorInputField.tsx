@@ -34,9 +34,9 @@ export default function ColorInputField({
             )}
             <div className="flex items-center gap-2">
                 <div className="h-10 w-14 overflow-hidden rounded-lg border bg-background">
-                    <input
+                    <Input
                         aria-label={ariaLabel}
-                        className="h-full w-full cursor-pointer border-0"
+                        className="h-full w-full cursor-pointer rounded-lg border-0 px-1 py-0.5"
                         onChange={(e) => onChange(e.target.value)}
                         type="color"
                         value={value}

@@ -112,7 +112,7 @@ export default function PhotoCardControls({
     onUploadImages,
 }: Props) {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-full mx-auto">
             {validationIssues.length > 0 && (
                 <SmartAlert
                     description={
@@ -158,7 +158,7 @@ export default function PhotoCardControls({
                             value={config.height}
                         />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-0.5">
                         <div className="text-sm font-medium">Background</div>
                         <ColorInputField
                             ariaLabel="Canvas background color"
@@ -207,8 +207,8 @@ export default function PhotoCardControls({
                                     </div>
                                 </div>
 
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div className="space-y-2">
+                                <div className="flex flex-wrap gap-2 justify-between">
+                                    <div className="space-y-2 flex-1 shrink-0">
                                         <Label htmlFor={`${sectionKey}-height`}>Height</Label>
                                         <DraftNumberInput
                                             ariaLabel={`${sectionKey} height`}
@@ -222,7 +222,7 @@ export default function PhotoCardControls({
                                         />
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-0.5 flex-1 shrink-0">
                                         <div className="text-sm font-medium">Background</div>
                                         <ColorInputField
                                             ariaLabel={`${sectionKey} background color`}
@@ -250,7 +250,7 @@ export default function PhotoCardControls({
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid gap-3 sm:grid-cols-[minmax(0,220px)_auto_auto] sm:items-end">
+                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-[minmax(0,220px)_auto_auto] sm:items-end">
                         <div className="space-y-2">
                             <div className="text-sm font-medium">New Layer Destination</div>
                             <Select
