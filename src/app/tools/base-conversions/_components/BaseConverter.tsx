@@ -6,6 +6,7 @@ import { TextCodec } from 'nhb-toolbox/hash';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
@@ -69,19 +70,8 @@ const FORMAT_OPTIONS = [
 const FORMAT_VALUES = ['utf8', 'hex', 'binary', 'base64'] as const;
 
 type EncodingFormat = (typeof FORMAT_VALUES)[number];
-type ConversionMethod =
-    | 'base64ToBinary'
-    | 'base64ToHex'
-    | 'base64ToUtf8'
-    | 'binaryToBase64'
-    | 'binaryToHex'
-    | 'binaryToUtf8'
-    | 'hexToBase64'
-    | 'hexToBinary'
-    | 'hexToUtf8'
-    | 'utf8ToBase64'
-    | 'utf8ToBinary'
-    | 'utf8ToHex';
+
+type ConversionMethod = Exclude<keyof typeof TextCodec, 'prototype' | `is${string}`>;
 
 type ConversionConfig = {
     method: ConversionMethod;
@@ -139,7 +129,7 @@ function getValidationMessage(source: EncodingFormat, value: string) {
     if (!value) return null;
 
     if (source === 'hex' && !TextCodec.isValidHex(value)) {
-        return 'Enter a valid hexadecimal byte string. Spaced and unspaced bytes are both accepted.';
+        return 'Enter a valid hexadecimal byte string. Both spaced and unspaced bytes are accepted.';
     }
 
     if (source === 'binary' && !TextCodec.isValidBinary(value)) {
@@ -523,9 +513,9 @@ export default function BaseConverter() {
                                         textToCopy={conversionState.output}
                                     />
                                 </div>
-                                <pre className="mt-3 max-w-full max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm font-cascadia">
+                                <CodeBlock className="mt-3 max-h-40 p-4 text-sm">
                                     {conversionState.output}
-                                </pre>
+                                </CodeBlock>
                             </div>
                         ) : (
                             <EmptyData

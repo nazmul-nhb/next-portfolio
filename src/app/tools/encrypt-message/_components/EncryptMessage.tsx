@@ -8,6 +8,7 @@ import { Cipher } from 'nhb-toolbox/hash';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
@@ -94,7 +95,7 @@ export default function EncryptMessage() {
                 output: null,
                 error: hasErrorMessage(error)
                     ? error.message
-                    : 'There is omething wrong with your passphrase or input!',
+                    : 'There is something wrong with your passphrase or input!',
             };
         }
     }, [passphrase, input, mode]);
@@ -299,9 +300,9 @@ export default function EncryptMessage() {
                                         textToCopy={encryptionState.output}
                                     />
                                 </div>
-                                <pre className="mt-3 max-w-full max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm font-cascadia">
+                                <CodeBlock className="mt-3 max-h-40 p-4 text-sm">
                                     {encryptionState.output}
-                                </pre>
+                                </CodeBlock>
                             </div>
                         ) : (
                             <EmptyData

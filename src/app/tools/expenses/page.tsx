@@ -38,7 +38,7 @@ export default async function ExpensesPage() {
     const session = await auth();
 
     if (!session?.user) {
-        redirect('/auth/login?redirectTo=/tools');
+        redirect('/auth/login?redirectTo=/tools/expenses');
     }
 
     return <ExpensesClient />;
