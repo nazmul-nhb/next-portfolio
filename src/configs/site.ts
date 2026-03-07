@@ -104,6 +104,13 @@ export const siteConfig = {
                 'Encrypt/decrypt text using a passphrase. Must use same passphrase for reverse process.',
         },
         {
+            href: '/tools/uuid',
+            label: 'UUID Tools',
+            icon: Tag,
+            description:
+                'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
+        },
+        {
             href: '/tools/expenses',
             label: 'Expense Manager',
             icon: Wallet,

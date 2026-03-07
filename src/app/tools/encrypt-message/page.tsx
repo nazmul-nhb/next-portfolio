@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import EncryptMessage from '@/app/tools/encrypt-message/_components/EncryptMessage';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import EncryptMessage from './_components/EncryptMessage';
 
 const description = 'Encrypt/decrypt text using a passphrase.';
 
