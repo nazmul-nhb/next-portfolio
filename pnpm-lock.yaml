@@ -86,6 +86,9 @@ importers:
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      locality-idb:
+        specifier: ^1.5.10
+        version: 1.5.10
       lucide-react:
         specifier: ^0.576.0
         version: 0.576.0(react@19.2.4)
@@ -2742,6 +2745,9 @@ packages:
 
   linkifyjs@4.3.2:
     resolution: {integrity: sha512-NT1CJtq3hHIreOianA8aSXn6Cw0JzYOuDQbOrSPe7gqFnCpKP++MQe3ODgO3oh2GJFORkAAdqredOa60z63GbA==}
+
+  locality-idb@1.5.10:
+    resolution: {integrity: sha512-+spsDHmVa0sw6fU/6zneG5OcLiL9UGz/SPk04gEPG6kB3s/jVPmjhvMVNRjnzAqsOcNA8rRQebmgbU683qd8Gw==}
 
   lodash@4.17.23:
     resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
@@ -5960,6 +5966,8 @@ snapshots:
       uc.micro: 2.1.0
 
   linkifyjs@4.3.2: {}
+
+  locality-idb@1.5.10: {}
 
   lodash@4.17.23: {}
 

@@ -7,6 +7,7 @@ import {
     FolderKanban,
     GraduationCap,
     Home,
+    ImagePlus,
     Info,
     LayoutDashboard,
     Lightbulb,
@@ -75,6 +76,13 @@ export const siteConfig = {
         // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],
     toolsMenus: [
+        {
+            href: '/tools/photo-card',
+            label: 'Photo Cards',
+            icon: ImagePlus,
+            description:
+                'Generate photo cards using your provided images, texts and store it in the browser', //Codex should rewrite this descripton professionally
+        },
         {
             href: '/tools/age-calculator',
             label: 'Age Calculator',

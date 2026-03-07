@@ -49,6 +49,7 @@
     "drizzle-zod": "^0.8.3",
     "framer-motion": "^12.34.3",
     "input-otp": "^1.4.2",
+    "locality-idb": "^1.5.10",
     "lucide-react": "^0.576.0",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
