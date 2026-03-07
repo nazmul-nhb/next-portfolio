@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
+import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -100,9 +101,18 @@ export default function EncryptMessage() {
 
     return (
         <div className="space-y-8">
-            <div className="max-w-3xl">
-                <h1 className="text-3xl font-bold tracking-tight">Encrypt/decrypt Message</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
+            <div>
+                <div className="flex items-start gap-2 flex-wrap justify-between">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+                        Encrypt/decrypt Message
+                    </h1>
+                    <ShareButton
+                        buttonLabel="Share this tool"
+                        route="/tools/encrypt-message"
+                        shareText="Encrypt/decrypt Message"
+                    />
+                </div>
+                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
                     Encrypt or decrypt text using a passphrase. The same passphrase used for
                     encryption must be used again to decrypt the message.
                 </p>

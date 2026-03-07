@@ -1,4 +1,5 @@
 import { Key, ListX } from 'lucide-react';
+import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DecodeUUID from './DecodeUUID';
@@ -7,9 +8,18 @@ import GenerateUUID from './GenerateUUID';
 export default function ManageUUID() {
     return (
         <div className="space-y-8">
-            <div className="max-w-3xl">
-                <h1 className="text-3xl font-bold tracking-tight">UUID Generator & Decoder</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
+            <div>
+                <div className="flex items-start gap-2 flex-wrap justify-between">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+                        UUID Generator & Decoder
+                    </h1>
+                    <ShareButton
+                        buttonLabel="Share this tool"
+                        route="/tools/uuid"
+                        shareText="UUID Generator & Decoder"
+                    />
+                </div>
+                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
                     Create UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing
                     UUIDs to inspect their metadata.
                 </p>

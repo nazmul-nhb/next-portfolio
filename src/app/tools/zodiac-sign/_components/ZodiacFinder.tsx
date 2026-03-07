@@ -26,6 +26,7 @@ import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import EmptyData from '@/components/misc/empty-data';
+import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -189,9 +190,18 @@ export default function ZodiacFinder() {
 
     return (
         <div className="space-y-8">
-            <div className="max-w-3xl">
-                <h1 className="text-3xl font-bold tracking-tight">Zodiac Sign Finder</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
+            <div>
+                <div className="flex items-start gap-2 flex-wrap justify-between">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+                        Zodiac Sign Finder
+                    </h1>
+                    <ShareButton
+                        buttonLabel="Share this tool"
+                        route="/tools/zodiac-sign"
+                        shareText="Zodiac Sign Finder"
+                    />
+                </div>
+                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
                     Pick a birth date and zodiac system to see the matching sign, its date
                     range, and a concise traditional description.
                 </p>
