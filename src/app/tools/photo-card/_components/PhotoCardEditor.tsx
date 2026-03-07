@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMount } from 'nhb-hooks';
-import { getTimestamp, isBrowser } from 'nhb-toolbox';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { SavedPhotoCard } from '@/lib/photo-card/indexed-db';
@@ -11,17 +10,23 @@ import {
     listSavedPhotoCards,
     savePhotoCard,
 } from '@/lib/photo-card/indexed-db';
+import { clampLayerPositionToSection, getSectionBounds } from '@/lib/photo-card/layout';
 import {
     downloadBlob,
     getExportErrorMessage,
+    measureTextLayer,
     renderPhotoCardToBlob,
 } from '@/lib/photo-card/renderer';
 import {
     createTextLayer,
     DEFAULT_PHOTO_CARD_CONFIG,
     type ImageLayer,
+    normalizePhotoCardConfig,
+    PHOTO_CARD_SECTION_LABELS,
     type PhotoCardConfig,
     PhotoCardConfigSchema,
+    type PhotoCardSectionConfig,
+    type PhotoCardSectionId,
     type TextLayer,
 } from '@/lib/photo-card/types';
 import PhotoCardCanvas from './PhotoCardCanvas';
@@ -58,13 +63,34 @@ function reorderItems<T extends { id: string }>(
     return nextItems;
 }
 
-function fitImageToCanvas(
+function withSectionEnabled(
+    config: PhotoCardConfig,
+    section: PhotoCardSectionId
+): PhotoCardConfig {
+    if (section === 'canvas') return config;
+
+    return {
+        ...config,
+        sections: {
+            ...config.sections,
+            [section]: {
+                ...config.sections[section],
+                enabled: true,
+            },
+        },
+    };
+}
+
+function fitImageToSection(
     naturalWidth: number,
     naturalHeight: number,
-    config: PhotoCardConfig
+    config: PhotoCardConfig,
+    section: PhotoCardSectionId
 ) {
-    const availableWidth = config.width * 0.9;
-    const availableHeight = config.height * 0.9;
+    const draftConfig = withSectionEnabled(config, section);
+    const bounds = getSectionBounds(draftConfig, section);
+    const availableWidth = bounds.width * 0.9;
+    const availableHeight = bounds.height * 0.9;
     const scale = Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight, 1);
     const width = Math.max(1, Math.round(naturalWidth * scale));
     const height = Math.max(1, Math.round(naturalHeight * scale));
@@ -72,8 +98,8 @@ function fitImageToCanvas(
     return {
         width,
         height,
-        x: Math.round((config.width - width) / 2),
-        y: Math.round((config.height - height) / 2),
+        x: Math.round((bounds.width - width) / 2),
+        y: Math.round((bounds.height - height) / 2),
     };
 }
 
@@ -107,27 +133,38 @@ async function fileToDataUrl(file: File) {
 }
 
 function buildFilename(extension: 'png' | 'jpeg') {
-    const date = getTimestamp().replaceAll(':', '-').replaceAll('.', '-');
+    const date = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
 
     return `photo-card-${date}.${extension === 'jpeg' ? 'jpg' : extension}`;
 }
 
 export default function PhotoCardEditor() {
+    const isBrowser = typeof window !== 'undefined';
     const queryClient = useQueryClient();
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [config, setConfig] = useState<PhotoCardConfig>(DEFAULT_PHOTO_CARD_CONFIG);
+    const [config, setConfig] = useState<PhotoCardConfig>(() =>
+        normalizePhotoCardConfig(DEFAULT_PHOTO_CARD_CONFIG)
+    );
     const [activeImageId, setActiveImageId] = useState<string | null>(null);
     const [activeTextId, setActiveTextId] = useState<string | null>(
         DEFAULT_PHOTO_CARD_CONFIG.texts[0]?.id ?? null
     );
+    const [newLayerSection, setNewLayerSection] = useState<PhotoCardSectionId>('canvas');
 
     const validation = useMemo(() => PhotoCardConfigSchema.safeParse(config), [config]);
 
     const savedCardsQuery = useQuery({
-        enabled: isBrowser(),
+        enabled: isBrowser,
         queryKey: ['photo-card', 'saved'],
         queryFn: listSavedPhotoCards,
     });
+
+    const savedCards = useMemo<SavedPhotoCard[]>(() => {
+        return (savedCardsQuery.data ?? []).map((card) => ({
+            ...card,
+            config: normalizePhotoCardConfig(card.config),
+        }));
+    }, [savedCardsQuery.data]);
 
     const saveMutation = useMutation({
         mutationFn: savePhotoCard,
@@ -152,13 +189,12 @@ export default function PhotoCardEditor() {
     });
 
     const previewUrls = useMemo<Record<string, string>>(() => {
-        const entries =
-            savedCardsQuery.data?.map(
-                (card) => [card.id, URL.createObjectURL(card.previewBlob)] as const
-            ) ?? [];
+        const entries = savedCards.map(
+            (card) => [card.id, URL.createObjectURL(card.previewBlob)] as const
+        );
 
         return Object.fromEntries(entries);
-    }, [savedCardsQuery.data]);
+    }, [savedCards]);
 
     useEffect(() => {
         return () => {
@@ -192,70 +228,122 @@ export default function PhotoCardEditor() {
         }));
     };
 
-    const updateImageLayer = (id: string, patch: Partial<ImageLayer>) => {
+    const updateSection = (
+        section: 'header' | 'footer',
+        patch: Partial<PhotoCardSectionConfig>
+    ) => {
         setConfig((current) => ({
             ...current,
-            images: current.images.map((layer) =>
-                layer.id === id
-                    ? {
-                          ...layer,
-                          ...patch,
-                          x:
-                              patch.x == null
-                                  ? layer.x
-                                  : clampInteger(Number(patch.x), -5000, 5000, layer.x),
-                          y:
-                              patch.y == null
-                                  ? layer.y
-                                  : clampInteger(Number(patch.y), -5000, 5000, layer.y),
-                          width:
-                              patch.width == null
-                                  ? layer.width
-                                  : clampInteger(Number(patch.width), 1, 4000, layer.width),
-                          height:
-                              patch.height == null
-                                  ? layer.height
-                                  : clampInteger(Number(patch.height), 1, 4000, layer.height),
-                      }
-                    : layer
-            ),
+            sections: {
+                ...current.sections,
+                [section]: {
+                    ...current.sections[section],
+                    ...patch,
+                    height:
+                        patch.height == null
+                            ? current.sections[section].height
+                            : clampInteger(
+                                  Number(patch.height),
+                                  60,
+                                  1200,
+                                  current.sections[section].height
+                              ),
+                    backgroundColor:
+                        patch.backgroundColor == null
+                            ? current.sections[section].backgroundColor
+                            : normalizeColor(
+                                  patch.backgroundColor,
+                                  current.sections[section].backgroundColor
+                              ),
+                },
+            },
         }));
     };
 
+    const updateImageLayer = (id: string, patch: Partial<ImageLayer>) => {
+        setConfig((current) => {
+            const nextConfig = patch.section
+                ? withSectionEnabled(current, patch.section)
+                : current;
+
+            return {
+                ...nextConfig,
+                images: nextConfig.images.map((layer) => {
+                    if (layer.id !== id) return layer;
+
+                    const nextLayer: ImageLayer = {
+                        ...layer,
+                        ...patch,
+                        section: patch.section ?? layer.section,
+                        width:
+                            patch.width == null
+                                ? layer.width
+                                : clampInteger(Number(patch.width), 1, 4000, layer.width),
+                        height:
+                            patch.height == null
+                                ? layer.height
+                                : clampInteger(Number(patch.height), 1, 4000, layer.height),
+                    };
+                    const nextPosition = clampLayerPositionToSection(
+                        nextConfig,
+                        nextLayer.section,
+                        nextLayer.width,
+                        nextLayer.height,
+                        patch.x ?? layer.x,
+                        patch.y ?? layer.y
+                    );
+
+                    return {
+                        ...nextLayer,
+                        ...nextPosition,
+                    };
+                }),
+            };
+        });
+    };
+
     const updateTextLayer = (id: string, patch: Partial<TextLayer>) => {
-        setConfig((current) => ({
-            ...current,
-            texts: current.texts.map((layer) =>
-                layer.id === id
-                    ? {
-                          ...layer,
-                          ...patch,
-                          text: patch.text ?? layer.text,
-                          color:
-                              patch.color == null
-                                  ? layer.color
-                                  : normalizeColor(patch.color, layer.color),
-                          fontSize:
-                              patch.fontSize == null
-                                  ? layer.fontSize
-                                  : clampInteger(
-                                        Number(patch.fontSize),
-                                        8,
-                                        400,
-                                        layer.fontSize
-                                    ),
-                          x:
-                              patch.x == null
-                                  ? layer.x
-                                  : clampInteger(Number(patch.x), -5000, 5000, layer.x),
-                          y:
-                              patch.y == null
-                                  ? layer.y
-                                  : clampInteger(Number(patch.y), -5000, 5000, layer.y),
-                      }
-                    : layer
-            ),
-        }));
+        setConfig((current) => {
+            const nextConfig = patch.section
+                ? withSectionEnabled(current, patch.section)
+                : current;
+
+            return {
+                ...nextConfig,
+                texts: nextConfig.texts.map((layer) => {
+                    if (layer.id !== id) return layer;
+
+                    const nextLayer: TextLayer = {
+                        ...layer,
+                        ...patch,
+                        text: patch.text ?? layer.text,
+                        section: patch.section ?? layer.section,
+                        color:
+                            patch.color == null
+                                ? layer.color
+                                : normalizeColor(patch.color, layer.color),
+                        fontSize:
+                            patch.fontSize == null
+                                ? layer.fontSize
+                                : clampInteger(Number(patch.fontSize), 8, 400, layer.fontSize),
+                    };
+                    const metrics = measureTextLayer(nextLayer);
+                    const nextPosition = clampLayerPositionToSection(
+                        nextConfig,
+                        nextLayer.section,
+                        metrics.width,
+                        metrics.height,
+                        patch.x ?? layer.x,
+                        patch.y ?? layer.y
+                    );
+
+                    return {
+                        ...nextLayer,
+                        ...nextPosition,
+                    };
+                }),
+            };
+        });
     };
 
     const removeImageLayer = (id: string) => {
@@ -295,17 +383,20 @@ export default function PhotoCardEditor() {
 
         void (async () => {
             try {
+                const targetSection = newLayerSection;
                 const nextLayers = await Promise.all(
                     Array.from(files).map(async (file) => {
                         const loaded = await fileToDataUrl(file);
-                        const fitted = fitImageToCanvas(
+                        const fitted = fitImageToSection(
                             loaded.naturalWidth,
                             loaded.naturalHeight,
-                            config
+                            config,
+                            targetSection
                         );
 
                         return {
                             id: crypto.randomUUID(),
+                            section: targetSection,
                             src: loaded.dataUrl,
                             x: fitted.x,
                             y: fitted.y,
@@ -317,13 +408,17 @@ export default function PhotoCardEditor() {
                     })
                 );
 
-                setConfig((current) => ({
-                    ...current,
-                    images: [...current.images, ...nextLayers],
-                }));
+                setConfig((current) => {
+                    const nextConfig = withSectionEnabled(current, targetSection);
+
+                    return {
+                        ...nextConfig,
+                        images: [...nextConfig.images, ...nextLayers],
+                    };
+                });
                 setActiveImageId(nextLayers[0]?.id ?? null);
                 toast.success(
-                    `${nextLayers.length} image layer${nextLayers.length === 1 ? '' : 's'} added.`
+                    `${nextLayers.length} image layer${nextLayers.length === 1 ? '' : 's'} added to ${PHOTO_CARD_SECTION_LABELS[targetSection].toLowerCase()}.`
                 );
             } catch (error) {
                 toast.error(getExportErrorMessage(error));
@@ -332,12 +427,20 @@ export default function PhotoCardEditor() {
     };
 
     const handleAddTextLayer = () => {
-        const nextLayer = createTextLayer(config.texts.length);
+        const targetSection = newLayerSection;
+        const sectionCount = config.texts.filter(
+            (layer) => layer.section === targetSection
+        ).length;
+        const nextLayer = createTextLayer(sectionCount, targetSection);
 
-        setConfig((current) => ({
-            ...current,
-            texts: [...current.texts, nextLayer],
-        }));
+        setConfig((current) => {
+            const nextConfig = withSectionEnabled(current, targetSection);
+
+            return {
+                ...nextConfig,
+                texts: [...nextConfig.texts, nextLayer],
+            };
+        });
         setActiveTextId(nextLayer.id);
     };
 
@@ -382,9 +485,11 @@ export default function PhotoCardEditor() {
     };
 
     const handleLoadSaved = (card: SavedPhotoCard) => {
-        setConfig(card.config);
-        setActiveImageId(card.config.images[0]?.id ?? null);
-        setActiveTextId(card.config.texts[0]?.id ?? null);
+        const normalizedConfig = normalizePhotoCardConfig(card.config);
+
+        setConfig(normalizedConfig);
+        setActiveImageId(normalizedConfig.images[0]?.id ?? null);
+        setActiveTextId(normalizedConfig.texts[0]?.id ?? null);
         toast.success('Saved photo card loaded into the editor.');
     };
 
@@ -409,6 +514,7 @@ export default function PhotoCardEditor() {
                 activeImageId={activeImageId}
                 activeTextId={activeTextId}
                 config={config}
+                newLayerSection={newLayerSection}
                 onAddTextLayer={handleAddTextLayer}
                 onCanvasChange={updateCanvas}
                 onDeleteSaved={(id) => deleteMutation.mutate(id)}
@@ -418,7 +524,9 @@ export default function PhotoCardEditor() {
                 onImageMove={moveImageLayer}
                 onImageRemove={removeImageLayer}
                 onLoadSaved={handleLoadSaved}
+                onNewLayerSectionChange={setNewLayerSection}
                 onSaveToIndexedDb={handleSaveToIndexedDb}
+                onSectionChange={updateSection}
                 onSelectImage={setActiveImageId}
                 onSelectText={setActiveTextId}
                 onTextChange={updateTextLayer}
@@ -426,13 +534,22 @@ export default function PhotoCardEditor() {
                 onTextRemove={removeTextLayer}
                 onUploadImages={handleUploadImages}
                 previewUrls={previewUrls}
-                savedCards={savedCardsQuery.data ?? []}
+                savedCards={savedCards}
                 savedCardsLoading={savedCardsQuery.isLoading}
                 savePending={saveMutation.isPending}
                 validationIssues={validationIssues}
             />
 
-            <PhotoCardCanvas canvasRef={canvasRef} config={config} />
+            <PhotoCardCanvas
+                activeImageId={activeImageId}
+                activeTextId={activeTextId}
+                canvasRef={canvasRef}
+                config={config}
+                onImageChange={updateImageLayer}
+                onSelectImage={setActiveImageId}
+                onSelectText={setActiveTextId}
+                onTextChange={updateTextLayer}
+            />
         </div>
     );
 }

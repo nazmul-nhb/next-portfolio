@@ -3,7 +3,7 @@
 import { ArrowDown, ArrowUp, Type, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -12,13 +12,18 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import {
-    PHOTO_CARD_FONT_OPTIONS,
     getPhotoCardFontOption,
+    PHOTO_CARD_FONT_OPTIONS,
+    PHOTO_CARD_SECTION_LABELS,
+    PHOTO_CARD_SECTION_OPTIONS,
     type PhotoCardFontId,
+    type PhotoCardSectionId,
     type TextLayer,
 } from '@/lib/photo-card/types';
+import { cn } from '@/lib/utils';
+import ColorInputField from './ColorInputField';
+import DraftNumberInput from './DraftNumberInput';
 
 type Props = {
     index: number;
@@ -68,7 +73,7 @@ export default function TextLayerEditor({
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                        {activeFont.label}, {layer.fontSize}px at ({layer.x}, {layer.y})
+                        {PHOTO_CARD_SECTION_LABELS[layer.section]} section
                     </p>
                 </button>
 
@@ -98,9 +103,7 @@ export default function TextLayerEditor({
             </div>
 
             <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor={`text-layer-text-${layer.id}`}>
-                    Text
-                </label>
+                <Label htmlFor={`text-layer-text-${layer.id}`}>Text</Label>
                 <Textarea
                     aria-label="Text layer content"
                     className="min-h-24 resize-y"
@@ -113,14 +116,41 @@ export default function TextLayerEditor({
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                    <div className="text-sm font-medium">Font</div>
+                    <Label htmlFor={`text-layer-section-${layer.id}`}>Section</Label>
+                    <Select
+                        onValueChange={(value) =>
+                            onChange({ section: value as PhotoCardSectionId })
+                        }
+                        value={layer.section}
+                    >
+                        <SelectTrigger
+                            aria-label="Text section"
+                            id={`text-layer-section-${layer.id}`}
+                        >
+                            <SelectValue placeholder="Select a section" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {PHOTO_CARD_SECTION_OPTIONS.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor={`text-layer-font-${layer.id}`}>Font</Label>
                     <Select
                         onValueChange={(value) =>
                             onChange({ fontFamily: value as PhotoCardFontId })
                         }
                         value={layer.fontFamily}
                     >
-                        <SelectTrigger aria-label="Font family">
+                        <SelectTrigger
+                            aria-label="Font family"
+                            id={`text-layer-font-${layer.id}`}
+                        >
                             <SelectValue placeholder="Select a font" />
                         </SelectTrigger>
                         <SelectContent>
@@ -134,72 +164,49 @@ export default function TextLayerEditor({
                         </SelectContent>
                     </Select>
                 </div>
-
-                <div className="space-y-2">
-                    <label
-                        className="text-sm font-medium"
-                        htmlFor={`text-layer-size-${layer.id}`}
-                    >
-                        Font Size
-                    </label>
-                    <Input
-                        aria-label="Text font size"
-                        id={`text-layer-size-${layer.id}`}
-                        min={8}
-                        onChange={(event) =>
-                            onChange({ fontSize: Number(event.target.value) || layer.fontSize })
-                        }
-                        type="number"
-                        value={layer.fontSize}
-                    />
-                </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
-                    <div className="text-sm font-medium">Color</div>
-                    <div className="flex items-center gap-2">
-                        <Input
-                            aria-label="Text color swatch"
-                            className="h-10 w-14 p-1"
-                            onChange={(event) => onChange({ color: event.target.value })}
-                            type="color"
-                            value={layer.color}
-                        />
-                        <Input
-                            aria-label="Text color hex value"
-                            onChange={(event) => onChange({ color: event.target.value })}
-                            spellCheck={false}
-                            value={layer.color}
-                        />
-                    </div>
+                    <Label htmlFor={`text-layer-size-${layer.id}`}>Font Size</Label>
+                    <DraftNumberInput
+                        ariaLabel="Text font size"
+                        id={`text-layer-size-${layer.id}`}
+                        max={400}
+                        min={8}
+                        onCommit={(value) => onChange({ fontSize: value })}
+                        value={layer.fontSize}
+                    />
                 </div>
-
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`text-layer-x-${layer.id}`}>
-                        X Position
-                    </label>
-                    <Input
-                        aria-label="Text x position"
+                    <Label htmlFor={`text-layer-x-${layer.id}`}>X Position</Label>
+                    <DraftNumberInput
+                        ariaLabel="Text x position"
                         id={`text-layer-x-${layer.id}`}
-                        onChange={(event) => onChange({ x: Number(event.target.value) || 0 })}
-                        type="number"
+                        min={0}
+                        onCommit={(value) => onChange({ x: value })}
                         value={layer.x}
                     />
                 </div>
-
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`text-layer-y-${layer.id}`}>
-                        Y Position
-                    </label>
-                    <Input
-                        aria-label="Text y position"
+                    <Label htmlFor={`text-layer-y-${layer.id}`}>Y Position</Label>
+                    <DraftNumberInput
+                        ariaLabel="Text y position"
                         id={`text-layer-y-${layer.id}`}
-                        onChange={(event) => onChange({ y: Number(event.target.value) || 0 })}
-                        type="number"
+                        min={0}
+                        onCommit={(value) => onChange({ y: value })}
                         value={layer.y}
                     />
                 </div>
+            </div>
+
+            <div className="space-y-2">
+                <div className="text-sm font-medium">Color</div>
+                <ColorInputField
+                    ariaLabel="Text color"
+                    onChange={(value) => onChange({ color: value })}
+                    value={layer.color}
+                />
             </div>
 
             <div className="rounded-lg border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
@@ -208,7 +215,7 @@ export default function TextLayerEditor({
                     Live style preview
                 </div>
                 <p
-                    className="mt-2 break-words"
+                    className="mt-2 wrap-break-word"
                     style={{
                         color: layer.color,
                         fontFamily: activeFont.fontFamily,

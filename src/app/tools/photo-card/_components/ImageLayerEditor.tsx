@@ -3,9 +3,22 @@
 import { ArrowDown, ArrowUp, ImageIcon, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    type ImageLayer,
+    PHOTO_CARD_SECTION_LABELS,
+    PHOTO_CARD_SECTION_OPTIONS,
+    type PhotoCardSectionId,
+} from '@/lib/photo-card/types';
 import { cn } from '@/lib/utils';
-import type { ImageLayer } from '@/lib/photo-card/types';
+import DraftNumberInput from './DraftNumberInput';
 
 type Props = {
     index: number;
@@ -55,7 +68,7 @@ export default function ImageLayerEditor({
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                        Positioned at ({layer.x}, {layer.y})
+                        {PHOTO_CARD_SECTION_LABELS[layer.section]} section
                     </p>
                 </button>
 
@@ -85,6 +98,7 @@ export default function ImageLayerEditor({
             </div>
 
             <div className="overflow-hidden rounded-xl border bg-muted/30">
+                {/* biome-ignore lint/performance/noImgElement: editor layer preview */}
                 <img
                     alt={`Layer ${index + 1}`}
                     className="h-32 w-full object-contain"
@@ -94,32 +108,27 @@ export default function ImageLayerEditor({
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`image-scale-${layer.id}`}>
-                        Scale (%)
-                    </label>
-                    <Input
-                        aria-label="Image scale percentage"
-                        id={`image-scale-${layer.id}`}
-                        min={1}
-                        onChange={(event) => {
-                            const nextScale = Number(event.target.value) || scale;
-
-                            if (!layer.naturalWidth || !layer.naturalHeight) return;
-
-                            onChange({
-                                width: Math.max(
-                                    1,
-                                    Math.round((layer.naturalWidth * nextScale) / 100)
-                                ),
-                                height: Math.max(
-                                    1,
-                                    Math.round((layer.naturalHeight * nextScale) / 100)
-                                ),
-                            });
-                        }}
-                        type="number"
-                        value={scale}
-                    />
+                    <Label htmlFor={`image-section-${layer.id}`}>Section</Label>
+                    <Select
+                        onValueChange={(value) =>
+                            onChange({ section: value as PhotoCardSectionId })
+                        }
+                        value={layer.section}
+                    >
+                        <SelectTrigger
+                            aria-label="Image section"
+                            id={`image-section-${layer.id}`}
+                        >
+                            <SelectValue placeholder="Select a section" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {PHOTO_CARD_SECTION_OPTIONS.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="rounded-lg border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
@@ -134,62 +143,71 @@ export default function ImageLayerEditor({
                 </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`image-x-${layer.id}`}>
-                        X Position
-                    </label>
-                    <Input
-                        aria-label="Image x position"
-                        id={`image-x-${layer.id}`}
-                        onChange={(event) => onChange({ x: Number(event.target.value) || 0 })}
-                        type="number"
-                        value={layer.x}
+                    <Label htmlFor={`image-scale-${layer.id}`}>Scale (%)</Label>
+                    <DraftNumberInput
+                        ariaLabel="Image scale percentage"
+                        id={`image-scale-${layer.id}`}
+                        min={1}
+                        onCommit={(nextScale) => {
+                            if (!layer.naturalWidth || !layer.naturalHeight) return;
+
+                            onChange({
+                                width: Math.max(
+                                    1,
+                                    Math.round((layer.naturalWidth * nextScale) / 100)
+                                ),
+                                height: Math.max(
+                                    1,
+                                    Math.round((layer.naturalHeight * nextScale) / 100)
+                                ),
+                            });
+                        }}
+                        value={scale}
                     />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`image-y-${layer.id}`}>
-                        Y Position
-                    </label>
-                    <Input
-                        aria-label="Image y position"
-                        id={`image-y-${layer.id}`}
-                        onChange={(event) => onChange({ y: Number(event.target.value) || 0 })}
-                        type="number"
-                        value={layer.y}
+                    <Label htmlFor={`image-width-${layer.id}`}>Width</Label>
+                    <DraftNumberInput
+                        ariaLabel="Image width"
+                        id={`image-width-${layer.id}`}
+                        min={1}
+                        onCommit={(value) => onChange({ width: value })}
+                        value={layer.width}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor={`image-height-${layer.id}`}>Height</Label>
+                    <DraftNumberInput
+                        ariaLabel="Image height"
+                        id={`image-height-${layer.id}`}
+                        min={1}
+                        onCommit={(value) => onChange({ height: value })}
+                        value={layer.height}
                     />
                 </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`image-width-${layer.id}`}>
-                        Width
-                    </label>
-                    <Input
-                        aria-label="Image width"
-                        id={`image-width-${layer.id}`}
-                        min={1}
-                        onChange={(event) =>
-                            onChange({ width: Number(event.target.value) || layer.width })
-                        }
-                        type="number"
-                        value={layer.width}
+                    <Label htmlFor={`image-x-${layer.id}`}>X Position</Label>
+                    <DraftNumberInput
+                        ariaLabel="Image x position"
+                        id={`image-x-${layer.id}`}
+                        min={0}
+                        onCommit={(value) => onChange({ x: value })}
+                        value={layer.x}
                     />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor={`image-height-${layer.id}`}>
-                        Height
-                    </label>
-                    <Input
-                        aria-label="Image height"
-                        id={`image-height-${layer.id}`}
-                        min={1}
-                        onChange={(event) =>
-                            onChange({ height: Number(event.target.value) || layer.height })
-                        }
-                        type="number"
-                        value={layer.height}
+                    <Label htmlFor={`image-y-${layer.id}`}>Y Position</Label>
+                    <DraftNumberInput
+                        ariaLabel="Image y position"
+                        id={`image-y-${layer.id}`}
+                        min={0}
+                        onCommit={(value) => onChange({ y: value })}
+                        value={layer.y}
                     />
                 </div>
             </div>

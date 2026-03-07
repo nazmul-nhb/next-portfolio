@@ -5,6 +5,7 @@ import {
     Download,
     ImagePlus,
     Layers3,
+    LayoutTemplate,
     Loader2,
     Save,
     Trash2,
@@ -22,9 +23,27 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import type { SavedPhotoCard } from '@/lib/photo-card/indexed-db';
-import type { ImageLayer, PhotoCardConfig, TextLayer } from '@/lib/photo-card/types';
+import type {
+    ImageLayer,
+    PhotoCardConfig,
+    PhotoCardSectionConfig,
+    PhotoCardSectionId,
+    TextLayer,
+} from '@/lib/photo-card/types';
+import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/photo-card/types';
+import ColorInputField from './ColorInputField';
+import DraftNumberInput from './DraftNumberInput';
 import ImageLayerEditor from './ImageLayerEditor';
 import TextLayerEditor from './TextLayerEditor';
 
@@ -32,6 +51,7 @@ type Props = {
     activeImageId: string | null;
     activeTextId: string | null;
     config: PhotoCardConfig;
+    newLayerSection: PhotoCardSectionId;
     previewUrls: Record<string, string>;
     savedCards: SavedPhotoCard[];
     savedCardsLoading: boolean;
@@ -48,7 +68,12 @@ type Props = {
     onImageMove: (id: string, direction: 'up' | 'down') => void;
     onImageRemove: (id: string) => void;
     onLoadSaved: (card: SavedPhotoCard) => void;
+    onNewLayerSectionChange: (section: PhotoCardSectionId) => void;
     onSaveToIndexedDb: () => void;
+    onSectionChange: (
+        section: 'header' | 'footer',
+        patch: Partial<PhotoCardSectionConfig>
+    ) => void;
     onSelectImage: (id: string) => void;
     onSelectText: (id: string) => void;
     onTextChange: (id: string, patch: Partial<TextLayer>) => void;
@@ -61,6 +86,7 @@ export default function PhotoCardControls({
     activeImageId,
     activeTextId,
     config,
+    newLayerSection,
     previewUrls,
     savedCards,
     savedCardsLoading,
@@ -75,7 +101,9 @@ export default function PhotoCardControls({
     onImageMove,
     onImageRemove,
     onLoadSaved,
+    onNewLayerSectionChange,
     onSaveToIndexedDb,
+    onSectionChange,
     onSelectImage,
     onSelectText,
     onTextChange,
@@ -103,68 +131,113 @@ export default function PhotoCardControls({
                 <CardHeader>
                     <CardTitle>Canvas Settings</CardTitle>
                     <CardDescription>
-                        Set the output size and base background color.
+                        Draft values stay editable until blur or Enter, so the inputs stop
+                        jumping while you type.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 sm:grid-cols-3">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium" htmlFor="photo-card-width">
-                            Width
-                        </label>
-                        <Input
-                            aria-label="Canvas width"
+                        <Label htmlFor="photo-card-width">Width</Label>
+                        <DraftNumberInput
+                            ariaLabel="Canvas width"
                             id="photo-card-width"
                             max={4000}
                             min={120}
-                            onChange={(event) =>
-                                onCanvasChange({
-                                    width: Number(event.target.value) || config.width,
-                                })
-                            }
-                            type="number"
+                            onCommit={(value) => onCanvasChange({ width: value })}
                             value={config.width}
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium" htmlFor="photo-card-height">
-                            Height
-                        </label>
-                        <Input
-                            aria-label="Canvas height"
+                        <Label htmlFor="photo-card-height">Height</Label>
+                        <DraftNumberInput
+                            ariaLabel="Canvas height"
                             id="photo-card-height"
                             max={4000}
                             min={120}
-                            onChange={(event) =>
-                                onCanvasChange({
-                                    height: Number(event.target.value) || config.height,
-                                })
-                            }
-                            type="number"
+                            onCommit={(value) => onCanvasChange({ height: value })}
                             value={config.height}
                         />
                     </div>
                     <div className="space-y-2">
                         <div className="text-sm font-medium">Background</div>
-                        <div className="flex items-center gap-2">
-                            <Input
-                                aria-label="Canvas background color swatch"
-                                className="h-10 w-14 p-1"
-                                onChange={(event) =>
-                                    onCanvasChange({ backgroundColor: event.target.value })
-                                }
-                                type="color"
-                                value={config.backgroundColor}
-                            />
-                            <Input
-                                aria-label="Canvas background color hex value"
-                                onChange={(event) =>
-                                    onCanvasChange({ backgroundColor: event.target.value })
-                                }
-                                spellCheck={false}
-                                value={config.backgroundColor}
-                            />
-                        </div>
+                        <ColorInputField
+                            ariaLabel="Canvas background color"
+                            onChange={(value) => onCanvasChange({ backgroundColor: value })}
+                            value={config.backgroundColor}
+                        />
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <LayoutTemplate className="size-5" />
+                        Header & Footer
+                    </CardTitle>
+                    <CardDescription>
+                        Turn sections on when you want dedicated branded strips with their own
+                        colors, images, and text layers.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4 lg:grid-cols-2">
+                    {(['header', 'footer'] as const).map((sectionKey) => {
+                        const section = config.sections[sectionKey];
+
+                        return (
+                            <div className="space-y-4 rounded-xl border p-4" key={sectionKey}>
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <p className="font-medium capitalize">{sectionKey}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Add images and text directly inside the {sectionKey}
+                                            .
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Checkbox
+                                            checked={section.enabled}
+                                            onCheckedChange={(checked) =>
+                                                onSectionChange(sectionKey, {
+                                                    enabled: checked === true,
+                                                })
+                                            }
+                                        />
+                                        <span className="text-sm">Enabled</span>
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`${sectionKey}-height`}>Height</Label>
+                                        <DraftNumberInput
+                                            ariaLabel={`${sectionKey} height`}
+                                            id={`${sectionKey}-height`}
+                                            max={1200}
+                                            min={60}
+                                            onCommit={(value) =>
+                                                onSectionChange(sectionKey, { height: value })
+                                            }
+                                            value={section.height}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium">Background</div>
+                                        <ColorInputField
+                                            ariaLabel={`${sectionKey} background color`}
+                                            onChange={(value) =>
+                                                onSectionChange(sectionKey, {
+                                                    backgroundColor: value,
+                                                })
+                                            }
+                                            value={section.backgroundColor}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </CardContent>
             </Card>
 
@@ -172,11 +245,33 @@ export default function PhotoCardControls({
                 <CardHeader>
                     <CardTitle>Image Layers</CardTitle>
                     <CardDescription>
-                        Upload one or more images and place them anywhere on the canvas.
+                        Upload images to the main canvas, header, or footer, then drag and
+                        resize them directly on the preview.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="grid gap-3 sm:grid-cols-[minmax(0,220px)_auto_auto] sm:items-end">
+                        <div className="space-y-2">
+                            <div className="text-sm font-medium">New Layer Destination</div>
+                            <Select
+                                onValueChange={(value) =>
+                                    onNewLayerSectionChange(value as PhotoCardSectionId)
+                                }
+                                value={newLayerSection}
+                            >
+                                <SelectTrigger aria-label="New image section">
+                                    <SelectValue placeholder="Select a section" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {PHOTO_CARD_SECTION_OPTIONS.map((option) => (
+                                        <SelectItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         <Input
                             accept="image/*"
                             className="hidden"
@@ -198,7 +293,9 @@ export default function PhotoCardControls({
                             </label>
                         </Button>
 
-                        <Badge variant="outline">{config.images.length} layer(s)</Badge>
+                        <Badge className="h-9" variant="outline">
+                            {config.images.length} layer(s)
+                        </Badge>
                     </div>
 
                     {config.images.length > 0 ? (
@@ -221,7 +318,7 @@ export default function PhotoCardControls({
                         </div>
                     ) : (
                         <EmptyData
-                            description="Upload JPG, PNG, WebP, or any browser-supported image. Each file becomes its own layer."
+                            description="Upload JPG, PNG, WebP, or any browser-supported image. Each file becomes its own layer and can be resized from the preview."
                             Icon={ImagePlus}
                             title="No image layers yet"
                         />
@@ -235,13 +332,33 @@ export default function PhotoCardControls({
                         <div>
                             <CardTitle>Text Layers</CardTitle>
                             <CardDescription>
-                                Stack headlines, captions, or call-to-actions over the artwork.
+                                Add text to the canvas, header, or footer, then drag it directly
+                                in the stage.
                             </CardDescription>
                         </div>
-                        <Button onClick={onAddTextLayer} type="button" variant="outline">
-                            <Type />
-                            Add Text
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-3">
+                            <Select
+                                onValueChange={(value) =>
+                                    onNewLayerSectionChange(value as PhotoCardSectionId)
+                                }
+                                value={newLayerSection}
+                            >
+                                <SelectTrigger aria-label="New text section" className="w-40">
+                                    <SelectValue placeholder="Select a section" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {PHOTO_CARD_SECTION_OPTIONS.map((option) => (
+                                        <SelectItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Button onClick={onAddTextLayer} type="button" variant="outline">
+                                <Type />
+                                Add Text
+                            </Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -265,7 +382,7 @@ export default function PhotoCardControls({
                         </div>
                     ) : (
                         <EmptyData
-                            description="Add as many text layers as needed for headlines, subtitles, or labels."
+                            description="Add as many text layers as needed and position them visually from the preview instead of relying on raw coordinates."
                             Icon={Layers3}
                             title="No text layers yet"
                         />
@@ -328,7 +445,7 @@ export default function PhotoCardControls({
                                 <div className="space-y-3 rounded-xl border p-3" key={card.id}>
                                     <div className="overflow-hidden rounded-lg border bg-muted/30">
                                         {previewUrls[card.id] ? (
-                                            // biome-ignore lint/performance/noImgElement: used only for preview
+                                            // biome-ignore lint/performance/noImgElement: used only for preview thumbnails
                                             <img
                                                 alt="Saved card preview"
                                                 className="aspect-video w-full object-cover"
@@ -350,7 +467,7 @@ export default function PhotoCardControls({
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-1">
                                         <Button
                                             onClick={() => onLoadSaved(card)}
                                             size="sm"
@@ -379,7 +496,7 @@ export default function PhotoCardControls({
                                             onClick={() => onDeleteSaved(card.id)}
                                             size="sm"
                                             type="button"
-                                            variant="ghost"
+                                            variant="destructive"
                                         >
                                             <Trash2 />
                                             Delete

@@ -81,7 +81,7 @@ export const siteConfig = {
             label: 'Photo Cards',
             icon: ImagePlus,
             description:
-                'Create polished photo cards with layered images, custom typography, live preview, and local browser storage.',
+                'Create polished photo cards with layered images, custom typography, live preview, and more.',
         },
         {
             href: '/tools/age-calculator',

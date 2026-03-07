@@ -52,7 +52,7 @@ async function ready() {
 export async function listSavedPhotoCards() {
     const db = await ready();
 
-    return db.from('photo_cards').orderBy('createdAt', 'desc').findAll();
+    return db.from('photo_cards').sortByIndex('createdAt', 'desc').findAll();
 }
 
 export async function savePhotoCard(

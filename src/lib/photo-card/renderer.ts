@@ -1,10 +1,16 @@
 import { inter, playfairDisplay, poppins, robotoMono } from '@/lib/fonts';
 import { hasErrorMessage } from '@/lib/utils';
-import type { PhotoCardConfig, PhotoCardFontId, TextLayer } from './types';
-import { PhotoCardConfigSchema } from './types';
+import { getAbsoluteLayerPosition, getSectionBounds } from './layout';
+import {
+    normalizePhotoCardConfig,
+    type PhotoCardConfig,
+    type PhotoCardFontId,
+    type TextLayer,
+} from './types';
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 let fontsReadyPromise: Promise<void> | null = null;
+let textMeasureCanvas: HTMLCanvasElement | null = null;
 
 const FONT_FAMILY_MAP: Record<PhotoCardFontId, string> = {
     inter: inter.style.fontFamily,
@@ -17,9 +23,7 @@ export function resolvePhotoCardFontFamily(fontId: PhotoCardFontId) {
     return FONT_FAMILY_MAP[fontId] ?? inter.style.fontFamily;
 }
 
-async function ensureFontLoaded(fontId: PhotoCardFontId) {
-    void fontId;
-
+async function ensureFontsReady() {
     if (typeof document === 'undefined' || !('fonts' in document)) {
         return;
     }
@@ -55,7 +59,52 @@ async function loadImage(src: string) {
     return cachedImage;
 }
 
-function drawTextLayer(context: CanvasRenderingContext2D, layer: TextLayer) {
+function getTextMeasureContext() {
+    if (typeof document === 'undefined') {
+        return null;
+    }
+
+    if (!textMeasureCanvas) {
+        textMeasureCanvas = document.createElement('canvas');
+    }
+
+    return textMeasureCanvas.getContext('2d');
+}
+
+export function measureTextLayer(layer: TextLayer) {
+    const context = getTextMeasureContext();
+    const lineHeight = Math.round(layer.fontSize * 1.2);
+    const lines = layer.text.split('\n');
+
+    if (!context) {
+        return {
+            width: Math.max(layer.fontSize * 2, 40),
+            height: Math.max(lineHeight * lines.length, lineHeight),
+        };
+    }
+
+    context.font = `${layer.fontSize}px ${resolvePhotoCardFontFamily(layer.fontFamily)}`;
+
+    const width = Math.ceil(
+        Math.max(
+            ...lines.map((line) => context.measureText(line || ' ').width),
+            layer.fontSize * 1.5
+        )
+    );
+
+    return {
+        width,
+        height: Math.max(lineHeight * lines.length, lineHeight),
+    };
+}
+
+function drawTextLayer(
+    context: CanvasRenderingContext2D,
+    config: PhotoCardConfig,
+    layer: TextLayer
+) {
+    const { x, y } = getAbsoluteLayerPosition(config, layer.section, layer.x, layer.y);
+
     context.save();
     context.fillStyle = layer.color;
     context.textBaseline = 'top';
@@ -64,17 +113,42 @@ function drawTextLayer(context: CanvasRenderingContext2D, layer: TextLayer) {
     const lineHeight = Math.round(layer.fontSize * 1.2);
 
     layer.text.split('\n').forEach((line, index) => {
-        context.fillText(line, layer.x, layer.y + lineHeight * index);
+        context.fillText(line, x, y + lineHeight * index);
     });
 
     context.restore();
+}
+
+function drawSectionBackground(context: CanvasRenderingContext2D, config: PhotoCardConfig) {
+    const headerBounds = getSectionBounds(config, 'header');
+    const footerBounds = getSectionBounds(config, 'footer');
+
+    if (config.sections.header.enabled && headerBounds.height > 0) {
+        context.fillStyle = config.sections.header.backgroundColor;
+        context.fillRect(
+            headerBounds.x,
+            headerBounds.y,
+            headerBounds.width,
+            headerBounds.height
+        );
+    }
+
+    if (config.sections.footer.enabled && footerBounds.height > 0) {
+        context.fillStyle = config.sections.footer.backgroundColor;
+        context.fillRect(
+            footerBounds.x,
+            footerBounds.y,
+            footerBounds.width,
+            footerBounds.height
+        );
+    }
 }
 
 export async function renderPhotoCardToCanvas(
     canvas: HTMLCanvasElement,
     config: PhotoCardConfig
 ) {
-    const parsed = PhotoCardConfigSchema.parse(config);
+    const parsed = normalizePhotoCardConfig(config);
     const context = canvas.getContext('2d');
 
     if (!context) {
@@ -88,6 +162,8 @@ export async function renderPhotoCardToCanvas(
     context.fillStyle = parsed.backgroundColor;
     context.fillRect(0, 0, parsed.width, parsed.height);
 
+    drawSectionBackground(context, parsed);
+
     const loadedImages = await Promise.all(
         parsed.images.map(async (layer) => ({
             layer,
@@ -96,17 +172,15 @@ export async function renderPhotoCardToCanvas(
     );
 
     for (const { layer, image } of loadedImages) {
-        context.drawImage(image, layer.x, layer.y, layer.width, layer.height);
+        const position = getAbsoluteLayerPosition(parsed, layer.section, layer.x, layer.y);
+
+        context.drawImage(image, position.x, position.y, layer.width, layer.height);
     }
 
-    await Promise.all(
-        [...new Set(parsed.texts.map((layer) => layer.fontFamily))].map((fontId) =>
-            ensureFontLoaded(fontId)
-        )
-    );
+    await ensureFontsReady();
 
     for (const textLayer of parsed.texts) {
-        drawTextLayer(context, textLayer);
+        drawTextLayer(context, parsed, textLayer);
     }
 }
 
