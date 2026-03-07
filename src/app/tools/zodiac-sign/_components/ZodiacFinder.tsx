@@ -222,12 +222,10 @@ export default function ZodiacFinder() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <CalendarDays className="size-5" />
-                            Birth Date Input
+                            Birth Date
                         </CardTitle>
                         <CardDescription>
-                            This follows the same tool layout and form conventions as the age
-                            calculator, with a date-only field and a shadcn select for zodiac
-                            presets.
+                            Please, select your birth date to find your zodiac sign.
                         </CardDescription>
                     </CardHeader>
 
@@ -343,7 +341,7 @@ export default function ZodiacFinder() {
                             Matching Sign
                         </CardTitle>
                         <CardDescription>
-                            Result updates as soon as the birth date and preset are valid.
+                            Result updates as soon as the birth date and preset have valid inputs.
                         </CardDescription>
                     </CardHeader>
 
