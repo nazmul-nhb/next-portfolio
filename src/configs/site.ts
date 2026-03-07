@@ -94,13 +94,14 @@ export const siteConfig = {
             label: 'Base Conversions',
             icon: Binary,
             description:
-                'Provides UTF-8–safe conversions between text, hex, binary, and Base64 representations using byte-level transformations.',
+                'Provides UTF-8–safe conversions between text, hex, binary, and Base64 representations.',
         },
         {
             href: '/tools/encrypt-message',
             label: 'Encrypt Message',
             icon: MessageSquareLock,
-            description: 'Encrypt/decrypt text using custom passphrase.',
+            description:
+                'Encrypt/decrypt text using a passphrase. Must use same passphrase for reverse process.',
         },
         {
             href: '/tools/expenses',

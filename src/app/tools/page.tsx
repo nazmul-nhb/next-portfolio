@@ -64,7 +64,7 @@ export default function ToolsPage() {
                         <CardContent>
                             <CardDescription>{description}</CardDescription>
                         </CardContent>
-                        <CardFooter className="border-t">
+                        <CardFooter className="border-t flex-1">
                             <Link
                                 className="inline-flex items-center gap-1.5 text-sm font-medium text-primary border-b border-b-transparent hover:border-b-primary hover:text-primary"
                                 href={href}
