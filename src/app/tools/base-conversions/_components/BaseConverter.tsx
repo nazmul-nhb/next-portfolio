@@ -274,17 +274,17 @@ export default function BaseConverter() {
         form.setValue('payload', conversionState.output, {
             shouldDirty: true,
             shouldTouch: true,
-            shouldValidate: true,
+            shouldValidate: false,
         });
         form.setValue('source', currentTarget, {
             shouldDirty: true,
             shouldTouch: true,
-            shouldValidate: true,
+            shouldValidate: false,
         });
         form.setValue('target', currentSource, {
             shouldDirty: true,
             shouldTouch: true,
-            shouldValidate: true,
+            shouldValidate: false,
         });
     };
 
