@@ -16,7 +16,14 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
-import { anekBangla, geistMono, geistSans, sourceSans, tiroBangla } from '@/lib/fonts';
+import {
+    anekBangla,
+    cascadiaCode,
+    geistMono,
+    geistSans,
+    sourceSans,
+    tiroBangla,
+} from '@/lib/fonts';
 import { buildOpenGraphImages, cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
@@ -75,6 +82,7 @@ export default function RootLayout({ children }: RootProps) {
                     geistSans.variable,
                     sourceSans.variable,
                     geistMono.variable,
+                    cascadiaCode.variable,
                     tiroBangla.variable,
                     anekBangla.variable,
                     'antialiased'

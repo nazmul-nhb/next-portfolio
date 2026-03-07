@@ -1,12 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Braces, CalendarClock, Info } from 'lucide-react';
+import { Braces, CalendarClock } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Alert, AlertTitle } from '@/components/ui/alert';
+import CodeBlock from '@/components/misc/code-block';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -107,23 +108,17 @@ function ParsedDatePreview({ label, value, chronos }: ParsedDatePreviewProps) {
             <div className="mt-4 space-y-3">
                 <div className="space-y-1">
                     <p className="text-xs font-medium text-muted-foreground">Form Value</p>
-                    <code className="block overflow-x-auto rounded-md bg-background px-3 py-2 font-mono text-xs">
-                        {value || 'null'}
-                    </code>
+                    <CodeBlock>{value || 'null'}</CodeBlock>
                 </div>
 
                 <div className="space-y-1">
                     <p className="text-xs font-medium text-muted-foreground">Native Date</p>
-                    <code className="block overflow-x-auto rounded-md bg-background px-3 py-2 font-mono text-xs">
-                        {chronos ? chronos.toLocalISOString() : 'null'}
-                    </code>
+                    <CodeBlock>{chronos ? chronos.toLocalISOString() : 'null'}</CodeBlock>
                 </div>
 
                 <div className="space-y-1">
                     <p className="text-xs font-medium text-muted-foreground">ISO Snapshot</p>
-                    <code className="block overflow-x-auto rounded-md bg-background px-3 py-2 font-mono text-xs">
-                        {chronos ? chronos.toISOString() : 'null'}
-                    </code>
+                    <CodeBlock>{chronos ? chronos.toISOString() : 'null'}</CodeBlock>
                 </div>
             </div>
         </div>
@@ -192,6 +187,7 @@ export default function AgeCalculator() {
                                                 <FormControl>
                                                     <Input
                                                         max={untilDateTime || undefined}
+                                                        placeholder="Birth Date & Time"
                                                         step={1}
                                                         type="datetime-local"
                                                         {...field}
@@ -216,6 +212,7 @@ export default function AgeCalculator() {
                                                 <FormControl>
                                                     <Input
                                                         min={birthDateTime || undefined}
+                                                        placeholder="Until Date & Time"
                                                         step={1}
                                                         type="datetime-local"
                                                         {...field}
@@ -272,16 +269,18 @@ export default function AgeCalculator() {
                                 : 'Enter your birth date and time to see the calculation result.'}
                         </code>
 
-                        <Alert className="my-6 border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none">
-                            <Info />
-                            <AlertTitle>
-                                Values are interpreted in{' '}
-                                <span className="font-bold">
-                                    {birthChronos.$getNativeTimeZoneId()}
-                                </span>{' '}
-                                ({birthChronos.utcOffset}).
-                            </AlertTitle>
-                        </Alert>
+                        <SmartAlert
+                            className="my-6 border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none"
+                            description={
+                                <span>
+                                    Values are interpreted in{' '}
+                                    <span className="font-bold">
+                                        {birthChronos.$getNativeTimeZoneId()}
+                                    </span>{' '}
+                                    ({birthChronos.utcOffset}).
+                                </span>
+                            }
+                        />
                     </CardContent>
                 </Card>
 

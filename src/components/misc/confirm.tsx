@@ -1,8 +1,7 @@
 'use client';
 
-import { InfoIcon } from 'lucide-react';
 import { type ExternalToast, toast } from 'sonner';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button, type ButtonProps } from '@/components/ui/button';
 
 type Options = {
@@ -37,11 +36,7 @@ export function confirmToast(options: Options) {
     toast.custom(
         (toastId) => (
             <div className="rounded-lg border bg-background p-4 shadow-lg space-y-3">
-                <Alert>
-                    <InfoIcon />
-                    <AlertTitle>{title}</AlertTitle>
-                    {description && <AlertDescription>{description}</AlertDescription>}
-                </Alert>
+                <SmartAlert description={description} title={title} />
 
                 <div className="flex gap-2 justify-end">
                     <Button

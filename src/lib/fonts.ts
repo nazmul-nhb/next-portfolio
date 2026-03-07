@@ -1,4 +1,11 @@
-import { Anek_Bangla, Geist, Geist_Mono, Source_Sans_3, Tiro_Bangla } from 'next/font/google';
+import {
+    Anek_Bangla,
+    Cascadia_Code,
+    Geist,
+    Geist_Mono,
+    Source_Sans_3,
+    Tiro_Bangla,
+} from 'next/font/google';
 
 export const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -26,4 +33,22 @@ export const sourceSans = Source_Sans_3({
     variable: '--font-source-sans',
     subsets: ['latin'],
     weight: 'variable',
+});
+
+export const cascadiaCode = Cascadia_Code({
+    variable: '--font-cascadia-code',
+    subsets: [
+        'arabic',
+        'braille',
+        'cyrillic',
+        'cyrillic-ext',
+        'greek',
+        'hebrew',
+        'latin',
+        'latin-ext',
+        'symbols2',
+        'vietnamese',
+    ],
+    weight: 'variable',
+    fallback: ['monospace'],
 });

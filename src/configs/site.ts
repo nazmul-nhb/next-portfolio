@@ -16,12 +16,11 @@ import {
     Newspaper,
     PenTool,
     Tag,
-    ToolCase,
     Users,
     Wallet,
     ZodiacCapricorn,
 } from 'lucide-react';
-import { FaDiscord, FaWhatsapp } from 'react-icons/fa';
+import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import type { TabItem } from '@/types';
 
@@ -68,7 +67,7 @@ export const siteConfig = {
         { title: 'Contact', path: '/contact', icon: Contact },
         { type: 'separator' },
         { title: 'Messages', path: '/messages', icon: MessageSquare },
-        { title: 'Tools', path: '/tools', icon: ToolCase },
+        { title: 'Tools', path: '/tools', icon: FaTools },
         { title: 'Resume', path: '/resume', icon: FileText },
         // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],

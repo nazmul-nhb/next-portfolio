@@ -1,14 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeftRight, Binary, Check, Copy, Info, TextCursorInput } from 'lucide-react';
+import { ArrowLeftRight, Binary, Check, Copy, TextCursorInput } from 'lucide-react';
 import { useCopyText } from 'nhb-hooks';
 import { TextCodec } from 'nhb-toolbox/hash';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,7 +42,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { cn, hasErrorMessage } from '@/lib/utils';
+import { hasErrorMessage } from '@/lib/utils';
 
 const FORMAT_OPTIONS = [
     {
@@ -275,20 +275,23 @@ export default function BaseConverter() {
                 </p>
             </div>
 
-            <Alert className="border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-800/70 dark:bg-sky-950/40 dark:text-sky-100">
-                <Info />
-                <AlertTitle>Input Rules</AlertTitle>
-                <AlertDescription>
-                    <p>
-                        Hex and binary inputs may be spaced or unspaced. Output for hex and
-                        binary conversions is returned in spaced byte groups.
-                    </p>
-                    <p>
-                        All text conversions are UTF-8 safe, so multibyte characters are
-                        preserved correctly instead of being coerced through ASCII-only logic.
-                    </p>
-                </AlertDescription>
-            </Alert>
+            <SmartAlert
+                className="border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-800/70 dark:bg-sky-950/40 dark:text-sky-100"
+                description={
+                    <Fragment>
+                        <p>
+                            Hex and binary inputs may be spaced or unspaced. Output for hex and
+                            binary conversions is returned in spaced byte groups.
+                        </p>
+                        <p>
+                            All text conversions are UTF-8 safe, so multibyte characters are
+                            preserved correctly instead of being coerced through ASCII-only
+                            logic.
+                        </p>
+                    </Fragment>
+                }
+                title="Input Rules"
+            />
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>
@@ -410,12 +413,7 @@ export default function BaseConverter() {
                                             <FormLabel>Input</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    className={cn(
-                                                        'resize-y',
-                                                        source === 'utf8'
-                                                            ? 'font-sans'
-                                                            : 'font-mono'
-                                                    )}
+                                                    className="resize-y font-cascadia"
                                                     placeholder={sourceOption.placeholder}
                                                     {...field}
                                                 />
@@ -498,11 +496,11 @@ export default function BaseConverter() {
                         </div>
 
                         {conversionState.error ? (
-                            <Alert variant="destructive">
-                                <Info />
-                                <AlertTitle>Conversion Error</AlertTitle>
-                                <AlertDescription>{conversionState.error}</AlertDescription>
-                            </Alert>
+                            <SmartAlert
+                                description={conversionState.error}
+                                title="Conversion Error"
+                                variant="destructive"
+                            />
                         ) : conversionState.output ? (
                             <div className="rounded-xl border bg-muted/20 p-4">
                                 <div className="flex flex-wrap gap-1 items-center justify-between select-none">
@@ -535,12 +533,7 @@ export default function BaseConverter() {
                                         )}
                                     </Button>
                                 </div>
-                                <pre
-                                    className={cn(
-                                        'mt-3 max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm',
-                                        target === 'utf8' ? 'font-sans' : 'font-mono'
-                                    )}
-                                >
+                                <pre className="mt-3 max-w-full max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm font-cascadia">
                                     {conversionState.output}
                                 </pre>
                             </div>

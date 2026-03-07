@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Calendar,
     CalendarDays,
-    Info,
     type LucideIcon,
     Sparkles,
     ZodiacAquarius,
@@ -23,10 +22,10 @@ import {
 import { Chronos } from 'nhb-toolbox';
 import { MONTHS } from 'nhb-toolbox/constants';
 import type { MonthDateString, ZodiacSign } from 'nhb-toolbox/date/types';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -204,17 +203,19 @@ export default function ZodiacFinder() {
                 </p>
             </div>
 
-            <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none">
-                <Info />
-                <AlertTitle>Interpretation Note</AlertTitle>
-                <AlertDescription>
-                    Zodiac systems are cultural and entertainment frameworks rather than
-                    scientific tools.
-                    <br />
-                    This finder is best used for light, tradition-based reference, not as a
-                    reliable measure of personality, compatibility, or future outcomes.
-                </AlertDescription>
-            </Alert>
+            <SmartAlert
+                className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100"
+                description={
+                    <Fragment>
+                        Zodiac systems are cultural and entertainment frameworks rather than
+                        scientific tools.
+                        <br />
+                        This finder is best used for light, tradition-based reference, not as a
+                        reliable measure of personality, compatibility, or future outcomes.
+                    </Fragment>
+                }
+                title="Interpretation Note"
+            />
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>
@@ -245,18 +246,13 @@ export default function ZodiacFinder() {
                                                 <FormLabel>Birth Date</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        placeholder="Birth Date"
                                                         type="date"
                                                         {...field}
                                                         value={field.value || ''}
                                                     />
                                                 </FormControl>
-                                                <Alert>
-                                                    <Info />
-                                                    <AlertDescription>
-                                                        Use the actual birth date. Time is not
-                                                        needed for this tool.
-                                                    </AlertDescription>
-                                                </Alert>
+                                                <SmartAlert description="Use the actual birth date. Time is not needed for this tool." />
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -290,14 +286,15 @@ export default function ZodiacFinder() {
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                <Alert>
-                                                    <Info />
-                                                    <AlertDescription>
-                                                        Western uses tropical boundaries.
-                                                        <br />
-                                                        Vedic uses sidereal boundaries.
-                                                    </AlertDescription>
-                                                </Alert>
+                                                <SmartAlert
+                                                    description={
+                                                        <Fragment>
+                                                            Western uses tropical boundaries.
+                                                            <br />
+                                                            Vedic uses sidereal boundaries.
+                                                        </Fragment>
+                                                    }
+                                                />
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -321,10 +318,9 @@ export default function ZodiacFinder() {
                             </form>
                         </Form>
 
-                        <Alert className="mt-6 border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none">
-                            <Info />
-                            <AlertTitle className="uppercase">Preset</AlertTitle>
-                            <AlertDescription>
+                        <SmartAlert
+                            className="mt-6 border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none"
+                            description={
                                 <div>
                                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground"></p>
                                     <p className="mt-2 text-sm font-medium">
@@ -334,8 +330,9 @@ export default function ZodiacFinder() {
                                         {selectedPreset.description}
                                     </p>
                                 </div>
-                            </AlertDescription>
-                        </Alert>
+                            }
+                            title="Preset"
+                        />
                     </CardContent>
                 </Card>
 
