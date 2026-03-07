@@ -123,7 +123,15 @@ const CONVERSION_MATRIX: Record<
 };
 
 function normalizeInput(source: EncodingFormat, value: string) {
-    return source === 'utf8' ? value : value.trim();
+    const normalized = value.trim();
+
+    if (source === 'utf8') return value;
+
+    if (source === 'hex' || source === 'binary') {
+        return normalized.replace(/\s+/g, ' ');
+    }
+
+    return normalized;
 }
 
 function getValidationMessage(source: EncodingFormat, value: string) {
@@ -258,6 +266,27 @@ export default function BaseConverter() {
             };
         }
     }, [payload, source, target]);
+
+    const toggleOutput = () => {
+        const currentSource = form.getValues('source');
+        const currentTarget = form.getValues('target');
+
+        form.setValue('payload', conversionState.output, {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+        });
+        form.setValue('source', currentTarget, {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+        });
+        form.setValue('target', currentSource, {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+        });
+    };
 
     return (
         <div className="space-y-8">
@@ -432,26 +461,7 @@ export default function BaseConverter() {
                                         disabled={
                                             !conversionState.output || !!conversionState.error
                                         }
-                                        onClick={() => {
-                                            const currentSource = form.getValues('source');
-                                            const currentTarget = form.getValues('target');
-
-                                            form.setValue('payload', conversionState.output, {
-                                                shouldDirty: true,
-                                                shouldTouch: true,
-                                                shouldValidate: true,
-                                            });
-                                            form.setValue('source', currentTarget, {
-                                                shouldDirty: true,
-                                                shouldTouch: true,
-                                                shouldValidate: true,
-                                            });
-                                            form.setValue('target', currentSource, {
-                                                shouldDirty: true,
-                                                shouldTouch: true,
-                                                shouldValidate: true,
-                                            });
-                                        }}
+                                        onClick={toggleOutput}
                                         type="button"
                                         variant="secondary"
                                     >

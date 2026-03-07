@@ -10,6 +10,7 @@ import {
     SectionHeading,
     StaggerContainer,
 } from '@/components/misc/animations';
+import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
@@ -149,8 +150,13 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                     `/blogs${tagFilter ? `?tag=${tagFilter}` : ''}${searchFilter ? `${tagFilter ? '&' : '?'}search=${searchFilter}` : ''}` as Route
                                 }
                             >
-                                Category: {categoryFilter}
-                                <X className="h-3 w-3" />
+                                Category:{' '}
+                                {
+                                    allCategories.find(
+                                        (category) => category.slug === categoryFilter
+                                    )?.title
+                                }
+                                <X className="size-3" />
                             </Link>
                         )}
                         {tagFilter && (
@@ -161,7 +167,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                 }
                             >
                                 Tag: #{tagFilter}
-                                <X className="h-3 w-3" />
+                                <X className="size-3" />
                             </Link>
                         )}
                         {searchFilter && (
@@ -172,7 +178,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                 }
                             >
                                 Search: &quot;{searchFilter}&quot;
-                                <X className="h-3 w-3" />
+                                <X className="size-3" />
                             </Link>
                         )}
                         <Link
@@ -263,23 +269,19 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                         </p>
                                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                                             <div className="flex items-center gap-2">
-                                                {blog.author.profile_image && (
-                                                    <Image
-                                                        alt={blog.author.name}
-                                                        className="h-5 w-5 rounded-full object-cover"
-                                                        height={20}
-                                                        src={buildCloudinaryUrl(
-                                                            blog.author.profile_image
-                                                        )}
-                                                        width={20}
-                                                    />
-                                                )}
+                                                <UserAvatar
+                                                    className="size-5"
+                                                    image={blog.author.profile_image}
+                                                    name={blog.author.name}
+                                                    size="sm"
+                                                />
+
                                                 <span>{blog.author.name}</span>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 {blog.published_date && (
                                                     <span className="flex items-center gap-1">
-                                                        <Calendar className="h-3 w-3" />
+                                                        <Calendar className="size-3" />
                                                         {formatDate({
                                                             date: blog.published_date,
                                                             format: 'mmm DD, yyyy',
@@ -287,7 +289,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                                     </span>
                                                 )}
                                                 <span className="flex items-center gap-1">
-                                                    <Eye className="h-3 w-3" />
+                                                    <Eye className="size-3" />
                                                     {blog.views}
                                                 </span>
                                             </div>

@@ -214,8 +214,8 @@ export default function ChatArea({
                     <div className="flex h-full flex-col items-center justify-center">
                         <UserAvatar
                             className="mb-3 size-20"
-                            image={selectedRecipient.name}
-                            name={selectedRecipient.profile_image}
+                            image={selectedRecipient.profile_image}
+                            name={selectedRecipient.name}
                         />
                         <p className="text-base font-semibold">{selectedRecipient.name}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
