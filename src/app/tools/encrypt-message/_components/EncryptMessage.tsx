@@ -109,16 +109,30 @@ export default function EncryptMessage() {
             <div className="max-w-3xl">
                 <h1 className="text-3xl font-bold tracking-tight">Encrypt/decrypt Message</h1>
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Encrypt/decrypt text using custom passphrase.
+                    Encrypt or decrypt text using a passphrase. The same passphrase used for
+                    encryption must be used again to decrypt the message.
                 </p>
             </div>
 
             <SmartAlert
                 className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100"
                 description={
-                    <Fragment>Must use same passphrase for encryption and decryption!</Fragment>
+                    <Fragment>
+                        <ol className="list-decimal ml-6">
+                            <li>Choose Encrypt or Decrypt mode.</li>
+                            <li>Enter a passphrase (this acts as the encryption key)</li>
+                            <li>
+                                Paste or type your message. The result is generated instantly.
+                            </li>
+                        </ol>
+                        <strong>
+                            To decrypt a message, you must use the same passphrase that was used
+                            to encrypt it. If the passphrase is incorrect, the message cannot be
+                            recovered.
+                        </strong>
+                    </Fragment>
                 }
-                title="Note on Passphrase"
+                title="How it works"
             />
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
@@ -128,7 +142,10 @@ export default function EncryptMessage() {
                             <TextCursorInput className="size-5" />
                             Text to {toTitleCase(mode)}
                         </CardTitle>
-                        <CardDescription>Provide the text message to {mode}.</CardDescription>
+                        <CardDescription>
+                            Provide the {mode === 'decrypt' ? 'encrypted' : 'text'} message to{' '}
+                            {mode}.
+                        </CardDescription>
                     </CardHeader>
 
                     <CardContent>
@@ -165,7 +182,15 @@ export default function EncryptMessage() {
                                                     </SelectContent>
                                                 </Select>
                                                 <FormDescription>
-                                                    {toTitleCase(mode)} text message
+                                                    <SmartAlert
+                                                        description={
+                                                            <span>
+                                                                {mode === 'decrypt'
+                                                                    ? 'Restore the original message using the same passphrase.'
+                                                                    : 'Convert text into a protected encrypted message.'}
+                                                            </span>
+                                                        }
+                                                    />
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
@@ -185,7 +210,10 @@ export default function EncryptMessage() {
                                                     {...field}
                                                 />
                                                 <FormDescription>
-                                                    {`${toTitleCase(mode)}ion key to ${mode}`}
+                                                    <SmartAlert
+                                                        description={`Secret key used to ${mode} the
+                                                    message. Keep it secure.`}
+                                                    />
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
@@ -207,7 +235,7 @@ export default function EncryptMessage() {
                                                 />
                                             </FormControl>
                                             <FormDescription>
-                                                Paste your
+                                                Paste or type your
                                                 {mode === 'decrypt' ? ' encrypted ' : ' text '}
                                                 message here. The result updates live.
                                             </FormDescription>
@@ -237,7 +265,7 @@ export default function EncryptMessage() {
                             {toTitleCase(mode)}ion Result
                         </CardTitle>
                         <CardDescription>
-                            Output is generated using the provided passphrase.
+                            You can copy the result generated from your input and passphrase.
                         </CardDescription>
                     </CardHeader>
 
@@ -290,11 +318,15 @@ export default function EncryptMessage() {
                             </div>
                         ) : (
                             <EmptyData
-                                description={`Enter your passphrase and message to ${mode}`}
+                                description={`Enter a passphrase and message to start ${mode}ing`}
                                 Icon={Binary}
                                 title={`Enter text to ${mode}`}
                             />
                         )}
+                        <SmartAlert
+                            className="bg-green-800/20"
+                            description="All encryption/decryption happen locally in your browser. Your text and passphrase are never sent to a server."
+                        />
                     </CardContent>
                 </Card>
             </div>

@@ -278,17 +278,10 @@ export default function BaseConverter() {
             <SmartAlert
                 className="border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-800/70 dark:bg-sky-950/40 dark:text-sky-100"
                 description={
-                    <Fragment>
-                        <p>
-                            Hex and binary inputs may be spaced or unspaced. Output for hex and
-                            binary conversions is returned in spaced byte groups.
-                        </p>
-                        <p>
-                            All text conversions are UTF-8 safe, so multibyte characters are
-                            preserved correctly instead of being coerced through ASCII-only
-                            logic.
-                        </p>
-                    </Fragment>
+                    <p>
+                        Hex and binary inputs may be spaced or unspaced. Output for hex and
+                        binary conversions is returned in spaced byte groups.
+                    </p>
                 }
                 title="Input Rules"
             />

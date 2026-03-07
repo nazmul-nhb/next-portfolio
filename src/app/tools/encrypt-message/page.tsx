@@ -3,7 +3,7 @@ import EncryptMessage from '@/app/tools/encrypt-message/_components/EncryptMessa
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 
-const description = 'Encrypt/decrypt text using custom passphrase.';
+const description = 'Encrypt/decrypt text using a passphrase.';
 
 export const metadata: Metadata = {
     title: 'Encrypt/Decrypt Message',
