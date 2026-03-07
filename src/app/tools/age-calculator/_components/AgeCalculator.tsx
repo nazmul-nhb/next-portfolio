@@ -166,7 +166,7 @@ export default function AgeCalculator() {
                         </CardTitle>
                         <CardDescription>
                             This follows the existing project pattern for date fields, but uses{' '}
-                            <code className="font-mono text-xs">datetime-local</code> with
+                            <code className="font-cascadia text-xs">datetime-local</code> with
                             second precision so you can preserve detailed time data.
                         </CardDescription>
                     </CardHeader>
@@ -263,11 +263,11 @@ export default function AgeCalculator() {
                             </form>
                         </Form>
 
-                        <code className="block overflow-x-auto rounded-md bg-background px-3 mt-6 py-2 font-mono text-xl font-semibold">
+                        <CodeBlock className="mt-6 text-lg md:text-xl font-semibold">
                             {birthDateTime
                                 ? age
                                 : 'Enter your birth date and time to see the calculation result.'}
-                        </code>
+                        </CodeBlock>
 
                         <SmartAlert
                             className="my-6 border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100 select-none"
