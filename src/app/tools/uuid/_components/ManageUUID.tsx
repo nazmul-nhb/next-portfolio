@@ -20,9 +20,9 @@ export default function ManageUUID() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const tab = searchParam.get('tab') as TabId;
+    const tab = searchParam.get('tab') as TabId | null;
 
-    const [tabId, setTabId] = useState<TabId>(tab);
+    const [tabId, setTabId] = useState<TabId>(tab || TABS[0]);
 
     useEffect(() => {
         const query = generateQueryParams({ tab: tabId });
