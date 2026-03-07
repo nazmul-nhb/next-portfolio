@@ -39,7 +39,7 @@ export function LoginForm() {
             setError('Invalid credentials. Please try again.');
             setLoading(false);
         } else {
-            router.push(redirectTo);
+            if (redirectTo) router.push(redirectTo);
         }
     };
 
