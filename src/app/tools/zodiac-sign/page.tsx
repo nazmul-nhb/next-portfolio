@@ -24,13 +24,13 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/zodiac-sign'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `Zodiac Sign Finder from ${siteConfig.name}`,
         description,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

@@ -18,13 +18,13 @@ export const metadata: Metadata = {
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
         url: `${siteConfig.baseUrl}/contact`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `Contact ${siteConfig.name}`,
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

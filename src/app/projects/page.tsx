@@ -31,13 +31,13 @@ export const metadata: Metadata = {
         description: `Explore ${siteConfig.name}'s projects.`,
         url: `${siteConfig.baseUrl}/projects`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `${siteConfig.name}'s Projects`,
         description: `Explore ${siteConfig.name}'s projects.`,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

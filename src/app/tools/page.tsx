@@ -31,13 +31,13 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `Tools from ${siteConfig.name}`,
         description,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

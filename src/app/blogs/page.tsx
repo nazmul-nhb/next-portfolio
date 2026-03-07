@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Blogs',
         description,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
 };
 

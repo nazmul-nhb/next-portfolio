@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         description: siteConfig.description,
         url: siteConfig.baseUrl,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         type: 'website',
     },
     twitter: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
             absolute: siteConfig.name,
         },
         description: siteConfig.description,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

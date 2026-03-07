@@ -37,13 +37,13 @@ export const metadata: Metadata = {
         description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
         url: `${siteConfig.baseUrl}/resume`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `Resume of ${siteConfig.name}`,
         description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };

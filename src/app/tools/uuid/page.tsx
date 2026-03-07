@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import Loading from '@/components/misc/loading';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
 import ManageUUID from './_components/ManageUUID';
@@ -30,17 +32,21 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/uuid'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
     },
     twitter: {
         card: 'summary_large_image',
         title: `UUID Generator & Decoder from ${siteConfig.name}`,
         description,
-        images: buildOpenGraphImages(siteConfig.logoSvg, siteConfig.favicon),
+        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         creator: '@nhb42',
     },
 };
 
 export default function UUIDPage() {
-    return <ManageUUID />;
+    return (
+        <Suspense fallback={<Loading />}>
+            <ManageUUID />
+        </Suspense>
+    );
 }
