@@ -1,15 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Binary, Check, Copy, TextCursorInput } from 'lucide-react';
-import { useCopyText } from 'nhb-hooks';
+import { Binary, TextCursorInput } from 'lucide-react';
 import { isNonEmptyString } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
 import { Cipher } from 'nhb-toolbox/hash';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
+import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
@@ -65,11 +64,6 @@ export default function EncryptMessage() {
     const input = form.watch('input');
     const passphrase = form.watch('passphrase');
     const mode = form.watch('mode');
-
-    const { copiedText, copyToClipboard } = useCopyText({
-        onSuccess: (msg) => toast.success(msg),
-        onError: (msg) => toast.error(msg),
-    });
 
     const encryptionState = useMemo(() => {
         if (!isNonEmptyString(passphrase)) {
@@ -286,31 +280,14 @@ export default function EncryptMessage() {
                                     <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                         Output
                                     </span>
-                                    <Button
-                                        onClick={() => {
-                                            copyToClipboard(
-                                                encryptionState.output,
-                                                'Result is copied to clipboard!'
-                                            );
+                                    <CopyButton
+                                        buttonText={{
+                                            after: 'Result Copied',
+                                            before: 'Copy Result',
                                         }}
-                                        size="sm"
-                                        type="button"
-                                        variant="outline"
-                                    >
-                                        {copiedText ? (
-                                            <Fragment>
-                                                <Check className="shrink-0 text-green-500" />
-                                                <span className="text-green-500">
-                                                    Result Copied!
-                                                </span>
-                                            </Fragment>
-                                        ) : (
-                                            <Fragment>
-                                                <Copy className="shrink-0" />
-                                                Copy Result
-                                            </Fragment>
-                                        )}
-                                    </Button>
+                                        successMsg="Result is copied to clipboard!"
+                                        textToCopy={encryptionState.output}
+                                    />
                                 </div>
                                 <pre className="mt-3 max-w-full max-h-96 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg bg-background p-4 text-sm font-cascadia">
                                     {encryptionState.output}

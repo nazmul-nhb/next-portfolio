@@ -20,7 +20,10 @@ export default function ManageUUID() {
                 description={
                     <ul className="list-disc ml-6 space-y-1">
                         <li>
-                            <strong>v1, v4, v6, v7, v8:</strong> Click &quot;Generate UUID&quot;
+                            <strong>v1, v4, v6, v7, v8:</strong> Click{' '}
+                            <code className="font-cascadia rounded px-1 bg-accent-foreground text-secondary">
+                                Generate Another
+                            </code>{' '}
                             to create a new UUID
                         </li>
                         <li>
@@ -31,6 +34,7 @@ export default function ManageUUID() {
                             Use the decoder to analyze any UUID and view its version, variant,
                             and metadata
                         </li>
+                        <li>Decoder remembers the last decoded uuid</li>
                     </ul>
                 }
                 title="How it works"

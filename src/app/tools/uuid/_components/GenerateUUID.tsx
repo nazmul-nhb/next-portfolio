@@ -1,9 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, Copy, Key, RefreshCw } from 'lucide-react';
-import { useCopyText, useMount } from 'nhb-hooks';
-import { isNonEmptyString } from 'nhb-toolbox';
+import { Key, RefreshCw } from 'lucide-react';
+import { useMount } from 'nhb-hooks';
+import { debounceAction, isNonEmptyString } from 'nhb-toolbox';
 import { isUUID, uuid } from 'nhb-toolbox/hash';
 import type { $UUID } from 'nhb-toolbox/hash/types';
 import { Fragment, useCallback, useEffect, useState } from 'react';
@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import CodeBlock from '@/components/misc/code-block';
+import CopyButton from '@/components/misc/copy-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -99,11 +100,6 @@ export default function GenerateUUID() {
         },
     });
 
-    const { copiedText, copyToClipboard } = useCopyText({
-        onSuccess: (msg: string) => toast.success(msg),
-        onError: (msg: string) => toast.error(msg),
-    });
-
     const version = generatorForm.watch('version');
     const name = generatorForm.watch('name');
     const namespace = generatorForm.watch('namespace');
@@ -139,13 +135,15 @@ export default function GenerateUUID() {
                 uuid: result,
                 version,
             });
+
+            toast.success(`Generated new ${version} UUID`);
         } catch {
             setGeneratedUUID(null);
         }
     }, [version, name, namespace, uppercase, requiresNamespace]);
 
     useEffect(() => {
-        handleGenerateNew();
+        debounceAction(handleGenerateNew, 500)();
     }, [handleGenerateNew]);
 
     const handleResetGenerator = () => {
@@ -294,7 +292,7 @@ export default function GenerateUUID() {
                             <div className="flex gap-2">
                                 <Button
                                     disabled={!generatedUUID}
-                                    onClick={handleGenerateNew}
+                                    onClick={debounceAction(handleGenerateNew, 300)}
                                     type="button"
                                 >
                                     <Key className="size-4" />
@@ -328,28 +326,11 @@ export default function GenerateUUID() {
                             {generatedUUID.uuid}
                         </CodeBlock>
                         <div className="flex flex-wrap gap-2">
-                            <Button
-                                onClick={() =>
-                                    copyToClipboard(
-                                        generatedUUID.uuid,
-                                        'UUID copied to clipboard!'
-                                    )
-                                }
-                                size="sm"
-                                variant="outline"
-                            >
-                                {copiedText === generatedUUID.uuid ? (
-                                    <Fragment>
-                                        <Check className="shrink-0 text-green-500" />
-                                        <span className="text-green-500">UUID Copied</span>
-                                    </Fragment>
-                                ) : (
-                                    <Fragment>
-                                        <Copy className="shrink-0" />
-                                        Copy UUID
-                                    </Fragment>
-                                )}
-                            </Button>
+                            <CopyButton
+                                buttonText={{ after: 'UUID Copied', before: 'Copy UUID' }}
+                                successMsg="UUID copied to clipboard!"
+                                textToCopy={generatedUUID.uuid}
+                            />
                         </div>
                     </CardContent>
                 </Card>

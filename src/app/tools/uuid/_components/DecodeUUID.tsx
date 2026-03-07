@@ -1,14 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Copy, ListX, RefreshCw } from 'lucide-react';
-import { useCopyText } from 'nhb-hooks';
+import { ListX, RefreshCw } from 'lucide-react';
+import { useStorage } from 'nhb-hooks';
 import { isNonEmptyString } from 'nhb-toolbox';
 import { decodeUUID, isUUID } from 'nhb-toolbox/hash';
 import type { DecodedUUID } from 'nhb-toolbox/hash/types';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import DecodedRow from './DecodedRow';
 
 const DecodeUUIDSchema = z.object({
     uuidInput: z
@@ -47,17 +47,22 @@ const DecodeUUIDSchema = z.object({
 type DecodeUUIDFormValues = z.infer<typeof DecodeUUIDSchema>;
 
 export default function DecodeUUID() {
+    const store = useStorage<string>({
+        key: 'nhb-uuid',
+        deserialize: (value) => {
+            return value;
+        },
+        serialize: (value) => {
+            return value;
+        },
+    });
+
     const decodeForm = useForm<DecodeUUIDFormValues>({
         resolver: zodResolver(DecodeUUIDSchema),
         mode: 'onChange',
         defaultValues: {
-            uuidInput: '',
+            uuidInput: store.value || '',
         },
-    });
-
-    const { copiedText, copyToClipboard } = useCopyText({
-        onSuccess: (msg: string) => toast.success(msg),
-        onError: (msg: string) => toast.error(msg),
     });
 
     const uuidInput = decodeForm.watch('uuidInput');
@@ -80,6 +85,16 @@ export default function DecodeUUID() {
         });
     };
 
+    useEffect(() => {
+        if (isUUID(uuidInput)) {
+            store.set(uuidInput);
+        }
+    }, [store.set, uuidInput]);
+
+    useEffect(() => {
+        if (store.value) decodeForm.setValue('uuidInput', store.value);
+    }, [decodeForm.setValue, store.value]);
+
     return (
         <div className="grid gap-6 xl:grid-cols-2">
             <Card>
@@ -94,6 +109,7 @@ export default function DecodeUUID() {
                 <CardContent>
                     <Form {...decodeForm}>
                         <form
+                            //  defaultValue={store.value ? store.value : undefined}
                             className="space-y-6"
                             onSubmit={(event) => event.preventDefault()}
                         >
@@ -137,15 +153,6 @@ export default function DecodeUUID() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-3 text-sm">
-                            <div className="border-b dark:border-gray-700 pb-3">
-                                <div className="font-semibold text-gray-600 dark:text-gray-400">
-                                    Original UUID
-                                </div>
-                                <div className="font-mono break-all mt-1 text-xs">
-                                    {decodedInfo.raw}
-                                </div>
-                            </div>
-
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <div className="font-semibold text-gray-600 dark:text-gray-400">
@@ -161,65 +168,40 @@ export default function DecodeUUID() {
                                 </div>
                             </div>
 
-                            <div className="border-t dark:border-gray-700 pt-3">
-                                <div className="font-semibold text-gray-600 dark:text-gray-400">
-                                    Plain (No Hyphens)
-                                </div>
-                                <div className="font-mono break-all mt-1 text-xs">
-                                    {decodedInfo.plain}
-                                </div>
-                            </div>
+                            <DecodedRow
+                                successMsgPrefix="Original UUID"
+                                title="Original UUID"
+                                value={decodedInfo.raw}
+                            />
+
+                            <DecodedRow
+                                successMsgPrefix="Plain UUID"
+                                title="Plain (No Hyphens)"
+                                value={decodedInfo.plain}
+                            />
 
                             {decodedInfo.timestamp != null && (
-                                <div className="border-t dark:border-gray-700 pt-3">
-                                    <div className="font-semibold text-gray-600 dark:text-gray-400">
-                                        Timestamp (Unix ms)
-                                    </div>
-                                    <div className="font-mono mt-1 text-xs">
-                                        {decodedInfo.timestamp} (
-                                        {new Date(decodedInfo.timestamp).toISOString()})
-                                    </div>
-                                </div>
+                                <DecodedRow
+                                    extra={new Date(decodedInfo.timestamp).toISOString()}
+                                    successMsgPrefix="Timestamp"
+                                    title="Timestamp (Unix ms)"
+                                    value={decodedInfo.timestamp}
+                                />
                             )}
 
                             {decodedInfo.node != null && (
-                                <div className="border-t dark:border-gray-700 pt-3">
-                                    <div className="font-semibold text-gray-600 dark:text-gray-400">
-                                        Node Identifier (v1)
-                                    </div>
-                                    <div className="font-mono mt-1 text-xs">
-                                        {decodedInfo.node}
-                                    </div>
-                                </div>
+                                <DecodedRow
+                                    successMsgPrefix="Node identifier"
+                                    title="Node Identifier (v1)"
+                                    value={decodedInfo.node}
+                                />
                             )}
 
-                            <div className="border-t dark:border-gray-700 pt-3">
-                                <div className="font-semibold text-gray-600 dark:text-gray-400">
-                                    BigInt Representation
-                                </div>
-                                <div className="font-mono text-xs mt-1 break-all">
-                                    {decodedInfo.singleInt.toString()}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-4">
-                            <Button
-                                onClick={() => copyToClipboard(decodedInfo.raw)}
-                                size="sm"
-                                variant="default"
-                            >
-                                <Copy className="size-4 mr-2" />
-                                Copy UUID
-                            </Button>
-                            <Button
-                                onClick={() => copyToClipboard(decodedInfo.plain)}
-                                size="sm"
-                                variant="outline"
-                            >
-                                <Copy className="size-4 mr-2" />
-                                Copy Plain
-                            </Button>
+                            <DecodedRow
+                                successMsgPrefix="BigInt representation"
+                                title="BigInt Representation"
+                                value={decodedInfo.singleInt}
+                            />
                         </div>
                     </CardContent>
                 </Card>
