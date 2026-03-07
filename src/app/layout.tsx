@@ -21,6 +21,10 @@ import {
     cascadiaCode,
     geistMono,
     geistSans,
+    inter,
+    playfairDisplay,
+    poppins,
+    robotoMono,
     sourceSans,
     tiroBangla,
 } from '@/lib/fonts';
@@ -85,6 +89,10 @@ export default function RootLayout({ children }: RootProps) {
                     cascadiaCode.variable,
                     tiroBangla.variable,
                     anekBangla.variable,
+                    inter.variable,
+                    poppins.variable,
+                    playfairDisplay.variable,
+                    robotoMono.variable,
                     'antialiased'
                 )}
                 suppressHydrationWarning

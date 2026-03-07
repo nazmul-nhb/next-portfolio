@@ -81,7 +81,7 @@ export const siteConfig = {
             label: 'Photo Cards',
             icon: ImagePlus,
             description:
-                'Generate photo cards using your provided images, texts and store it in the browser', //Codex should rewrite this descripton professionally
+                'Create polished photo cards with layered images, custom typography, live preview, and local browser storage.',
         },
         {
             href: '/tools/age-calculator',
