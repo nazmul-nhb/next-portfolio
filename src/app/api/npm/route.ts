@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getTimestamp, pickFields } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
-import type { PackageDetails, PackageDlData } from '@/types/npm';
+import { type PackageDetails, type PackageDlData, PKG_FIELDS } from '@/types/npm';
 
 export async function GET(req: NextRequest) {
     try {
@@ -22,16 +22,7 @@ export async function GET(req: NextRequest) {
             return sendErrorResponse(`Cannot find package: ${pkg} on npm`);
         }
 
-        const data = pickFields(pkgRes.data, [
-            'author',
-            'contributors',
-            'dist-tags',
-            'description',
-            'homepage',
-            'license',
-            'maintainers',
-            'repository',
-        ]);
+        const data = pickFields(pkgRes.data, [...PKG_FIELDS]);
 
         return sendResponse(
             'N/A',

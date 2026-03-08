@@ -1,3 +1,5 @@
+import type { Prettify } from 'nhb-toolbox/utils/types';
+
 export interface PackageDetails {
     _id: string;
     _rev: string;
@@ -56,3 +58,19 @@ export interface PackageDlData {
     end: string;
     package: string;
 }
+
+export const PKG_FIELDS = [
+    'author',
+    'contributors',
+    'dist-tags',
+    'description',
+    'homepage',
+    'keywords',
+    'license',
+    'maintainers',
+    'repository',
+] as const;
+
+export type PackageResponse = Prettify<
+    Pick<PackageDetails, (typeof PKG_FIELDS)[number]> & PackageDlData
+> & { keywords?: string[] };

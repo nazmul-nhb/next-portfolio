@@ -27,6 +27,7 @@ import type { Route } from 'next';
 import type { ComponentType } from 'react';
 import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
+import { SiNpm } from 'react-icons/si';
 import type { TabItem } from '@/types';
 
 export const siteConfig = {
@@ -118,6 +119,13 @@ export const siteConfig = {
             icon: Tag,
             description:
                 'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
+        },
+        {
+            href: '/tools/npm-package',
+            label: 'NPM Package Details',
+            icon: SiNpm,
+            description:
+                'Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, keywords, and more.',
         },
         {
             href: '/tools/photo-card',
