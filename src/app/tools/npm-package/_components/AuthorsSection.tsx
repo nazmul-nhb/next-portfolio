@@ -1,6 +1,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { Mail, User, Users } from 'lucide-react';
 import { isValidArray } from 'nhb-toolbox';
+import { Fragment } from 'react/jsx-runtime';
 import LivePreviewButton from '@/components/misc/live-preview';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,35 +36,41 @@ export function AuthorsSection({ data, variants }: AuthorsSectionProps) {
                                 <p className="text-sm font-medium">{data.author.name}</p>
                             </div>
                         )}
-
-                        <p className="text-xs font-medium text-muted-foreground">Contact</p>
-                        <div className="flex items-center gap-3 mt-2">
-                            {data.author.email && (
-                                <a
-                                    href={`mailto:${data.author.email}`}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    <Button
-                                        className="gap-1 sm:gap-2"
-                                        size="sm"
-                                        variant="outline"
-                                    >
-                                        <Mail className="size-4" />
-                                        Email
-                                    </Button>
-                                </a>
-                            )}
-                            {data.author.url && (
-                                <LivePreviewButton
-                                    previewLabel="Preview URL"
-                                    title={
-                                        data.author.name || `Website of ${data.package} author`
-                                    }
-                                    url={data.author.url}
-                                />
-                            )}
-                        </div>
+                        {(data.author.email || data.author.url) && (
+                            <Fragment>
+                                <p className="text-xs font-medium text-muted-foreground">
+                                    Contact
+                                </p>
+                                <div className="flex items-center gap-3 mt-2">
+                                    {data.author.email && (
+                                        <a
+                                            href={`mailto:${data.author.email}`}
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                        >
+                                            <Button
+                                                className="gap-1 sm:gap-2"
+                                                size="sm"
+                                                variant="outline"
+                                            >
+                                                <Mail className="size-4" />
+                                                Email
+                                            </Button>
+                                        </a>
+                                    )}
+                                    {data.author.url && (
+                                        <LivePreviewButton
+                                            previewLabel="Preview URL"
+                                            title={
+                                                data.author.name ||
+                                                `Website of ${data.package} author`
+                                            }
+                                            url={data.author.url}
+                                        />
+                                    )}
+                                </div>
+                            </Fragment>
+                        )}
                     </CardContent>
                 </Card>
             )}
