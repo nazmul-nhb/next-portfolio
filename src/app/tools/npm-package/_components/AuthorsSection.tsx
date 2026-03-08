@@ -94,7 +94,7 @@ function Maintributors({ title, data }: MaintainerProps) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="space-y-2 max-h-40 custom-scroll overflow-y-auto">
+                <div className="space-y-2 max-h-40 custom-scroll overflow-y-auto px-2">
                     {data.map((maintainer, idx) => (
                         <div
                             className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm"

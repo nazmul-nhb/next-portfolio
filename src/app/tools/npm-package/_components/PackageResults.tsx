@@ -1,25 +1,85 @@
 import { motion, type Variants } from 'framer-motion';
 import { AlertCircle, Package } from 'lucide-react';
 import EmptyData from '@/components/misc/empty-data';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { hasErrorMessage } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
 import { AuthorsSection } from './AuthorsSection';
 import { PackageInfo } from './PackageInfo';
 import { PackageStats } from './PackageStats';
-import { hasErrorMessage } from '@/lib/utils';
 
 interface PackageResultsProps {
     data: PackageResponse | null;
     error: Error | null;
     hasSearched: boolean;
+    isLoading: boolean;
     containerVariants: Variants;
     itemVariants: Variants;
+}
+
+function PackageResultsSkeleton() {
+    return (
+        <div className="space-y-4">
+            {/* Stats Cards Skeleton */}
+            <div className="flex flex-wrap gap-4 justify-between">
+                {Array.from({ length: 2 }).map((_, i) => (
+                    <Card className="h-full shrink-0 flex-1" key={i}>
+                        <CardContent>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Skeleton className="h-3 w-24" />
+                                    <Skeleton className="h-4 w-4 rounded-full" />
+                                </div>
+                                <Skeleton className="h-8 w-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            {/* Period Skeleton */}
+            <Card>
+                <CardContent className="space-y-2">
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Skeleton className="h-3 w-24" />
+                            <Skeleton className="h-4 w-4 rounded-full" />
+                        </div>
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Authors Info Skeleton */}
+            <div className="grid gap-4 md:grid-cols-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <Skeleton className="h-5 w-24" />
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <div>
+                                <Skeleton className="h-3 w-16 mb-2" />
+                                <Skeleton className="h-4 w-32" />
+                            </div>
+                            <div>
+                                <Skeleton className="h-3 w-16 mb-2" />
+                                <Skeleton className="h-4 w-40" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export function PackageResults({
     data,
     error,
     hasSearched,
+    isLoading,
     containerVariants,
     itemVariants,
 }: PackageResultsProps) {
@@ -29,13 +89,20 @@ export function PackageResults({
 
     if (error) {
         return (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{errorMessage}</AlertDescription>
+            <Alert className="w-full border-2 h-full min-h-96" variant="destructive">
+                <AlertCircle className="h-5 w-5" />
+                <AlertTitle>Error Loading Package</AlertTitle>
+                <AlertDescription className="mt-2 text-sm">{errorMessage}</AlertDescription>
             </Alert>
         );
     }
 
+    // Loading state - show skeleton
+    if (isLoading && hasSearched) {
+        return <PackageResultsSkeleton />;
+    }
+
+    // Empty state - no search performed yet
     if (!hasSearched) {
         return (
             <EmptyData
@@ -46,10 +113,18 @@ export function PackageResults({
         );
     }
 
+    // No data state - show empty
     if (!data) {
-        return null;
+        return (
+            <EmptyData
+                description="No data available for this package"
+                Icon={Package}
+                title="No Results"
+            />
+        );
     }
 
+    // Data state - show results
     return (
         <motion.div
             animate="visible"

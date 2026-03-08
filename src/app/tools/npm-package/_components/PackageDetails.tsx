@@ -135,6 +135,7 @@ export default function NpmPackageDetails() {
                     data={data || null}
                     error={error as Error | null}
                     hasSearched={hasSearched}
+                    isLoading={isLoading}
                     itemVariants={itemVariants}
                 />
             </div>
