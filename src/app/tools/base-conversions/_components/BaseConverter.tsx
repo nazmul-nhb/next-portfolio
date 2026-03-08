@@ -6,6 +6,7 @@ import { TextCodec } from 'nhb-toolbox/hash';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
@@ -516,6 +517,10 @@ export default function BaseConverter() {
                     </CardContent>
                 </Card>
             </div>
+            <PoweredBy
+                description="This tool uses TextCodec class from my open-source package to encode/decode among formats."
+                url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/TextCodec"
+            />
         </div>
     );
 }

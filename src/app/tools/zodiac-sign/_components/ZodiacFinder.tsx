@@ -19,12 +19,13 @@ import {
     ZodiacTaurus,
     ZodiacVirgo,
 } from 'lucide-react';
-import { Chronos } from 'nhb-toolbox';
+import { Chronos, getTimestamp } from 'nhb-toolbox';
 import { MONTHS } from 'nhb-toolbox/constants';
 import type { MonthDateString, ZodiacSign } from 'nhb-toolbox/date/types';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
@@ -167,7 +168,7 @@ export default function ZodiacFinder() {
         resolver: zodResolver(ZodiacFinderFormSchema),
         mode: 'onChange',
         defaultValues: {
-            birthDate: '',
+            birthDate: getTimestamp({ format: 'local' }).split('T')[0],
             preset: 'western',
         },
     });
@@ -396,6 +397,10 @@ export default function ZodiacFinder() {
                     </CardContent>
                 </Card>
             </div>
+            <PoweredBy
+                description="This tool uses Chronos class from my open-source package to find zodiac match."
+                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/names#getzodiacsign"
+            />
         </div>
     );
 }

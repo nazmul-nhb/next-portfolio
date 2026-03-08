@@ -290,14 +290,16 @@ export default function GenerateUUID() {
                             )}
 
                             <div className="flex gap-2">
-                                <Button
-                                    disabled={!generatedUUID}
-                                    onClick={debounceAction(handleGenerateNew, 300)}
-                                    type="button"
-                                >
-                                    <Key className="size-4" />
-                                    Generate Another
-                                </Button>
+                                {requiresNamespace || (
+                                    <Button
+                                        disabled={!generatedUUID}
+                                        onClick={debounceAction(handleGenerateNew, 300)}
+                                        type="button"
+                                    >
+                                        <Key className="size-4" />
+                                        Generate Another
+                                    </Button>
+                                )}
                                 <Button
                                     onClick={handleResetGenerator}
                                     type="button"

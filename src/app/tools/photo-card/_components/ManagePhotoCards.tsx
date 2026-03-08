@@ -1,4 +1,5 @@
 import { ImagePlus } from 'lucide-react';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import PhotoCardEditor from './PhotoCardEditor';
@@ -39,6 +40,12 @@ export default function ManagePhotoCards() {
                 className="bg-emerald-600/10"
                 description="Rendering, exporting, and saving happen locally in your browser. No images or card data are sent to a server."
                 Icon={ImagePlus}
+            />
+
+            <PoweredBy
+                description="This tool uses Locality class from my open-source package to handle IndexedDB operations efficiently."
+                name="locality-idb"
+                url="https://github.com/nazmul-nhb/locality-idb?tab=readme-ov-file"
             />
         </div>
     );

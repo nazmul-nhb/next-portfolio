@@ -6,6 +6,7 @@ import { useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
 import SmartAlert from '@/components/misc/smart-alert';
@@ -131,7 +132,7 @@ export default function AgeCalculator() {
         resolver: zodResolver(AgeCalculatorFormSchema),
         mode: 'all',
         defaultValues: {
-            birthDateTime: '',
+            birthDateTime: new Chronos().addDays(-1).toLocalISOString().split('.')[0],
             untilDateTime: toDateTimeLocalValue(),
         },
     });
@@ -155,7 +156,6 @@ export default function AgeCalculator() {
                 route="/tools/age-calculator"
                 title="Age Calculator"
             />
-
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>
                     <CardHeader>
@@ -309,6 +309,10 @@ export default function AgeCalculator() {
                     </CardContent>
                 </Card>
             </div>
+            <PoweredBy
+                description="This tool uses Chronos class from my open-source package to calculate age."
+                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#durationstring"
+            />
         </div>
     );
 }

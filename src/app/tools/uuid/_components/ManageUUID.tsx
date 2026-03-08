@@ -5,6 +5,7 @@ import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { generateQueryParams } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -87,10 +88,22 @@ export default function ManageUUID() {
                 {/* Generator Section */}
                 <TabsContent value={TABS[0]}>
                     <GenerateUUID />
+
+                    <PoweredBy
+                        className="mt-4"
+                        description="This tool uses uuid from my open-source package for pure JS uuid implementation."
+                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
+                    />
                 </TabsContent>
                 {/* Decoder Section */}
                 <TabsContent value={TABS[1]}>
                     <DecodeUUID />
+
+                    <PoweredBy
+                        className="mt-4"
+                        description="This tool uses decodeUUID from my open-source package to decode a UUID into its internal components."
+                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/decodeUUID"
+                    />
                 </TabsContent>
             </Tabs>
 
