@@ -157,7 +157,7 @@ export default function AgeCalculator() {
                 title="Age Calculator"
             />
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
-                <Card>
+                <Card className="max-h-fit">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <CalendarClock className="size-5" />
@@ -280,6 +280,10 @@ export default function AgeCalculator() {
                                 </span>
                             }
                         />
+                        <PoweredBy
+                            description="This tool uses Chronos class from my open-source package to calculate age."
+                            url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#durationstring"
+                        />
                     </CardContent>
                 </Card>
 
@@ -309,10 +313,6 @@ export default function AgeCalculator() {
                     </CardContent>
                 </Card>
             </div>
-            <PoweredBy
-                description="This tool uses Chronos class from my open-source package to calculate age."
-                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#durationstring"
-            />
         </div>
     );
 }

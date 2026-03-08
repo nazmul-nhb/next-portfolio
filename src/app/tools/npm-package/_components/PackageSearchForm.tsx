@@ -81,7 +81,7 @@ export function PackageSearchForm({
     };
 
     return (
-        <Card>
+        <Card className="max-h-fit">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Package className="size-5" />

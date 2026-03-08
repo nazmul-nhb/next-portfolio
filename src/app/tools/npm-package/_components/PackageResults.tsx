@@ -2,7 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { AlertCircle, Package } from 'lucide-react';
 import EmptyData from '@/components/misc/empty-data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { hasErrorMessage } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
@@ -51,26 +51,19 @@ function PackageResultsSkeleton() {
                 </CardContent>
             </Card>
 
-            {/* Authors Info Skeleton */}
-            <div className="grid gap-4 md:grid-cols-2">
-                {Array.from({ length: 2 }).map((_, i) => (
-                    <Card key={i}>
-                        <CardHeader>
-                            <Skeleton className="h-5 w-24" />
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div>
-                                <Skeleton className="h-3 w-16 mb-2" />
-                                <Skeleton className="h-4 w-32" />
-                            </div>
-                            <div>
-                                <Skeleton className="h-3 w-16 mb-2" />
-                                <Skeleton className="h-4 w-40" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            {/* Package Info Skeleton */}
+            <Card>
+                <CardContent className="space-y-2">
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Skeleton className="h-3 w-24" />
+                            <Skeleton className="h-4 w-12 rounded" />
+                        </div>
+                        <Skeleton className="h-6 w-full" />
+                        <Skeleton className="h-6 w-full" />
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
