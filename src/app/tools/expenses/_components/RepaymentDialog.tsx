@@ -52,7 +52,7 @@ export function RepaymentDialog({ currency, loan, money, setLoan }: RepaymentDia
             note?: string;
             payment_date?: string;
         }
-    >(`/api/tools/expenses/loans/${loan?.id}/payments` as `/${string}`, 'POST', {
+    >(`/api/tools/expenses/loans/${loan?.id}/payments`, 'POST', {
         invalidateKeys: ['expense-summary', 'expense-loans'],
     });
 

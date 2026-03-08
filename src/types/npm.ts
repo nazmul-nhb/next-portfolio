@@ -73,4 +73,6 @@ export const PKG_FIELDS = [
 
 export type PackageResponse = Prettify<
     Pick<PackageDetails, (typeof PKG_FIELDS)[number]> & PackageDlData
-> & { keywords?: string[] };
+>;
+
+export type PackageSearch = { packageName: string; startDate: string; endDate: string };

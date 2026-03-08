@@ -46,7 +46,7 @@ export function EntriesSection({
     const { mutate: deleteEntry, isPending: deletingEntry } = useApiMutation<
         { receipt_urls?: string[] },
         null
-    >(`/api/tools/expenses/entries?id=${deletingEntryId}` as `/${string}`, 'DELETE', {
+    >(`/api/tools/expenses/entries?id=${deletingEntryId}`, 'DELETE', {
         invalidateKeys: ['expense-summary', 'expense-entries'],
     });
 
