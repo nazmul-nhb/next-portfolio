@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import Loading from '@/components/misc/loading';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import NpmPackageDetails from './_components/PackageDetails';
-import { Suspense } from 'react';
-import Loading from '@/components/misc/loading';
 
 const description =
-    'Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, keywords, and more.';
+    'Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, and more.';
 
 export const metadata: Metadata = {
     title: 'NPM Package Details',

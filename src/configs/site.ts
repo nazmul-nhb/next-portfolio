@@ -122,10 +122,10 @@ export const siteConfig = {
         },
         {
             href: '/tools/npm-package',
-            label: 'NPM Package Details',
+            label: 'Package Details',
             icon: SiNpm,
             description:
-                'Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, keywords, and more.',
+                'Search for any npm package and view comprehensive details including downloads and maintainers.',
         },
         {
             href: '/tools/photo-card',
