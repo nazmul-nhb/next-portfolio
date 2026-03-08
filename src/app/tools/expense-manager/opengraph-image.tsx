@@ -17,7 +17,7 @@ export default async function Image() {
             siteTitle={`Expense Manager » ${siteConfig.name}`}
             tag={`Expense Manager`}
             title={`Expense Manager from ${siteConfig.name}`}
-            url={buildCanonicalUrl('/tools/expenses')}
+            url={buildCanonicalUrl('/tools/expense-manager')}
         />
     );
 }

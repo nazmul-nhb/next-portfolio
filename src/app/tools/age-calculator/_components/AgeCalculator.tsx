@@ -6,8 +6,8 @@ import { useMount } from 'nhb-hooks';
 import { Chronos } from 'nhb-toolbox';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
-import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -150,22 +150,11 @@ export default function AgeCalculator() {
 
     return useMount(
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        Age Calculator
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/age-calculator"
-                        shareText="Age Calculator"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Capture an exact birth moment and comparison moment with full local
-                    date-time precision.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Capture an exact birth moment and comparison moment with full local date-time precision."
+                route="/tools/age-calculator"
+                title="Age Calculator"
+            />
 
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>

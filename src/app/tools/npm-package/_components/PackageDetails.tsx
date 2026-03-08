@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useMount } from 'nhb-hooks';
 import { generateQueryParams, getTimestamp } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
-import ShareButton from '@/components/misc/share-button';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import type { PackageResponse, PackageSearch } from '@/types/npm';
@@ -92,22 +92,11 @@ export default function NpmPackageDetails() {
 
     const content = (
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        NPM Package Details
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/npm-package"
-                        shareText="NPM Package Details Tool"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Search for any npm package and view comprehensive details including
-                    downloads, maintainers, repository, license, and more.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, and more."
+                route="/tools/npm-package"
+                title="NPM Package Details"
+            />
 
             <SmartAlert
                 description="The download dates and counts are fetched from the official npm registry. Data may have a slight delay."

@@ -25,8 +25,8 @@ import type { MonthDateString, ZodiacSign } from 'nhb-toolbox/date/types';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import EmptyData from '@/components/misc/empty-data';
-import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -190,22 +190,11 @@ export default function ZodiacFinder() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        Zodiac Sign Finder
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/zodiac-sign"
-                        shareText="Zodiac Sign Finder"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Pick a birth date and zodiac system to see the matching sign, its date
-                    range, and a concise traditional description.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Pick a birth date and zodiac system to see the matching sign, its date range, and a concise traditional description."
+                route="/tools/zodiac-sign"
+                title="Zodiac Sign Finder"
+            />
 
             <SmartAlert
                 className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100"

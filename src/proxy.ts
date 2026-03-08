@@ -18,7 +18,7 @@ export async function proxy(req: NextRequest) {
         '/messages',
         '/blogs/new',
         '/blogs/edit',
-        '/tools/expenses',
+        '/tools/expense-manager',
     ] as const;
 
     // Force-sign-out any user whose account has been deleted or deactivated
@@ -56,7 +56,7 @@ export const config = {
         '/admin/:path*',
         '/settings/:path*',
         '/messages/:path*',
-        '/tools/expenses',
+        '/tools/expense-manager',
         '/blogs/new',
         '/blogs/edit/:path*',
     ],

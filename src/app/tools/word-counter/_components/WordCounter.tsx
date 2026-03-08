@@ -5,7 +5,7 @@ import { CaseSensitive, Pilcrow, TextWrap, Type, WholeWord } from 'lucide-react'
 import { useMount } from 'nhb-hooks';
 import { countWords, formatWithPlural } from 'nhb-toolbox';
 import { type ChangeEvent, useMemo, useState } from 'react';
-import ShareButton from '@/components/misc/share-button';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -99,22 +99,11 @@ export default function WordCounter() {
 
     return useMount(
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        Word Counter
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/word-counter"
-                        shareText="Word Counter Tool"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Analyze your text with detailed word, character, and readability metrics.
-                    Perfect for writers, students, and content creators.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Analyze your text with detailed word, character, and readability metrics. Perfect for writers, students, and content creators."
+                route="/tools/word-counter"
+                title="Word Counter"
+            />
 
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 <Card>

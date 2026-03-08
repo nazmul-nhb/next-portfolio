@@ -1,27 +1,16 @@
 import { ImagePlus } from 'lucide-react';
-import ShareButton from '@/components/misc/share-button';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import PhotoCardEditor from './PhotoCardEditor';
 
 export default function ManagePhotoCards() {
     return (
         <div className="space-y-8 max-w-full">
-            <div>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                    <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                        Photo Card Generator
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/photo-card"
-                        shareText="Photo Card Generator"
-                    />
-                </div>
-                <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-                    Compose browser-based photo cards with uploaded images, layered typography,
-                    live canvas preview, and local IndexedDB saving.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Compose browser-based photo cards with uploaded images, layered typography, live canvas preview, and local IndexedDB saving."
+                route="/tools/photo-card"
+                title="Photo Card Generator"
+            />
 
             <SmartAlert
                 className="border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100"

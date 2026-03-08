@@ -1,7 +1,7 @@
 import { Wallet } from 'lucide-react';
 import { CURRENCY_CODES } from 'nhb-toolbox/constants';
 import { useEffect, useState } from 'react';
-import type { CurrencyResponse } from '@/app/tools/expenses/_components/types';
+import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
 import { Button } from '@/components/ui/button';
 import {
     Card,

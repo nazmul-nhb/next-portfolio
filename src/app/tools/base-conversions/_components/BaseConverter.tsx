@@ -6,10 +6,10 @@ import { TextCodec } from 'nhb-toolbox/hash';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
-import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -281,22 +281,11 @@ export default function BaseConverter() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        Base Conversions
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/base-conversions"
-                        shareText="Base Conversions"
-                    />
-                </div>{' '}
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Convert UTF-8 text, hex, binary, and Base64 with a single source input and
-                    byte-level transformations underneath.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Convert UTF-8 text, hex, binary, and Base64 with a single source input and byte-level transformations underneath."
+                route="/tools/base-conversions"
+                title="Base Conversions"
+            />
 
             <SmartAlert
                 className="border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-800/70 dark:bg-sky-950/40 dark:text-sky-100"

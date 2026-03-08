@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
                 ? await db.insert(receipts).values(receiptValues).returning()
                 : [];
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Loan', 'POST', {
             ...newLoan,

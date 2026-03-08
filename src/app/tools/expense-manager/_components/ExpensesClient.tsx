@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import type { CurrencyResponse } from '@/app/tools/expenses/_components/types';
-import ShareButton from '@/components/misc/share-button';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
+import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export function ExpensesClient() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/auth/login?redirectTo=/tools/expenses');
+            router.push('/auth/login?redirectTo=/tools/expense-manager');
         }
     }, [status, router]);
 
@@ -109,23 +109,14 @@ export function ExpensesClient() {
                     .
                 </AlertDescription>
             </Alert>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <div className="flex items-start gap-2 flex-wrap justify-between">
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                            Expense Manager
-                        </h1>
-                        <ShareButton
-                            buttonLabel="Share this tool"
-                            route="/tools/expenses"
-                            shareText="Expense Manager"
-                        />
-                    </div>
-                    <p className="max-w-3xl mt-1 text-sm text-muted-foreground">
-                        Track income, expenses, borrowed loans, lent loans, and cash in hand.
-                    </p>
-                </div>
-                <div className="flex gap-2">
+            <div className="space-y-3">
+                <TitleWithShare
+                    description="Track income, expenses, borrowed loans, lent loans, and cash in hand."
+                    route="/tools/expense-manager"
+                    title="Expense Manager"
+                />
+
+                <div className="flex gap-2 justify-end">
                     <Button onClick={() => setIsAddOpen(true)}>
                         <Plus className="size-4" />
                         Add Entry

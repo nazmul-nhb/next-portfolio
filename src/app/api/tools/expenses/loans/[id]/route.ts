@@ -64,7 +64,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
             .where(and(eq(loans.id, loanId), eq(loans.user_id, userId)))
             .returning();
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Loan', 'PATCH', {
             ...updated,
@@ -108,7 +108,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
             return sendErrorResponse('Loan not found', 404);
         }
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Loan', 'DELETE', {
             ...deleted,

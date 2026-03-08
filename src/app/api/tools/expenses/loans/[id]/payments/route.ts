@@ -92,7 +92,7 @@ export async function POST(req: NextRequest, { params }: Params) {
             },
         };
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Loan Payment', 'POST', result);
     } catch (error) {

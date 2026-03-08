@@ -135,7 +135,7 @@ export const siteConfig = {
                 'Create polished photo cards with layered images, custom typography, live preview, and more.',
         },
         {
-            href: '/tools/expenses',
+            href: '/tools/expense-manager',
             label: 'Expense Manager',
             icon: Wallet,
             description: 'Track income, expenses, loans, repayments, and net cash in hand.',

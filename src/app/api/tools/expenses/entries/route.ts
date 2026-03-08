@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
             receipts: createdReceipts,
         };
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Expense', 'POST', created);
     } catch (error) {
@@ -197,7 +197,7 @@ export async function DELETE(req: NextRequest) {
             .where(and(eq(expenses.id, id), eq(expenses.user_id, userId)))
             .returning();
 
-        revalidatePath('/tools/expenses');
+        revalidatePath('/tools/expense-manager');
 
         return sendResponse('Expense', 'DELETE', {
             ...deleted,

@@ -8,10 +8,10 @@ import { Cipher } from 'nhb-toolbox/hash';
 import { Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
-import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -102,22 +102,11 @@ export default function EncryptMessage() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        Encrypt/decrypt Message
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/encrypt-message"
-                        shareText="Encrypt/decrypt Message"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Encrypt or decrypt text using a passphrase. The same passphrase used for
-                    encryption must be used again to decrypt the message.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Encrypt or decrypt text using a passphrase. The same passphrase used for encryption must be used again to decrypt the message."
+                route="/tools/encrypt-message"
+                title="Encrypt/decrypt Message"
+            />
 
             <SmartAlert
                 className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100"

@@ -5,7 +5,7 @@ import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { generateQueryParams } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
-import ShareButton from '@/components/misc/share-button';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DecodeUUID from './DecodeUUID';
@@ -38,22 +38,11 @@ export default function ManageUUID() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <div className="flex items-start gap-2 flex-wrap justify-between">
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                        UUID Generator & Decoder
-                    </h1>
-                    <ShareButton
-                        buttonLabel="Share this tool"
-                        route="/tools/uuid"
-                        shareText="UUID Generator & Decoder"
-                    />
-                </div>
-                <p className="max-w-3xl mt-2 text-sm text-muted-foreground">
-                    Create UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing
-                    UUIDs to inspect their metadata.
-                </p>
-            </div>
+            <TitleWithShare
+                description="Create UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing UUIDs to inspect their metadata."
+                route="/tools/uuid"
+                title="UUID Generator & Decoder"
+            />
 
             <SmartAlert
                 className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100"

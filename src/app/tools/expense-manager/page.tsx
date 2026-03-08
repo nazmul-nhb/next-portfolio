@@ -17,11 +17,11 @@ export const metadata: Metadata = {
         'loan',
         'expense manager',
     ],
-    alternates: { canonical: buildCanonicalUrl('/tools/expenses') },
+    alternates: { canonical: buildCanonicalUrl('/tools/expense-manager') },
     openGraph: {
         title: `Expense Manager from ${siteConfig.name}`,
         description,
-        url: buildCanonicalUrl('/tools/expenses'),
+        url: buildCanonicalUrl('/tools/expense-manager'),
         siteName: siteConfig.name,
     },
 };
@@ -30,7 +30,7 @@ export default async function ExpensesPage() {
     const session = await auth();
 
     if (!session?.user) {
-        redirect('/auth/login?redirectTo=/tools/expenses');
+        redirect('/auth/login?redirectTo=/tools/expense-manager');
     }
 
     return <ExpensesClient />;
