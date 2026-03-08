@@ -77,13 +77,6 @@ export const siteConfig = {
     ] satisfies TabItem[],
     toolsMenus: [
         {
-            href: '/tools/photo-card',
-            label: 'Photo Cards',
-            icon: ImagePlus,
-            description:
-                'Create polished photo cards with layered images, custom typography, live preview, and more.',
-        },
-        {
             href: '/tools/age-calculator',
             label: 'Age Calculator',
             icon: Calculator,
@@ -117,6 +110,13 @@ export const siteConfig = {
             icon: Tag,
             description:
                 'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
+        },
+        {
+            href: '/tools/photo-card',
+            label: 'Photo Cards',
+            icon: ImagePlus,
+            description:
+                'Create polished photo cards with layered images, custom typography, live preview, and more.',
         },
         {
             href: '/tools/expenses',

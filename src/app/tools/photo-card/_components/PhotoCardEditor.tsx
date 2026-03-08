@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMount } from 'nhb-hooks';
+import { uuid } from 'nhb-toolbox/hash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { SavedPhotoCard } from '@/lib/photo-card/indexed-db';
@@ -17,6 +18,7 @@ import {
     measureTextLayer,
     renderPhotoCardToBlob,
 } from '@/lib/photo-card/renderer';
+import { PhotoCardConfigSchema } from '@/lib/photo-card/schema';
 import {
     createTextLayer,
     DEFAULT_PHOTO_CARD_CONFIG,
@@ -24,7 +26,6 @@ import {
     normalizePhotoCardConfig,
     PHOTO_CARD_SECTION_LABELS,
     type PhotoCardConfig,
-    PhotoCardConfigSchema,
     type PhotoCardSectionConfig,
     type PhotoCardSectionId,
     type TextLayer,
@@ -395,7 +396,7 @@ export default function PhotoCardEditor() {
                         );
 
                         return {
-                            id: crypto.randomUUID(),
+                            id: uuid(),
                             section: targetSection,
                             src: loaded.dataUrl,
                             x: fitted.x,

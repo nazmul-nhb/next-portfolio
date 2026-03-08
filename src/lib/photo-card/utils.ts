@@ -1,10 +1,11 @@
+import { uuid } from 'nhb-toolbox/hash';
 import {
     PHOTO_CARD_FONT_OPTIONS,
     PHOTO_CARD_SECTION_IDS,
     PHOTO_CARD_SECTION_LABELS,
 } from './constants';
+import { PhotoCardConfigSchema } from './schema';
 import type { PhotoCardConfig, PhotoCardFontId, PhotoCardSectionId, TextLayer } from './types';
-import { PhotoCardConfigSchema } from './types';
 
 /**
  * Creates a default text layer with sensible defaults
@@ -13,7 +14,7 @@ export function createTextLayer(index = 0, section: PhotoCardSectionId = 'canvas
     const isCanvas = section === 'canvas';
 
     return {
-        id: crypto.randomUUID(),
+        id: uuid(),
         section,
         text:
             index === 0 && isCanvas

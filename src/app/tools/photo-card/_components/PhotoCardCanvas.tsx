@@ -17,11 +17,11 @@ import {
     getSectionBounds,
 } from '@/lib/photo-card/layout';
 import { measureTextLayer, renderPhotoCardToCanvas } from '@/lib/photo-card/renderer';
+import { PhotoCardConfigSchema } from '@/lib/photo-card/schema';
 import {
     type ImageLayer,
     PHOTO_CARD_SECTION_LABELS,
     type PhotoCardConfig,
-    PhotoCardConfigSchema,
     type TextLayer,
 } from '@/lib/photo-card/types';
 import PhotoCardStageLayer from './PhotoCardStageLayer';
