@@ -13,14 +13,12 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-    getPhotoCardFontOption,
     PHOTO_CARD_FONT_OPTIONS,
     PHOTO_CARD_SECTION_LABELS,
     PHOTO_CARD_SECTION_OPTIONS,
-    type PhotoCardFontId,
-    type PhotoCardSectionId,
-    type TextLayer,
-} from '@/lib/photo-card/types';
+} from '@/lib/photo-card/constants';
+import type { PhotoCardFontId, PhotoCardSectionId, TextLayer } from '@/lib/photo-card/types';
+import { getPhotoCardFontOption } from '@/lib/photo-card/utils';
 import { cn } from '@/lib/utils';
 import ColorInputField from './ColorInputField';
 import DraftNumberInput from './DraftNumberInput';

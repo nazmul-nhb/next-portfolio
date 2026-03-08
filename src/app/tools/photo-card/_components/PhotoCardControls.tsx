@@ -33,6 +33,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/photo-card/constants';
 import type { SavedPhotoCard } from '@/lib/photo-card/indexed-db';
 import type {
     ImageLayer,
@@ -41,7 +42,6 @@ import type {
     PhotoCardSectionId,
     TextLayer,
 } from '@/lib/photo-card/types';
-import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/photo-card/types';
 import ColorInputField from './ColorInputField';
 import DraftNumberInput from './DraftNumberInput';
 import ImageLayerEditor from './ImageLayerEditor';
@@ -215,7 +215,7 @@ export default function PhotoCardControls({
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 justify-between">
-                                    <div className="space-y-2 flex-1 shrink-0">
+                                    <div className="space-y-2 md:flex-1 shrink-0">
                                         <Label htmlFor={`${sectionKey}-height`}>Height</Label>
                                         <DraftNumberInput
                                             ariaLabel={`${sectionKey} height`}
@@ -229,7 +229,7 @@ export default function PhotoCardControls({
                                         />
                                     </div>
 
-                                    <div className="space-y-0.5 flex-1 shrink-0">
+                                    <div className="space-y-0.5 md:flex-2 shrink-0">
                                         <div className="text-sm font-medium">Background</div>
                                         <ColorInputField
                                             ariaLabel={`${sectionKey} background color`}

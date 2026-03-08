@@ -15,7 +15,7 @@ export const contentType = 'image/png';
 export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
-            description="Build photo cards locally with uploaded images, layered text, live canvas preview, and browser storage."
+            description="Create polished photo cards with layered images, custom typography, live preview, and more."
             siteTitle={`Photo Card Generator » ${siteConfig.name}`}
             tag={`Photo Card Generator`}
             title={`Photo Card Generator from ${siteConfig.name}`}

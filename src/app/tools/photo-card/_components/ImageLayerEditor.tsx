@@ -13,11 +13,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    type ImageLayer,
     PHOTO_CARD_SECTION_LABELS,
     PHOTO_CARD_SECTION_OPTIONS,
-    type PhotoCardSectionId,
-} from '@/lib/photo-card/types';
+} from '@/lib/photo-card/constants';
+import type { ImageLayer, PhotoCardSectionId } from '@/lib/photo-card/types';
 import { cn } from '@/lib/utils';
 import DraftNumberInput from './DraftNumberInput';
 

@@ -1,24 +1,7 @@
-import type { PHOTO_CARD_FONT_IDS, PHOTO_CARD_SECTION_IDS } from './constants';
-
-// Re-export constants for backward compatibility
-export {
-    PHOTO_CARD_FONT_IDS,
-    PHOTO_CARD_FONT_OPTIONS,
-    PHOTO_CARD_SECTION_IDS,
-    PHOTO_CARD_SECTION_LABELS,
-    PHOTO_CARD_SECTION_OPTIONS,
-} from './constants';
-
-// Re-export utilities for backward compatibility
-export {
-    createTextLayer,
-    DEFAULT_PHOTO_CARD_CONFIG,
-    getPhotoCardFontOption,
-    normalizePhotoCardConfig,
-} from './utils';
+import type { PHOTO_CARD_FONT_OPTIONS, PHOTO_CARD_SECTION_IDS } from './constants';
 
 // Type definitions
-export type PhotoCardFontId = (typeof PHOTO_CARD_FONT_IDS)[number];
+export type PhotoCardFontId = (typeof PHOTO_CARD_FONT_OPTIONS)[number]['value'];
 export type PhotoCardSectionId = (typeof PHOTO_CARD_SECTION_IDS)[number];
 
 export type PhotoCardSectionConfig = {

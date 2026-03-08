@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PHOTO_CARD_FONT_IDS, PHOTO_CARD_SECTION_IDS } from './constants';
+import { PHOTO_CARD_FONT_OPTIONS, PHOTO_CARD_SECTION_IDS } from './constants';
 
 const HexColorSchema = z
     .string()
@@ -51,7 +51,7 @@ export const PhotoCardTextLayerSchema = z.object({
     id: z.string().min(1),
     section: z.enum(PHOTO_CARD_SECTION_IDS).default('canvas'),
     text: z.string().max(500, 'Keep each text layer within 500 characters.'),
-    fontFamily: z.enum(PHOTO_CARD_FONT_IDS),
+    fontFamily: z.enum(PHOTO_CARD_FONT_OPTIONS.map((option) => option.value)),
     fontSize: z.coerce
         .number()
         .int('Use whole pixels.')

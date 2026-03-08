@@ -43,7 +43,7 @@ export default function DraftNumberInput({ ariaLabel, id, max, min, onCommit, va
     return (
         <Input
             aria-label={ariaLabel}
-            // className="max-w-20"
+            className="max-w-36 min-w-20"
             id={id}
             inputMode="numeric"
             onBlur={commit}

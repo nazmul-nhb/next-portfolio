@@ -1,12 +1,19 @@
-import { inter, playfairDisplay, poppins, robotoMono } from '@/lib/fonts';
+import {
+    anekBangla,
+    cascadiaCode,
+    geistMono,
+    geistSans,
+    inter,
+    playfairDisplay,
+    poppins,
+    robotoMono,
+    sourceSans,
+    tiroBangla,
+} from '@/lib/fonts';
+import { normalizePhotoCardConfig } from '@/lib/photo-card/utils';
 import { hasErrorMessage } from '@/lib/utils';
 import { getAbsoluteLayerPosition, getSectionBounds } from './layout';
-import {
-    normalizePhotoCardConfig,
-    type PhotoCardConfig,
-    type PhotoCardFontId,
-    type TextLayer,
-} from './types';
+import type { PhotoCardConfig, PhotoCardFontId, TextLayer } from './types';
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 let fontsReadyPromise: Promise<void> | null = null;
@@ -17,6 +24,12 @@ const FONT_FAMILY_MAP: Record<PhotoCardFontId, string> = {
     poppins: poppins.style.fontFamily,
     playfair: playfairDisplay.style.fontFamily,
     'roboto-mono': robotoMono.style.fontFamily,
+    'anek-bangla': anekBangla.style.fontFamily,
+    'tiro-bangla': tiroBangla.style.fontFamily,
+    'cascadia-code': cascadiaCode.style.fontFamily,
+    'geist-mono': geistMono.style.fontFamily,
+    'geist-sans': geistSans.style.fontFamily,
+    'source-sans': sourceSans.style.fontFamily,
 };
 
 export function resolvePhotoCardFontFamily(fontId: PhotoCardFontId) {

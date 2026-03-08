@@ -11,6 +11,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { getPhotoCardColorTokens } from '@/lib/photo-card/colors';
+import { PHOTO_CARD_SECTION_LABELS } from '@/lib/photo-card/constants';
 import {
     clampLayerPositionToSection,
     getAbsoluteLayerPosition,
@@ -18,12 +19,7 @@ import {
 } from '@/lib/photo-card/layout';
 import { measureTextLayer, renderPhotoCardToCanvas } from '@/lib/photo-card/renderer';
 import { PhotoCardConfigSchema } from '@/lib/photo-card/schema';
-import {
-    type ImageLayer,
-    PHOTO_CARD_SECTION_LABELS,
-    type PhotoCardConfig,
-    type TextLayer,
-} from '@/lib/photo-card/types';
+import type { ImageLayer, PhotoCardConfig, TextLayer } from '@/lib/photo-card/types';
 import { cn } from '@/lib/utils';
 import PhotoCardStageLayer from './PhotoCardStageLayer';
 

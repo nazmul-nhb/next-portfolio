@@ -5,6 +5,7 @@ import { useMount } from 'nhb-hooks';
 import { uuid } from 'nhb-toolbox/hash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { PHOTO_CARD_SECTION_LABELS } from '@/lib/photo-card/constants';
 import type { SavedPhotoCard } from '@/lib/photo-card/indexed-db';
 import {
     deleteSavedPhotoCard,
@@ -19,17 +20,18 @@ import {
     renderPhotoCardToBlob,
 } from '@/lib/photo-card/renderer';
 import { PhotoCardConfigSchema } from '@/lib/photo-card/schema';
+import type {
+    ImageLayer,
+    PhotoCardConfig,
+    PhotoCardSectionConfig,
+    PhotoCardSectionId,
+    TextLayer,
+} from '@/lib/photo-card/types';
 import {
     createTextLayer,
     DEFAULT_PHOTO_CARD_CONFIG,
-    type ImageLayer,
     normalizePhotoCardConfig,
-    PHOTO_CARD_SECTION_LABELS,
-    type PhotoCardConfig,
-    type PhotoCardSectionConfig,
-    type PhotoCardSectionId,
-    type TextLayer,
-} from '@/lib/photo-card/types';
+} from '@/lib/photo-card/utils';
 import PhotoCardCanvas from './PhotoCardCanvas';
 import PhotoCardControls from './PhotoCardControls';
 

@@ -6,7 +6,7 @@ import { buildCanonicalUrl } from '@/lib/utils';
 import ManagePhotoCards from './_components/ManagePhotoCards';
 
 const description =
-    'Build photo cards locally with uploaded images, layered text, live canvas preview, and browser storage.';
+    'Create polished photo cards with layered images, custom typography, live preview, and more.';
 
 export const metadata: Metadata = {
     title: 'Photo Card Generator',

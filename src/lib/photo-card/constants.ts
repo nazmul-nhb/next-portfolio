@@ -22,12 +22,37 @@ export const PHOTO_CARD_FONT_OPTIONS = [
         label: 'Roboto Mono',
         fontFamily: '"Roboto Mono"',
     },
+    {
+        value: 'anek-bangla',
+        label: 'Anek Bangla',
+        fontFamily: '"Anek Bangla"',
+    },
+    {
+        value: 'tiro-bangla',
+        label: 'Tiro Bangla',
+        fontFamily: '"Tiro Bangla"',
+    },
+    {
+        value: 'source-sans',
+        label: 'Source Sans',
+        fontFamily: '"Source Sans"',
+    },
+    {
+        value: 'cascadia-code',
+        label: 'Cascadia Code',
+        fontFamily: '"Cascadia Code"',
+    },
+    {
+        value: 'geist-sans',
+        label: 'Geist Sans',
+        fontFamily: '"Geist Sans"',
+    },
+    {
+        value: 'geist-mono',
+        label: 'Geist Mono',
+        fontFamily: '"Geist Mono"',
+    },
 ] as const;
-
-/**
- * Valid font IDs for type safety
- */
-export const PHOTO_CARD_FONT_IDS = ['inter', 'poppins', 'playfair', 'roboto-mono'] as const;
 
 /**
  * Valid section IDs for the photo card (header, canvas, footer)

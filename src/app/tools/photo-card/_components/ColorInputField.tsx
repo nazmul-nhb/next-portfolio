@@ -44,7 +44,7 @@ export default function ColorInputField({
                 </div>
                 <Input
                     aria-label={`${ariaLabel} hex`}
-                    className="font-mono"
+                    className="font-cascadia max-w-32"
                     id={id}
                     inputMode="text"
                     onChange={(e) => onChange(e.target.value)}
