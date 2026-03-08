@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import ZodiacFinder from './_components/ZodiacFinder';
 
 const description =
@@ -24,14 +24,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/zodiac-sign'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Zodiac Sign Finder from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 
 const description = 'Utilities for daily productivity and personal management.';
 
@@ -31,14 +31,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Tools from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

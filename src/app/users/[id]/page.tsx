@@ -44,9 +44,9 @@ export async function generateMetadata({
                 title: user.name,
                 description: user.bio || `Profile of ${user.name}`,
                 images: buildOpenGraphImages(
-                    user.profile_image && buildCloudinaryUrl(user.profile_image),
-                    siteConfig.logoSvg,
-                    siteConfig.favicon
+                    user.profile_image
+                        ? buildCloudinaryUrl(user.profile_image)
+                        : buildCanonicalUrl(siteConfig.favicon as Route)
                 ),
             },
         };

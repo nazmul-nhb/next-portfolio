@@ -18,12 +18,7 @@ import { db } from '@/lib/drizzle';
 import { education, experiences } from '@/lib/drizzle/schema/career';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
-import {
-    buildCanonicalUrl,
-    buildCloudinaryUrl,
-    buildOpenGraphImages,
-    formatDuration,
-} from '@/lib/utils';
+import { buildCanonicalUrl, buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
@@ -37,14 +32,6 @@ export const metadata: Metadata = {
         description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
         url: `${siteConfig.baseUrl}/resume`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Resume of ${siteConfig.name}`,
-        description: `Resume of ${siteConfig.name} - Full-Stack Web Developer.`,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

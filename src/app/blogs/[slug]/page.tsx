@@ -47,9 +47,9 @@ export async function generateMetadata({
                 title: `${title} by ${author.name}`,
                 description,
                 images: buildOpenGraphImages(
-                    cover_image && buildCloudinaryUrl(cover_image),
-                    siteConfig.logoSvg,
-                    siteConfig.favicon
+                    cover_image
+                        ? buildCloudinaryUrl(cover_image)
+                        : buildCanonicalUrl(siteConfig.blogCover as Route)
                 ),
                 type: 'article',
                 publishedTime: data.blog.published_date

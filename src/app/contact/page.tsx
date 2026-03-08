@@ -5,7 +5,7 @@ import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { SectionHeading, SlideInLeft, SlideInRight } from '@/components/misc/animations';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import { ContactForm } from './_components/ContactForm';
 
 export const metadata: Metadata = {
@@ -18,14 +18,6 @@ export const metadata: Metadata = {
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
         url: `${siteConfig.baseUrl}/contact`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Contact ${siteConfig.name}`,
-        description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

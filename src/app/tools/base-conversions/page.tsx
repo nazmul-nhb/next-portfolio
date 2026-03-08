@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import BaseConverter from './_components/BaseConverter';
 
 const description =
@@ -25,14 +25,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/base-conversions'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Base Conversions from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

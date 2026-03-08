@@ -28,7 +28,7 @@ import {
     sourceSans,
     tiroBangla,
 } from '@/lib/fonts';
-import { buildOpenGraphImages, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
@@ -55,18 +55,7 @@ export const metadata: Metadata = {
         description: siteConfig.description,
         url: siteConfig.baseUrl,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         type: 'website',
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: {
-            default: siteConfig.name,
-            template: `%s » ${siteConfig.name}`,
-        },
-        description: siteConfig.description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
     verification: {
         google: ENV.google.gscVerificationId,

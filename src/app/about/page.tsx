@@ -15,12 +15,7 @@ import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { education, experiences, users } from '@/lib/drizzle/schema';
 import { skills } from '@/lib/drizzle/schema/skills';
-import {
-    buildCanonicalUrl,
-    buildCloudinaryUrl,
-    buildOpenGraphImages,
-    formatDuration,
-} from '@/lib/utils';
+import { buildCanonicalUrl, buildCloudinaryUrl, formatDuration } from '@/lib/utils';
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
@@ -34,14 +29,6 @@ export const metadata: Metadata = {
         description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
         url: `${siteConfig.baseUrl}/about`,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `About ${siteConfig.name}`,
-        description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

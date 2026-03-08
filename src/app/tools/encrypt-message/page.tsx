@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import EncryptMessage from './_components/EncryptMessage';
 
 const description = 'Encrypt/decrypt text using a passphrase.';
@@ -23,14 +23,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/encrypt-message'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Encrypt/Decrypt Message from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

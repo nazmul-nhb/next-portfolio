@@ -5,7 +5,6 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildOpenGraphImages } from '@/lib/utils';
 import type { SelectSkill } from '@/types/skills';
 import { CareerHighlightsSection } from './_components/CareerHighlights';
 import { HeroSection } from './_components/HeroSection';
@@ -30,17 +29,7 @@ export const metadata: Metadata = {
         description: siteConfig.description,
         url: siteConfig.baseUrl,
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
         type: 'website',
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: {
-            absolute: siteConfig.name,
-        },
-        description: siteConfig.description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

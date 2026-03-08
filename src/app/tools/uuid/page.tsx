@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Loading from '@/components/misc/loading';
 import { siteConfig } from '@/configs/site';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import ManageUUID from './_components/ManageUUID';
 
 const description = 'Generate and decode UUIDs across all RFC 4122 versions (v1, v3-v8).';
@@ -32,14 +32,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/uuid'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `UUID Generator & Decoder from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 

@@ -59,7 +59,7 @@ export async function generateMetadata({
                 images: buildOpenGraphImages(
                     project.screenshots[0] && buildCloudinaryUrl(project.screenshots[0]),
                     project.favicon && buildCloudinaryUrl(project.favicon),
-                    siteConfig.favicon
+                    buildCanonicalUrl(siteConfig.favicon as Route)
                 ),
             },
         };

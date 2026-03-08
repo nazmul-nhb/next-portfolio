@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { siteConfig } from '@/configs/site';
 import { auth } from '@/lib/auth';
-import { buildCanonicalUrl, buildOpenGraphImages } from '@/lib/utils';
+import { buildCanonicalUrl } from '@/lib/utils';
 import { ExpensesClient } from './_components/ExpensesClient';
 
 const description = 'Track income, expenses, loans, repayments, and cash in hand.';
@@ -23,14 +23,6 @@ export const metadata: Metadata = {
         description,
         url: buildCanonicalUrl('/tools/expenses'),
         siteName: siteConfig.name,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: `Expense Manager from ${siteConfig.name}`,
-        description,
-        images: buildOpenGraphImages(siteConfig.favicon, siteConfig.logoSvg),
-        creator: '@nhb42',
     },
 };
 
