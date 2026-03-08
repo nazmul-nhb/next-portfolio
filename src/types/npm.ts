@@ -70,6 +70,8 @@ export const PKG_FIELDS = [
     'repository',
 ] as const;
 
+export const NPM_START = '2010-01-01';
+
 export type PackageResponse = Prettify<
     Pick<PackageDetails, (typeof PKG_FIELDS)[number]> & PackageDlData
 >;

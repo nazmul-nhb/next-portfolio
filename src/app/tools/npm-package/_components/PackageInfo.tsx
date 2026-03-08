@@ -47,7 +47,7 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                             <div className="flex flex-wrap items-center gap-3">
                                 <LivePreviewButton
                                     previewLabel="Preview Homepage"
-                                    title={`Homepage of ${data.package}`}
+                                    title={data.package}
                                     url={data.homepage}
                                 />
                             </div>

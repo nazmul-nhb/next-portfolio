@@ -1,5 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
-import { Calendar, Download, Package } from 'lucide-react';
+import { CalendarClock, Download, Package } from 'lucide-react';
 import CodeBlock from '@/components/misc/code-block';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -46,7 +46,7 @@ function StatCard({ label, value, icon, color, className }: StatCardProps) {
                             key={value}
                             transition={{ duration: 0.25 }}
                         >
-                            <CodeBlock className="text-lg md:text-xl font-bold tracking-tight">
+                            <CodeBlock className="text-sm ms:text-base md:text-lg font-bold tracking-tight">
                                 {value}
                             </CodeBlock>
                         </motion.p>
@@ -83,7 +83,7 @@ export function PackageStats({ data, variants }: PackageStatsProps) {
             </div>
             <StatCard
                 color="blue"
-                icon={<Calendar className="size-4" />}
+                icon={<CalendarClock className="size-4" />}
                 label="Period"
                 value={`${data.start} to ${data.end}`}
             />

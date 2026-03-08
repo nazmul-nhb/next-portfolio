@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Package } from 'lucide-react';
+import { getTimestamp } from 'nhb-toolbox';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,8 +22,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import type { PackageSearch } from '@/types/npm';
-import { getTimestamp } from 'nhb-toolbox';
+import { NPM_START, type PackageSearch } from '@/types/npm';
 
 const NpmPackageSchema = z.object({
     package: z.string().min(1, 'Package name is required'),
@@ -52,8 +52,8 @@ export function PackageSearchForm({
         mode: 'onChange',
         defaultValues: initialValues || {
             package: '',
-            start: '01-01-2010',
-            end: getTimestamp().split('T')[0],
+            start: NPM_START,
+            end: getTimestamp({ format: 'local' }).split('T')[0],
         },
     });
 
@@ -73,9 +73,10 @@ export function PackageSearchForm({
     const handleReset = () => {
         form.reset({
             package: '',
-            start: '01-01-2010',
-            end: getTimestamp().split('T')[0],
+            start: NPM_START,
+            end: getTimestamp({ format: 'local' }).split('T')[0],
         });
+
         onReset();
     };
 
@@ -131,7 +132,8 @@ export function PackageSearchForm({
                                             <Input
                                                 type="date"
                                                 {...field}
-                                                max={endDate || undefined}
+                                                max={endDate}
+                                                min={NPM_START}
                                             />
                                         </FormControl>
                                         <FormDescription>

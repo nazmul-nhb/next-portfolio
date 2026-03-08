@@ -3,12 +3,12 @@ import type { NextRequest } from 'next/server';
 import { getTimestamp, pickFields } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
-import { type PackageDetails, type PackageDlData, PKG_FIELDS } from '@/types/npm';
+import { NPM_START, type PackageDetails, type PackageDlData, PKG_FIELDS } from '@/types/npm';
 
 export async function GET(req: NextRequest) {
     try {
         const pkg = req.nextUrl.searchParams.get('package') || 'nhb-toolbox';
-        const start = req.nextUrl.searchParams.get('start') || '2010-01-01';
+        const start = req.nextUrl.searchParams.get('start') || NPM_START;
         const end = req.nextUrl.searchParams.get('end') || getTimestamp().split('T')[0];
 
         const [downRes, pkgRes] = await Promise.all([

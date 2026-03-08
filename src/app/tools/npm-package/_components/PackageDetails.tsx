@@ -9,7 +9,7 @@ import { useCallback, useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
 import { useApiQuery } from '@/lib/hooks/use-api';
-import type { PackageResponse, PackageSearch } from '@/types/npm';
+import { NPM_START, type PackageResponse, type PackageSearch } from '@/types/npm';
 import { PackageResults } from './PackageResults';
 import { PackageSearchForm } from './PackageSearchForm';
 
@@ -19,8 +19,9 @@ export default function NpmPackageDetails() {
     const [hasSearched, setHasSearched] = useState(false);
 
     const initialPackage = searchParams.get('package') || '';
-    const initialStart = searchParams.get('start') || '2010-01-01';
-    const initialEnd = searchParams.get('end') || getTimestamp().split('T')[0];
+    const initialStart = searchParams.get('start') || NPM_START;
+    const initialEnd =
+        searchParams.get('end') || getTimestamp({ format: 'local' }).split('T')[0];
 
     // Check if we should auto-search on mount
     const shouldAutoSearch = useMemo(
@@ -29,7 +30,7 @@ export default function NpmPackageDetails() {
     );
 
     const apiEndpoint = useMemo(() => {
-        if (!initialPackage.trim()) return null;
+        if (!initialPackage.trim()) return '/api/npm';
 
         const params = generateQueryParams({
             package: initialPackage.trim(),
@@ -40,13 +41,10 @@ export default function NpmPackageDetails() {
         return `/api/npm${params}` as const;
     }, [initialPackage, initialStart, initialEnd]);
 
-    const { data, isLoading, error } = useApiQuery<PackageResponse>(
-        (apiEndpoint || '/api/npm') as `/${string}`,
-        {
-            enabled: !!apiEndpoint && hasSearched,
-            queryKey: [apiEndpoint],
-        }
-    );
+    const { data, isLoading, error } = useApiQuery<PackageResponse>(apiEndpoint, {
+        enabled: !!apiEndpoint && hasSearched,
+        queryKey: [apiEndpoint],
+    });
 
     // Auto-search if URL has params on mount
     if (shouldAutoSearch && !hasSearched) {
@@ -99,6 +97,7 @@ export default function NpmPackageDetails() {
             />
 
             <SmartAlert
+                className="bg-teal-800/20"
                 description="The download dates and counts are fetched from the official npm registry. Data may have a slight delay."
                 Icon={AlertCircle}
                 title="Data Source"

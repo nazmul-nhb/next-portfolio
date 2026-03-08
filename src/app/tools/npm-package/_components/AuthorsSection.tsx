@@ -61,10 +61,7 @@ export function AuthorsSection({ data, variants }: AuthorsSectionProps) {
                                     {data.author.url && (
                                         <LivePreviewButton
                                             previewLabel="Preview URL"
-                                            title={
-                                                data.author.name ||
-                                                `Website of ${data.package} author`
-                                            }
+                                            title={data.author.name || `${data.package} author`}
                                             url={data.author.url}
                                         />
                                     )}
