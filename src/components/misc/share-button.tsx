@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 type Props = {
     /* The route to share, used to construct the sharable URL. Should be the path part of the URL (e.g., '/blogs/my-post'). */
-    route: Route | `${Route}/${string | number}`;
+    route: Route;
     /* Optional text to include when sharing to WhatsApp. */
     shareText?: string;
     /* Optional label for the share button, used for accessibility. Defaults to 'Share this post'. */

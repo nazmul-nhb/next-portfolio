@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import type { PackageSearch } from '@/types/npm';
+import { getTimestamp } from 'nhb-toolbox';
 
 const NpmPackageSchema = z.object({
     package: z.string().min(1, 'Package name is required'),
@@ -36,11 +37,7 @@ interface PackageSearchFormProps {
     onSearch: (values: PackageSearch) => void;
     onReset: () => void;
     hasSearched: boolean;
-    initialValues?: {
-        package: string;
-        start: string;
-        end: string;
-    };
+    initialValues?: NpmPackageFormValues;
 }
 
 export function PackageSearchForm({
@@ -55,8 +52,8 @@ export function PackageSearchForm({
         mode: 'onChange',
         defaultValues: initialValues || {
             package: '',
-            start: '',
-            end: '',
+            start: '01-01-2010',
+            end: getTimestamp().split('T')[0],
         },
     });
 
@@ -76,8 +73,8 @@ export function PackageSearchForm({
     const handleReset = () => {
         form.reset({
             package: '',
-            start: '',
-            end: '',
+            start: '01-01-2010',
+            end: getTimestamp().split('T')[0],
         });
         onReset();
     };

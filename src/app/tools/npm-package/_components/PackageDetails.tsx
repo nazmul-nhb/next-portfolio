@@ -4,6 +4,7 @@ import type { Variants } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMount } from 'nhb-hooks';
+import { generateQueryParams, getTimestamp } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
 import ShareButton from '@/components/misc/share-button';
 import SmartAlert from '@/components/misc/smart-alert';
@@ -18,8 +19,8 @@ export default function NpmPackageDetails() {
     const [hasSearched, setHasSearched] = useState(false);
 
     const initialPackage = searchParams.get('package') || '';
-    const initialStart = searchParams.get('start') || '';
-    const initialEnd = searchParams.get('end') || '';
+    const initialStart = searchParams.get('start') || '2010-01-01';
+    const initialEnd = searchParams.get('end') || getTimestamp().split('T')[0];
 
     // Check if we should auto-search on mount
     const shouldAutoSearch = useMemo(
@@ -30,14 +31,13 @@ export default function NpmPackageDetails() {
     const apiEndpoint = useMemo(() => {
         if (!initialPackage.trim()) return null;
 
-        const params = new URLSearchParams({
+        const params = generateQueryParams({
             package: initialPackage.trim(),
+            start: initialStart,
+            end: initialEnd,
         });
 
-        if (initialStart) params.set('start', initialStart);
-        if (initialEnd) params.set('end', initialEnd);
-
-        return `/api/npm?${params.toString()}` as const;
+        return `/api/npm${params}` as const;
     }, [initialPackage, initialStart, initialEnd]);
 
     const { data, isLoading, error } = useApiQuery<PackageResponse>(
@@ -57,14 +57,13 @@ export default function NpmPackageDetails() {
         (values: PackageSearch) => {
             setHasSearched(true);
 
-            const params = new URLSearchParams({
+            const params = generateQueryParams({
                 package: values.packageName,
+                start: values.startDate,
+                end: values.endDate,
             });
 
-            if (values.startDate) params.set('start', values.startDate);
-            if (values.endDate) params.set('end', values.endDate);
-
-            router.push(`/tools/npm-package?${params.toString()}`);
+            router.push(`/tools/npm-package${params}`);
         },
         [router]
     );

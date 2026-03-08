@@ -138,7 +138,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                                 variant: 'destructive',
                                 className: 'gap-1 sm:gap-2',
                             }}
-                            route={`/projects/${project.id}`}
+                            route={`/projects/${project.id}` as Route}
                             shareLabel="Share this project"
                             shareText={project.title}
                         />

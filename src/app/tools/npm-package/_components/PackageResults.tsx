@@ -98,12 +98,12 @@ export function PackageResults({
     }
 
     // Loading state - show skeleton
-    if (isLoading && hasSearched) {
+    if (isLoading) {
         return <PackageResultsSkeleton />;
     }
 
     // Empty state - no search performed yet
-    if (!hasSearched) {
+    if (!isLoading && !hasSearched) {
         return (
             <EmptyData
                 description="Enter a package name and click search to view details"

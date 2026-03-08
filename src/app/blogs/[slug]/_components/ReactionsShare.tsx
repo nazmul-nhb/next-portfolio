@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
 import type { BlogDetails } from '@/types/blogs';
+import type { Route } from 'next';
 
 type Props = {
     blog: BlogDetails;
@@ -98,7 +99,7 @@ export default function ReactionsShare({ blog }: Props) {
                 </Button>
 
                 <ShareButton
-                    route={`/blogs/${blog.slug}`}
+                    route={`/blogs/${blog.slug}` as Route}
                     shareText={`${blog.title} by ${blog.author.name}`}
                 />
             </div>

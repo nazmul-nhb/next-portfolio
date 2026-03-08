@@ -41,7 +41,7 @@ export function AuthorsSection({ data, variants }: AuthorsSectionProps) {
                                 <p className="text-xs font-medium text-muted-foreground">
                                     Contact
                                 </p>
-                                <div className="flex items-center gap-3 mt-2">
+                                <div className="flex flex-wrap items-center gap-3 mt-2">
                                     {data.author.email && (
                                         <a
                                             href={`mailto:${data.author.email}`}

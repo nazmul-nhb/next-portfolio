@@ -106,7 +106,7 @@ export default function WordCounter() {
                     </h1>
                     <ShareButton
                         buttonLabel="Share this tool"
-                        route="/tools/word-count"
+                        route="/tools/word-counter"
                         shareText="Word Counter Tool"
                     />
                 </div>
