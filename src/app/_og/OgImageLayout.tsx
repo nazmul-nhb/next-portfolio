@@ -36,7 +36,7 @@ export function OgImageLayout({ title, siteTitle, description, tag, url }: Props
                 <img
                     alt={siteConfig.name}
                     height={80}
-                    src={`${siteConfig.baseUrl}/${siteConfig.favicon}`}
+                    src={siteConfig.baseUrl.concat(siteConfig.favicon)}
                     width={80}
                 />
 

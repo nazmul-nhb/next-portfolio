@@ -53,8 +53,7 @@ export async function GET(req: NextRequest) {
                 created_at: loans.created_at,
                 updated_at: loans.updated_at,
                 remaining_amount: sql<number>`${loans.principal_amount} - ${loans.paid_amount}`,
-                payments_count:
-                    sql<number>`coalesce((select count(*) from ${loanPayments} where ${loanPayments.loan_id} = ${loans.id}), 0)`,
+                payments_count: sql<number>`coalesce((select count(*) from ${loanPayments} where ${loanPayments.loan_id} = ${loans.id}), 0)`,
             })
             .from(loans)
             .where(and(...conditions))
@@ -67,10 +66,7 @@ export async function GET(req: NextRequest) {
                       .select()
                       .from(receipts)
                       .where(
-                          and(
-                              eq(receipts.user_id, userId),
-                              inArray(receipts.loan_id, loanIds)
-                          )
+                          and(eq(receipts.user_id, userId), inArray(receipts.loan_id, loanIds))
                       )
                 : [];
 

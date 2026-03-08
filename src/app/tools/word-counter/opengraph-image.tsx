@@ -13,11 +13,11 @@ export const contentType = 'image/png';
 export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
-            description="Calculate your age based on your birthdate, with options for detailed breakdown and future age prediction."
-            siteTitle={`Age Calculator » ${siteConfig.name}`}
-            tag={`Age Calculator`}
-            title={`Age Calculator from ${siteConfig.name}`}
-            url={buildCanonicalUrl('/tools/age-calculator')}
+            description="Analyze your text with detailed word, character, and readability metrics."
+            siteTitle={`Word Counter » ${siteConfig.name}`}
+            tag="Word Counter"
+            title={`Word Counter from ${siteConfig.name}`}
+            url={buildCanonicalUrl('/tools/word-counter')}
         />
     );
 }

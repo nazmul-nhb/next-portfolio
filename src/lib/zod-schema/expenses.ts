@@ -95,7 +95,10 @@ export const AddExpenseEntryFormSchema = z
             .string()
             .max(2000, 'Description must be at most 2000 characters')
             .optional(),
-        counterparty: z.string().max(128, 'Counterparty must be at most 128 characters').optional(),
+        counterparty: z
+            .string()
+            .max(128, 'Counterparty must be at most 128 characters')
+            .optional(),
         due_date: z.string().optional(),
         entry_date: z.string().optional(),
         receipt_files: z.array(z.custom<File>()).max(10).optional(),

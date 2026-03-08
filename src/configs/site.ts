@@ -20,6 +20,7 @@ import {
     Tag,
     Users,
     Wallet,
+    WholeWord,
     ZodiacCapricorn,
 } from 'lucide-react';
 import type { Route } from 'next';
@@ -82,6 +83,13 @@ export const siteConfig = {
             icon: Calculator,
             description:
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
+        },
+        {
+            href: '/tools/word-counter',
+            label: 'Word Counter',
+            icon: WholeWord,
+            description:
+                'Analyze your text with detailed word, character, and readability metrics.',
         },
         {
             href: '/tools/zodiac-sign',

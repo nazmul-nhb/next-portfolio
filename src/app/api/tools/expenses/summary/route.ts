@@ -29,24 +29,18 @@ export async function GET() {
 
         const [expenseTotals] = await db
             .select({
-                total_income:
-                    sql<number>`coalesce(sum(case when ${expenses.type} = 'income' then ${expenses.amount} else 0 end), 0)`,
-                total_expense:
-                    sql<number>`coalesce(sum(case when ${expenses.type} = 'expense' then ${expenses.amount} else 0 end), 0)`,
+                total_income: sql<number>`coalesce(sum(case when ${expenses.type} = 'income' then ${expenses.amount} else 0 end), 0)`,
+                total_expense: sql<number>`coalesce(sum(case when ${expenses.type} = 'expense' then ${expenses.amount} else 0 end), 0)`,
             })
             .from(expenses)
             .where(eq(expenses.user_id, userId));
 
         const [loanTotals] = await db
             .select({
-                borrowed_outstanding:
-                    sql<number>`coalesce(sum(case when ${loans.type} = 'borrowed' then ${loans.principal_amount} - ${loans.paid_amount} else 0 end), 0)`,
-                lent_outstanding:
-                    sql<number>`coalesce(sum(case when ${loans.type} = 'lent' then ${loans.principal_amount} - ${loans.paid_amount} else 0 end), 0)`,
-                active_borrowed_count:
-                    sql<number>`coalesce(sum(case when ${loans.type} = 'borrowed' and ${loans.status} = 'active' then 1 else 0 end), 0)`,
-                active_lent_count:
-                    sql<number>`coalesce(sum(case when ${loans.type} = 'lent' and ${loans.status} = 'active' then 1 else 0 end), 0)`,
+                borrowed_outstanding: sql<number>`coalesce(sum(case when ${loans.type} = 'borrowed' then ${loans.principal_amount} - ${loans.paid_amount} else 0 end), 0)`,
+                lent_outstanding: sql<number>`coalesce(sum(case when ${loans.type} = 'lent' then ${loans.principal_amount} - ${loans.paid_amount} else 0 end), 0)`,
+                active_borrowed_count: sql<number>`coalesce(sum(case when ${loans.type} = 'borrowed' and ${loans.status} = 'active' then 1 else 0 end), 0)`,
+                active_lent_count: sql<number>`coalesce(sum(case when ${loans.type} = 'lent' and ${loans.status} = 'active' then 1 else 0 end), 0)`,
             })
             .from(loans)
             .where(eq(loans.user_id, userId));
