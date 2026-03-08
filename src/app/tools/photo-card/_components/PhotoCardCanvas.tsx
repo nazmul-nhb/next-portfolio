@@ -24,6 +24,7 @@ import {
     type PhotoCardConfig,
     type TextLayer,
 } from '@/lib/photo-card/types';
+import { cn } from '@/lib/utils';
 import PhotoCardStageLayer from './PhotoCardStageLayer';
 
 type Props = {
@@ -35,6 +36,7 @@ type Props = {
     onSelectImage: (id: string) => void;
     onSelectText: (id: string) => void;
     onTextChange: (id: string, patch: Partial<TextLayer>) => void;
+    onAddImages?: (files: File[], section: 'canvas' | 'header' | 'footer') => void;
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -54,6 +56,7 @@ export default function PhotoCardCanvas({
     onSelectImage,
     onSelectText,
     onTextChange,
+    onAddImages,
 }: Props) {
     const [containerWidth, setContainerWidth] = useState(0);
     const [renderError, setRenderError] = useState<string | null>(null);
@@ -198,28 +201,53 @@ export default function PhotoCardCanvas({
             const startX = event.clientX;
             const startY = event.clientY;
             const startWidth = layer.width;
+            const startHeight = layer.height;
             const aspectRatio =
                 (layer.naturalWidth ?? layer.width) / (layer.naturalHeight ?? layer.height);
             const sectionBounds = getSectionBounds(config, layer.section);
+            const maintainRatio = layer.maintainAspectRatio !== false; // Default to true
 
             const onMove = (pointerEvent: PointerEvent) => {
-                const delta = Math.max(
-                    (pointerEvent.clientX - startX) / scale,
-                    (pointerEvent.clientY - startY) / scale
-                );
+                const deltaX = (pointerEvent.clientX - startX) / scale;
+                const deltaY = (pointerEvent.clientY - startY) / scale;
 
-                let nextWidth = clamp(startWidth + delta, 24, sectionBounds.width - layer.x);
-                let nextHeight = Math.round(nextWidth / aspectRatio);
+                if (maintainRatio) {
+                    // Keep aspect ratio
+                    const delta = Math.max(deltaX, deltaY);
+                    let nextWidth = clamp(
+                        startWidth + delta,
+                        24,
+                        sectionBounds.width - layer.x
+                    );
+                    let nextHeight = Math.round(nextWidth / aspectRatio);
 
-                if (nextHeight > sectionBounds.height - layer.y) {
-                    nextHeight = sectionBounds.height - layer.y;
-                    nextWidth = Math.round(nextHeight * aspectRatio);
+                    if (nextHeight > sectionBounds.height - layer.y) {
+                        nextHeight = sectionBounds.height - layer.y;
+                        nextWidth = Math.round(nextHeight * aspectRatio);
+                    }
+
+                    onImageChange(layer.id, {
+                        width: Math.max(24, nextWidth),
+                        height: Math.max(24, nextHeight),
+                    });
+                } else {
+                    // Free resize
+                    const nextWidth = clamp(
+                        startWidth + deltaX,
+                        24,
+                        sectionBounds.width - layer.x
+                    );
+                    const nextHeight = clamp(
+                        startHeight + deltaY,
+                        24,
+                        sectionBounds.height - layer.y
+                    );
+
+                    onImageChange(layer.id, {
+                        width: Math.max(24, nextWidth),
+                        height: Math.max(24, nextHeight),
+                    });
                 }
-
-                onImageChange(layer.id, {
-                    width: Math.max(24, nextWidth),
-                    height: Math.max(24, nextHeight),
-                });
             };
 
             const onUp = () => {
@@ -283,6 +311,43 @@ export default function PhotoCardCanvas({
         [config, onSelectText, onTextChange, scale]
     );
 
+    const [dragActive, setDragActive] = useState(false);
+
+    const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (event.dataTransfer.types.includes('Files')) {
+            event.dataTransfer.dropEffect = 'copy';
+            setDragActive(true);
+        }
+    }, []);
+
+    const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setDragActive(false);
+    }, []);
+
+    const handleDrop = useCallback(
+        (event: React.DragEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setDragActive(false);
+
+            if (!onAddImages) return;
+
+            const files = Array.from(event.dataTransfer.files).filter((file) =>
+                file.type.startsWith('image/')
+            );
+
+            if (files.length > 0) {
+                onAddImages(files, 'canvas');
+            }
+        },
+        [onAddImages]
+    );
+
     const hasAnyVisualLayer = config.images.length > 0 || config.texts.length > 0;
     const stageWidth = config.width * scale;
     const stageHeight = config.height * scale;
@@ -295,13 +360,21 @@ export default function PhotoCardCanvas({
                     Interactive Preview
                 </CardTitle>
                 <CardDescription>
-                    Drag layers to reposition, resize via corner handle. Header and footer areas
-                    stay visually separated.
+                    Drag layers to reposition, resize via corner handle. Drag images onto canvas
+                    to add. Header and footer areas stay visually separated.
                 </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-4">
-                <div className="custom-scroll overflow-auto rounded-2xl border bg-muted/30 p-4">
+                <div
+                    className={cn(
+                        'custom-scroll overflow-auto rounded-2xl border bg-muted/30 p-4 transition-colors',
+                        dragActive && 'border-primary bg-primary/5'
+                    )}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                >
                     <div className="w-full" ref={viewportRef}>
                         <div
                             className="mx-auto"

@@ -1,3 +1,4 @@
+import { clampNumber } from 'nhb-toolbox';
 import type { PhotoCardConfig, PhotoCardSectionId } from './types';
 
 export type PhotoCardSectionBounds = {
@@ -7,10 +8,6 @@ export type PhotoCardSectionBounds = {
     width: number;
     height: number;
 };
-
-function clamp(value: number, min: number, max: number) {
-    return Math.min(max, Math.max(min, value));
-}
 
 export function getSectionHeight(config: PhotoCardConfig, section: PhotoCardSectionId): number {
     if (section === 'header') {
@@ -88,7 +85,7 @@ export function clampLayerPositionToSection(
     const bounds = getSectionBounds(config, section);
 
     return {
-        x: clamp(Math.round(x), 0, Math.max(0, bounds.width - layerWidth)),
-        y: clamp(Math.round(y), 0, Math.max(0, bounds.height - layerHeight)),
+        x: clampNumber(Math.round(x), 0, Math.max(0, bounds.width - layerWidth)),
+        y: clampNumber(Math.round(y), 0, Math.max(0, bounds.height - layerHeight)),
     };
 }

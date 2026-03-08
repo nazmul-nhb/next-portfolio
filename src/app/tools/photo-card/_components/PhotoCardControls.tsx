@@ -197,13 +197,20 @@ export default function PhotoCardControls({
                                     <div className="flex items-center gap-2">
                                         <Checkbox
                                             checked={section.enabled}
+                                            id={sectionKey}
+                                            name={sectionKey}
                                             onCheckedChange={(checked) =>
                                                 onSectionChange(sectionKey, {
                                                     enabled: checked === true,
                                                 })
                                             }
                                         />
-                                        <span className="text-sm">Enabled</span>
+                                        <label
+                                            className="text-sm mt-1 select-none cursor-pointer"
+                                            htmlFor={sectionKey}
+                                        >
+                                            Enabled
+                                        </label>
                                     </div>
                                 </div>
 
@@ -226,6 +233,7 @@ export default function PhotoCardControls({
                                         <div className="text-sm font-medium">Background</div>
                                         <ColorInputField
                                             ariaLabel={`${sectionKey} background color`}
+                                            // label="Background"
                                             onChange={(value) =>
                                                 onSectionChange(sectionKey, {
                                                     backgroundColor: value,
@@ -285,7 +293,7 @@ export default function PhotoCardControls({
                         />
                         <Button asChild type="button" variant="outline">
                             <label
-                                className="inline-flex items-center gap-2"
+                                className="inline-flex items-center gap-2 cursor-pointer"
                                 htmlFor="photo-card-image-upload"
                             >
                                 <Upload />
@@ -430,7 +438,7 @@ export default function PhotoCardControls({
                     </CardTitle>
                     <CardDescription>
                         Everything stays in this browser. You can reload a saved configuration
-                        or export it again later.
+                        or export it later.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

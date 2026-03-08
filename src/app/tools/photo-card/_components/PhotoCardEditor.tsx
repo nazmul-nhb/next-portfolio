@@ -379,14 +379,19 @@ export default function PhotoCardEditor() {
         }));
     };
 
-    const handleUploadImages = (files: FileList | null) => {
-        if (!files?.length) return;
+    const handleAddImages = (
+        files: FileList | File[] | null,
+        targetSection: PhotoCardSectionId = 'canvas'
+    ) => {
+        const fileArray =
+            files instanceof FileList ? Array.from(files) : Array.isArray(files) ? files : [];
+
+        if (!fileArray.length) return;
 
         void (async () => {
             try {
-                const targetSection = newLayerSection;
                 const nextLayers = await Promise.all(
-                    Array.from(files).map(async (file) => {
+                    fileArray.map(async (file) => {
                         const loaded = await fileToDataUrl(file);
                         const fitted = fitImageToSection(
                             loaded.naturalWidth,
@@ -405,6 +410,7 @@ export default function PhotoCardEditor() {
                             height: fitted.height,
                             naturalWidth: loaded.naturalWidth,
                             naturalHeight: loaded.naturalHeight,
+                            maintainAspectRatio: true,
                         } satisfies ImageLayer;
                     })
                 );
@@ -425,6 +431,11 @@ export default function PhotoCardEditor() {
                 toast.error(getExportErrorMessage(error));
             }
         })();
+    };
+
+    const handleUploadImages = (files: FileList | null) => {
+        if (!files?.length) return;
+        handleAddImages(files, newLayerSection);
     };
 
     const handleAddTextLayer = () => {
@@ -546,6 +557,7 @@ export default function PhotoCardEditor() {
                 activeTextId={activeTextId}
                 canvasRef={canvasRef}
                 config={config}
+                onAddImages={handleAddImages}
                 onImageChange={updateImageLayer}
                 onSelectImage={setActiveImageId}
                 onSelectText={setActiveTextId}

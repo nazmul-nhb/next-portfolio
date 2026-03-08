@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, ImageIcon, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -187,6 +188,22 @@ export default function ImageLayerEditor({
                         value={layer.height}
                     />
                 </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+                <Checkbox
+                    checked={layer.maintainAspectRatio !== false}
+                    id={`image-aspect-ratio-${layer.id}`}
+                    onCheckedChange={(checked) =>
+                        onChange({ maintainAspectRatio: Boolean(checked) })
+                    }
+                />
+                <Label
+                    className="text-sm font-medium cursor-pointer"
+                    htmlFor={`image-aspect-ratio-${layer.id}`}
+                >
+                    Maintain aspect ratio while resizing
+                </Label>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

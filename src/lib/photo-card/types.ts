@@ -37,6 +37,7 @@ export type ImageLayer = {
     height: number;
     naturalWidth?: number;
     naturalHeight?: number;
+    maintainAspectRatio?: boolean;
 };
 
 export type TextLayer = {
