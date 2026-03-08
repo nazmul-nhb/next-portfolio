@@ -3,7 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { CaseSensitive, Pilcrow, TextWrap, Type, WholeWord } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
-import { countWords, formatWithPlural } from 'nhb-toolbox';
+import { countWords, formatWithPlural, parseMSec, roundNumber } from 'nhb-toolbox';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import { Badge } from '@/components/ui/badge';
@@ -62,7 +62,8 @@ export default function WordCounter() {
         const sentences = text ? text.split(/[.!।?]+/).filter((s) => s.trim()).length : 0;
         const avgWordLength = wordCnt > 0 ? (charCntNoSpace / wordCnt).toFixed(1) : '0';
         const avgSentenceLength = sentences > 0 ? (wordCnt / sentences).toFixed(1) : '0';
-        const readingTimeMinutes = Math.ceil(wordCnt / 200);
+        const readingTimeMins = wordCnt / 200;
+        const readingTimeSecs = parseMSec(`${readingTimeMins}min`, true);
 
         return {
             words: wordCnt,
@@ -72,7 +73,13 @@ export default function WordCounter() {
             sentences,
             avgWordLength: parseFloat(avgWordLength),
             avgSentenceLength: parseFloat(avgSentenceLength),
-            readingTimeMinutes,
+            readingTime: {
+                value:
+                    readingTimeMins < 1
+                        ? roundNumber(readingTimeSecs)
+                        : roundNumber(readingTimeMins),
+                unit: readingTimeMins < 1 ? 'sec' : 'min',
+            },
         };
     }, [inputText]);
 
@@ -120,7 +127,7 @@ export default function WordCounter() {
 
                     <CardContent>
                         <Textarea
-                            className="w-full min-h-64 font-cascadia text-sm resize-y"
+                            className="w-full min-h-64 max-h-112 custom-scroll font-cascadia text-sm"
                             onChange={handleInputChange}
                             placeholder="Type or paste your text here..."
                             value={inputText}
@@ -160,7 +167,7 @@ export default function WordCounter() {
                                                 key={item.value}
                                                 transition={{ duration: 0.25 }}
                                             >
-                                                <p className="text-2xl md:text-3xl font-bold tracking-tight">
+                                                <p className="text-2xl md:text-3xl font-bold font-cascadia tracking-tight">
                                                     {item.value}
                                                 </p>
                                             </motion.div>
@@ -196,7 +203,7 @@ export default function WordCounter() {
                                 />
                                 <StatsRow
                                     title="Reading Time"
-                                    value={`~ ${formatWithPlural(stats.readingTimeMinutes, 'min')}`}
+                                    value={`~ ${formatWithPlural(stats.readingTime.value, stats.readingTime.unit)}`}
                                 />
                             </motion.div>
                         </CardContent>
@@ -216,7 +223,7 @@ function StatsRow({ title, value }: StatsProps) {
     return (
         <div className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors">
             <span className="text-xs font-medium text-muted-foreground">{title}</span>
-            <Badge className="font-cascadia" variant="secondary">
+            <Badge className="font-cascadia" variant="outline">
                 {value}
             </Badge>
         </div>
