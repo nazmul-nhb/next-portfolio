@@ -425,7 +425,7 @@ export default function PhotoCardControls({
                         variant="secondary"
                     >
                         {savePending ? <Loader2 className="animate-spin" /> : <Save />}
-                        Save to IndexedDB
+                        Save
                     </Button>
                 </CardContent>
             </Card>
@@ -450,7 +450,10 @@ export default function PhotoCardControls({
                     ) : savedCards.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2">
                             {savedCards.map((card) => (
-                                <div className="space-y-3 rounded-xl border p-3" key={card.id}>
+                                <div
+                                    className="space-y-3 rounded-xl border p-1.5"
+                                    key={card.id}
+                                >
                                     <div className="overflow-hidden rounded-lg border bg-muted/30">
                                         {previewUrls[card.id] ? (
                                             // biome-ignore lint/performance/noImgElement: used only for preview thumbnails

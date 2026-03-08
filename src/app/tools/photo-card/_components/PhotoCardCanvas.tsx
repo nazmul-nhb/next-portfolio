@@ -437,7 +437,7 @@ export default function PhotoCardCanvas({
                                                         }}
                                                     >
                                                         <div
-                                                            className="absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider"
+                                                            className="absolute left-3 top-3 rounded-full px-3 py-1 text-2xl uppercase tracking-wider"
                                                             style={{
                                                                 backgroundColor: tokens.base,
                                                                 color: tokens.foreground,

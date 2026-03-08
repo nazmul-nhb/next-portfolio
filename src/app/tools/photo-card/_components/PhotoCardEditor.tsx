@@ -523,36 +523,38 @@ export default function PhotoCardEditor() {
     };
 
     return useMount(
-        <div className="mx-auto max-w-full grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-            <PhotoCardControls
-                activeImageId={activeImageId}
-                activeTextId={activeTextId}
-                config={config}
-                newLayerSection={newLayerSection}
-                onAddTextLayer={handleAddTextLayer}
-                onCanvasChange={updateCanvas}
-                onDeleteSaved={(id) => deleteMutation.mutate(id)}
-                onDownloadSaved={handleDownloadSaved}
-                onExport={handleExport}
-                onImageChange={updateImageLayer}
-                onImageMove={moveImageLayer}
-                onImageRemove={removeImageLayer}
-                onLoadSaved={handleLoadSaved}
-                onNewLayerSectionChange={setNewLayerSection}
-                onSaveToIndexedDb={handleSaveToIndexedDb}
-                onSectionChange={updateSection}
-                onSelectImage={setActiveImageId}
-                onSelectText={setActiveTextId}
-                onTextChange={updateTextLayer}
-                onTextMove={moveTextLayer}
-                onTextRemove={removeTextLayer}
-                onUploadImages={handleUploadImages}
-                previewUrls={previewUrls}
-                savedCards={savedCards}
-                savedCardsLoading={savedCardsQuery.isLoading}
-                savePending={saveMutation.isPending}
-                validationIssues={validationIssues}
-            />
+        <div className="mx-auto max-w-full xl:h-[calc(100vh-6rem)] grid gap-6 grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+            <div className="xl:overflow-y-auto custom-scroll xl:border xl:p-1">
+                <PhotoCardControls
+                    activeImageId={activeImageId}
+                    activeTextId={activeTextId}
+                    config={config}
+                    newLayerSection={newLayerSection}
+                    onAddTextLayer={handleAddTextLayer}
+                    onCanvasChange={updateCanvas}
+                    onDeleteSaved={(id) => deleteMutation.mutate(id)}
+                    onDownloadSaved={handleDownloadSaved}
+                    onExport={handleExport}
+                    onImageChange={updateImageLayer}
+                    onImageMove={moveImageLayer}
+                    onImageRemove={removeImageLayer}
+                    onLoadSaved={handleLoadSaved}
+                    onNewLayerSectionChange={setNewLayerSection}
+                    onSaveToIndexedDb={handleSaveToIndexedDb}
+                    onSectionChange={updateSection}
+                    onSelectImage={setActiveImageId}
+                    onSelectText={setActiveTextId}
+                    onTextChange={updateTextLayer}
+                    onTextMove={moveTextLayer}
+                    onTextRemove={removeTextLayer}
+                    onUploadImages={handleUploadImages}
+                    previewUrls={previewUrls}
+                    savedCards={savedCards}
+                    savedCardsLoading={savedCardsQuery.isLoading}
+                    savePending={saveMutation.isPending}
+                    validationIssues={validationIssues}
+                />
+            </div>
 
             <PhotoCardCanvas
                 activeImageId={activeImageId}
