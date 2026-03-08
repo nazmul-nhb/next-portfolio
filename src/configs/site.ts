@@ -27,7 +27,7 @@ import type { Route } from 'next';
 import type { ComponentType } from 'react';
 import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
-import { SiNpm } from 'react-icons/si';
+import { ImNpm } from 'react-icons/im';
 import type { TabItem } from '@/types';
 
 export const siteConfig = {
@@ -123,9 +123,9 @@ export const siteConfig = {
         {
             href: '/tools/npm-package',
             label: 'Package Details',
-            icon: SiNpm,
+            icon: ImNpm,
             description:
-                'Search for any npm package and view comprehensive details including downloads and maintainers.',
+                'Search for npm package(s) and view comprehensive details including downloads and maintainers.',
         },
         {
             href: '/tools/photo-card',

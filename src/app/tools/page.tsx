@@ -54,7 +54,9 @@ export default function ToolsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription>{description}</CardDescription>
+                            <CardDescription className="line-clamp-2">
+                                {description}
+                            </CardDescription>
                         </CardContent>
                         <CardFooter className="border-t flex-1">
                             <Link
