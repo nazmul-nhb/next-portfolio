@@ -1,6 +1,8 @@
 import { motion, type Variants } from 'framer-motion';
 import { Calendar, Download, Package } from 'lucide-react';
+import CodeBlock from '@/components/misc/code-block';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
 
 function formatNumber(num: number): string {
@@ -12,9 +14,10 @@ interface StatCardProps {
     value: string | number;
     icon: React.ReactNode;
     color: 'blue' | 'emerald' | 'purple' | 'amber' | 'pink';
+    className?: string;
 }
 
-function StatCard({ label, value, icon, color }: StatCardProps) {
+function StatCard({ label, value, icon, color, className }: StatCardProps) {
     const colorClasses = {
         blue: 'text-blue-600 dark:text-blue-400',
         emerald: 'text-emerald-600 dark:text-emerald-400',
@@ -26,12 +29,12 @@ function StatCard({ label, value, icon, color }: StatCardProps) {
     return (
         <motion.div
             animate={{ opacity: 1, scale: 1 }}
-            className="flex-1 shrink-0"
+            className={cn(className)}
             initial={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
         >
             <Card className="h-full">
-                <CardContent className="p-4">
+                <CardContent>
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-medium text-muted-foreground">{label}</p>
@@ -39,12 +42,13 @@ function StatCard({ label, value, icon, color }: StatCardProps) {
                         </div>
                         <motion.p
                             animate={{ opacity: 1, scale: 1 }}
-                            className="text-xl md:text-2xl font-bold tracking-tight"
                             initial={{ opacity: 0, scale: 0.8 }}
                             key={value}
                             transition={{ duration: 0.25 }}
                         >
-                            {value}
+                            <CodeBlock className="text-lg md:text-xl font-bold tracking-tight">
+                                {value}
+                            </CodeBlock>
                         </motion.p>
                     </div>
                 </CardContent>
@@ -61,14 +65,16 @@ interface PackageStatsProps {
 export function PackageStats({ data, variants }: PackageStatsProps) {
     return (
         <motion.div className="space-y-3" variants={variants}>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-between">
                 <StatCard
+                    className="shrink-0 flex-1"
                     color="purple"
                     icon={<Package className="size-4" />}
                     label="Package"
                     value={data.package}
                 />
                 <StatCard
+                    className="shrink-0 flex-1"
                     color="emerald"
                     icon={<Download className="size-4" />}
                     label="Total Downloads"

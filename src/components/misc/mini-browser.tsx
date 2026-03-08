@@ -20,7 +20,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import SmartTooltip from '@/components/misc/smart-tooltip';
-import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import { buildCloudinaryUrl, cn, hasErrorMessage } from '@/lib/utils';
 
 const MIN_W = 320;
 const MIN_H = 300;
@@ -309,7 +309,7 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                 if (abortController.signal.aborted) return;
 
                 setGithubReadmeError(
-                    error instanceof Error
+                    hasErrorMessage(error)
                         ? error.message
                         : 'Failed to load README from GitHub.'
                 );

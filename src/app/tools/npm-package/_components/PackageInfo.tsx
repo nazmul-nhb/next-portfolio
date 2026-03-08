@@ -1,5 +1,7 @@
 import { motion, type Variants } from 'framer-motion';
-import { Code, FileText, Link as LinkIcon } from 'lucide-react';
+import { Code, FileText } from 'lucide-react';
+import { FaGitAlt } from 'react-icons/fa';
+import LivePreviewButton from '@/components/misc/live-preview';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PackageResponse } from '@/types/npm';
@@ -17,11 +19,13 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
     return (
         <motion.div variants={variants}>
             <Card>
-                <CardHeader>
+                <CardHeader className="flex justify-between items-center gap-2 flex-wrap">
                     <CardTitle className="flex items-center gap-2">
                         <FileText className="size-5" />
                         Package Information
                     </CardTitle>
+
+                    {data.license && <Badge>{data.license}</Badge>}
                 </CardHeader>
                 <CardContent className="space-y-5">
                     {data.description && (
@@ -30,6 +34,39 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                                 Description
                             </p>
                             <p className="text-sm text-foreground">{data.description}</p>
+                        </div>
+                    )}
+
+                    {data.homepage && (
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2">
+                                Homepage
+                            </p>
+                            <div className="flex items-center gap-3">
+                                <LivePreviewButton
+                                    previewLabel="Preview Homepage"
+                                    title={`Homepage of ${data.package}`}
+                                    url={data.homepage}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {data.repository && (
+                        <div>
+                            <a
+                                className="flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:underline"
+                                href={
+                                    data.repository.url?.startsWith('git+')
+                                        ? data.repository.url.replace('git+', '')
+                                        : data.repository.url
+                                }
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                <FaGitAlt className="size-4 mb-0.5" />
+                                Repository
+                            </a>
                         </div>
                     )}
 
@@ -48,34 +85,6 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                             </div>
                         </div>
                     )}
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {data.license && (
-                            <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-2">
-                                    License
-                                </p>
-                                <Badge>{data.license}</Badge>
-                            </div>
-                        )}
-
-                        {data.homepage && (
-                            <div>
-                                <p className="text-xs font-medium text-muted-foreground mb-2">
-                                    Homepage
-                                </p>
-                                <a
-                                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                                    href={data.homepage}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    <LinkIcon className="size-3" />
-                                    View Homepage
-                                </a>
-                            </div>
-                        )}
-                    </div>
                 </CardContent>
             </Card>
         </motion.div>

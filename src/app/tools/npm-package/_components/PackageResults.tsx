@@ -4,10 +4,9 @@ import EmptyData from '@/components/misc/empty-data';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { PackageResponse } from '@/types/npm';
 import { AuthorsSection } from './AuthorsSection';
-import { KeywordsSection } from './KeywordsSection';
 import { PackageInfo } from './PackageInfo';
 import { PackageStats } from './PackageStats';
-import { RepositorySection } from './RepositorySection';
+import { hasErrorMessage } from '@/lib/utils';
 
 interface PackageResultsProps {
     data: PackageResponse | null;
@@ -24,8 +23,9 @@ export function PackageResults({
     containerVariants,
     itemVariants,
 }: PackageResultsProps) {
-    const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch package details';
+    const errorMessage = hasErrorMessage(error)
+        ? error.message
+        : 'Failed to fetch package details';
 
     if (error) {
         return (
@@ -59,9 +59,7 @@ export function PackageResults({
         >
             <PackageStats data={data} variants={itemVariants} />
             <PackageInfo data={data} variants={itemVariants} />
-            <RepositorySection data={data} variants={itemVariants} />
             <AuthorsSection data={data} variants={itemVariants} />
-            <KeywordsSection data={data} variants={itemVariants} />
         </motion.div>
     );
 }

@@ -35,7 +35,7 @@ interface Bugs {
     email: string;
 }
 
-interface Contributor {
+export interface Contributor {
     url: string;
     name: string;
     email: string;
@@ -65,7 +65,6 @@ export const PKG_FIELDS = [
     'dist-tags',
     'description',
     'homepage',
-    'keywords',
     'license',
     'maintainers',
     'repository',

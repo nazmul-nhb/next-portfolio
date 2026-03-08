@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import NpmPackageDetails from './_components/PackageDetails';
+import { Suspense } from 'react';
+import Loading from '@/components/misc/loading';
 
 const description =
     'Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, keywords, and more.';
@@ -29,5 +31,9 @@ export const metadata: Metadata = {
 };
 
 export default function NpmPackagePage() {
-    return <NpmPackageDetails />;
+    return (
+        <Suspense fallback={<Loading />}>
+            <NpmPackageDetails />
+        </Suspense>
+    );
 }
