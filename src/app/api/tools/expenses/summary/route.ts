@@ -2,10 +2,10 @@ import { eq, sql } from 'drizzle-orm';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { auth } from '@/lib/auth';
-import { calculateNetBalance } from '@/lib/expenses';
 import { db } from '@/lib/drizzle';
 import { expenses, loans } from '@/lib/drizzle/schema/expenses';
 import { users } from '@/lib/drizzle/schema/users';
+import { calculateNetBalance } from '@/lib/expenses';
 import type { ExpenseSummary } from '@/types/expenses';
 
 /**
