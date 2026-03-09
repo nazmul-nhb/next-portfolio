@@ -33,7 +33,7 @@ function StatCard({ label, value, icon, color, className }: StatCardProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
         >
-            <Card className="h-full">
+            <Card className="h-full" size="sm">
                 <CardContent>
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">

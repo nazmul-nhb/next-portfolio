@@ -46,7 +46,7 @@ function PackageResultsSkeleton() {
                             <Skeleton className="h-3 w-24" />
                             <Skeleton className="size-4 rounded-full" />
                         </div>
-                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-10 w-full" />
                     </div>
                 </CardContent>
             </Card>
