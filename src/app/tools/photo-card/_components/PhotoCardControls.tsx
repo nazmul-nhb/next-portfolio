@@ -569,7 +569,7 @@ export default function PhotoCardControls({
     ] satisfies Array<{ id: string; section: JSX.Element }>;
 
     return (
-        <div className="space-y-6 max-w-full mx-auto">
+        <div className="space-y-6 max-w-full mx-auto max-h-fit">
             {validationIssues.length > 0 && (
                 <SmartAlert
                     description={

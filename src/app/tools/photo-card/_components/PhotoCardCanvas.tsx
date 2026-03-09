@@ -349,7 +349,7 @@ export default function PhotoCardCanvas({
     const stageHeight = config.height * scale;
 
     return (
-        <Card className="custom-scroll overflow-y-auto xl:sticky xl:top-20 rounded-none bg-transparent">
+        <Card className="custom-scroll overflow-y-auto xl:sticky xl:top-20 rounded-none bg-transparent max-h-fit pb-0">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Layers3 className="size-5" />

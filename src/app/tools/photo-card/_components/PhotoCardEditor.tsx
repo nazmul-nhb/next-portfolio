@@ -524,7 +524,7 @@ export default function PhotoCardEditor() {
 
     return useMount(
         <div className="mx-auto max-w-full xl:h-[calc(100vh-6rem)] grid gap-4 grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-            <div className="xl:overflow-y-auto custom-scroll xl:border xl:p-1">
+            <div className="xl:overflow-y-auto custom-scroll border p-1 max-h-fit">
                 <PhotoCardControls
                     activeImageId={activeImageId}
                     activeTextId={activeTextId}
