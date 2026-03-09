@@ -349,22 +349,21 @@ export default function PhotoCardCanvas({
     const stageHeight = config.height * scale;
 
     return (
-        <Card className="xl:sticky xl:top-20">
+        <Card className="custom-scroll overflow-y-auto xl:sticky xl:top-20 rounded-none bg-transparent">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Layers3 className="size-5" />
                     Interactive Preview
                 </CardTitle>
                 <CardDescription>
-                    Drag layers to reposition, resize via corner handle. Drag images onto canvas
-                    to add. Header and footer areas stay visually separated.
+                    Drag images onto canvas to add. You can reposition and/or resize layers.
                 </CardDescription>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 p-1.5">
                 <div
                     className={cn(
-                        'custom-scroll overflow-auto rounded-2xl border bg-muted/30 p-4 transition-colors',
+                        'custom-scroll overflow-auto rounded-none border bg-muted/30 px-2 py-2.5 transition-colors',
                         dragActive && 'border-primary bg-primary/5'
                     )}
                     onDragLeave={handleDragLeave}
@@ -387,7 +386,7 @@ export default function PhotoCardCanvas({
                             >
                                 {/* Canvas Background */}
                                 <canvas
-                                    className="absolute inset-0 size-full rounded-xl border bg-background shadow-sm pointer-events-none"
+                                    className="absolute inset-0 size-full border bg-background shadow-sm pointer-events-none"
                                     ref={canvasRef}
                                 />
 
@@ -543,7 +542,7 @@ export default function PhotoCardCanvas({
                 ) : !hasAnyVisualLayer &&
                   !config.sections.header.enabled &&
                   !config.sections.footer.enabled ? (
-                    <div className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
+                    <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
                         <ImageOff className="mx-auto mb-2 size-5" />
                         Add an image or text layer to compose your photo card.
                     </div>
