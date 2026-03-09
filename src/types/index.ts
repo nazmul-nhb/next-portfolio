@@ -4,6 +4,7 @@ import type { GenericObject } from 'nhb-toolbox/object/types';
 import type React from 'react';
 import type { ReactNode, SVGProps } from 'react';
 import type { SiteConfig } from '@/configs/site';
+import type { FONT_OPTIONS } from '@/lib/constants';
 
 export type Uncertain<T> = T | null | undefined;
 
@@ -88,3 +89,5 @@ export interface ReorderItem {
 export type ReplaceDate<T extends GenericObject> = {
     [K in keyof T]: T[K] extends Date ? string : T[K];
 };
+
+export type FontId = (typeof FONT_OPTIONS)[number]['value'];

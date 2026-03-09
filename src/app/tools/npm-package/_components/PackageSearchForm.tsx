@@ -22,7 +22,8 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { NPM_START, type PackageSearch } from '@/types/npm';
+import { NPM_START } from '@/lib/constants';
+import type { PackageSearch } from '@/types/npm';
 
 const NpmPackageSchema = z.object({
     package: z.string().min(1, 'Package name is required'),

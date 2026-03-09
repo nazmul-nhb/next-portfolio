@@ -13,11 +13,11 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-    PHOTO_CARD_FONT_OPTIONS,
+    FONT_OPTIONS,
     PHOTO_CARD_SECTION_LABELS,
     PHOTO_CARD_SECTION_OPTIONS,
-} from '@/lib/photo-card/constants';
-import type { PhotoCardFontId, PhotoCardSectionId, TextLayer } from '@/lib/photo-card/types';
+} from '@/lib/constants';
+import type { FontId, PhotoCardSectionId, TextLayer } from '@/lib/photo-card/types';
 import { getPhotoCardFontOption } from '@/lib/photo-card/utils';
 import { cn } from '@/lib/utils';
 import ColorInputField from './ColorInputField';
@@ -140,9 +140,7 @@ export default function TextLayerEditor({
                 <div className="space-y-2">
                     <Label htmlFor={`text-layer-font-${layer.id}`}>Font</Label>
                     <Select
-                        onValueChange={(value) =>
-                            onChange({ fontFamily: value as PhotoCardFontId })
-                        }
+                        onValueChange={(value) => onChange({ fontFamily: value as FontId })}
                         value={layer.fontFamily}
                     >
                         <SelectTrigger
@@ -152,7 +150,7 @@ export default function TextLayerEditor({
                             <SelectValue placeholder="Select a font" />
                         </SelectTrigger>
                         <SelectContent>
-                            {PHOTO_CARD_FONT_OPTIONS.map((option) => (
+                            {FONT_OPTIONS.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
                                     <span style={{ fontFamily: option.fontFamily }}>
                                         {option.label}

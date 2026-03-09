@@ -37,8 +37,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/constants';
 import type { SavedPhotoCard } from '@/lib/indexed-db';
-import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/photo-card/constants';
 import type {
     ImageLayer,
     PhotoCardConfig,

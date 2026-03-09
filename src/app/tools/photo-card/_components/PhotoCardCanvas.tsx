@@ -10,8 +10,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { PHOTO_CARD_SECTION_LABELS } from '@/lib/constants';
 import { getPhotoCardColorTokens } from '@/lib/photo-card/colors';
-import { PHOTO_CARD_SECTION_LABELS } from '@/lib/photo-card/constants';
 import {
     clampLayerPositionToSection,
     getAbsoluteLayerPosition,

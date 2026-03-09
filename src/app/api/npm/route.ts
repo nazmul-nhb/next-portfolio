@@ -3,7 +3,8 @@ import type { NextRequest } from 'next/server';
 import { getTimestamp, pickFields } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
-import { NPM_START, type PackageDetails, type PackageDlData, PKG_FIELDS } from '@/types/npm';
+import { NPM_START, PKG_FIELDS } from '@/lib/constants';
+import type { PackageDetails, PackageDlData } from '@/types/npm';
 
 export async function GET(req: NextRequest) {
     try {

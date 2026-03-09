@@ -13,13 +13,13 @@ import {
 import { normalizePhotoCardConfig } from '@/lib/photo-card/utils';
 import { hasErrorMessage } from '@/lib/utils';
 import { getAbsoluteLayerPosition, getSectionBounds } from './layout';
-import type { PhotoCardConfig, PhotoCardFontId, TextLayer } from './types';
+import type { FontId, PhotoCardConfig, TextLayer } from './types';
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 let fontsReadyPromise: Promise<void> | null = null;
 let textMeasureCanvas: HTMLCanvasElement | null = null;
 
-const FONT_FAMILY_MAP: Record<PhotoCardFontId, string> = {
+const FONT_FAMILY_MAP: Record<FontId, string> = {
     inter: inter.style.fontFamily,
     poppins: poppins.style.fontFamily,
     playfair: playfairDisplay.style.fontFamily,
@@ -32,7 +32,7 @@ const FONT_FAMILY_MAP: Record<PhotoCardFontId, string> = {
     'source-sans': sourceSans.style.fontFamily,
 };
 
-export function resolvePhotoCardFontFamily(fontId: PhotoCardFontId) {
+export function resolvePhotoCardFontFamily(fontId: FontId) {
     return FONT_FAMILY_MAP[fontId] ?? inter.style.fontFamily;
 }
 

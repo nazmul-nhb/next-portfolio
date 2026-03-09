@@ -12,10 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    PHOTO_CARD_SECTION_LABELS,
-    PHOTO_CARD_SECTION_OPTIONS,
-} from '@/lib/photo-card/constants';
+import { PHOTO_CARD_SECTION_LABELS, PHOTO_CARD_SECTION_OPTIONS } from '@/lib/constants';
 import type { ImageLayer, PhotoCardSectionId } from '@/lib/photo-card/types';
 import { cn } from '@/lib/utils';
 import DraftNumberInput from './DraftNumberInput';

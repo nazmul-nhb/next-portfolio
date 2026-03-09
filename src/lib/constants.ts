@@ -1,7 +1,7 @@
 /**
  * Font configuration options for photo card text layers
  */
-export const PHOTO_CARD_FONT_OPTIONS = [
+export const FONT_OPTIONS = [
     {
         value: 'inter',
         label: 'Inter',
@@ -75,3 +75,16 @@ export const PHOTO_CARD_SECTION_OPTIONS = PHOTO_CARD_SECTION_IDS.map((value) => 
     value,
     label: PHOTO_CARD_SECTION_LABELS[value],
 })) as ReadonlyArray<{ value: (typeof PHOTO_CARD_SECTION_IDS)[number]; label: string }>;
+
+export const PKG_FIELDS = [
+    'author',
+    'contributors',
+    'dist-tags',
+    'description',
+    'homepage',
+    'license',
+    'maintainers',
+    'repository',
+] as const;
+
+export const NPM_START = '2010-01-01';

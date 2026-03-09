@@ -8,8 +8,9 @@ import { generateQueryParams, getTimestamp } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
+import { NPM_START } from '@/lib/constants';
 import { useApiQuery } from '@/lib/hooks/use-api';
-import { NPM_START, type PackageResponse, type PackageSearch } from '@/types/npm';
+import type { PackageResponse, PackageSearch } from '@/types/npm';
 import { PackageResults } from './PackageResults';
 import { PackageSearchForm } from './PackageSearchForm';
 

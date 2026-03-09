@@ -16,7 +16,7 @@ const dbSchema = defineSchema({
         previewBlob: column.custom<Blob>(),
     },
     resume: {
-        id: column.int().pk(),
+        id: column.uuid().pk(),
         createdAt: column.timestamp(),
     },
 });

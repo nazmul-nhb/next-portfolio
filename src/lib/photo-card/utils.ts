@@ -1,11 +1,7 @@
 import { uuid } from 'nhb-toolbox/hash';
-import {
-    PHOTO_CARD_FONT_OPTIONS,
-    PHOTO_CARD_SECTION_IDS,
-    PHOTO_CARD_SECTION_LABELS,
-} from './constants';
+import { FONT_OPTIONS, PHOTO_CARD_SECTION_IDS, PHOTO_CARD_SECTION_LABELS } from '../constants';
 import { PhotoCardConfigSchema } from './schema';
-import type { PhotoCardConfig, PhotoCardFontId, PhotoCardSectionId, TextLayer } from './types';
+import type { FontId, PhotoCardConfig, PhotoCardSectionId, TextLayer } from './types';
 
 /**
  * Creates a default text layer with sensible defaults
@@ -61,11 +57,8 @@ export function normalizePhotoCardConfig(config: unknown): PhotoCardConfig {
 /**
  * Gets the font option object for a given font ID
  */
-export function getPhotoCardFontOption(fontId: PhotoCardFontId) {
-    return (
-        PHOTO_CARD_FONT_OPTIONS.find((option) => option.value === fontId) ??
-        PHOTO_CARD_FONT_OPTIONS[0]
-    );
+export function getPhotoCardFontOption(fontId: FontId) {
+    return FONT_OPTIONS.find((option) => option.value === fontId) ?? FONT_OPTIONS[0];
 }
 
 /**

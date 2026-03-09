@@ -1,7 +1,6 @@
-import type { PHOTO_CARD_FONT_OPTIONS, PHOTO_CARD_SECTION_IDS } from './constants';
+import type { FontId } from '@/types';
+import type { PHOTO_CARD_SECTION_IDS } from '../constants';
 
-// Type definitions
-export type PhotoCardFontId = (typeof PHOTO_CARD_FONT_OPTIONS)[number]['value'];
 export type PhotoCardSectionId = (typeof PHOTO_CARD_SECTION_IDS)[number];
 
 export type PhotoCardSectionConfig = {
@@ -27,7 +26,7 @@ export type TextLayer = {
     id: string;
     section: PhotoCardSectionId;
     text: string;
-    fontFamily: PhotoCardFontId;
+    fontFamily: FontId;
     fontSize: number;
     color: string;
     x: number;
