@@ -34,7 +34,7 @@ type SavedResumeInsert = InferInsertType<typeof dbSchema.resumes>;
 function createDB() {
     return new Locality({
         dbName: 'nazmul-nhb.dev',
-        version: 1,
+        version: 2,
         schema: dbSchema,
     });
 }

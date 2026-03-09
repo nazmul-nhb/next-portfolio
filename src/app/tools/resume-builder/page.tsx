@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
 import { FileText } from 'lucide-react';
+import type { Metadata } from 'next';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import SmartAlert from '@/components/misc/smart-alert';
@@ -35,7 +35,7 @@ export default function ResumeBuilderPage() {
     return (
         <div className="space-y-8 max-w-full">
             <TitleWithShare
-                description="Build professional resumes with live preview, customizable fonts, sections, and local IndexedDB storage. Create and save multiple resume versions effortlessly."
+                description="Build professional resumes with live preview, customizable fonts, sections, and more. Create and save multiple resume versions effortlessly."
                 route={'/tools/resume-builder'}
                 title="Resume Builder"
             />

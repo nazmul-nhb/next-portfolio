@@ -366,9 +366,9 @@ export default function ResumeBuilder() {
     );
 
     return (
-        <div className="grid gap-6 lg:grid-cols-3 max-w-full">
+        <div className="grid gap-4 lg:grid-cols-3 max-w-full">
             {/* Controls */}
-            <div className="lg:col-span-1 order-2 lg:order-1">
+            <div className="lg:col-span-1 order-2 lg:order-1 max-h-[calc(100vh-6rem)] custom-scroll overflow-y-auto">
                 <ResumeControls
                     config={config}
                     loadingResumes={savedResumesQuery.isLoading}
@@ -402,7 +402,7 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Preview */}
-            <div className="lg:col-span-2 order-1 lg:order-2">
+            <div className="lg:col-span-2 order-1 lg:order-2 max-h-[calc(100vh-6rem)] custom-scroll overflow-y-auto">
                 <ResumePrevier
                     config={config}
                     onImageChange={(patch) => {

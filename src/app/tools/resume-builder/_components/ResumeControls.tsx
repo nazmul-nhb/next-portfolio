@@ -1144,7 +1144,7 @@ export function ResumeControls({
     ];
 
     return (
-        <div className="space-y-6 max-w-full mx-auto max-h-fit">
+        <div className="space-y-6 max-w-full mx-auto custom-scroll border overflow-y-auto max-h-fit">
             {validationIssues.length > 0 && (
                 <SmartAlert
                     description={
@@ -1159,8 +1159,8 @@ export function ResumeControls({
                 />
             )}
 
-            <Tabs className="w-full" defaultValue="header">
-                <TabsList className="overflow-x-auto" variant="line">
+            <Tabs className="w-full" defaultValue="summary">
+                <TabsList variant="line">
                     {TABS.map((tab) => (
                         <TabsTrigger key={tab.id} value={tab.id}>
                             {tab.label}

@@ -1,8 +1,9 @@
 'use client';
 
-import { Github, Globe, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
+import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { memo } from 'react';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { Card } from '@/components/ui/card';
 import { DEFAULT_SECTION_LABELS } from '@/lib/resume-builder/defaults';
 import type { ResumeConfig } from '@/lib/resume-builder/types';
@@ -37,12 +38,12 @@ const ResumePrevier = memo(function ResumePreviewer({ config }: ResumePreviwerPr
 
     return (
         <Card
-            className="custom-scroll overflow-y-auto xl:sticky xl:top-20 rounded-none bg-transparent max-h-fit pb-0"
+            className="custom-scroll overflow-y-auto border xl:sticky xl:top-20 rounded-none bg-transparent max-h-fit p-0"
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
-            <div className="w-full flex justify-center p-4 lg:p-6">
+            <div className="w-full flex justify-center">
                 <div
                     className="w-full bg-white dark:bg-slate-950 shadow-lg"
                     style={{
@@ -112,13 +113,13 @@ const ResumePrevier = memo(function ResumePreviewer({ config }: ResumePreviwerPr
                                     )}
                                     {config.header.linkedin && (
                                         <div className="flex items-center gap-1">
-                                            <Linkedin className="w-3 h-3" />
+                                            <FaLinkedin className="w-3 h-3" />
                                             {config.header.linkedin}
                                         </div>
                                     )}
                                     {config.header.github && (
                                         <div className="flex items-center gap-1">
-                                            <Github className="w-3 h-3" />
+                                            <FaGithub className="w-3 h-3" />
                                             {config.header.github}
                                         </div>
                                     )}
