@@ -28,7 +28,7 @@ import {
     sourceSans,
     tiroBangla,
 } from '@/lib/fonts';
-import { cn } from '@/lib/utils';
+import { buildCanonicalUrl, cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
     authors: [{ name: siteConfig.name, url: siteConfig.baseUrl }],
-    alternates: { canonical: new URL(siteConfig.baseUrl) },
+    alternates: { canonical: buildCanonicalUrl('/') },
     icons: {
         icon: siteConfig.favicon,
         shortcut: siteConfig.favicon,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
             template: `%s » ${siteConfig.name}`,
         },
         description: siteConfig.description,
-        url: siteConfig.baseUrl,
+        url: buildCanonicalUrl('/'),
         siteName: siteConfig.name,
         type: 'website',
     },
