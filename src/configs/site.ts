@@ -4,6 +4,7 @@ import {
     Calculator,
     Contact,
     FileText,
+    FileUser,
     FolderKanban,
     GraduationCap,
     Home,
@@ -129,6 +130,13 @@ export const siteConfig = {
             icon: ImNpm,
             description:
                 'Search for npm package(s) and view comprehensive details including downloads and maintainers.',
+        },
+        {
+            href: '/tools/resume-builder',
+            label: 'Resume Builder',
+            icon: FileUser,
+            description:
+                'Create and manage professional resume with live preview, customizable fonts, and more.',
         },
         {
             href: '/tools/photo-card',
