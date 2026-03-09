@@ -30,7 +30,7 @@ function PackageResultsSkeleton() {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <Skeleton className="h-3 w-24" />
-                                    <Skeleton className="h-4 w-4 rounded-full" />
+                                    <Skeleton className="size-4 rounded-full" />
                                 </div>
                                 <Skeleton className="h-8 w-full" />
                             </div>
@@ -44,7 +44,7 @@ function PackageResultsSkeleton() {
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Skeleton className="h-3 w-24" />
-                            <Skeleton className="h-4 w-4 rounded-full" />
+                            <Skeleton className="size-4 rounded-full" />
                         </div>
                         <Skeleton className="h-8 w-full" />
                     </div>
@@ -83,7 +83,7 @@ export function PackageResults({
     if (error) {
         return (
             <Alert className="w-full border-2 h-full min-h-96" variant="destructive">
-                <AlertCircle className="h-5 w-5" />
+                <AlertCircle className="size-5" />
                 <AlertTitle>Error Loading Package</AlertTitle>
                 <AlertDescription className="mt-2 text-sm">{errorMessage}</AlertDescription>
             </Alert>

@@ -294,7 +294,7 @@ export function ExperienceForm({
                                 type="button"
                                 variant="outline"
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="size-4" />
                             </Button>
                         </div>
                         <FormDescription>Add technologies used in this role</FormDescription>
@@ -325,7 +325,7 @@ export function ExperienceForm({
                                         onClick={() => handleRemoveTechnology(idx)}
                                         type="button"
                                     >
-                                        <X className="h-3 w-3" />
+                                        <X className="size-3" />
                                     </button>
                                 </div>
                             ))}
@@ -352,7 +352,7 @@ export function ExperienceForm({
                                     type="button"
                                     variant="destructive"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="size-4" />
                                 </Button>
                             )}
                         </div>
@@ -364,7 +364,7 @@ export function ExperienceForm({
                         type="button"
                         variant="outline"
                     >
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 size-4" />
                         Add Achievement
                     </Button>
 
@@ -406,7 +406,7 @@ export function ExperienceForm({
                                             <div className="rounded-lg border border-border p-4">
                                                 <img
                                                     alt="Logo preview"
-                                                    className="h-12 w-12 object-contain"
+                                                    className="size-12 object-contain"
                                                     src={logoPreview}
                                                 />
                                             </div>

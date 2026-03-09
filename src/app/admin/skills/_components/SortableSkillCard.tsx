@@ -70,7 +70,7 @@ export default function SortableSkillCard({
                         size="sm"
                         variant="outline"
                     >
-                        <Pencil className="mr-2 h-3 w-3" />
+                        <Pencil className="mr-2 size-3" />
                         Edit
                     </Button>
                     <Button
@@ -81,7 +81,7 @@ export default function SortableSkillCard({
                         variant="outline"
                     >
                         {(deletingId === skill.id && isPending) || (
-                            <Trash2 className="h-3 w-3 text-destructive" />
+                            <Trash2 className="size-3 text-destructive" />
                         )}
                     </Button>
                 </div>

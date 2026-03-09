@@ -33,7 +33,7 @@ export default function NavbarDocked({ active, tab, Icon }: Props) {
                 />
             )}
             <span className="relative z-10 flex items-center gap-1.5">
-                <SmartTooltip content={tab.title} trigger={<Icon className="h-4 w-4" />} />
+                <SmartTooltip content={tab.title} trigger={<Icon className="size-4" />} />
                 <AnimatePresence mode="wait">
                     {active && (
                         <motion.span

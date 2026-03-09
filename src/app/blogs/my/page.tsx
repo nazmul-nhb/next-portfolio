@@ -74,7 +74,7 @@ export default function MyBlogsPage() {
             {!blogs || blogs.length === 0 ? (
                 <FadeInUp>
                     <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <PenTool className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                        <PenTool className="mb-4 size-12 text-muted-foreground/50" />
                         <h2 className="mb-2 text-xl font-semibold">No blog posts yet</h2>
                         <p className="mb-6 text-muted-foreground">
                             Start sharing your thoughts with the world!
@@ -93,7 +93,7 @@ export default function MyBlogsPage() {
                                     <div className="aspect-3/1 overflow-hidden bg-muted">
                                         <Image
                                             alt={blog.title}
-                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={100}
                                             src={
                                                 blog.cover_image
@@ -128,14 +128,14 @@ export default function MyBlogsPage() {
                                     </p>
                                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                                         <span className="flex items-center gap-1">
-                                            <Calendar className="h-3 w-3" />
+                                            <Calendar className="size-3" />
                                             {formatDate({
                                                 date: blog.published_date || blog.created_at,
                                                 format: 'mmm DD, yyyy',
                                             })}
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <Eye className="h-3 w-3" />
+                                            <Eye className="size-3" />
                                             {blog.views}
                                         </span>
                                     </div>
@@ -147,7 +147,7 @@ export default function MyBlogsPage() {
                                             variant="outline"
                                         >
                                             <Link href={`/blogs/${blog.slug}/edit`}>
-                                                <Edit className="h-3 w-3" />
+                                                <Edit className="size-3" />
                                                 Edit
                                             </Link>
                                         </Button>

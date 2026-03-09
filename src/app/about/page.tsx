@@ -60,13 +60,13 @@ export default async function AboutPage() {
         <div className="relative mx-auto max-w-4xl px-4 py-12 overflow-x-hidden">
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-                <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
-                <div className="absolute bottom-1/3 -left-24 h-56 w-56 rounded-full bg-violet-500/5 blur-3xl" />
+                <div className="absolute -top-24 right-0 size-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute bottom-1/3 -left-24 size-56 rounded-full bg-violet-500/5 blur-3xl" />
             </div>
             {/* Intro */}
             <FadeInUp>
                 <div className="mb-16 text-center">
-                    <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 shadow-lg shadow-blue-500/10">
+                    <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 shadow-lg shadow-blue-500/10">
                         {adminImage ? (
                             <Image
                                 alt={siteConfig.name}
@@ -97,7 +97,7 @@ export default async function AboutPage() {
             <section className="mb-16">
                 <SlideInLeft>
                     <div className="mb-8 flex items-center gap-3">
-                        <Briefcase className="h-6 w-6 text-primary" />
+                        <Briefcase className="size-6 text-primary" />
                         <h2 className="text-2xl font-bold">Experience</h2>
                     </div>
                 </SlideInLeft>
@@ -130,7 +130,7 @@ export default async function AboutPage() {
             <section className="mb-16 space-y-6">
                 <SlideInRight>
                     <div className="mb-8 flex items-center gap-3">
-                        <GraduationCap className="h-6 w-6 text-primary" />
+                        <GraduationCap className="size-6 text-primary" />
                         <h2 className="text-2xl font-bold">Education</h2>
                     </div>
                 </SlideInRight>
@@ -164,7 +164,7 @@ export default async function AboutPage() {
                 <section className="mb-16">
                     <SlideInLeft>
                         <div className="mb-8 flex items-center gap-3">
-                            <Code2 className="h-6 w-6 text-primary" />
+                            <Code2 className="size-6 text-primary" />
                             <h2 className="text-2xl font-bold">Technical Skills</h2>
                         </div>
                     </SlideInLeft>
@@ -175,7 +175,7 @@ export default async function AboutPage() {
                                 <div className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-card p-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
                                     <Image
                                         alt={skill.title}
-                                        className="h-5 w-5 object-contain"
+                                        className="size-5 object-contain"
                                         height={20}
                                         loading="eager"
                                         src={buildCloudinaryUrl(skill.icon)}
@@ -193,7 +193,7 @@ export default async function AboutPage() {
             <section className="mb-16">
                 <SlideInRight>
                     <div className="mb-8 flex items-center gap-3">
-                        <Heart className="h-6 w-6 text-primary" />
+                        <Heart className="size-6 text-primary" />
                         <h2 className="text-2xl font-bold">Interests</h2>
                     </div>
                 </SlideInRight>
@@ -223,7 +223,7 @@ export default async function AboutPage() {
                         {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                             <a
                                 aria-label={label}
-                                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
+                                className="flex size-10 items-center justify-center rounded-full border border-border bg-card transition-all hover:bg-primary hover:text-primary-foreground duration-200"
                                 href={href}
                                 key={label}
                                 rel="noopener noreferrer"

@@ -1,7 +1,5 @@
 import { asc, eq } from 'drizzle-orm';
-import type { Metadata } from 'next';
 import { ENV } from '@/configs/env';
-import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema/skills';
 import { users } from '@/lib/drizzle/schema/users';
@@ -14,24 +12,6 @@ import { SkillsSection } from './_components/SkillsSection';
 import { TestimonialsSection } from './_components/Testimonials';
 
 export const revalidate = 60; // ISR: revalidate every minute
-
-export const metadata: Metadata = {
-    title: {
-        absolute: siteConfig.name,
-    },
-    description: siteConfig.description,
-    keywords: [...siteConfig.keywords, ...Object.values(siteConfig.links)],
-    alternates: { canonical: new URL(siteConfig.baseUrl) },
-    openGraph: {
-        title: {
-            absolute: siteConfig.name,
-        },
-        description: siteConfig.description,
-        url: siteConfig.baseUrl,
-        siteName: siteConfig.name,
-        type: 'website',
-    },
-};
 
 export default async function HomePage() {
     let allSkills: SelectSkill[] = [];

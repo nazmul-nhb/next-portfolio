@@ -45,8 +45,8 @@ export default async function ProjectsPage() {
         <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-                <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
-                <div className="absolute -bottom-24 left-0 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+                <div className="absolute -top-24 right-0 size-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 left-0 size-72 rounded-full bg-violet-500/5 blur-3xl" />
             </div>
             <SectionHeading
                 align="center"
@@ -81,7 +81,7 @@ export default async function ProjectsPage() {
                                         <div className="relative aspect-video overflow-hidden bg-muted">
                                             <Image
                                                 alt={project.title}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                 height={300}
                                                 src={buildCloudinaryUrl(project.screenshots[0])}
                                                 width={600}
@@ -96,7 +96,7 @@ export default async function ProjectsPage() {
                                             {project.favicon && (
                                                 <Image
                                                     alt={project.title}
-                                                    className="h-6 w-6 rounded"
+                                                    className="size-6 rounded"
                                                     height={24}
                                                     src={buildCloudinaryUrl(project.favicon)}
                                                     width={24}

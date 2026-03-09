@@ -48,7 +48,7 @@ export function ContactForm() {
     if (submitted) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-                <CheckCircle className="mb-4 h-12 w-12 text-green-500" />
+                <CheckCircle className="mb-4 size-12 text-green-500" />
                 <h3 className="mb-2 text-xl font-semibold">Message Sent!</h3>
                 <p className="text-muted-foreground">
                     Thanks for reaching out. I&apos;ll get back to you within 24-48 hours.
@@ -126,7 +126,7 @@ export function ContactForm() {
             {apiError && <p className="text-sm text-destructive">{apiError}</p>}
 
             <Button className="w-full" disabled={isPending} loading={isPending} type="submit">
-                <Send className="mr-2 h-4 w-4" />
+                <Send className="mr-2 size-4" />
                 Send Message
             </Button>
         </form>

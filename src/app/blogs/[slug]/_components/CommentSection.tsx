@@ -148,7 +148,7 @@ export function CommentSection({ blogId, blogSlug, comments }: CommentSectionPro
                                 onClick={handleSubmit}
                                 size="sm"
                             >
-                                <Send className="h-4 w-4" />
+                                <Send className="size-4" />
                             </Button>
                         </div>
                     </div>

@@ -162,7 +162,7 @@ function BubbleChatPanelSkeleton() {
             {/* Input */}
             <div className="flex shrink-0 items-center gap-1.5 border-t border-border/50 px-2 py-1.5">
                 <Skeleton className="h-8 flex-1 rounded-md" />
-                <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
+                <Skeleton className="size-8 shrink-0 rounded-md" />
             </div>
         </Fragment>
     );

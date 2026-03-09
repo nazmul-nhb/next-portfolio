@@ -140,7 +140,7 @@ export default async function ResumePage() {
                 <section className="mb-8 sm:mb-10">
                     <SlideInLeft>
                         <div className="mb-6 flex items-center gap-2">
-                            <Briefcase className="h-5 w-5 text-primary" />
+                            <Briefcase className="size-5 text-primary" />
                             <h2 className="text-xl font-bold">Experience</h2>
                         </div>
                     </SlideInLeft>
@@ -204,7 +204,7 @@ export default async function ResumePage() {
                 <section className="mb-8 sm:mb-10">
                     <SlideInRight>
                         <div className="mb-6 flex items-center gap-2">
-                            <GraduationCap className="h-5 w-5 text-primary" />
+                            <GraduationCap className="size-5 text-primary" />
                             <h2 className="text-xl font-bold">Education</h2>
                         </div>
                     </SlideInRight>
@@ -261,7 +261,7 @@ export default async function ResumePage() {
                 <section className="mb-8 sm:mb-10">
                     <SlideInLeft>
                         <div className="mb-6 flex items-center gap-2">
-                            <Code2 className="h-5 w-5 text-primary" />
+                            <Code2 className="size-5 text-primary" />
                             <h2 className="text-xl font-bold">Technical Skills</h2>
                         </div>
                     </SlideInLeft>

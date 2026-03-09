@@ -115,7 +115,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                         <div className="flex gap-2">
                                             <Link href={`/admin/projects/${project.id}`}>
                                                 <Button size="sm" variant="ghost">
-                                                    <Pencil className="h-4 w-4" />
+                                                    <Pencil className="size-4" />
                                                 </Button>
                                             </Link>
                                             <Button
@@ -124,7 +124,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                                                 size="sm"
                                                 variant="ghost"
                                             >
-                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                <Trash2 className="size-4 text-destructive" />
                                             </Button>
                                         </div>
                                     </div>

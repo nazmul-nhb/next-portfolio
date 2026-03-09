@@ -26,8 +26,8 @@ export default function ContactPage() {
         <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
             {/* Decorative background */}
             <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-                <div className="absolute -top-24 left-0 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
-                <div className="absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
+                <div className="absolute -top-24 left-0 size-72 rounded-full bg-blue-500/5 blur-3xl" />
+                <div className="absolute -bottom-24 right-0 size-72 rounded-full bg-violet-500/5 blur-3xl" />
             </div>
 
             <SectionHeading
@@ -55,8 +55,8 @@ export default function ContactPage() {
                                 className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
                                 href={`mailto:${ENV.adminEmail}`}
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                    <Mail className="h-5 w-5 text-primary" />
+                                <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                                    <Mail className="size-5 text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">Email</p>
@@ -72,8 +72,8 @@ export default function ContactPage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                    <FiGithub className="h-5 w-5 text-primary" />
+                                <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                                    <FiGithub className="size-5 text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">GitHub</p>
@@ -89,8 +89,8 @@ export default function ContactPage() {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                    <FiLinkedin className="h-5 w-5 text-primary" />
+                                <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                                    <FiLinkedin className="size-5 text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">LinkedIn</p>
@@ -107,7 +107,7 @@ export default function ContactPage() {
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    <FaWhatsapp className="h-5 w-5 text-primary" />
+                                    <FaWhatsapp className="size-5 text-primary" />
                                     <span className="text-sm font-medium">WhatsApp</span>
                                 </a>
                                 <a
@@ -116,14 +116,14 @@ export default function ContactPage() {
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    <FaDiscord className="h-5 w-5 text-primary" />
+                                    <FaDiscord className="size-5 text-primary" />
                                     <span className="text-sm font-medium">Discord</span>
                                 </a>
                                 <a
                                     className="flex items-center gap-3 rounded-lg border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md hover:bg-primary/10"
                                     href={`tel:${siteConfig.mobile}`}
                                 >
-                                    <Phone className="h-5 w-5 text-primary" />
+                                    <Phone className="size-5 text-primary" />
                                     <span className="text-sm font-medium">Call Now</span>
                                 </a>
                             </div>

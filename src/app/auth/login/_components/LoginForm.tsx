@@ -63,7 +63,7 @@ export function LoginForm() {
                         onClick={handleGoogleLogin}
                         variant="outline"
                     >
-                        <FaGoogle className="h-4 w-4" />
+                        <FaGoogle className="size-4" />
                         Continue with Google
                     </Button>
 
@@ -88,7 +88,7 @@ export function LoginForm() {
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Mail className="absolute left-3 top-3 size-4 text-muted-foreground" />
                                 <Input
                                     autoComplete="email"
                                     className="pl-10"
@@ -105,7 +105,7 @@ export function LoginForm() {
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Lock className="absolute left-3 top-3 size-4 text-muted-foreground" />
                                 <Input
                                     autoComplete="current-password"
                                     className="pl-10"
@@ -125,7 +125,7 @@ export function LoginForm() {
                             loading={loading}
                             type="submit"
                         >
-                            <LogIn className="h-4 w-4" />
+                            <LogIn className="size-4" />
                             {'Sign In'}
                         </Button>
                     </form>

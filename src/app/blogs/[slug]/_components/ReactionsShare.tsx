@@ -1,6 +1,7 @@
 'use client';
 
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
+import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
@@ -9,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
 import type { BlogDetails } from '@/types/blogs';
-import type { Route } from 'next';
 
 type Props = {
     blog: BlogDetails;
@@ -85,7 +85,7 @@ export default function ReactionsShare({ blog }: Props) {
                     size="sm"
                     variant={profile && likes.has(profile.id) ? 'default' : 'outline'}
                 >
-                    <ThumbsUp className="h-4 w-4" />
+                    <ThumbsUp className="size-4" />
                     {likes.size}
                 </Button>
                 <Button
@@ -94,7 +94,7 @@ export default function ReactionsShare({ blog }: Props) {
                     size="sm"
                     variant={profile && dislikes.has(profile.id) ? 'destructive' : 'outline'}
                 >
-                    <ThumbsDown className="h-4 w-4" />
+                    <ThumbsDown className="size-4" />
                     {dislikes.size}
                 </Button>
 

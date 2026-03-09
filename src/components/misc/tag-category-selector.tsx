@@ -118,7 +118,7 @@ export function TagCategorySelector({
                                 ? `${selectedIds.length} ${label.toLowerCase()} selected`
                                 : `Select ${label.toLowerCase()}...`}
                         </span>
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-2">
@@ -201,7 +201,7 @@ export function TagCategorySelector({
                                 onClick={() => removeOption(opt.id)}
                                 type="button"
                             >
-                                <X className="h-3 w-3" />
+                                <X className="size-3" />
                             </button>
                         </span>
                     ))}

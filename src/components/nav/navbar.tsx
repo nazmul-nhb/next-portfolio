@@ -132,7 +132,7 @@ export default function Navbar() {
                         {/* Search Button */}
 
                         <Button
-                            className="h-9 w-9 rounded-full"
+                            className="size-9 rounded-full"
                             onClick={() => setSearchOpen(true)}
                             size="icon"
                             variant="ghost"
@@ -150,7 +150,7 @@ export default function Navbar() {
 
                                 return (
                                     <Link
-                                        className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
+                                        className={`flex size-9 items-center justify-center rounded-full transition-colors ${
                                             isActive(tab.path)
                                                 ? 'bg-accent text-accent-foreground'
                                                 : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
@@ -180,12 +180,12 @@ export default function Navbar() {
 
                         {/* Mobile Menu Toggle */}
                         <Button
-                            className="h-9 w-9 rounded-full md:hidden"
+                            className="size-9 rounded-full md:hidden"
                             onClick={() => setMobileOpen(true)}
                             size="icon"
                             variant="ghost"
                         >
-                            <Menu className="h-5 w-5" />
+                            <Menu className="size-5" />
                         </Button>
                     </div>
                 </div>
@@ -210,7 +210,7 @@ export default function Navbar() {
                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         >
                             <form className="flex items-center gap-3" onSubmit={handleSearch}>
-                                <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+                                <Search className="size-5 shrink-0 text-muted-foreground" />
                                 <input
                                     className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/60"
                                     onChange={(e) => setSearchQuery(e.target.value)}

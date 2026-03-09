@@ -137,7 +137,7 @@ export default function ChatArea({
     if (!activeConversationId && !selectedRecipient) {
         return (
             <div className="flex h-full flex-col items-center justify-center bg-card/50">
-                <MessageSquare className="mb-4 h-16 w-16 text-muted-foreground/30" />
+                <MessageSquare className="mb-4 size-16 text-muted-foreground/30" />
                 <h2 className="text-lg font-medium text-muted-foreground">
                     Select a conversation
                 </h2>
@@ -165,7 +165,7 @@ export default function ChatArea({
                     onClick={onBack}
                     type="button"
                 >
-                    <ArrowLeft className="h-5 w-5" />
+                    <ArrowLeft className="size-5" />
                 </button>
                 {chatPartner && (
                     <Fragment>
@@ -196,7 +196,7 @@ export default function ChatArea({
                     >
                         <SmartTooltip
                             content="Pop out to bubble"
-                            trigger={<ExternalLink className="h-4 w-4" />}
+                            trigger={<ExternalLink className="size-4" />}
                         />
                     </button>
                 )}
@@ -350,7 +350,7 @@ export default function ChatArea({
                     onClick={handleSend}
                     size="icon"
                 >
-                    <Send className="h-4 w-4" />
+                    <Send className="size-4" />
                 </Button>
             </div>
         </div>

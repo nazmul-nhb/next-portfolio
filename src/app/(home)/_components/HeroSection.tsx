@@ -133,7 +133,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                                 <motion.a
                                     aria-label={label}
-                                    className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+                                    className="flex size-10 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
                                     href={href}
                                     key={label}
                                     rel="noopener noreferrer"
@@ -157,7 +157,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             <div className="absolute inset-0 rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 blur-2xl" />
                             <button
                                 className={cn(
-                                    'relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-border/50 bg-card/50 backdrop-blur-sm',
+                                    'relative flex size-full items-center justify-center overflow-hidden rounded-full border border-border/50 bg-card/50 backdrop-blur-sm',
                                     {
                                         'cursor-pointer group': isAdmin,
                                     }
@@ -181,12 +181,12 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 )}
                                 {isAdmin && (
                                     <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 transition-colors group-hover:bg-black/40">
-                                        <Camera className="h-8 w-8 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                                        <Camera className="size-8 text-white opacity-0 transition-opacity group-hover:opacity-100" />
                                     </div>
                                 )}
                                 {(uploading || isPending) && (
                                     <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                        <div className="size-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
                                     </div>
                                 )}
                             </button>

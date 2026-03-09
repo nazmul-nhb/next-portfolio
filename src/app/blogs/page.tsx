@@ -221,7 +221,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
             {allBlogs.length === 0 ? (
                 <FadeInUp>
                     <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <PenTool className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                        <PenTool className="mb-4 size-12 text-muted-foreground/50" />
                         <h2 className="mb-2 text-xl font-semibold">No blog posts yet</h2>
                         <p className="mb-6 text-muted-foreground">
                             Be the first to write a blog post!
@@ -243,7 +243,7 @@ export default async function BlogsPage({ searchParams }: ParamProps) {
                                     <div className="aspect-3/1 overflow-hidden bg-muted">
                                         <Image
                                             alt={blog.title}
-                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             height={160}
                                             src={
                                                 blog.cover_image

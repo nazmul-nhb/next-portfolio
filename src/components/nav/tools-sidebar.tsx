@@ -55,7 +55,7 @@ export function ToolsSidebar() {
                             key={item.href}
                             onClick={() => setDrawerOpen(false)}
                         >
-                            <item.icon className="h-4 w-4" />
+                            <item.icon className="size-4" />
                             {item.label}
                         </Link>
                     );
@@ -67,7 +67,7 @@ export function ToolsSidebar() {
                     className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                     href="/"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="size-4" />
                     Back to Site
                 </Link>
             </div>
@@ -109,12 +109,12 @@ export function ToolsSidebar() {
                             <div className="flex items-center justify-between border-b border-border p-4">
                                 <span className="text-sm font-semibold">Tools</span>
                                 <Button
-                                    className="h-8 w-8 rounded-full"
+                                    className="size-8 rounded-full"
                                     onClick={() => setDrawerOpen(false)}
                                     size="icon"
                                     variant="ghost"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="size-4" />
                                 </Button>
                             </div>
                             <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
@@ -142,7 +142,7 @@ export function ToolsSidebar() {
                                             key={item.href}
                                             onClick={() => setDrawerOpen(false)}
                                         >
-                                            <item.icon className="h-4 w-4" />
+                                            <item.icon className="size-4" />
                                             {item.label}
                                         </Link>
                                     );
@@ -154,7 +154,7 @@ export function ToolsSidebar() {
                                     href="/"
                                     onClick={() => setDrawerOpen(false)}
                                 >
-                                    <ArrowLeft className="h-4 w-4" />
+                                    <ArrowLeft className="size-4" />
                                     Back to Site
                                 </Link>
                             </div>

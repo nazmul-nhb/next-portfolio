@@ -84,7 +84,7 @@ export function TestimonialsClient({ initialData }: Props) {
             {testimonials.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
-                        <MessageSquareQuote className="mb-4 h-12 w-12 text-muted-foreground" />
+                        <MessageSquareQuote className="mb-4 size-12 text-muted-foreground" />
                         <p className="mb-4 text-muted-foreground">No testimonials yet</p>
                         <Link href="/admin/testimonials/new">
                             <Button>
@@ -126,7 +126,7 @@ export function TestimonialsClient({ initialData }: Props) {
                                     <div className="flex gap-2">
                                         <Link href={`/admin/testimonials/${testimonial.id}`}>
                                             <Button size="icon" variant="outline">
-                                                <Pencil className="h-4 w-4" />
+                                                <Pencil className="size-4" />
                                             </Button>
                                         </Link>
                                         <Button
@@ -139,7 +139,7 @@ export function TestimonialsClient({ initialData }: Props) {
                                             variant="destructive"
                                         >
                                             {(deletingId === testimonial.id && isPending) || (
-                                                <Trash2 className="h-4 w-4" />
+                                                <Trash2 className="size-4" />
                                             )}
                                         </Button>
                                     </div>

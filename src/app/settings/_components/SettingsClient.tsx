@@ -209,7 +209,7 @@ export function SettingsClient() {
                 <FadeInUp delay={0.1}>
                     <div className="mb-8 rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950/30">
                         <div className="flex items-start gap-3">
-                            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+                            <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-600" />
                             <div className="flex-1">
                                 <h3 className="mb-1 font-medium text-amber-800 dark:text-amber-200">
                                     Verify Your Email
@@ -274,7 +274,7 @@ export function SettingsClient() {
             {profile.email_verified && (
                 <FadeInUp delay={0.1}>
                     <div className="mb-8 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CheckCircle className="size-5 text-green-600" />
                         <span className="text-sm text-green-700 dark:text-green-300">
                             Email verified
                         </span>
@@ -346,7 +346,7 @@ export function SettingsClient() {
                                     </div>
                                 )}
                                 {(imagePreview || profileImage) && !uploadingImage && (
-                                    <div className="relative h-24 w-24 overflow-hidden rounded-full border">
+                                    <div className="relative size-24 overflow-hidden rounded-full border">
                                         {!imagePreview && profileImage.startsWith('http') ? (
                                             // biome-ignore lint/performance/noImgElement: needed for external images
                                             <img

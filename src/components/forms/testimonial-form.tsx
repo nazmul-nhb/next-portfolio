@@ -210,7 +210,7 @@ export function TestimonialForm({
                                 type="button"
                             >
                                 <Star
-                                    className={`h-6 w-6 ${
+                                    className={`size-6 ${
                                         star <= rating
                                             ? 'fill-yellow-400 text-yellow-400'
                                             : 'text-muted-foreground'
@@ -243,10 +243,10 @@ export function TestimonialForm({
                                     />
                                     {avatarPreview && (
                                         <div className="flex items-center gap-4">
-                                            <div className="h-16 w-16 overflow-hidden rounded-full border border-border">
+                                            <div className="size-16 overflow-hidden rounded-full border border-border">
                                                 <img
                                                     alt="Avatar preview"
-                                                    className="h-full w-full object-cover"
+                                                    className="size-full object-cover"
                                                     src={avatarPreview}
                                                 />
                                             </div>

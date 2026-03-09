@@ -33,7 +33,7 @@ export default function Footer() {
                         <div className="flex items-center gap-2.5">
                             <Image
                                 alt={siteConfig.name}
-                                className="h-8 w-8 rounded-full object-fit"
+                                className="size-8 rounded-full object-fit"
                                 height={520}
                                 loading="eager"
                                 quality={100}

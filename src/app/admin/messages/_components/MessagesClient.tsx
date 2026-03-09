@@ -100,7 +100,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
         return (
             <Card>
                 <CardContent className="flex flex-col items-center justify-center py-16">
-                    <Mail className="mb-4 h-12 w-12 text-muted-foreground/40" />
+                    <Mail className="mb-4 size-12 text-muted-foreground/40" />
                     <p className="text-lg font-medium text-muted-foreground">No messages yet</p>
                     <p className="text-sm text-muted-foreground/70">
                         Messages from your contact form will appear here.
@@ -117,7 +117,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                 <span>{messages.length} total</span>
                 {unreadCount > 0 && (
                     <span className="flex items-center gap-1.5 font-medium text-primary">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                        <span className="size-2 animate-pulse rounded-full bg-primary" />
                         {unreadCount} unread
                     </span>
                 )}
@@ -144,13 +144,13 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                         {/* Avatar */}
                         <div
                             className={cn(
-                                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+                                'flex size-10 shrink-0 items-center justify-center rounded-full',
                                 message.is_read
                                     ? 'bg-muted text-muted-foreground'
                                     : 'bg-primary/10 text-primary'
                             )}
                         >
-                            <User className="h-5 w-5" />
+                            <User className="size-5" />
                         </div>
 
                         {/* Content */}

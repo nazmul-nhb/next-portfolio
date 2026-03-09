@@ -27,7 +27,7 @@ export default async function AdminMessagesPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-3">
-                <MessageCircle className="h-8 w-8 text-purple-600" />
+                <MessageCircle className="size-8 text-purple-600" />
                 <div>
                     <h1 className="text-3xl font-bold">Contact Messages</h1>
                     <p className="text-muted-foreground">Messages from your contact form</p>

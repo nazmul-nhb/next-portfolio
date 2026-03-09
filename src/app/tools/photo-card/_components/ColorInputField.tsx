@@ -36,7 +36,7 @@ export default function ColorInputField({
                 <div className="h-10 w-14 overflow-hidden rounded-lg border bg-background">
                     <Input
                         aria-label={ariaLabel}
-                        className="h-full w-full cursor-pointer rounded-lg border-0 px-1 py-0.5"
+                        className="size-full cursor-pointer rounded-lg border-0 px-1 py-0.5"
                         onChange={(e) => onChange(e.target.value)}
                         type="color"
                         value={value}

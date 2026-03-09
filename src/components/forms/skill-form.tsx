@@ -167,7 +167,7 @@ export function SkillForm({ onSubmit, defaultValues, isLoading = false }: SkillF
                                                 {/** biome-ignore lint/performance/noImgElement: it's for preview */}
                                                 <img
                                                     alt="Icon preview"
-                                                    className="h-12 w-12 object-contain"
+                                                    className="size-12 object-contain"
                                                     src={iconPreview}
                                                 />
                                             </div>

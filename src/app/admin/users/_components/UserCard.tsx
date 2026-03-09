@@ -170,9 +170,9 @@ export default function UserCard({ userData }: Props) {
                                     variant="ghost"
                                 >
                                     {userData.is_active ? (
-                                        <Ban className="h-4 w-4" />
+                                        <Ban className="size-4" />
                                     ) : (
-                                        <UserCheck className="h-4 w-4" />
+                                        <UserCheck className="size-4" />
                                     )}
                                 </Button>
                             }
@@ -188,7 +188,7 @@ export default function UserCard({ userData }: Props) {
                                     variant="ghost"
                                 >
                                     {(deletingId === userData.id && isDeleting) || (
-                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                        <Trash2 className="size-4 text-destructive" />
                                     )}
                                 </Button>
                             }

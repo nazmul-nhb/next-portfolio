@@ -168,7 +168,7 @@ export default function EditBlogPage() {
                     <div className="flex items-center gap-3">
                         <Button asChild size="icon" variant="ghost">
                             <Link href={`/blogs/${slug}`}>
-                                <ArrowLeft className="h-5 w-5" />
+                                <ArrowLeft className="size-5" />
                             </Link>
                         </Button>
                         <h1 className="text-2xl font-bold">Edit Post</h1>

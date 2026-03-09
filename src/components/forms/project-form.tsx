@@ -391,7 +391,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                     type="button"
                                     variant="outline"
                                 >
-                                    <Plus className="h-4 w-4" />
+                                    <Plus className="size-4" />
                                 </Button>
                             </div>
                             <FormDescription>
@@ -426,7 +426,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                             onClick={() => removeTechStack(idx)}
                                             type="button"
                                         >
-                                            <X className="h-3 w-3" />
+                                            <X className="size-3" />
                                         </button>
                                     </div>
                                 ))}
@@ -457,11 +457,11 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                             <Card>
                                                 <CardContent className="p-4">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="relative h-16 w-16 overflow-hidden rounded">
+                                                        <div className="relative size-16 overflow-hidden rounded">
                                                             {/** biome-ignore lint/performance/noImgElement: for image preview */}
                                                             <img
                                                                 alt="Favicon preview"
-                                                                className="h-full w-full object-contain"
+                                                                className="size-full object-contain"
                                                                 src={faviconPreview}
                                                             />
                                                         </div>
@@ -522,7 +522,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                                                 {/** biome-ignore lint/performance/noImgElement: for preview */}
                                                                 <img
                                                                     alt={`Screenshot ${index + 1} preview`}
-                                                                    className="h-full w-full object-cover"
+                                                                    className="size-full object-cover"
                                                                     src={
                                                                         screenshotPreviews[
                                                                             index
@@ -562,14 +562,14 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                     type="button"
                                     variant="destructive"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="size-4" />
                                 </Button>
                             )}
                         </div>
                     ))}
 
                     <Button onClick={addFeature} size="sm" type="button" variant="outline">
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 size-4" />
                         Add Feature
                     </Button>
 

@@ -155,7 +155,7 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                                         className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
                                         variant="outline"
                                     >
-                                        <Shield className="h-3 w-3" />
+                                        <Shield className="size-3" />
                                         Admin
                                     </Badge>
                                 )}
@@ -191,21 +191,21 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                     <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border/40 pt-6">
                         <div className="flex flex-col items-center gap-1">
                             <div className="flex items-center gap-1.5 text-lg font-bold">
-                                <FileText className="h-4 w-4 text-primary" />
+                                <FileText className="size-4 text-primary" />
                                 {userBlogs.length}
                             </div>
                             <span className="text-xs text-muted-foreground">Posts</span>
                         </div>
                         <div className="flex flex-col items-center gap-1">
                             <div className="flex items-center gap-1.5 text-lg font-bold">
-                                <Eye className="h-4 w-4 text-primary" />
+                                <Eye className="size-4 text-primary" />
                                 {totalViews}
                             </div>
                             <span className="text-xs text-muted-foreground">Total views</span>
                         </div>
                         <div className="flex flex-col items-center gap-1">
                             <div className="flex items-center gap-1.5 text-lg font-bold">
-                                <PenTool className="h-4 w-4 text-primary" />
+                                <PenTool className="size-4 text-primary" />
                                 {commentCount}
                             </div>
                             <span className="text-xs text-muted-foreground">Comments</span>
@@ -223,7 +223,7 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                 {userBlogs.length === 0 ? (
                     <FadeInUp>
                         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 py-16">
-                            <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                            <FileText className="mb-3 size-10 text-muted-foreground/40" />
                             <p className="text-muted-foreground">No published posts yet.</p>
                         </div>
                     </FadeInUp>
@@ -261,7 +261,7 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                                                     </span>
                                                 )}
                                                 <span className="flex items-center gap-1">
-                                                    <Eye className="h-3 w-3" />
+                                                    <Eye className="size-3" />
                                                     {post.views}
                                                 </span>
                                             </div>

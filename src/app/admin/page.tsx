@@ -195,7 +195,7 @@ export default async function AdminDashboard() {
                                 <CardTitle className="text-sm font-medium text-muted-foreground">
                                     {card.title}
                                 </CardTitle>
-                                <card.icon className={`h-5 w-5 ${card.color}`} />
+                                <card.icon className={`size-5 ${card.color}`} />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-3xl font-bold">{card.count}</div>

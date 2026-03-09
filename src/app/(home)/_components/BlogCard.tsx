@@ -55,7 +55,7 @@ export default function BlogCard({ blog }: Props) {
                         <div className="flex items-center gap-3">
                             {blog.published_date && (
                                 <span className="flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
+                                    <Calendar className="size-3" />
                                     {formatDate({
                                         date: blog.published_date,
                                         format: 'dd, mmm DD, YYYY',
@@ -63,7 +63,7 @@ export default function BlogCard({ blog }: Props) {
                                 </span>
                             )}
                             <span className="flex items-center gap-1">
-                                <Eye className="h-3 w-3" />
+                                <Eye className="size-3" />
                                 {blog.views}
                             </span>
                         </div>

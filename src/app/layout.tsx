@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
+import type { ChildrenProp } from '@/types';
 
 export const metadata: Metadata = {
     title: {
@@ -62,14 +63,9 @@ export const metadata: Metadata = {
     },
 };
 
-type RootProps = Readonly<{
-    children: React.ReactNode;
-}>;
-
-export default function RootLayout({ children }: RootProps) {
+export default function RootLayout({ children }: ChildrenProp) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <link href={siteConfig.favicon} rel="shortcut icon" type="image/png" />
             <body
                 className={cn(
                     geistSans.variable,

@@ -181,7 +181,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                                             className="flex items-start gap-2 text-sm text-muted-foreground"
                                             key={`${feature}-${idx}`}
                                         >
-                                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+                                            <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-500" />
                                             <span>{feature}</span>
                                         </li>
                                     ))}
@@ -276,7 +276,7 @@ export default async function ProjectDetailPage({ params }: PageProps<'/projects
                 <div className="mt-12 border-t border-border/40 pt-8 text-center">
                     <Link href="/projects">
                         <Button className="gap-2" variant="outline">
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="size-4" />
                             Back to All Projects
                         </Button>
                     </Link>

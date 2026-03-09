@@ -45,7 +45,7 @@ export default function MessageButton({ userId, userName }: MessageButtonProps) 
             size="sm"
             variant="outline"
         >
-            {!isPending && <MessageCircle className="h-4 w-4" />}
+            {!isPending && <MessageCircle className="size-4" />}
             Message {userName.split(' ')[0]}
         </Button>
     );

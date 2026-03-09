@@ -291,7 +291,7 @@ export function EducationForm({
                                     type="button"
                                     variant="destructive"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="size-4" />
                                 </Button>
                             )}
                         </div>
@@ -303,7 +303,7 @@ export function EducationForm({
                         type="button"
                         variant="outline"
                     >
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 size-4" />
                         Add Achievement
                     </Button>
 
@@ -347,7 +347,7 @@ export function EducationForm({
                                             <div className="rounded-lg border border-border p-4">
                                                 <img
                                                     alt="Logo preview"
-                                                    className="h-12 w-12 object-contain"
+                                                    className="size-12 object-contain"
                                                     src={logoPreview}
                                                 />
                                             </div>

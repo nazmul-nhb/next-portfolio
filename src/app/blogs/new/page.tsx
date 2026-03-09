@@ -115,7 +115,7 @@ export default function NewBlogPage() {
                     <div className="flex items-center gap-3">
                         <Button asChild size="icon" variant="ghost">
                             <Link href="/blogs">
-                                <ArrowLeft className="h-5 w-5" />
+                                <ArrowLeft className="size-5" />
                             </Link>
                         </Button>
                         <h1 className="text-2xl font-bold">Write a New Post</h1>
@@ -160,7 +160,7 @@ export default function NewBlogPage() {
                             />
                             {uploadingCover && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Upload className="h-4 w-4 animate-pulse" />
+                                    <Upload className="size-4 animate-pulse" />
                                     Uploading cover image...
                                 </div>
                             )}
@@ -233,7 +233,7 @@ export default function NewBlogPage() {
                         <label className="flex cursor-pointer items-center gap-2 text-sm">
                             <input
                                 checked={isPublished}
-                                className="h-4 w-4 rounded border-border accent-primary"
+                                className="size-4 rounded border-border accent-primary"
                                 onChange={(e) => setIsPublished(e.target.checked)}
                                 type="checkbox"
                             />

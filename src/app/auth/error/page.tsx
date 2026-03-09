@@ -15,7 +15,7 @@ export default function AuthErrorPage() {
         <div className="flex min-h-[70vh] items-center justify-center px-4 overflow-x-hidden">
             <FadeInUp>
                 <div className="max-w-md text-center">
-                    <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
+                    <AlertTriangle className="mx-auto mb-4 size-12 text-destructive" />
                     <h1 className="mb-2 text-2xl font-bold">Authentication Error</h1>
                     <p className="mb-6 text-muted-foreground">
                         Something went wrong during sign in. Please try again or use a different

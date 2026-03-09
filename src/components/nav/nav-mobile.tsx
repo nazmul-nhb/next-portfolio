@@ -59,12 +59,12 @@ export default function NavMobileDrawer({
                 <div className="flex items-center justify-between border-b border-border p-4">
                     <span className="text-sm font-semibold">Navigation</span>
                     <Button
-                        className="h-8 w-8 rounded-full"
+                        className="size-8 rounded-full"
                         onClick={() => setMobileOpen(false)}
                         size="icon"
                         variant="ghost"
                     >
-                        <X className="h-4 w-4" />
+                        <X className="size-4" />
                     </Button>
                 </div>
 
@@ -84,7 +84,7 @@ export default function NavMobileDrawer({
                                     key={tab.path}
                                     onClick={() => setMobileOpen(false)}
                                 >
-                                    <Icon className="h-4 w-4" />
+                                    <Icon className="size-4" />
                                     {tab.title}
                                 </Link>
                             );
@@ -109,7 +109,7 @@ export default function NavMobileDrawer({
                                             key={tab.path}
                                             onClick={() => setMobileOpen(false)}
                                         >
-                                            <Icon className="h-4 w-4" />
+                                            <Icon className="size-4" />
                                             {tab.title}
                                         </Link>
                                     );
@@ -130,7 +130,7 @@ export default function NavMobileDrawer({
                                 href={'/admin'}
                                 onClick={() => setMobileOpen(false)}
                             >
-                                <Settings className="h-4 w-4" />
+                                <Settings className="size-4" />
                                 Admin Dashboard
                             </Link>
                         </Fragment>
@@ -160,18 +160,18 @@ export default function NavMobileDrawer({
                                 </div>
                             </Link>
                             <Button
-                                className="h-8 w-8 shrink-0 rounded-full"
+                                className="size-8 shrink-0 rounded-full"
                                 onClick={handleLogout}
                                 size="icon"
                                 variant="ghost"
                             >
-                                <LogOut className="h-4 w-4" />
+                                <LogOut className="size-4" />
                             </Button>
                         </div>
                     ) : (
                         <Button asChild className="w-full" size="sm">
                             <Link href="/auth/login">
-                                <LogIn className="mr-2 h-4 w-4" />
+                                <LogIn className="mr-2 size-4" />
                                 Sign In
                             </Link>
                         </Button>

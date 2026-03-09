@@ -74,7 +74,7 @@ export default function ConversationList({
             {/* Search */}
             <div className="relative shrink-0 border-b border-border/50 px-3 py-2">
                 <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         className="h-9 pl-9 pr-8 text-sm"
                         onChange={(e) => handleSearchChange(e.target.value)}
@@ -87,7 +87,7 @@ export default function ConversationList({
                             onClick={clearSearch}
                             type="button"
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                         </button>
                     )}
                 </div>

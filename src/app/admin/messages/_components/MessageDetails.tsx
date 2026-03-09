@@ -37,7 +37,7 @@ export default function MessageDetails({
                     <DialogTitle className="flex items-center gap-2">
                         {selectedMessage ? (
                             <Fragment>
-                                <User className="h-5 w-5 text-primary" />
+                                <User className="size-5 text-primary" />
                                 {selectedMessage.name}
                             </Fragment>
                         ) : (
