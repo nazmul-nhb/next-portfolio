@@ -1,10 +1,12 @@
 'use client';
 
+import { pdf } from '@react-pdf/renderer';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { $UUID } from 'locality-idb';
 import { uuid } from 'nhb-toolbox/hash';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { confirmToast } from '@/components/misc/confirm';
 import {
     deleteSavedResume,
     getSavedResume,
@@ -15,9 +17,10 @@ import {
 import { DEFAULT_RESUME_CONFIG } from '@/lib/resume-builder/defaults';
 import { ResumeConfigSchema } from '@/lib/resume-builder/schema';
 import type { ResumeConfig, ResumeImageLayer } from '@/lib/resume-builder/types';
-import { normalizeResumeConfig } from '@/lib/resume-builder/utils';
+import { normalizeResumeConfig, reorderItems } from '@/lib/resume-builder/utils';
 import { ResumeControls } from './ResumeControls';
-import ResumePrevier from './ResumePreviewer';
+import { ResumePdfDocument } from './ResumePdfDocument';
+import ResumePreviewer from './ResumePreviewer';
 
 /**
  * Main Resume Builder component
@@ -28,6 +31,7 @@ export default function ResumeBuilder() {
     const [config, setConfig] = useState<ResumeConfig>(() =>
         normalizeResumeConfig(DEFAULT_RESUME_CONFIG)
     );
+    const [pdfPending, setPdfPending] = useState(false);
     const [resumeName, setResumeName] = useState('My Resume');
     const currentResumeIdRef = useRef<string | null>(null);
 
@@ -188,6 +192,13 @@ export default function ResumeBuilder() {
         }));
     }, []);
 
+    const reorderExperience = useCallback((id: string, direction: 'up' | 'down') => {
+        setConfig((prev) => ({
+            ...prev,
+            experience: reorderItems(prev.experience, id, direction),
+        }));
+    }, []);
+
     // Education updates
     const addEducation = useCallback((entry: Omit<ResumeConfig['education'][0], 'id'>) => {
         setConfig((prev) => ({
@@ -212,6 +223,13 @@ export default function ResumeBuilder() {
         setConfig((prev) => ({
             ...prev,
             education: prev.education.filter((edu) => edu.id !== id),
+        }));
+    }, []);
+
+    const reorderEducation = useCallback((id: string, direction: 'up' | 'down') => {
+        setConfig((prev) => ({
+            ...prev,
+            education: reorderItems(prev.education, id, direction),
         }));
     }, []);
 
@@ -350,25 +368,70 @@ export default function ResumeBuilder() {
     }, [resumeName, saveMutation]);
 
     const handleLoadResume = useCallback(
-        (resumeId: string) => {
+        (resumeId: $UUID) => {
             loadMutation.mutate(resumeId);
         },
         [loadMutation]
     );
 
     const handleDeleteResume = useCallback(
-        (resumeId: string) => {
-            if (window.confirm('Are you sure you want to delete this resume?')) {
-                deleteMutation.mutate(resumeId as $UUID);
-            }
+        (resumeId: $UUID) => {
+            confirmToast({
+                title: 'Are you sure you want to delete this resume?',
+                description: 'This will permanently delete the resume from the storage.',
+                confirmText: 'Delete',
+                onConfirm: () => deleteMutation.mutate(resumeId),
+            });
         },
         [deleteMutation]
     );
 
+    const handleRemoveImage = useCallback(() => {
+        setConfig((prev) => ({
+            ...prev,
+            header: {
+                ...prev.header,
+                image: undefined,
+            },
+        }));
+    }, []);
+
+    const handleDownloadPdf = useCallback(async () => {
+        if (!validation.success) {
+            toast.error('Resume configuration is invalid. Please fix the highlighted issues.');
+            return;
+        }
+
+        setPdfPending(true);
+
+        try {
+            const blob = await pdf(
+                <ResumePdfDocument config={validation.data as ResumeConfig} />
+            ).toBlob();
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const filename = `${resumeName || config.header.fullName || 'resume'}`
+                .trim()
+                .replace(/[^a-z0-9]+/gi, '_')
+                .replace(/^_+|_+$/g, '');
+
+            link.href = downloadUrl;
+            link.download = `${filename || 'resume'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to generate PDF');
+        } finally {
+            setPdfPending(false);
+        }
+    }, [config.header.fullName, resumeName, validation]);
+
     return (
-        <div className="grid gap-4 lg:grid-cols-3 max-w-full">
+        <div className="grid max-w-full gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.15fr)]">
             {/* Controls */}
-            <div className="lg:col-span-1 order-2 lg:order-1 max-h-[calc(100vh-6rem)] custom-scroll overflow-y-auto">
+            <div className="order-2 max-h-[calc(100vh-6rem)] overflow-y-auto custom-scroll lg:order-1">
                 <ResumeControls
                     config={config}
                     loadingResumes={savedResumesQuery.isLoading}
@@ -376,15 +439,19 @@ export default function ResumeBuilder() {
                     onCustomSectionRemove={removeCustomSection}
                     onCustomSectionUpdate={updateCustomSection}
                     onDeleteResume={handleDeleteResume}
+                    onDownloadPdf={handleDownloadPdf}
                     onEducationAdd={addEducation}
                     onEducationRemove={removeEducation}
+                    onEducationReorder={reorderEducation}
                     onEducationUpdate={updateEducation}
                     onExperienceAdd={addExperience}
                     onExperienceRemove={removeExperience}
+                    onExperienceReorder={reorderExperience}
                     onExperienceUpdate={updateExperience}
                     onFontChange={updateFont}
                     onHeaderChange={updateHeader}
                     onLoadResume={handleLoadResume}
+                    onRemoveImage={handleRemoveImage}
                     onSaveName={setResumeName}
                     onSaveResume={handleSaveResume}
                     onSectionFontChange={updateSectionFont}
@@ -394,6 +461,7 @@ export default function ResumeBuilder() {
                     onSkillRemove={removeSkill}
                     onSummaryChange={updateSummary}
                     onUploadImage={uploadImage}
+                    pdfPending={pdfPending}
                     resumeName={resumeName}
                     savedResumes={savedResumes}
                     savePending={saveMutation.isPending}
@@ -402,35 +470,8 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Preview */}
-            <div className="lg:col-span-2 order-1 lg:order-2 max-h-[calc(100vh-6rem)] custom-scroll overflow-y-auto">
-                <ResumePrevier
-                    config={config}
-                    onImageChange={(patch) => {
-                        setConfig((prev) => {
-                            if (!patch) {
-                                return {
-                                    ...prev,
-                                    header: {
-                                        ...prev.header,
-                                        image: undefined,
-                                    },
-                                };
-                            }
-
-                            return {
-                                ...prev,
-                                header: {
-                                    ...prev.header,
-                                    image: {
-                                        ...(prev.header.image || {}),
-                                        ...patch,
-                                        id: patch.id || prev.header.image?.id || uuid(),
-                                    } as ResumeConfig['header']['image'],
-                                },
-                            };
-                        });
-                    }}
-                />
+            <div className="order-1 max-h-[calc(100vh-6rem)] overflow-y-auto custom-scroll lg:order-2">
+                <ResumePreviewer config={config} />
             </div>
         </div>
     );

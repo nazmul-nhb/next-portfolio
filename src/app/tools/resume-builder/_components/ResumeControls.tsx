@@ -1,5 +1,6 @@
 'use client';
 
+import type { $UUID } from 'locality-idb';
 import {
     ArrowDown,
     ArrowUp,
@@ -13,7 +14,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { uuid } from 'nhb-toolbox/hash';
-import { useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -47,22 +49,28 @@ import type {
     ResumeEducationItem,
     ResumeExperienceItem,
 } from '@/lib/resume-builder/types';
+import { sortResumeSections } from '@/lib/resume-builder/utils';
 
 interface ResumeControlsProps {
     config: ResumeConfig;
     validationIssues: string[];
+    pdfPending: boolean;
     savePending: boolean;
     resumeName: string;
-    savedResumes: Array<{ id: string; name: string }>;
+    savedResumes: Array<{ id: $UUID; name: string }>;
     loadingResumes: boolean;
     onHeaderChange: (field: string, value: string | boolean) => void;
+    onRemoveImage: () => void;
     onSummaryChange: (value: string) => void;
+    onDownloadPdf: () => void;
     onSkillAdd: (name: string) => void;
     onSkillRemove: (id: string) => void;
     onExperienceAdd: (entry: Omit<ResumeExperienceItem, 'id'>) => void;
+    onExperienceReorder: (id: string, direction: 'up' | 'down') => void;
     onExperienceUpdate: (id: string, patch: Partial<ResumeExperienceItem>) => void;
     onExperienceRemove: (id: string) => void;
     onEducationAdd: (entry: Omit<ResumeEducationItem, 'id'>) => void;
+    onEducationReorder: (id: string, direction: 'up' | 'down') => void;
     onEducationUpdate: (id: string, patch: Partial<ResumeEducationItem>) => void;
     onEducationRemove: (id: string) => void;
     onCustomSectionAdd: (section: CustomSection) => void;
@@ -75,25 +83,30 @@ interface ResumeControlsProps {
     onUploadImage: (file: File) => void;
     onSaveName: (name: string) => void;
     onSaveResume: () => void;
-    onLoadResume: (resumeId: string) => void;
-    onDeleteResume: (resumeId: string) => void;
+    onLoadResume: (resumeId: $UUID) => void;
+    onDeleteResume: (resumeId: $UUID) => void;
 }
 
 export function ResumeControls({
     config,
     validationIssues,
+    pdfPending,
     savePending,
     resumeName,
     savedResumes,
     loadingResumes,
     onHeaderChange,
+    onRemoveImage,
     onSummaryChange,
+    onDownloadPdf,
     onSkillAdd,
     onSkillRemove,
     onExperienceAdd,
+    onExperienceReorder,
     onExperienceUpdate,
     onExperienceRemove,
     onEducationAdd,
+    onEducationReorder,
     onEducationUpdate,
     onEducationRemove,
     onCustomSectionAdd,
@@ -117,7 +130,7 @@ export function ResumeControls({
     const [customSectionTitle, setCustomSectionTitle] = useState('');
 
     const sortedSections = useMemo(
-        () => config.sections.sort((a, b) => a.order - b.order),
+        () => sortResumeSections(config.sections),
         [config.sections]
     );
 
@@ -169,7 +182,7 @@ export function ResumeControls({
             id: 'summary',
             label: 'Summary',
             content: (
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                     <Card className="rounded-none">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -182,24 +195,22 @@ export function ResumeControls({
                         <CardContent className="space-y-4">
                             {sortedSections.map((section, index) => (
                                 <div
-                                    className="flex items-center gap-2 p-2 bg-muted rounded-md"
+                                    className="flex items-center gap-3 rounded-md bg-muted p-3"
                                     key={section.id}
                                 >
-                                    <input
+                                    <Checkbox
                                         checked={section.enabled}
-                                        className="rounded"
                                         id={`section-${section.id}`}
-                                        onChange={(e) =>
-                                            onSectionToggle(section.id, e.target.checked)
+                                        onCheckedChange={(checked) =>
+                                            onSectionToggle(section.id, checked === true)
                                         }
-                                        type="checkbox"
                                     />
-                                    <label
+                                    <Label
                                         className="flex-1 cursor-pointer"
                                         htmlFor={`section-${section.id}`}
                                     >
                                         {DEFAULT_SECTION_LABELS[section.id]}
-                                    </label>
+                                    </Label>
                                     <div className="flex gap-1">
                                         {index > 0 && (
                                             <Button
@@ -237,8 +248,8 @@ export function ResumeControls({
                                 Your profile information appears at the top of the resume
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
+                        <CardContent className="space-y-5">
+                            <div className="grid gap-4 sm:grid-cols-2 [&>div]:space-y-2">
                                 <div>
                                     <Label htmlFor="full-name">Full Name</Label>
                                     <Input
@@ -332,8 +343,8 @@ export function ResumeControls({
                             </div>
 
                             {/* Image Upload */}
-                            <div className="border-t pt-4">
-                                <Label className="mb-2 block">Profile Image</Label>
+                            <div className="space-y-3 border-t pt-4">
+                                <Label htmlFor="profile-image">Profile Image</Label>
                                 <div className="flex items-center gap-3">
                                     <Input
                                         accept="image/*"
@@ -349,7 +360,7 @@ export function ResumeControls({
                                         <div className="shrink-0">
                                             <Image
                                                 alt="Profile preview"
-                                                className="w-16 h-16 rounded object-cover border border-border"
+                                                className="size-16 rounded-md border border-border object-cover"
                                                 height={64}
                                                 src={config.header.image.dataUrl}
                                                 width={64}
@@ -358,12 +369,7 @@ export function ResumeControls({
                                     )}
                                 </div>
                                 {config.header.image && (
-                                    <Button
-                                        className="mt-2"
-                                        onClick={() => onHeaderChange('image', '')}
-                                        size="sm"
-                                        variant="outline"
-                                    >
+                                    <Button onClick={onRemoveImage} size="sm" variant="outline">
                                         Remove Image
                                     </Button>
                                 )}
@@ -377,9 +383,9 @@ export function ResumeControls({
                                 Brief overview of your professional background
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="space-y-2">
                             <Textarea
-                                className="min-h-32"
+                                className="min-h-32 max-h-40 custom-scroll"
                                 onChange={(e) => onSummaryChange(e.target.value)}
                                 placeholder="Write a compelling professional summary..."
                                 value={config.summary}
@@ -393,14 +399,14 @@ export function ResumeControls({
             id: 'skills',
             label: 'Skills',
             content: (
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                     <Card className="rounded-none">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">Skills</CardTitle>
                             <CardDescription>Add your professional skills</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
                                 <Input
                                     onChange={(e) => setSkillInput(e.target.value)}
                                     onKeyDown={(e) => {
@@ -411,8 +417,8 @@ export function ResumeControls({
                                     placeholder="Add a skill..."
                                     value={skillInput}
                                 />
-                                <Button onClick={handleAddSkill} size="sm">
-                                    <Plus className="size-4" />
+                                <Button onClick={handleAddSkill} size="icon-sm">
+                                    <Plus />
                                 </Button>
                             </div>
 
@@ -420,14 +426,14 @@ export function ResumeControls({
                                 <div className="space-y-2">
                                     {config.skills.map((skill) => (
                                         <div
-                                            className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                            className="flex items-center justify-between rounded-md bg-muted p-3"
                                             key={skill.id}
                                         >
                                             <span>{skill.name}</span>
                                             <Button
                                                 onClick={() => onSkillRemove(skill.id)}
-                                                size="sm"
-                                                variant="ghost"
+                                                size="icon-sm"
+                                                variant="destructive"
                                             >
                                                 <Trash2 className="size-4" />
                                             </Button>
@@ -455,10 +461,10 @@ export function ResumeControls({
                                 <div className="space-y-4">
                                     {config.experience.map((exp, index) => (
                                         <div
-                                            className="border rounded-lg p-4 space-y-3"
+                                            className="space-y-4 rounded-lg border p-4"
                                             key={exp.id}
                                         >
-                                            <div className="grid gap-3 sm:grid-cols-2">
+                                            <div className="grid gap-4 sm:grid-cols-2 [&>div]:space-y-2">
                                                 <div>
                                                     <Label htmlFor={`exp-company-${exp.id}`}>
                                                         Company
@@ -522,27 +528,25 @@ export function ResumeControls({
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <input
+                                                <Checkbox
                                                     checked={exp.current}
-                                                    className="rounded"
                                                     id={`exp-current-${exp.id}`}
-                                                    onChange={(e) =>
+                                                    onCheckedChange={(checked) =>
                                                         onExperienceUpdate(exp.id, {
-                                                            current: e.target.checked,
+                                                            current: checked === true,
                                                         })
                                                     }
-                                                    type="checkbox"
                                                 />
                                                 <Label htmlFor={`exp-current-${exp.id}`}>
                                                     Currently working here
                                                 </Label>
                                             </div>
-                                            <div>
+                                            <div className="space-y-2">
                                                 <Label htmlFor={`exp-desc-${exp.id}`}>
                                                     Description
                                                 </Label>
                                                 <Textarea
-                                                    className="min-h-20"
+                                                    className="min-h-20 max-h-40 custom-scroll"
                                                     id={`exp-desc-${exp.id}`}
                                                     onChange={(e) =>
                                                         onExperienceUpdate(exp.id, {
@@ -557,7 +561,7 @@ export function ResumeControls({
                                                 {index > 0 && (
                                                     <Button
                                                         onClick={() =>
-                                                            onExperienceUpdate(exp.id, {})
+                                                            onExperienceReorder(exp.id, 'up')
                                                         }
                                                         size="sm"
                                                         variant="outline"
@@ -568,7 +572,7 @@ export function ResumeControls({
                                                 {index < config.experience.length - 1 && (
                                                     <Button
                                                         onClick={() =>
-                                                            onExperienceUpdate(exp.id, {})
+                                                            onExperienceReorder(exp.id, 'down')
                                                         }
                                                         size="sm"
                                                         variant="outline"
@@ -578,7 +582,7 @@ export function ResumeControls({
                                                 )}
                                                 <Button
                                                     onClick={() => onExperienceRemove(exp.id)}
-                                                    size="sm"
+                                                    size="icon-sm"
                                                     variant="destructive"
                                                 >
                                                     <Trash2 className="size-4" />
@@ -594,7 +598,7 @@ export function ResumeControls({
                                 onClick={handleAddExperience}
                                 variant="outline"
                             >
-                                <Plus className="size-4 mr-2" />
+                                <Plus className="mr-2 size-4" />
                                 Add Experience
                             </Button>
                         </CardContent>
@@ -609,10 +613,10 @@ export function ResumeControls({
                                 <div className="space-y-4">
                                     {config.education.map((edu, index) => (
                                         <div
-                                            className="border rounded-lg p-4 space-y-3"
+                                            className="space-y-4 rounded-lg border p-4"
                                             key={edu.id}
                                         >
-                                            <div className="grid gap-3 sm:grid-cols-2">
+                                            <div className="grid gap-4 sm:grid-cols-2 [&>div]:space-y-2">
                                                 <div>
                                                     <Label htmlFor={`edu-school-${edu.id}`}>
                                                         School
@@ -691,27 +695,25 @@ export function ResumeControls({
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <input
+                                                <Checkbox
                                                     checked={edu.current}
-                                                    className="rounded"
                                                     id={`edu-current-${edu.id}`}
-                                                    onChange={(e) =>
+                                                    onCheckedChange={(checked) =>
                                                         onEducationUpdate(edu.id, {
-                                                            current: e.target.checked,
+                                                            current: checked === true,
                                                         })
                                                     }
-                                                    type="checkbox"
                                                 />
                                                 <Label htmlFor={`edu-current-${edu.id}`}>
                                                     Currently studying
                                                 </Label>
                                             </div>
-                                            <div>
+                                            <div className="space-y-2">
                                                 <Label htmlFor={`edu-desc-${edu.id}`}>
                                                     Description (Optional)
                                                 </Label>
                                                 <Textarea
-                                                    className="min-h-20"
+                                                    className="min-h-20 max-h-40 custom-scroll"
                                                     id={`edu-desc-${edu.id}`}
                                                     onChange={(e) =>
                                                         onEducationUpdate(edu.id, {
@@ -726,7 +728,7 @@ export function ResumeControls({
                                                 {index > 0 && (
                                                     <Button
                                                         onClick={() =>
-                                                            onEducationUpdate(edu.id, {})
+                                                            onEducationReorder(edu.id, 'up')
                                                         }
                                                         size="sm"
                                                         variant="outline"
@@ -737,7 +739,7 @@ export function ResumeControls({
                                                 {index < config.education.length - 1 && (
                                                     <Button
                                                         onClick={() =>
-                                                            onEducationUpdate(edu.id, {})
+                                                            onEducationReorder(edu.id, 'down')
                                                         }
                                                         size="sm"
                                                         variant="outline"
@@ -747,7 +749,7 @@ export function ResumeControls({
                                                 )}
                                                 <Button
                                                     onClick={() => onEducationRemove(edu.id)}
-                                                    size="sm"
+                                                    size="icon-sm"
                                                     variant="destructive"
                                                 >
                                                     <Trash2 className="size-4" />
@@ -763,7 +765,7 @@ export function ResumeControls({
                                 onClick={handleAddEducation}
                                 variant="outline"
                             >
-                                <Plus className="size-4 mr-2" />
+                                <Plus className="mr-2 size-4" />
                                 Add Education
                             </Button>
                         </CardContent>
@@ -775,14 +777,14 @@ export function ResumeControls({
             id: 'customize',
             label: 'Customize',
             content: (
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                     <Card className="rounded-none">
                         <CardHeader>
                             <CardTitle>Font Settings</CardTitle>
                             <CardDescription>Customize fonts for your resume</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
+                        <CardContent className="space-y-5">
+                            <div className="space-y-2">
                                 <Label htmlFor="global-font">Global Font</Label>
                                 <Select onValueChange={onFontChange} value={config.fontFamily}>
                                     <SelectTrigger id="global-font">
@@ -790,7 +792,10 @@ export function ResumeControls({
                                     </SelectTrigger>
                                     <SelectContent>
                                         {RESUME_FONT_OPTIONS.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.fontFamily}
+                                            >
                                                 {option.label}
                                             </SelectItem>
                                         ))}
@@ -802,7 +807,7 @@ export function ResumeControls({
                                 <p className="font-medium text-sm">Section-Specific Fonts</p>
                                 {Object.entries(DEFAULT_SECTION_LABELS).map(
                                     ([sectionId, label]) => (
-                                        <div key={sectionId}>
+                                        <div className="space-y-2" key={sectionId}>
                                             <Label htmlFor={`section-font-${sectionId}`}>
                                                 {label}
                                             </Label>
@@ -823,7 +828,7 @@ export function ResumeControls({
                                                     {RESUME_FONT_OPTIONS.map((option) => (
                                                         <SelectItem
                                                             key={option.value}
-                                                            value={option.value}
+                                                            value={option.fontFamily}
                                                         >
                                                             {option.label}
                                                         </SelectItem>
@@ -850,7 +855,7 @@ export function ResumeControls({
                                 <div className="space-y-4">
                                     {config.customSections.map((section) => (
                                         <div
-                                            className="border rounded-lg p-4 space-y-3"
+                                            className="space-y-4 rounded-lg border p-4"
                                             key={section.id}
                                         >
                                             <div className="flex items-center justify-between">
@@ -861,7 +866,7 @@ export function ResumeControls({
                                                     onClick={() =>
                                                         onCustomSectionRemove(section.id)
                                                     }
-                                                    size="sm"
+                                                    size="icon-sm"
                                                     variant="destructive"
                                                 >
                                                     <Trash2 className="size-4" />
@@ -871,7 +876,7 @@ export function ResumeControls({
                                             {section.fieldType === 'textarea' &&
                                                 typeof section.value === 'string' && (
                                                     <Textarea
-                                                        className="min-h-24"
+                                                        className="min-h-24 max-h-40 custom-scroll"
                                                         onChange={(e) =>
                                                             onCustomSectionUpdate(section.id, {
                                                                 value: e.target.value,
@@ -973,7 +978,7 @@ export function ResumeControls({
                                                             size="sm"
                                                             variant="outline"
                                                         >
-                                                            <Plus className="size-4 mr-2" />
+                                                            <Plus className="mr-2 size-4" />
                                                             Add Item
                                                         </Button>
                                                     </div>
@@ -989,12 +994,12 @@ export function ResumeControls({
                                     onClick={() => setNewCustomSection(true)}
                                     variant="outline"
                                 >
-                                    <Plus className="size-4 mr-2" />
+                                    <Plus className="mr-2 size-4" />
                                     Add Custom Section
                                 </Button>
                             ) : (
-                                <div className="border rounded-lg p-4 space-y-3">
-                                    <div>
+                                <div className="space-y-4 rounded-lg border p-4">
+                                    <div className="space-y-2">
                                         <Label htmlFor="custom-title">Section Title</Label>
                                         <Input
                                             id="custom-title"
@@ -1005,7 +1010,7 @@ export function ResumeControls({
                                             value={customSectionTitle}
                                         />
                                     </div>
-                                    <div>
+                                    <div className="space-y-2">
                                         <Label htmlFor="custom-type">Field Type</Label>
                                         <Select
                                             onValueChange={(
@@ -1057,13 +1062,45 @@ export function ResumeControls({
                 <div className="space-y-4">
                     <Card className="rounded-none">
                         <CardHeader>
+                            <CardTitle>Download PDF</CardTitle>
+                            <CardDescription>
+                                Export a clean white-page PDF version of this resume
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-sm text-muted-foreground">
+                                The downloaded file uses a white A4 layout for a professional
+                                finish.
+                            </p>
+                            <Button
+                                className="w-full"
+                                disabled={pdfPending}
+                                onClick={onDownloadPdf}
+                            >
+                                {pdfPending ? (
+                                    <Fragment>
+                                        <Loader2 className="mr-2 size-4 animate-spin" />
+                                        Generating PDF...
+                                    </Fragment>
+                                ) : (
+                                    <Fragment>
+                                        <Download className="mr-2 size-4" />
+                                        Download PDF
+                                    </Fragment>
+                                )}
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-none">
+                        <CardHeader>
                             <CardTitle>Save Resume</CardTitle>
                             <CardDescription>
                                 Save your current resume to IndexedDB
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <div>
+                            <div className="space-y-2">
                                 <Label htmlFor="resume-name">Resume Name</Label>
                                 <Input
                                     id="resume-name"
@@ -1078,15 +1115,15 @@ export function ResumeControls({
                                 onClick={onSaveResume}
                             >
                                 {savePending ? (
-                                    <>
-                                        <Loader2 className="size-4 mr-2 animate-spin" />
+                                    <Fragment>
+                                        <Loader2 className="mr-2 size-4 animate-spin" />
                                         Saving...
-                                    </>
+                                    </Fragment>
                                 ) : (
-                                    <>
-                                        <Save className="size-4 mr-2" />
+                                    <Fragment>
+                                        <Save className="mr-2 size-4" />
                                         Save Resume
-                                    </>
+                                    </Fragment>
                                 )}
                             </Button>
                         </CardContent>
@@ -1106,7 +1143,7 @@ export function ResumeControls({
                                 <div className="space-y-2">
                                     {savedResumes.map((resume) => (
                                         <div
-                                            className="flex items-center justify-between p-3 bg-muted rounded-md"
+                                            className="flex items-center justify-between rounded-md bg-muted p-3"
                                             key={resume.id}
                                         >
                                             <span className="font-medium">{resume.name}</span>
@@ -1115,12 +1152,12 @@ export function ResumeControls({
                                                     onClick={() => onLoadResume(resume.id)}
                                                     size="sm"
                                                 >
-                                                    <Download className="size-4 mr-1" />
+                                                    <Download className="mr-1 size-4" />
                                                     Load
                                                 </Button>
                                                 <Button
                                                     onClick={() => onDeleteResume(resume.id)}
-                                                    size="sm"
+                                                    size="icon-sm"
                                                     variant="destructive"
                                                 >
                                                     <Trash2 className="size-4" />
@@ -1144,7 +1181,7 @@ export function ResumeControls({
     ];
 
     return (
-        <div className="space-y-6 max-w-full mx-auto custom-scroll border overflow-y-auto max-h-fit">
+        <div className="mx-auto max-h-fit max-w-full space-y-6 overflow-y-auto border bg-card custom-scroll">
             {validationIssues.length > 0 && (
                 <SmartAlert
                     description={
@@ -1159,8 +1196,11 @@ export function ResumeControls({
                 />
             )}
 
-            <Tabs className="w-full" defaultValue="summary">
-                <TabsList variant="line">
+            <Tabs className="w-full gap-4" defaultValue="summary">
+                <TabsList
+                    className="h-auto w-full justify-start gap-1 overflow-x-auto rounded-none border-b px-0 pb-1"
+                    variant="line"
+                >
                     {TABS.map((tab) => (
                         <TabsTrigger key={tab.id} value={tab.id}>
                             {tab.label}

@@ -1,17 +1,47 @@
 import { uuid } from 'nhb-toolbox/hash';
-import { DEFAULT_RESUME_CONFIG } from './defaults';
+import { DEFAULT_RESUME_CONFIG, RESUME_FONT_OPTIONS } from './defaults';
 import type {
     CustomSection,
+    DefaultSectionId,
     ResumeConfig,
     ResumeEducationItem,
     ResumeExperienceItem,
     ResumeSkillItem,
 } from './types';
 
+function resolveResumeFontFamily(value: string | undefined, fallback: string): string {
+    if (!value) {
+        return fallback;
+    }
+
+    const matchedFont = RESUME_FONT_OPTIONS.find(
+        (option) => option.value === value || option.fontFamily === value
+    );
+
+    return matchedFont?.fontFamily ?? value;
+}
+
 /**
  * Normalize and validate resume config
  */
 export function normalizeResumeConfig(config: Partial<ResumeConfig>): ResumeConfig {
+    const normalizedFontFamily = resolveResumeFontFamily(
+        config.fontFamily,
+        DEFAULT_RESUME_CONFIG.fontFamily
+    );
+    const normalizedSectionFonts = (
+        Object.keys(DEFAULT_RESUME_CONFIG.sectionFonts) as DefaultSectionId[]
+    ).reduce(
+        (accumulator, sectionId) => {
+            accumulator[sectionId] = resolveResumeFontFamily(
+                config.sectionFonts?.[sectionId],
+                normalizedFontFamily
+            );
+            return accumulator;
+        },
+        {} as ResumeConfig['sectionFonts']
+    );
+
     return {
         header: {
             ...DEFAULT_RESUME_CONFIG.header,
@@ -23,11 +53,8 @@ export function normalizeResumeConfig(config: Partial<ResumeConfig>): ResumeConf
         education: config.education || DEFAULT_RESUME_CONFIG.education,
         customSections: config.customSections || [],
         sections: config.sections || DEFAULT_RESUME_CONFIG.sections,
-        fontFamily: config.fontFamily || DEFAULT_RESUME_CONFIG.fontFamily,
-        sectionFonts: {
-            ...DEFAULT_RESUME_CONFIG.sectionFonts,
-            ...config.sectionFonts,
-        },
+        fontFamily: normalizedFontFamily,
+        sectionFonts: normalizedSectionFonts,
     };
 }
 
@@ -187,4 +214,108 @@ export function formatDateRange(startDate: string, endDate: string, current: boo
         return `${startDate} - Present`;
     }
     return `${startDate} - ${endDate}`;
+}
+
+/**
+ * Sort sections by configured order.
+ */
+export function sortResumeSections<T extends { order: number }>(sections: T[]): T[] {
+    return [...sections].sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Format a YYYY-MM string to a readable month label.
+ */
+export function formatResumeMonthLabel(value: string): string {
+    if (!value) {
+        return '';
+    }
+
+    const [year, month] = value.split('-');
+
+    if (!year || !month) {
+        return value;
+    }
+
+    const date = new Date(Number(year), Number(month) - 1, 1);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        year: 'numeric',
+    }).format(date);
+}
+
+/**
+ * Format a date range using readable month labels.
+ */
+export function formatResumeDateRange(
+    startDate: string,
+    endDate: string,
+    current: boolean
+): string {
+    const start = formatResumeMonthLabel(startDate);
+
+    if (!start) {
+        return current ? 'Present' : formatResumeMonthLabel(endDate);
+    }
+
+    if (current) {
+        return `${start} - Present`;
+    }
+
+    const end = formatResumeMonthLabel(endDate);
+
+    return end ? `${start} - ${end}` : start;
+}
+
+/**
+ * Ensure external links are valid for anchors and PDF links.
+ */
+export function normalizeResumeHref(value: string): string {
+    if (!value) {
+        return '';
+    }
+
+    if (
+        value.startsWith('http://') ||
+        value.startsWith('https://') ||
+        value.startsWith('mailto:') ||
+        value.startsWith('tel:')
+    ) {
+        return value;
+    }
+
+    return `https://${value}`;
+}
+
+/**
+ * Reduce a contact URL to a cleaner label.
+ */
+export function formatResumeLinkLabel(value: string): string {
+    return value
+        .replace(/^https?:\/\//, '')
+        .replace(/^mailto:/, '')
+        .replace(/^tel:/, '')
+        .replace(/\/$/, '');
+}
+
+/**
+ * Map CSS/web font choices to react-pdf built-in font families.
+ */
+export function getResumePdfFontFamily(value: string): 'Courier' | 'Helvetica' | 'Times-Roman' {
+    const normalized = value.toLowerCase();
+
+    if (normalized.includes('mono') || normalized.includes('cascadia')) {
+        return 'Courier';
+    }
+
+    if (normalized.includes('playfair') || normalized.includes('times')) {
+        return 'Times-Roman';
+    }
+
+    return 'Helvetica';
 }

@@ -2,312 +2,303 @@
 
 import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
-import { memo } from 'react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { Card } from '@/components/ui/card';
 import { DEFAULT_SECTION_LABELS } from '@/lib/resume-builder/defaults';
 import type { ResumeConfig } from '@/lib/resume-builder/types';
+import {
+    formatResumeDateRange,
+    formatResumeLinkLabel,
+    normalizeResumeHref,
+    sortResumeSections,
+} from '@/lib/resume-builder/utils';
 
-interface ResumePreviwerProps {
+interface ResumePreviewerProps {
     config: ResumeConfig;
-    onImageChange?: (patch: Partial<ResumeConfig['header']['image']>) => void;
 }
 
-/**
- * Resume preview component with real-time editing
- */
-const ResumePrevier = memo(function ResumePreviewer({ config }: ResumePreviwerProps) {
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    const sortedSections = config.sections
-        .filter((s) => s.enabled)
-        .sort((a, b) => a.order - b.order);
+export default function ResumePreviewer({ config }: ResumePreviewerProps) {
+    const sortedSections = sortResumeSections(config.sections).filter(
+        (section) => section.enabled
+    );
 
     return (
-        <Card
-            className="custom-scroll overflow-y-auto border xl:sticky xl:top-20 rounded-none bg-transparent max-h-fit p-0"
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-        >
-            <div className="w-full flex justify-center">
+        <Card className="custom-scroll max-h-fit overflow-y-auto rounded-none border border-sky-200/60 bg-linear-to-br from-sky-50 via-blue-50/70 to-background p-3 shadow-sm">
+            <div className="mx-auto w-full max-w-212.5 border border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
                 <div
-                    className="w-full bg-white dark:bg-slate-950 shadow-lg"
-                    style={{
-                        maxWidth: '850px',
-                        fontFamily: config.fontFamily,
-                        fontSize: '14px',
-                        lineHeight: '1.6',
-                        color: '#1f2937',
-                    }}
+                    className="border-b border-slate-200 bg-linear-to-r from-sky-50 via-white to-slate-50 p-7"
+                    style={{ fontFamily: config.sectionFonts.summary }}
                 >
-                    {/* Header Section */}
-                    <div
-                        className="p-6 border-b bg-linear-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800"
-                        style={{ fontFamily: config.sectionFonts.summary }}
-                    >
-                        <div className="flex justify-between items-start gap-4">
-                            <div className="flex-1">
+                    <div className="flex items-start justify-between gap-6">
+                        <div className="flex-1 space-y-4">
+                            <div className="space-y-1">
                                 <h1
-                                    className="text-3xl font-bold mb-1"
+                                    className="text-4xl font-bold tracking-tight text-slate-950"
                                     style={{ fontFamily: config.fontFamily }}
                                 >
                                     {config.header.fullName}
                                 </h1>
-                                <p className="text-lg text-slate-600 dark:text-slate-400 mb-3">
+                                <p className="text-base font-medium text-slate-600">
                                     {config.header.jobTitle}
                                 </p>
-
-                                {/* Contact Information */}
-                                <div className="flex flex-wrap gap-3 text-xs text-slate-600 dark:text-slate-400">
-                                    {config.header.email && (
-                                        <div className="flex items-center gap-1">
-                                            <Mail className="w-3 h-3" />
-                                            <a
-                                                className="hover:text-primary"
-                                                href={`mailto:${config.header.email}`}
-                                            >
-                                                {config.header.email}
-                                            </a>
-                                        </div>
-                                    )}
-                                    {config.header.phone && (
-                                        <div className="flex items-center gap-1">
-                                            <Phone className="w-3 h-3" />
-                                            {config.header.phone}
-                                        </div>
-                                    )}
-                                    {config.header.location && (
-                                        <div className="flex items-center gap-1">
-                                            <MapPin className="w-3 h-3" />
-                                            {config.header.location}
-                                        </div>
-                                    )}
-                                    {config.header.website && (
-                                        <div className="flex items-center gap-1">
-                                            <Globe className="w-3 h-3" />
-                                            <a
-                                                className="hover:text-primary"
-                                                href={config.header.website}
-                                                rel="noopener noreferrer"
-                                                target="_blank"
-                                            >
-                                                {config.header.website
-                                                    .replace('https://', '')
-                                                    .replace('http://', '')}
-                                            </a>
-                                        </div>
-                                    )}
-                                    {config.header.linkedin && (
-                                        <div className="flex items-center gap-1">
-                                            <FaLinkedin className="w-3 h-3" />
-                                            {config.header.linkedin}
-                                        </div>
-                                    )}
-                                    {config.header.github && (
-                                        <div className="flex items-center gap-1">
-                                            <FaGithub className="w-3 h-3" />
-                                            {config.header.github}
-                                        </div>
-                                    )}
-                                </div>
                             </div>
 
-                            {/* Profile Image */}
-                            {config.header.image && (
-                                <div className="shrink-0">
-                                    <Image
-                                        alt="Profile"
-                                        className="w-24 h-24 rounded-lg object-cover border border-slate-200 dark:border-slate-700"
-                                        height={96}
-                                        src={config.header.image.dataUrl}
-                                        width={96}
-                                    />
-                                </div>
-                            )}
+                            <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-slate-600">
+                                {config.header.email ? (
+                                    <a
+                                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-950"
+                                        href={`mailto:${config.header.email}`}
+                                    >
+                                        <Mail className="size-3.5" />
+                                        {config.header.email}
+                                    </a>
+                                ) : null}
+                                {config.header.phone ? (
+                                    <a
+                                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-950"
+                                        href={`tel:${config.header.phone}`}
+                                    >
+                                        <Phone className="size-3.5" />
+                                        {config.header.phone}
+                                    </a>
+                                ) : null}
+                                {config.header.location ? (
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <MapPin className="size-3.5" />
+                                        {config.header.location}
+                                    </span>
+                                ) : null}
+                                {config.header.website ? (
+                                    <a
+                                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-950"
+                                        href={normalizeResumeHref(config.header.website)}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        <Globe className="size-3.5" />
+                                        {formatResumeLinkLabel(config.header.website)}
+                                    </a>
+                                ) : null}
+                                {config.header.linkedin ? (
+                                    <a
+                                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-950"
+                                        href={normalizeResumeHref(config.header.linkedin)}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        <FaLinkedin className="size-3.5" />
+                                        {formatResumeLinkLabel(config.header.linkedin)}
+                                    </a>
+                                ) : null}
+                                {config.header.github ? (
+                                    <a
+                                        className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-950"
+                                        href={normalizeResumeHref(config.header.github)}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        <FaGithub className="size-3.5" />
+                                        {formatResumeLinkLabel(config.header.github)}
+                                    </a>
+                                ) : null}
+                            </div>
                         </div>
+
+                        {config.header.image?.dataUrl ? (
+                            <div className="shrink-0">
+                                <Image
+                                    alt="Profile"
+                                    className="size-24 rounded-2xl border border-slate-200 object-cover shadow-sm"
+                                    height={96}
+                                    src={config.header.image.dataUrl}
+                                    width={96}
+                                />
+                            </div>
+                        ) : null}
                     </div>
+                </div>
 
-                    {/* Content Sections */}
-                    <div className="p-6 space-y-5">
-                        {sortedSections.map((section) => {
-                            if (section.id === 'summary') {
-                                return (
-                                    <section
-                                        key="summary"
-                                        style={{ fontFamily: config.sectionFonts.summary }}
-                                    >
-                                        <h2 className="text-lg font-bold mb-2 text-slate-900 dark:text-white border-b pb-1">
-                                            {DEFAULT_SECTION_LABELS.summary}
-                                        </h2>
-                                        <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                                            {config.summary}
-                                        </p>
-                                    </section>
-                                );
-                            }
+                <div className="space-y-6 p-7 text-[13px] leading-6 text-slate-700">
+                    {sortedSections.map((section) => {
+                        if (section.id === 'summary' && config.summary.trim()) {
+                            return (
+                                <section
+                                    className="space-y-3"
+                                    key={section.id}
+                                    style={{ fontFamily: config.sectionFonts.summary }}
+                                >
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {DEFAULT_SECTION_LABELS.summary}
+                                    </h2>
+                                    <p className="leading-6 text-slate-700">{config.summary}</p>
+                                </section>
+                            );
+                        }
 
-                            if (section.id === 'skills') {
-                                return (
-                                    <section
-                                        key="skills"
-                                        style={{ fontFamily: config.sectionFonts.skills }}
-                                    >
-                                        <h2 className="text-lg font-bold mb-2 text-slate-900 dark:text-white border-b pb-1">
-                                            {DEFAULT_SECTION_LABELS.skills}
-                                        </h2>
-                                        <div className="flex flex-wrap gap-2">
-                                            {config.skills.map((skill) => (
-                                                <span
-                                                    className="px-3 py-1 bg-primary/10 text-primary dark:bg-primary/20 rounded-full text-xs font-medium"
-                                                    key={skill.id}
-                                                >
-                                                    {skill.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </section>
-                                );
-                            }
+                        if (section.id === 'skills' && config.skills.length > 0) {
+                            return (
+                                <section
+                                    className="space-y-3"
+                                    key={section.id}
+                                    style={{ fontFamily: config.sectionFonts.skills }}
+                                >
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {DEFAULT_SECTION_LABELS.skills}
+                                    </h2>
+                                    <div className="flex flex-wrap gap-2">
+                                        <span className="text-xs font-medium text-slate-800">
+                                            {config.skills
+                                                .map((skill) => skill.name)
+                                                .join(', ')}
+                                        </span>
+                                    </div>
+                                </section>
+                            );
+                        }
 
-                            if (section.id === 'experience') {
-                                return (
-                                    <section
-                                        key="experience"
-                                        style={{ fontFamily: config.sectionFonts.experience }}
-                                    >
-                                        <h2 className="text-lg font-bold mb-3 text-slate-900 dark:text-white border-b pb-1">
-                                            {DEFAULT_SECTION_LABELS.experience}
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {config.experience.map((exp) => (
-                                                <div
-                                                    className="border-l-2 border-primary pl-4"
-                                                    key={exp.id}
-                                                >
-                                                    <div className="flex justify-between items-baseline gap-2">
-                                                        <h3 className="font-semibold text-slate-900 dark:text-white">
-                                                            {exp.position}
-                                                        </h3>
-                                                        <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                                                            {exp.startDate}
-                                                            {exp.current
-                                                                ? ' - Present'
-                                                                : ` - ${exp.endDate}`}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                                        {exp.company}
-                                                    </p>
-                                                    <p className="text-sm text-slate-700 dark:text-slate-300">
-                                                        {exp.description}
+                        if (section.id === 'experience' && config.experience.length > 0) {
+                            return (
+                                <section
+                                    className="space-y-4"
+                                    key={section.id}
+                                    style={{ fontFamily: config.sectionFonts.experience }}
+                                >
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {DEFAULT_SECTION_LABELS.experience}
+                                    </h2>
+                                    {config.experience.map((experience) => (
+                                        <div
+                                            className="border-l-2 border-slate-200 pl-4"
+                                            key={experience.id}
+                                        >
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="space-y-1">
+                                                    <h3 className="text-sm font-semibold text-slate-950">
+                                                        {experience.position}
+                                                    </h3>
+                                                    <p className="text-sm font-medium text-slate-600">
+                                                        {experience.company}
                                                     </p>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                );
-                            }
-
-                            if (section.id === 'education') {
-                                return (
-                                    <section
-                                        key="education"
-                                        style={{ fontFamily: config.sectionFonts.education }}
-                                    >
-                                        <h2 className="text-lg font-bold mb-3 text-slate-900 dark:text-white border-b pb-1">
-                                            {DEFAULT_SECTION_LABELS.education}
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {config.education.map((edu) => (
-                                                <div
-                                                    className="border-l-2 border-primary pl-4"
-                                                    key={edu.id}
-                                                >
-                                                    <div className="flex justify-between items-baseline gap-2">
-                                                        <h3 className="font-semibold text-slate-900 dark:text-white">
-                                                            {edu.degree} in {edu.field}
-                                                        </h3>
-                                                        <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                                                            {edu.startDate}
-                                                            {edu.current
-                                                                ? ' - Present'
-                                                                : ` - ${edu.endDate}`}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                                        {edu.school}
-                                                    </p>
-                                                    {edu.description && (
-                                                        <p className="text-sm text-slate-700 dark:text-slate-300">
-                                                            {edu.description}
-                                                        </p>
+                                                <span className="shrink-0 text-xs font-medium text-slate-500">
+                                                    {formatResumeDateRange(
+                                                        experience.startDate,
+                                                        experience.endDate,
+                                                        experience.current
                                                     )}
-                                                </div>
-                                            ))}
+                                                </span>
+                                            </div>
+                                            <p className="mt-2 text-sm leading-6 text-slate-700">
+                                                {experience.description}
+                                            </p>
                                         </div>
-                                    </section>
-                                );
+                                    ))}
+                                </section>
+                            );
+                        }
+
+                        if (section.id === 'education' && config.education.length > 0) {
+                            return (
+                                <section
+                                    className="space-y-4"
+                                    key={section.id}
+                                    style={{ fontFamily: config.sectionFonts.education }}
+                                >
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {DEFAULT_SECTION_LABELS.education}
+                                    </h2>
+                                    {config.education.map((education) => (
+                                        <div
+                                            className="border-l-2 border-slate-200 pl-4"
+                                            key={education.id}
+                                        >
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="space-y-1">
+                                                    <h3 className="text-sm font-semibold text-slate-950">
+                                                        {education.degree}
+                                                        {education.field
+                                                            ? ` in ${education.field}`
+                                                            : ''}
+                                                    </h3>
+                                                    <p className="text-sm font-medium text-slate-600">
+                                                        {education.school}
+                                                    </p>
+                                                </div>
+                                                <span className="shrink-0 text-xs font-medium text-slate-500">
+                                                    {formatResumeDateRange(
+                                                        education.startDate,
+                                                        education.endDate,
+                                                        education.current
+                                                    )}
+                                                </span>
+                                            </div>
+                                            {education.description ? (
+                                                <p className="mt-2 text-sm leading-6 text-slate-700">
+                                                    {education.description}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                    ))}
+                                </section>
+                            );
+                        }
+
+                        return null;
+                    })}
+
+                    {config.customSections.map((section) => {
+                        if (section.fieldType !== 'list' && typeof section.value === 'string') {
+                            if (!section.value.trim()) {
+                                return null;
                             }
 
-                            return null;
-                        })}
+                            return (
+                                <section className="space-y-3" key={section.id}>
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {section.title}
+                                    </h2>
+                                    <p
+                                        className={
+                                            section.fieldType === 'textarea'
+                                                ? 'whitespace-pre-wrap leading-6 text-slate-700'
+                                                : 'leading-6 text-slate-700'
+                                        }
+                                    >
+                                        {section.value}
+                                    </p>
+                                </section>
+                            );
+                        }
 
-                        {/* Custom Sections */}
-                        {config.customSections.map((customSection) => (
-                            <section className="border-t pt-4" key={customSection.id}>
-                                <h2 className="text-lg font-bold mb-3 text-slate-900 dark:text-white border-b pb-1">
-                                    {customSection.title}
-                                </h2>
+                        if (section.fieldType === 'list' && Array.isArray(section.value)) {
+                            if (section.value.length === 0) {
+                                return null;
+                            }
 
-                                {customSection.fieldType === 'textarea' &&
-                                    typeof customSection.value === 'string' && (
-                                        <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                                            {customSection.value}
-                                        </p>
-                                    )}
+                            return (
+                                <section className="space-y-3" key={section.id}>
+                                    <h2 className="border-b border-slate-200 pb-2 text-xs font-semibold tracking-[0.24em] text-slate-900 uppercase">
+                                        {section.title}
+                                    </h2>
+                                    <ul className="space-y-2">
+                                        {section.value.map((item) => (
+                                            <li
+                                                className="flex items-start gap-2 text-sm leading-6 text-slate-700"
+                                                key={item.id}
+                                            >
+                                                <span className="mt-0.5 text-slate-400">•</span>
+                                                <span>{item.value}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+                            );
+                        }
 
-                                {customSection.fieldType === 'text' &&
-                                    typeof customSection.value === 'string' && (
-                                        <p className="text-sm text-slate-700 dark:text-slate-300">
-                                            {customSection.value}
-                                        </p>
-                                    )}
-
-                                {customSection.fieldType === 'list' &&
-                                    Array.isArray(customSection.value) && (
-                                        <ul className="space-y-2">
-                                            {customSection.value.map((item) => (
-                                                <li
-                                                    className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2"
-                                                    key={item.id}
-                                                >
-                                                    <span className="font-bold mt-0.5">•</span>
-                                                    <span>{item.value}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                            </section>
-                        ))}
-                    </div>
+                        return null;
+                    })}
                 </div>
             </div>
         </Card>
     );
-});
-
-export default ResumePrevier;
+}
