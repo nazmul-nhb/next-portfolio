@@ -17,9 +17,10 @@ import {
     PHOTO_CARD_SECTION_LABELS,
     PHOTO_CARD_SECTION_OPTIONS,
 } from '@/lib/constants';
-import type { FontId, PhotoCardSectionId, TextLayer } from '@/lib/photo-card/types';
+import type { PhotoCardSectionId, TextLayer } from '@/lib/photo-card/types';
 import { getPhotoCardFontOption } from '@/lib/photo-card/utils';
 import { cn } from '@/lib/utils';
+import type { FontId } from '@/types';
 import ColorInputField from './ColorInputField';
 import DraftNumberInput from './DraftNumberInput';
 

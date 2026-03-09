@@ -12,8 +12,9 @@ import {
 } from '@/lib/fonts';
 import { normalizePhotoCardConfig } from '@/lib/photo-card/utils';
 import { hasErrorMessage } from '@/lib/utils';
+import type { FontId } from '@/types';
 import { getAbsoluteLayerPosition, getSectionBounds } from './layout';
-import type { FontId, PhotoCardConfig, TextLayer } from './types';
+import type { PhotoCardConfig, TextLayer } from './types';
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 let fontsReadyPromise: Promise<void> | null = null;

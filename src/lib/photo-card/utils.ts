@@ -1,7 +1,8 @@
 import { uuid } from 'nhb-toolbox/hash';
+import type { FontId } from '@/types';
 import { FONT_OPTIONS, PHOTO_CARD_SECTION_IDS, PHOTO_CARD_SECTION_LABELS } from '../constants';
 import { PhotoCardConfigSchema } from './schema';
-import type { FontId, PhotoCardConfig, PhotoCardSectionId, TextLayer } from './types';
+import type { PhotoCardConfig, PhotoCardSectionId, TextLayer } from './types';
 
 /**
  * Creates a default text layer with sensible defaults
