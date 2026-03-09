@@ -1,48 +1,53 @@
 import {
+    type $UUID,
     column,
     defineSchema,
     type InferInsertType,
     type InferSelectType,
     Locality,
 } from 'locality-idb';
-import type { PhotoCardConfig } from './types';
+import type { PhotoCardConfig } from './photo-card/types';
 
-const photoCardSchema = defineSchema({
+const dbSchema = defineSchema({
     photo_cards: {
         id: column.uuid().pk(),
         createdAt: column.timestamp().index(),
         config: column.object<PhotoCardConfig>(),
         previewBlob: column.custom<Blob>(),
     },
+    resume: {
+        id: column.int().pk(),
+        createdAt: column.timestamp(),
+    },
 });
 
-export type SavedPhotoCard = InferSelectType<typeof photoCardSchema.photo_cards>;
-type SavedPhotoCardInsert = InferInsertType<typeof photoCardSchema.photo_cards>;
+export type SavedPhotoCard = InferSelectType<typeof dbSchema.photo_cards>;
+type SavedPhotoCardInsert = InferInsertType<typeof dbSchema.photo_cards>;
 
-function createPhotoCardDb() {
+function createDB() {
     return new Locality({
-        dbName: 'nhb-photo-card-db',
+        dbName: 'nazmul-nhb.dev',
         version: 1,
-        schema: photoCardSchema,
+        schema: dbSchema,
     });
 }
 
-let photoCardDb: ReturnType<typeof createPhotoCardDb> | null = null;
+let nhbDb: ReturnType<typeof createDB> | null = null;
 
-function getPhotoCardDb() {
+function getDB() {
     if (typeof window === 'undefined' || typeof indexedDB === 'undefined') {
         throw new Error('IndexedDB is only available in the browser.');
     }
 
-    const db = photoCardDb ?? createPhotoCardDb();
+    const db = nhbDb ?? createDB();
 
-    photoCardDb = db;
+    nhbDb = db;
 
     return db;
 }
 
 async function ready() {
-    const db = getPhotoCardDb();
+    const db = getDB();
 
     await db.ready();
 
@@ -69,7 +74,7 @@ export async function savePhotoCard(
         .run();
 }
 
-export async function deleteSavedPhotoCard(id: SavedPhotoCard['id']) {
+export async function deleteSavedPhotoCard(id: $UUID) {
     const db = await ready();
 
     return db
