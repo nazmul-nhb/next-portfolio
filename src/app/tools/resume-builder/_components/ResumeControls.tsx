@@ -291,7 +291,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('phone', e.target.value)
                                         }
-                                        placeholder="+1 (123) 456-7890"
+                                        placeholder="+8801623732187"
                                         value={config.header.phone || ''}
                                     />
                                 </div>

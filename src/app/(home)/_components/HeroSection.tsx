@@ -5,6 +5,7 @@ import { ArrowRight, Camera, LucideMailQuestionMark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { FaTools } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ENV } from '@/configs/env';
@@ -120,11 +121,12 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 </Link>
                             </Button>
                             <Button size="lg" variant="outline">
-                                <Link href="/blogs">Read My Blog</Link>
+                                <FaTools className="size-4" />
+                                <Link href="/tools">Productivity Tools</Link>
                             </Button>
                             <Button asChild size="lg">
                                 <Link href="/contact#send-message">
-                                    Send a Message <LucideMailQuestionMark className="size-4" />
+                                    <LucideMailQuestionMark className="size-4" /> Send a Message
                                 </Link>
                             </Button>
                         </div>
