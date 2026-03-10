@@ -1,18 +1,18 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Plus, Trash2 } from 'lucide-react';
-import { useClock, useMount } from 'nhb-hooks';
-import { Chronos } from 'nhb-toolbox';
+import { ClockPlus, Globe, GlobeLock, Trash2 } from 'lucide-react';
+import { useClock, useMount, useStorage } from 'nhb-hooks';
+import { type Chronos, convertStringCase, extractObjectKeys, isValidArray } from 'nhb-toolbox';
 import { TIME_ZONE_IDS, TIME_ZONES } from 'nhb-toolbox/constants';
-import type { $TimeZoneIdentifier, TimeZoneId } from 'nhb-toolbox/date/types';
+import type { $TimeZoneIdentifier, TimeZone, UTCOffset } from 'nhb-toolbox/date/types';
+import { uuid } from 'nhb-toolbox/hash';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
-import CodeBlock from '@/components/misc/code-block';
-import SmartAlert from '@/components/misc/smart-alert';
+import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -22,6 +22,14 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import {
+    Combobox,
+    ComboboxContent,
+    ComboboxEmpty,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList,
+} from '@/components/ui/combobox';
+import {
     Form,
     FormControl,
     FormDescription,
@@ -30,6 +38,7 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -46,52 +55,353 @@ const generateUTCOffsets = () => {
             if (minutes === 0) {
                 const sign = hours >= 0 ? '+' : '';
                 const offset = `UTC${sign}${String(hours).padStart(2, '0')}:00`;
-                offsets.push({
-                    value: offset,
-                    label: offset,
-                    type: 'UTC' as const,
-                });
+                offsets.push(offset);
             } else {
                 const sign = hours >= 0 ? '+' : '';
                 const offset = `UTC${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                offsets.push({
-                    value: offset,
-                    label: offset,
-                    type: 'UTC' as const,
-                });
+                offsets.push(offset);
             }
         }
     }
     return offsets;
 };
 
+const utcOffsets = generateUTCOffsets();
+
+const TZ_OPTIONS = {
+    timezoneIdentifier: [...new Set(Object.keys(TIME_ZONE_IDS))],
+    timezoneName: [...new Set(Object.keys(TIME_ZONES))] as TimeZone[],
+    UTCOffset: [...new Set(utcOffsets)],
+};
+
+const TZ_TYPE_OPTIONS = extractObjectKeys(TZ_OPTIONS, true);
+
 const timeZoneAddFormSchema = z.object({
+    tzType: z.enum(TZ_TYPE_OPTIONS),
     timezone: z.string().min(1, 'Please select a timezone.'),
     label: z
         .string()
         .min(1, 'Label is required.')
-        .max(30, 'Label must be less than 30 characters.'),
+        .max(64, 'Label must be less than 30 characters.'),
 });
 
 type TimeZoneAddFormValues = z.infer<typeof timeZoneAddFormSchema>;
 
+type ValidTimeZone = TimeZone | $TimeZoneIdentifier | UTCOffset;
+
 interface TimeZoneEntry {
     id: string;
-    timezone: Exclude<TimeZoneId, $TimeZoneIdentifier[]>;
+    timezone: ValidTimeZone;
     label: string;
-    chronos: Chronos;
+}
+
+export default function TimezoneConverter() {
+    const [timeZoneOptions, settimeZoneOptions] = useState(TZ_OPTIONS.timezoneIdentifier);
+
+    const { time } = useClock({ interval: 'frame' });
+
+    const store = useStorage<TimeZoneEntry[]>({ key: 'nhb-timezone' });
+
+    const form = useForm<TimeZoneAddFormValues>({
+        resolver: zodResolver(timeZoneAddFormSchema),
+        mode: 'all',
+        defaultValues: {
+            tzType: 'timezoneIdentifier',
+            timezone: time.$getNativeTimeZoneId(),
+            label: time.$getNativeTimeZoneId(),
+        },
+    });
+
+    const tzType = form.watch('tzType');
+
+    const handleAddTimezone = (values: TimeZoneAddFormValues) => {
+        const tz = values.timezone as ValidTimeZone;
+
+        const newEntry: TimeZoneEntry = {
+            id: uuid(),
+            timezone: tz,
+            label: values.label,
+        };
+
+        store.set(store.value ? [...store.value, newEntry] : [newEntry]);
+
+        form.reset();
+    };
+
+    const handleRemoveEntry = (id: string) => {
+        if (store.value) {
+            store.set(store.value.filter((entry) => entry.id !== id));
+        }
+    };
+
+    const timezone = form.watch('timezone');
+
+    useEffect(() => {
+        const currentLabel = form.getValues('label');
+
+        if (!form.formState.dirtyFields.label || !currentLabel) {
+            form.setValue('label', timezone, {
+                shouldValidate: true,
+                shouldDirty: false,
+            });
+        }
+    }, [timezone, form]);
+
+    useEffect(() => {
+        settimeZoneOptions(TZ_OPTIONS[tzType]);
+
+        form.setValue('timezone', timeZoneOptions[0], {
+            shouldValidate: true,
+            shouldDirty: false,
+        });
+    }, [tzType, form.setValue, timeZoneOptions[0]]);
+
+    return useMount(
+        <div className="space-y-8">
+            <TitleWithShare
+                description="Compare current time across multiple timezones with live updates."
+                route="/tools/timezone-converter"
+                title="Timezone Converter"
+            />
+
+            <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
+                <div className="space-y-5">
+                    {/* Local Time Display */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Globe className="size-5" />
+                                Your Local Time
+                            </CardTitle>
+                            <CardDescription>
+                                Current time in your timezone - updates every second.
+                            </CardDescription>
+                        </CardHeader>
+
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <div className="text-5xl font-bold font-mono">
+                                        {time.format('HH:mm:ss')}
+                                    </div>
+                                    <div className="text-lg text-muted-foreground">
+                                        {time.format('ddd, mmmm DD, YYYY')}
+                                    </div>
+                                    <div className="text-sm font-medium text-muted-foreground">
+                                        {time.$getNativeTimeZoneId()} ({time.utcOffset})
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Add Timezone Form */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <ClockPlus className="size-4" /> Add Timezone
+                            </CardTitle>
+                            <CardDescription>
+                                Select from IANA identifiers, abbreviations, or custom UTC
+                                offsets.
+                            </CardDescription>
+                        </CardHeader>
+
+                        <CardContent>
+                            <Form {...form}>
+                                <form
+                                    className="space-y-6"
+                                    onSubmit={form.handleSubmit(handleAddTimezone)}
+                                >
+                                    <div className="flex gap-2 flex-wrap items-start w-full">
+                                        <FormField
+                                            control={form.control}
+                                            name="tzType"
+                                            render={({ field }) => (
+                                                <FormItem className="flex-1 w-full">
+                                                    <FormLabel>Timezone Selector</FormLabel>
+                                                    <Select
+                                                        {...field}
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    >
+                                                        <FormControl>
+                                                            <SelectTrigger>
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent className="w-full">
+                                                            {TZ_TYPE_OPTIONS.map((option) => (
+                                                                <SelectItem
+                                                                    key={option}
+                                                                    value={option}
+                                                                >
+                                                                    {convertStringCase(
+                                                                        option,
+                                                                        'Title Case',
+                                                                        {
+                                                                            preserveAcronyms: true,
+                                                                        }
+                                                                    )}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormDescription>
+                                                        Select timezone selector type, e.g.,
+                                                        IANA identifier, abbreviation, or UTC
+                                                        offset.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="timezone"
+                                            render={({ field }) => (
+                                                <FormItem className="flex-1 w-full">
+                                                    <FormLabel>Timezone</FormLabel>
+                                                    <Combobox
+                                                        items={timeZoneOptions}
+                                                        {...field}
+                                                        onValueChange={field.onChange}
+                                                        value={field.value || ''}
+                                                    >
+                                                        <FormControl>
+                                                            <ComboboxInput
+                                                                placeholder="Select timezone"
+                                                                showClear
+                                                            />
+                                                        </FormControl>
+
+                                                        <ComboboxContent>
+                                                            <ComboboxEmpty>
+                                                                No items found.
+                                                            </ComboboxEmpty>
+                                                            <ComboboxList className="custom-scroll">
+                                                                {(item) => (
+                                                                    <ComboboxItem
+                                                                        key={item}
+                                                                        value={item}
+                                                                    >
+                                                                        {tzType ===
+                                                                        'timezoneName'
+                                                                            ? TIME_ZONES[
+                                                                                  item as TimeZone
+                                                                              ].tzName
+                                                                            : item}
+                                                                    </ComboboxItem>
+                                                                )}
+                                                            </ComboboxList>
+                                                        </ComboboxContent>
+                                                    </Combobox>
+                                                    <FormDescription>
+                                                        Select timezone by IANA identifier,
+                                                        abbreviation, or UTC offset.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <FormField
+                                        control={form.control}
+                                        name="label"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Label (e.g., "New York Office")
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <div className="flex gap-2 flex-wrap items-center justify-between">
+                                                        <Input
+                                                            className="flex-1"
+                                                            placeholder="Enter location name..."
+                                                            {...field}
+                                                            value={field.value ?? ''}
+                                                        />
+                                                        <Button size="lg" type="submit">
+                                                            <ClockPlus className="size-4" />
+                                                            Add Timezone
+                                                        </Button>
+                                                    </div>
+                                                </FormControl>
+                                                <FormDescription>
+                                                    A friendly name for this timezone location.
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </form>
+                            </Form>
+
+                            <PoweredBy
+                                className="mt-6"
+                                description="This tool uses Chronos.timeZone() for timezone conversions."
+                                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/conversion#timezone"
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Timezone Cards Grid */}
+                {isValidArray(store.value) ? (
+                    <Card className="h-fit max-w-full max-h-[calc(100vh-5rem)] overflow-y-auto custom-scroll">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <GlobeLock className="size-4" /> Added Timezones
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-3 grid-cols-2">
+                                {store.value.map((entry) => {
+                                    const chronos = time.timeZone(entry.timezone);
+
+                                    return (
+                                        <TimeZoneCard
+                                            chronos={chronos}
+                                            entry={entry}
+                                            key={entry.id}
+                                            onRemove={handleRemoveEntry}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            <PoweredBy
+                                className="mt-6"
+                                description="This time updates in real-time using the useClock hook."
+                                name="nhb-hooks"
+                                url="https://github.com/nazmul-nhb/nhb-hooks/blob/main/README.md#useclock"
+                            />
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <EmptyData
+                        description="No timezones added yet. Add one to start comparing times."
+                        Icon={Globe}
+                        title="No TImezone Added"
+                    />
+                )}
+            </div>
+        </div>
+    );
 }
 
 interface TimeZoneCardProps {
     entry: TimeZoneEntry;
+    chronos: Chronos;
     onRemove: (id: string) => void;
 }
 
-function TimeZoneCard({ entry, onRemove }: TimeZoneCardProps) {
+function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
     return (
-        <Card className="relative">
-            <CardContent className="pt-6">
-                <div className="flex items-start justify-between gap-4">
+        <Card className="relative" size="sm">
+            <CardContent>
+                <div className="flex items-start flex-wrap justify-between gap-4">
                     <div className="flex-1 space-y-3">
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -104,25 +414,21 @@ function TimeZoneCard({ entry, onRemove }: TimeZoneCardProps) {
 
                         <div className="space-y-2 pt-2">
                             <div className="text-3xl font-bold font-mono">
-                                {entry.chronos.format('HH:mm:ss')}
+                                {chronos.format('HH:mm:ss')}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                                {entry.chronos.format('ddd, MMM DD YYYY')}
+                                {chronos.format('ddd, mmmm DD, YYYY')}
                             </div>
                             <div className="text-xs font-medium text-muted-foreground">
-                                UTC {entry.chronos.utcOffset}
+                                {chronos.utcOffset}
                             </div>
                         </div>
-
-                        <CodeBlock className="text-xs mt-3">
-                            {`timeZone('${entry.timezone}')`}
-                        </CodeBlock>
                     </div>
 
                     <Button
                         className="text-destructive hover:text-destructive"
                         onClick={() => onRemove(entry.id)}
-                        size="sm"
+                        size="icon-sm"
                         variant="ghost"
                     >
                         <Trash2 className="size-4" />
@@ -130,303 +436,5 @@ function TimeZoneCard({ entry, onRemove }: TimeZoneCardProps) {
                 </div>
             </CardContent>
         </Card>
-    );
-}
-
-export default function TimezoneConverter() {
-    const { time } = useClock();
-    const [entries, setEntries] = useState<TimeZoneEntry[]>([]);
-    const [utcOffsets] = useState(generateUTCOffsets());
-
-    const form = useForm<TimeZoneAddFormValues>({
-        resolver: zodResolver(timeZoneAddFormSchema),
-        mode: 'all',
-        defaultValues: {
-            timezone: 'Asia/Dhaka',
-            label: '',
-        },
-    });
-
-    const handleAddTimezone = (values: TimeZoneAddFormValues) => {
-        const tz = values.timezone as Exclude<TimeZoneId, $TimeZoneIdentifier[]>;
-        const chronos = new Chronos(time).timeZone(tz);
-
-        const newEntry: TimeZoneEntry = {
-            id: `${Date.now()}-${Math.random()}`,
-            timezone: tz,
-            label: values.label,
-            chronos,
-        };
-
-        setEntries((prev) => [...prev, newEntry]);
-        form.reset();
-    };
-
-    const handleRemoveEntry = (id: string) => {
-        setEntries((prev) => prev.filter((entry) => entry.id !== id));
-    };
-
-    // Update all times whenever the clock updates
-    useEffect(() => {
-        setEntries((prev) =>
-            prev.map((entry) => ({
-                ...entry,
-                chronos: new Chronos(time).timeZone(entry.timezone),
-            }))
-        );
-    }, [time]);
-
-    return useMount(
-        <div className="space-y-8">
-            <TitleWithShare
-                description="Compare current time across multiple timezones with live updates using Chronos.timeZone() and useClock."
-                route="/tools/timezone-converter"
-                title="Timezone Converter"
-            />
-
-            <div className="grid gap-6">
-                {/* Local Time Display */}
-                <Card className="border-2 border-primary/20">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Globe className="size-5" />
-                            Your Local Time (Live Clock)
-                        </CardTitle>
-                        <CardDescription>
-                            Current time in your timezone - updates every second using useClock
-                            hook.
-                        </CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <div className="text-5xl font-bold font-mono">
-                                    {new Chronos(time).format('HH:mm:ss')}
-                                </div>
-                                <div className="text-lg text-muted-foreground">
-                                    {new Chronos(time).format('dddd, MMMM DD YYYY')}
-                                </div>
-                                <div className="text-sm font-medium text-muted-foreground">
-                                    {new Chronos(time).$getNativeTimeZoneId()} (
-                                    {new Chronos(time).utcOffset})
-                                </div>
-                            </div>
-
-                            <SmartAlert
-                                className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100 text-sm"
-                                description={
-                                    <span>
-                                        This time updates in real-time using the{' '}
-                                        <code className="font-cascadia text-xs">useClock</code>{' '}
-                                        hook.
-                                    </span>
-                                }
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Add Timezone Form */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Add Timezone</CardTitle>
-                        <CardDescription>
-                            Select from IANA identifiers, abbreviations, or custom UTC offsets.
-                        </CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
-                        <Form {...form}>
-                            <form
-                                className="space-y-6"
-                                onSubmit={form.handleSubmit(handleAddTimezone)}
-                            >
-                                <FormField
-                                    control={form.control}
-                                    name="label"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Label (e.g., "New York Office")
-                                            </FormLabel>
-                                            <FormControl>
-                                                <input
-                                                    placeholder="Enter location name..."
-                                                    {...field}
-                                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                A friendly name for this timezone location.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="timezone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Timezone</FormLabel>
-                                            <Select
-                                                defaultValue={field.value}
-                                                onValueChange={field.onChange}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <div className="max-h-96">
-                                                        {/* IANA Identifiers Group */}
-                                                        <div className="px-2 py-1.5">
-                                                            <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">
-                                                                IANA IDENTIFIERS
-                                                            </p>
-                                                            {Object.keys(TIME_ZONE_IDS).map(
-                                                                (id) => (
-                                                                    <SelectItem
-                                                                        key={id}
-                                                                        value={id}
-                                                                    >
-                                                                        {id}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </div>
-
-                                                        {/* Abbreviations Group */}
-                                                        <div className="px-2 py-1.5">
-                                                            <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">
-                                                                ABBREVIATIONS
-                                                            </p>
-                                                            {Object.entries(TIME_ZONES).map(
-                                                                ([abbr]) => (
-                                                                    <SelectItem
-                                                                        key={abbr}
-                                                                        value={abbr}
-                                                                    >
-                                                                        {abbr}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </div>
-
-                                                        {/* UTC Offsets Group */}
-                                                        <div className="px-2 py-1.5">
-                                                            <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">
-                                                                UTC OFFSETS (15-MIN INTERVALS)
-                                                            </p>
-                                                            {utcOffsets.map((offset) => (
-                                                                <SelectItem
-                                                                    key={offset.value}
-                                                                    value={offset.value}
-                                                                >
-                                                                    {offset.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormDescription>
-                                                Select timezone by IANA identifier,
-                                                abbreviation, or UTC offset.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <Button className="w-full gap-2" type="submit">
-                                    <Plus className="size-4" />
-                                    Add Timezone
-                                </Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-
-                {/* Timezone Cards Grid */}
-                {entries.length > 0 && (
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4">Added Timezones</h3>
-                        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                            {entries.map((entry) => (
-                                <TimeZoneCard
-                                    entry={entry}
-                                    key={entry.id}
-                                    onRemove={handleRemoveEntry}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {entries.length === 0 && (
-                    <Card className="border-dashed">
-                        <CardContent className="pt-8 text-center pb-8">
-                            <Globe className="size-12 mx-auto text-muted-foreground/50 mb-4" />
-                            <p className="text-muted-foreground">
-                                No timezones added yet. Add one to start comparing times.
-                            </p>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Documentation */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>How It Works</CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <h4 className="font-semibold text-sm">
-                                Three Types of Timezone Inputs:
-                            </h4>
-                            <div className="space-y-2 text-sm">
-                                <div className="rounded-lg bg-muted p-3">
-                                    <p className="font-mono text-xs">
-                                        new Chronos().timeZone('Asia/Dhaka')
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        IANA timezone identifier (recommended for accuracy)
-                                    </p>
-                                </div>
-
-                                <div className="rounded-lg bg-muted p-3">
-                                    <p className="font-mono text-xs">
-                                        new Chronos().timeZone('EST')
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Timezone abbreviation (when identifiers are unavailable)
-                                    </p>
-                                </div>
-
-                                <div className="rounded-lg bg-muted p-3">
-                                    <p className="font-mono text-xs">
-                                        new Chronos().timeZone('UTC+06:30')
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        UTC offset in 15-minute intervals (for fictional/custom
-                                        timezones)
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <PoweredBy
-                            description="This tool uses Chronos.timeZone() for conversions and useClock for live time updates."
-                            url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/conversion#timezone"
-                        />
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
     );
 }

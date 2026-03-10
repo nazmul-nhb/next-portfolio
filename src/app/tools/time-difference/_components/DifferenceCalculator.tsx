@@ -244,8 +244,8 @@ export default function DifferenceCalculator() {
                                         <FormItem>
                                             <FormLabel>Calculate Difference In</FormLabel>
                                             <Select
-                                                defaultValue={field.value}
                                                 onValueChange={field.onChange}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
