@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Clock, Gauge } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { Chronos, roundNumber } from 'nhb-toolbox';
+import { capitalizeString } from 'nhb-toolbox/change-case';
 import type { TimeUnit } from 'nhb-toolbox/date/types';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -38,16 +39,16 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
-const UNIT_OPTIONS: Array<{ value: TimeUnit; label: string }> = [
-    { value: 'millisecond', label: 'Milliseconds' },
-    { value: 'second', label: 'Seconds' },
-    { value: 'minute', label: 'Minutes' },
-    { value: 'hour', label: 'Hours' },
-    { value: 'day', label: 'Days' },
-    { value: 'week', label: 'Weeks' },
-    { value: 'month', label: 'Months' },
-    { value: 'year', label: 'Years' },
-];
+const TIME_UNITS = [
+    'year',
+    'month',
+    'week',
+    'day',
+    'hour',
+    'minute',
+    'second',
+    'millisecond',
+] as const;
 
 function toDateTimeLocalValue(date = new Date()) {
     const chr = new Chronos(date);
@@ -64,16 +65,7 @@ const DifferenceCalculatorFormSchema = z
     .object({
         startDateTime: z.string().min(1, 'Start date and time is required.'),
         endDateTime: z.string().min(1, 'End date and time is required.'),
-        unit: z.enum([
-            'year',
-            'month',
-            'week',
-            'day',
-            'hour',
-            'minute',
-            'second',
-            'millisecond',
-        ]),
+        unit: z.enum(TIME_UNITS),
     })
     .superRefine(({ startDateTime, endDateTime }, ctx) => {
         const startDate = parseDateTimeLocal(startDateTime);
@@ -107,10 +99,6 @@ interface ResultPreviewProps {
 function ResultPreview({ startDate, endDate, unit }: ResultPreviewProps) {
     const chr = new Chronos(startDate);
 
-    const getUnitLabel = (u: TimeUnit) => {
-        return UNIT_OPTIONS.find((opt) => opt.value === u)?.label || u;
-    };
-
     return (
         <div className="rounded-lg border bg-linear-to-br from-primary/5 via-transparent to-primary/10 p-3 space-y-4">
             <div className="flex items-baseline gap-3">
@@ -118,24 +106,24 @@ function ResultPreview({ startDate, endDate, unit }: ResultPreviewProps) {
                     {roundNumber(chr.diff(endDate, unit), 3)}
                 </div>
                 <div className="text-lg font-semibold text-muted-foreground">
-                    {getUnitLabel(unit)}
+                    {capitalizeString(unit)}s
                 </div>
             </div>
 
             <div className="pt-3 border-t space-y-2">
                 <p className="text-xs font-medium text-muted-foreground">ALTERNATIVE UNITS</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {UNIT_OPTIONS.map((option) => {
+                    {TIME_UNITS.map((option) => {
                         return (
                             <div
                                 className="rounded px-2 py-1.5 bg-muted/50 text-center"
-                                key={option.value}
+                                key={option}
                             >
                                 <div className="text-xs font-medium text-muted-foreground">
-                                    {option.label}
+                                    {capitalizeString(option)}s
                                 </div>
                                 <div className="text-sm font-semibold">
-                                    {roundNumber(chr.diff(endDate, option.value), 3)}
+                                    {roundNumber(chr.diff(endDate, option), 3)}
                                 </div>
                             </div>
                         );
@@ -265,12 +253,9 @@ export default function DifferenceCalculator() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {UNIT_OPTIONS.map((option) => (
-                                                        <SelectItem
-                                                            key={option.value}
-                                                            value={option.value}
-                                                        >
-                                                            {option.label}
+                                                    {TIME_UNITS.map((option) => (
+                                                        <SelectItem key={option} value={option}>
+                                                            {capitalizeString(option)}s
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
