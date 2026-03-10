@@ -279,7 +279,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('email', e.target.value)
                                         }
-                                        placeholder="your.email@example.com"
+                                        placeholder="e.g., your.email@example.com"
                                         type="email"
                                         value={config.header.email || ''}
                                     />
@@ -291,7 +291,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('phone', e.target.value)
                                         }
-                                        placeholder="+8801623732187"
+                                        placeholder="e.g., +8801623732187"
                                         value={config.header.phone || ''}
                                     />
                                 </div>
@@ -302,7 +302,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('location', e.target.value)
                                         }
-                                        placeholder="City, Country"
+                                        placeholder="e.g., Sirajganj, Bangladesh"
                                         value={config.header.location || ''}
                                     />
                                 </div>
@@ -313,7 +313,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('website', e.target.value)
                                         }
-                                        placeholder="https://example.com"
+                                        placeholder="e.g., https://example.com"
                                         type="url"
                                         value={config.header.website || ''}
                                     />
@@ -325,7 +325,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('linkedin', e.target.value)
                                         }
-                                        placeholder="linkedin.com/in/username"
+                                        placeholder="e.g., https://linkedin.com/in/username"
                                         value={config.header.linkedin || ''}
                                     />
                                 </div>
@@ -336,7 +336,7 @@ export function ResumeControls({
                                         onChange={(e) =>
                                             onHeaderChange('github', e.target.value)
                                         }
-                                        placeholder="github.com/username"
+                                        placeholder="e.g., https://github.com/username"
                                         value={config.header.github || ''}
                                     />
                                 </div>
