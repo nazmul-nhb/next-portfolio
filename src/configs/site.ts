@@ -6,6 +6,7 @@ import {
     FileText,
     FileUser,
     FolderKanban,
+    Globe,
     GraduationCap,
     Home,
     ImagePlus,
@@ -88,6 +89,19 @@ export const siteConfig = {
             icon: Calculator,
             description:
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
+        },
+        {
+            href: '/tools/time-difference',
+            label: 'Difference Calculator',
+            icon: Calculator,
+            description: 'Calculate precise differences between two moments in any time unit.',
+        },
+        {
+            href: '/tools/timezone-converter',
+            label: 'Timezone Converter',
+            icon: Globe,
+            description:
+                'Compare current time across multiple timezones with live updates and IANA support.',
         },
         {
             href: '/tools/word-counter',
