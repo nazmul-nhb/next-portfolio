@@ -122,7 +122,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             </Button>
                             <Button size="lg" variant="outline">
                                 <FaTools className="size-4" />
-                                <Link href="/tools">Productivity Tools</Link>
+                                <Link href="/tools">Explore Tools</Link>
                             </Button>
                             <Button asChild size="lg">
                                 <Link href="/contact#send-message">
