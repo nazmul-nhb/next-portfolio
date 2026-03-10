@@ -4,7 +4,9 @@ import { AlertTriangle, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { generateQueryParams } from 'nhb-toolbox';
 import { useEffect, useMemo, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
@@ -12,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { formatMoney } from '@/lib/expenses';
 import { useApiQuery } from '@/lib/hooks/use-api';
+import type { Uncertain } from '@/types';
 import type { ExpenseSummary, LoanItem, PaginatedExpenses } from '@/types/expenses';
 import { AddEntryDialog } from './AddEntryDialog';
 import { CurrencyCard } from './CurrencyCard';
@@ -27,6 +30,8 @@ export function ExpensesClient() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+    const [timeframe, setTimeframe] = useState<'all' | 'range'>('all');
+    const [dateRange, setDateRange] = useState<Uncertain<DateRange>>(null);
     const [page, setPage] = useState(1);
     const [repaymentLoan, setRepaymentLoan] = useState<LoanItem | null>(null);
 
@@ -36,15 +41,24 @@ export function ExpensesClient() {
         }
     }, [status, router]);
 
+    const range = useMemo(() => {
+        if (timeframe === 'all' || !dateRange) return null;
+
+        return { from: dateRange?.from?.toISOString(), to: dateRange?.to?.toISOString() };
+    }, [timeframe, dateRange]);
+
     const entriesEndpoint = useMemo(() => {
-        const params = new URLSearchParams({
+        const params = generateQueryParams({
             page: String(page),
-            limit: '8',
+            limit: timeframe === 'all' ? '8' : '50',
+            type: filter !== 'all' ? filter : '',
+            search: query.trim() ? query.trim() : '',
+            from: dateRange?.from && range ? range.from : '',
+            to: dateRange?.to && range ? range.to : '',
         });
-        if (filter !== 'all') params.set('type', filter);
-        if (query.trim()) params.set('search', query.trim());
-        return `/api/tools/expenses/entries?${params.toString()}` as const;
-    }, [filter, page, query]);
+
+        return `/api/tools/expenses/entries${params}` as const;
+    }, [dateRange?.from, dateRange?.to, filter, page, query, timeframe, range]);
 
     const { data: summary, isLoading: summaryLoading } = useApiQuery<ExpenseSummary>(
         '/api/tools/expenses/summary',
@@ -129,14 +143,21 @@ export function ExpensesClient() {
             <CurrencyCard currencyData={currencyData} />
             <SummaryCards money={money} summary={summary} />
             <EntriesSection
+                dateRange={dateRange}
                 entries={entries}
                 filter={filter}
                 money={money}
                 page={page}
                 query={query}
+                setDateRange={setDateRange}
                 setFilter={setFilter}
                 setPage={setPage}
                 setQuery={setQuery}
+                setTimeframe={(value) => {
+                    setPage(() => 1);
+                    setTimeframe(value);
+                }}
+                timeframe={timeframe}
                 totalPages={totalPages}
             />
             <LoansSection

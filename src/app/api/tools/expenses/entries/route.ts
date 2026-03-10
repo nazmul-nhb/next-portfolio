@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, inArray, lt, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import type z from 'zod';
@@ -23,15 +23,19 @@ export async function GET(req: NextRequest) {
         }
 
         const userId = +session.user.id;
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = req.nextUrl;
 
         const page = Math.max(1, Number(searchParams.get('page') || 1));
         const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') || 8)));
         const offset = (page - 1) * limit;
         const type = searchParams.get('type');
         const search = searchParams.get('search')?.trim();
+        const from = searchParams.get('from');
+        const to = searchParams.get('to');
 
         const whereConditions = [eq(expenses.user_id, userId)];
+        let fromDate: Date | null = null;
+        let toDate: Date | null = null;
 
         if (type === 'income' || type === 'expense') {
             whereConditions.push(eq(expenses.type, type));
@@ -44,6 +48,26 @@ export async function GET(req: NextRequest) {
                     ilike(expenses.description, `%${search}%`)
                 ) as ReturnType<typeof eq>
             );
+        }
+
+        if (from) {
+            fromDate = new Date(from);
+            if (Number.isNaN(fromDate.getTime())) {
+                return sendErrorResponse('Invalid "from" date', 400);
+            }
+            whereConditions.push(gte(expenses.entry_date, fromDate));
+        }
+
+        if (to) {
+            toDate = new Date(to);
+            if (Number.isNaN(toDate.getTime())) {
+                return sendErrorResponse('Invalid "to" date', 400);
+            }
+            whereConditions.push(lt(expenses.entry_date, toDate));
+        }
+
+        if (fromDate && toDate && fromDate.getTime() >= toDate.getTime()) {
+            return sendErrorResponse('"from" must be earlier than "to"', 400);
         }
 
         const whereClause = and(...whereConditions);
