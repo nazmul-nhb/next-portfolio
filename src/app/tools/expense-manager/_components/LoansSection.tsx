@@ -137,7 +137,7 @@ function LoanColumn({
     values,
 }: LoanColumnProps) {
     return (
-        <Card>
+        <Card className="max-h-[calc(100vh-5rem)] rounded-none px-1 overflow-y-auto custom-scroll">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     {type === 'borrowed' ? (

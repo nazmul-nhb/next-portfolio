@@ -1,7 +1,7 @@
 import { uuid } from 'nhb-toolbox/hash';
 import type { ResumeConfig } from './types';
 
-export const DEFAULT_RESUME_CONFIG: ResumeConfig = {
+export const DEFAULT_RESUME_CONFIG = {
     header: {
         fullName: 'Your Name',
         jobTitle: 'Your Job Title',
@@ -58,7 +58,7 @@ export const DEFAULT_RESUME_CONFIG: ResumeConfig = {
         experience: 'system-ui',
         education: 'system-ui',
     },
-};
+} satisfies ResumeConfig;
 
 /**
  * Font options for resume (similar to photo card fonts)
