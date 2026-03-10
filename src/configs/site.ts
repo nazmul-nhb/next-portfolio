@@ -92,7 +92,7 @@ export const siteConfig = {
         },
         {
             href: '/tools/time-difference',
-            label: 'Difference Calculator',
+            label: 'Time Difference',
             icon: Calculator,
             description: 'Calculate precise differences between two moments in any time unit.',
         },

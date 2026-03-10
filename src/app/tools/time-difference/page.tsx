@@ -17,11 +17,11 @@ export const metadata: Metadata = {
         'time difference',
         'chronos diff',
     ],
-    alternates: { canonical: buildCanonicalUrl('/tools/difference-calculator') },
+    alternates: { canonical: buildCanonicalUrl('/tools/time-difference') },
     openGraph: {
         title: `Difference Calculator from ${siteConfig.name}`,
         description,
-        url: buildCanonicalUrl('/tools/difference-calculator'),
+        url: buildCanonicalUrl('/tools/time-difference'),
         siteName: siteConfig.name,
     },
 };
