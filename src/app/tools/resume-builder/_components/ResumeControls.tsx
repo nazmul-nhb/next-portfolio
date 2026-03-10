@@ -347,7 +347,7 @@ export function ResumeControls({
                                 <Label htmlFor="profile-image">Profile Image</Label>
                                 <div className="flex items-center gap-3">
                                     <Input
-                                        accept="image/*"
+                                        accept="image/png, image/jpeg"
                                         id="profile-image"
                                         onChange={(e) => {
                                             if (e.target.files?.[0]) {
