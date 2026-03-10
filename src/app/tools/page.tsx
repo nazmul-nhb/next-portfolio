@@ -15,7 +15,7 @@ import { buildCanonicalUrl } from '@/lib/utils';
 const description = 'Utilities for daily productivity and personal management.';
 
 export const metadata: Metadata = {
-    title: 'All Tools',
+    title: 'Tools',
     description,
     keywords: [
         ...siteConfig.keywords,
