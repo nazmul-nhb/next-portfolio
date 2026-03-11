@@ -133,7 +133,7 @@ export const siteConfig = {
                 'Encrypt/decrypt text using a passphrase. Must use same passphrase for reverse process.',
         },
         {
-            href: '/tools/uuid',
+            href: '/tools/uuid?tab=generate',
             label: 'UUID Tools',
             icon: Tag,
             description:

@@ -7,11 +7,13 @@ import { type Chronos, convertStringCase, extractObjectKeys, isValidArray } from
 import { TIME_ZONE_IDS, TIME_ZONES } from 'nhb-toolbox/constants';
 import type { $TimeZoneIdentifier, TimeZone, UTCOffset } from 'nhb-toolbox/date/types';
 import { uuid } from 'nhb-toolbox/hash';
+import type { $UUID } from 'nhb-toolbox/hash/types';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
+import CodeBlock from '@/components/misc/code-block';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
@@ -90,7 +92,7 @@ type TimeZoneAddFormValues = z.infer<typeof timeZoneAddFormSchema>;
 type ValidTimeZone = TimeZone | $TimeZoneIdentifier | UTCOffset;
 
 interface TimeZoneEntry {
-    id: string;
+    id: $UUID;
     timezone: ValidTimeZone;
     label: string;
 }
@@ -115,11 +117,9 @@ export default function TimezoneConverter() {
     const tzType = form.watch('tzType');
 
     const handleAddTimezone = (values: TimeZoneAddFormValues) => {
-        const tz = values.timezone as ValidTimeZone;
-
         const newEntry: TimeZoneEntry = {
             id: uuid(),
-            timezone: tz,
+            timezone: values.timezone as ValidTimeZone,
             label: values.label,
         };
 
@@ -179,15 +179,15 @@ export default function TimezoneConverter() {
                         <CardContent>
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <div className="text-5xl font-bold font-mono">
+                                    <CodeBlock className="text-5xl font-bold">
                                         {time.format('HH:mm:ss')}
-                                    </div>
-                                    <div className="text-lg text-muted-foreground">
+                                    </CodeBlock>
+                                    <CodeBlock className="text-lg text-muted-foreground">
                                         {time.format('ddd, mmmm DD, YYYY')}
-                                    </div>
-                                    <div className="text-sm font-medium text-muted-foreground">
+                                    </CodeBlock>
+                                    <CodeBlock className="text-sm font-medium text-muted-foreground">
                                         {time.$getNativeTimeZoneId()} ({time.utcOffset})
-                                    </div>
+                                    </CodeBlock>
                                 </div>
                             </div>
                         </CardContent>
@@ -404,24 +404,24 @@ function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
         <Card className="relative flex-1 min-w-fit" size="sm">
             <CardContent>
                 <div className="flex items-start flex-wrap justify-between gap-4">
-                    <div className="flex-1 space-y-3">
+                    <div className="flex-1 space-y-3 font-source-sans">
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                                 {entry.label}
                             </p>
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-xs font-cascadia bg-background px-1 py-0.5 rounded text-muted-foreground mt-1">
                                 {entry.timezone}
                             </p>
                         </div>
 
-                        <div className="space-y-2 pt-2">
-                            <div className="text-3xl font-bold font-mono">
+                        <div className="space-y-2">
+                            <CodeBlock className="text-3xl font-bold">
                                 {chronos.format('HH:mm:ss')}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
+                            </CodeBlock>
+                            <div className="text-sm bg-background px-1 py-0.5 rounded text-muted-foreground">
                                 {chronos.format('ddd, mmmm DD, YYYY')}
                             </div>
-                            <div className="text-xs font-medium text-muted-foreground">
+                            <div className="text-sm font-cascadia font-medium bg-background px-1 py-0.5 rounded text-muted-foreground">
                                 {chronos.utcOffset}
                             </div>
                         </div>
