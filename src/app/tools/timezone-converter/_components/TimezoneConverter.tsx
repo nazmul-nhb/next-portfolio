@@ -173,9 +173,7 @@ export default function TimezoneConverter() {
                                 <Globe className="size-5" />
                                 Your Local Time
                             </CardTitle>
-                            <CardDescription>
-                                Current time in your timezone - updates every second.
-                            </CardDescription>
+                            <CardDescription>Current time in your timezone.</CardDescription>
                         </CardHeader>
 
                         <CardContent>
@@ -213,7 +211,7 @@ export default function TimezoneConverter() {
                                     className="space-y-6"
                                     onSubmit={form.handleSubmit(handleAddTimezone)}
                                 >
-                                    <div className="flex gap-2 flex-wrap items-start w-full">
+                                    <div className="flex gap-2 flex-col sm:flex-row md:flex-col lg:flex-row flex-wrap items-start w-full">
                                         <FormField
                                             control={form.control}
                                             name="tzType"
@@ -316,14 +314,18 @@ export default function TimezoneConverter() {
                                                     Label (e.g., "New York Office")
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <div className="flex gap-2 flex-wrap items-center justify-between">
+                                                    <div className="flex gap-2 flex-wrap  items-center justify-between">
                                                         <Input
-                                                            className="flex-1"
+                                                            className="flex-1 min-w-fit"
                                                             placeholder="Enter location name..."
                                                             {...field}
                                                             value={field.value ?? ''}
                                                         />
-                                                        <Button size="lg" type="submit">
+                                                        <Button
+                                                            className="min-w-fit"
+                                                            size="lg"
+                                                            type="submit"
+                                                        >
                                                             <ClockPlus className="size-4" />
                                                             Add Timezone
                                                         </Button>
@@ -357,7 +359,7 @@ export default function TimezoneConverter() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid gap-3 grid-cols-2">
+                            <div className="flex flex-wrap gap-3">
                                 {store.value.map((entry) => {
                                     const chronos = time.timeZone(entry.timezone);
 
@@ -399,7 +401,7 @@ interface TimeZoneCardProps {
 
 function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
     return (
-        <Card className="relative" size="sm">
+        <Card className="relative flex-1 min-w-fit" size="sm">
             <CardContent>
                 <div className="flex items-start flex-wrap justify-between gap-4">
                     <div className="flex-1 space-y-3">

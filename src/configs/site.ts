@@ -1,7 +1,8 @@
 import {
     Binary,
     Briefcase,
-    Calculator,
+    ClockCheck,
+    ClockFading,
     Contact,
     FileText,
     FileUser,
@@ -86,14 +87,14 @@ export const siteConfig = {
         {
             href: '/tools/age-calculator',
             label: 'Age Calculator',
-            icon: Calculator,
+            icon: ClockFading,
             description:
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
         },
         {
             href: '/tools/time-difference',
             label: 'Time Difference',
-            icon: Calculator,
+            icon: ClockCheck,
             description: 'Calculate precise differences between two moments in any time unit.',
         },
         {

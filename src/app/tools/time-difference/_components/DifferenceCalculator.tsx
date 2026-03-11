@@ -101,31 +101,28 @@ function ResultPreview({ startDate, endDate, unit }: ResultPreviewProps) {
 
     return (
         <div className="rounded-lg border bg-linear-to-br from-primary/5 via-transparent to-primary/10 p-3 space-y-4">
-            <div className="flex items-baseline gap-3">
+            <CodeBlock className="flex items-baseline gap-3">
                 <div className="text-3xl md:text-4xl font-bold text-primary">
                     {roundNumber(chr.diff(endDate, unit), 3)}
                 </div>
                 <div className="text-lg font-semibold text-muted-foreground">
                     {capitalizeString(unit)}s
                 </div>
-            </div>
+            </CodeBlock>
 
             <div className="pt-3 border-t space-y-2">
                 <p className="text-xs font-medium text-muted-foreground">ALTERNATIVE UNITS</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {TIME_UNITS.map((option) => {
                         return (
-                            <div
-                                className="rounded px-2 py-1.5 bg-muted/50 text-center"
-                                key={option}
-                            >
+                            <CodeBlock className="rounded px-2 py-1.5 text-center" key={option}>
                                 <div className="text-xs font-medium text-muted-foreground">
                                     {capitalizeString(option)}s
                                 </div>
                                 <div className="text-sm font-semibold">
                                     {roundNumber(chr.diff(endDate, option), 3)}
                                 </div>
-                            </div>
+                            </CodeBlock>
                         );
                     })}
                 </div>
@@ -135,8 +132,8 @@ function ResultPreview({ startDate, endDate, unit }: ResultPreviewProps) {
                 className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100 text-sm"
                 description={
                     <span>
-                        Positive value means end date is{' '}
-                        <span className="font-semibold">after</span> start date. Negative value
+                        Negative value means end date is{' '}
+                        <span className="font-semibold">after</span> start date. Positive value
                         means end date is <span className="font-semibold">before</span> start
                         date.
                     </span>
