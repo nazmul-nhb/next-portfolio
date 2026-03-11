@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
+import { confirmToast } from '@/components/misc/confirm';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
@@ -400,15 +401,34 @@ interface TimeZoneCardProps {
 }
 
 function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
+    const deleteZone = (id: $UUID) => {
+        confirmToast({
+            onConfirm: () => onRemove(id),
+            title: 'Delete the saved timezone',
+            description: 'This will delete the timezone info from your storage.',
+            confirmText: 'Delete',
+        });
+    };
+
     return (
-        <Card className="relative flex-1 min-w-fit" size="sm">
+        <Card className="flex-1 min-w-fit max-w-full" size="sm">
             <CardContent>
                 <div className="flex items-start flex-wrap justify-between gap-4">
-                    <div className="flex-1 space-y-3 font-source-sans">
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                                {entry.label}
-                            </p>
+                    <div className="flex-1 space-y-3 font-source-sans w-full">
+                        <div className="">
+                            <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                <p className="flex-1 text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                                    {entry.label}
+                                </p>
+                                <Button
+                                    className=""
+                                    onClick={() => deleteZone(entry.id)}
+                                    size="icon-xs"
+                                    variant="destructive"
+                                >
+                                    <Trash2 className="size-4" />
+                                </Button>
+                            </div>
                             <p className="text-xs font-cascadia bg-background px-1 py-0.5 rounded text-muted-foreground mt-1">
                                 {entry.timezone}
                             </p>
@@ -426,15 +446,6 @@ function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
                             </div>
                         </div>
                     </div>
-
-                    <Button
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => onRemove(entry.id)}
-                        size="icon-sm"
-                        variant="ghost"
-                    >
-                        <Trash2 className="size-4" />
-                    </Button>
                 </div>
             </CardContent>
         </Card>
