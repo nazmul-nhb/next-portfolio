@@ -1,4 +1,3 @@
-import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
+import Navigate from './_components/Navigate';
 
 const description = 'Utilities for daily productivity and personal management.';
 
@@ -46,11 +46,12 @@ export default function ToolsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {siteConfig.toolsMenus.map(({ description, href, icon: Icon, label }) => (
-                    <Card className="transition-shadow hover:shadow-md group" key={label}>
-                        <Link
-                            className="transition-transform duration-300 group-hover:scale-102"
-                            href={href}
-                        >
+                    <Link
+                        className="transition-transform duration-300 hover:scale-102"
+                        href={href}
+                        key={label}
+                    >
+                        <Card className="transition-shadow hover:shadow-md">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Icon className="size-5" />
@@ -62,17 +63,11 @@ export default function ToolsPage() {
                                     {description}
                                 </CardDescription>
                             </CardContent>
-                        </Link>
-                        <CardFooter className="border-t flex-1">
-                            <Link
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary border-b border-b-transparent hover:border-b-primary hover:text-primary"
-                                href={href}
-                            >
-                                Open Tool
-                                <ArrowRight className="size-4" />
-                            </Link>
-                        </CardFooter>
-                    </Card>
+                            <CardFooter className="border-t flex-1">
+                                <Navigate href={href} />
+                            </CardFooter>
+                        </Card>
+                    </Link>
                 ))}
             </div>
 

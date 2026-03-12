@@ -1,4 +1,5 @@
 import { uuid } from 'nhb-toolbox/hash';
+import { FONT_OPTIONS } from '@/lib/constants';
 import type { ResumeConfig } from './types';
 
 export const DEFAULT_RESUME_CONFIG = {
@@ -69,46 +70,7 @@ export const RESUME_FONT_OPTIONS = [
         label: 'System UI',
         fontFamily: 'system-ui',
     },
-    {
-        value: 'inter',
-        label: 'Inter',
-        fontFamily: 'Inter',
-    },
-    {
-        value: 'poppins',
-        label: 'Poppins',
-        fontFamily: 'Poppins',
-    },
-    {
-        value: 'playfair',
-        label: 'Playfair',
-        fontFamily: '"Playfair Display"',
-    },
-    {
-        value: 'roboto-mono',
-        label: 'Roboto Mono',
-        fontFamily: '"Roboto Mono"',
-    },
-    {
-        value: 'source-sans',
-        label: 'Source Sans',
-        fontFamily: '"Source Sans"',
-    },
-    {
-        value: 'cascadia-code',
-        label: 'Cascadia Code',
-        fontFamily: '"Cascadia Code"',
-    },
-    {
-        value: 'geist-sans',
-        label: 'Geist Sans',
-        fontFamily: '"Geist Sans"',
-    },
-    {
-        value: 'geist-mono',
-        label: 'Geist Mono',
-        fontFamily: '"Geist Mono"',
-    },
+    ...FONT_OPTIONS,
 ] as const;
 
 /**

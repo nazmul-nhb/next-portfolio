@@ -3,6 +3,7 @@
 import { pdf } from '@react-pdf/renderer';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { $UUID } from 'locality-idb';
+import { isBrowser, isObjectWithKeys } from 'nhb-toolbox';
 import { uuid } from 'nhb-toolbox/hash';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -26,19 +27,18 @@ import ResumePreviewer from './ResumePreviewer';
  * Main Resume Builder component
  */
 export default function ResumeBuilder() {
-    const isBrowser = typeof window !== 'undefined';
     const queryClient = useQueryClient();
     const [config, setConfig] = useState<ResumeConfig>(() =>
         normalizeResumeConfig(DEFAULT_RESUME_CONFIG)
     );
     const [pdfPending, setPdfPending] = useState(false);
     const [resumeName, setResumeName] = useState('My Resume');
-    const currentResumeIdRef = useRef<string | null>(null);
+    const currentResumeIdRef = useRef<$UUID | null>(null);
 
     const validation = useMemo(() => ResumeConfigSchema.safeParse(config), [config]);
 
     const savedResumesQuery = useQuery({
-        enabled: isBrowser,
+        enabled: isBrowser(),
         queryKey: ['resume-builder', 'saved'],
         queryFn: listSavedResumes,
     });
@@ -58,7 +58,7 @@ export default function ResumeBuilder() {
                 throw new Error('Resume configuration is invalid. Please fix the errors.');
             }
 
-            const validConfig = validation.data as ResumeConfig;
+            const validConfig = validation.data;
 
             if (isNew) {
                 return saveResume({
@@ -66,9 +66,7 @@ export default function ResumeBuilder() {
                     config: validConfig,
                 });
             } else if (currentResumeIdRef.current) {
-                const id = currentResumeIdRef.current as unknown as Parameters<
-                    typeof updateResume
-                >[0];
+                const id = currentResumeIdRef.current;
                 await updateResume(id, {
                     name: resumeName,
                     config: validConfig,
@@ -79,7 +77,7 @@ export default function ResumeBuilder() {
             throw new Error('No resume ID to update');
         },
         onSuccess: (result) => {
-            if (result && typeof result === 'object' && 'id' in result) {
+            if (isObjectWithKeys(result, ['id'])) {
                 currentResumeIdRef.current = result.id;
             }
             toast.success(`Resume "${resumeName}" saved successfully!`);

@@ -15,6 +15,7 @@ import {
 import Image from 'next/image';
 import { uuid } from 'nhb-toolbox/hash';
 import { Fragment, useCallback, useMemo, useState } from 'react';
+import { SiAdobeacrobatreader } from 'react-icons/si';
 import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
@@ -1079,12 +1080,12 @@ export function ResumeControls({
                             >
                                 {pdfPending ? (
                                     <Fragment>
-                                        <Loader2 className="mr-2 size-4 animate-spin" />
+                                        <SiAdobeacrobatreader className="size-4 animate-spin" />
                                         Generating PDF...
                                     </Fragment>
                                 ) : (
                                     <Fragment>
-                                        <Download className="mr-2 size-4" />
+                                        <Download className="size-4" />
                                         Download PDF
                                     </Fragment>
                                 )}
