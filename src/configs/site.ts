@@ -20,6 +20,7 @@ import {
     MessageSquareQuote,
     Newspaper,
     PenTool,
+    Shuffle,
     Tag,
     Users,
     Wallet,
@@ -90,6 +91,13 @@ export const siteConfig = {
             icon: ClockFading,
             description:
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
+        },
+        {
+            href: '/tools/anagram-generator',
+            label: 'Anagram Generator',
+            icon: Shuffle,
+            description:
+                'Generate unique anagrams of any word using multiple filtering options.',
         },
         {
             href: '/tools/time-difference',

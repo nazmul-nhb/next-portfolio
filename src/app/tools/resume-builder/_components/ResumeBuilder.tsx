@@ -19,6 +19,7 @@ import { DEFAULT_RESUME_CONFIG } from '@/lib/resume-builder/defaults';
 import { ResumeConfigSchema } from '@/lib/resume-builder/schema';
 import type { ResumeConfig, ResumeImageLayer } from '@/lib/resume-builder/types';
 import { normalizeResumeConfig, reorderItems } from '@/lib/resume-builder/utils';
+import { hasErrorMessage } from '@/lib/utils';
 import { ResumeControls } from './ResumeControls';
 import { ResumePdfDocument } from './ResumePdfDocument';
 import ResumePreviewer from './ResumePreviewer';
@@ -84,7 +85,7 @@ export default function ResumeBuilder() {
             void queryClient.invalidateQueries({ queryKey: ['resume-builder', 'saved'] });
         },
         onError: (error) => {
-            toast.error(error instanceof Error ? error.message : 'Failed to save resume');
+            toast.error(hasErrorMessage(error) ? error.message : 'Failed to save resume');
         },
     });
 
@@ -95,7 +96,7 @@ export default function ResumeBuilder() {
             void queryClient.invalidateQueries({ queryKey: ['resume-builder', 'saved'] });
         },
         onError: (error) => {
-            toast.error(error instanceof Error ? error.message : 'Failed to delete resume');
+            toast.error(hasErrorMessage(error) ? error.message : 'Failed to delete resume');
         },
     });
 
@@ -113,7 +114,7 @@ export default function ResumeBuilder() {
             }
         },
         onError: (error) => {
-            toast.error(error instanceof Error ? error.message : 'Failed to load resume');
+            toast.error(hasErrorMessage(error) ? error.message : 'Failed to load resume');
         },
     });
 
@@ -420,7 +421,7 @@ export default function ResumeBuilder() {
             link.remove();
             URL.revokeObjectURL(downloadUrl);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to generate PDF');
+            toast.error(hasErrorMessage(error) ? error.message : 'Failed to generate PDF');
         } finally {
             setPdfPending(false);
         }
