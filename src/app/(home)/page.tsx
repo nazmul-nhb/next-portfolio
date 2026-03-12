@@ -10,6 +10,7 @@ import { RecentBlogsSection } from './_components/RecentBlogs';
 import { RecentProjectsSection } from './_components/RecentProjects';
 import { SkillsSection } from './_components/SkillsSection';
 import { TestimonialsSection } from './_components/Testimonials';
+import ToolsSection from './_components/ToolsSection';
 
 export const revalidate = 60; // ISR: revalidate every minute
 
@@ -38,6 +39,7 @@ export default async function HomePage() {
             <SkillsSection skills={allSkills} />
             <RecentProjectsSection />
             <CareerHighlightsSection />
+            <ToolsSection />
             <RecentBlogsSection />
             <TestimonialsSection />
         </div>

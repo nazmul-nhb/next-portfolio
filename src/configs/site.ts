@@ -93,13 +93,6 @@ export const siteConfig = {
                 'Calculate age based on birthdate, with options for detailed breakdown and future age prediction.',
         },
         {
-            href: '/tools/anagram-generator',
-            label: 'Anagram Generator',
-            icon: Shuffle,
-            description:
-                'Generate unique anagrams of any word using multiple filtering options.',
-        },
-        {
             href: '/tools/time-difference',
             label: 'Time Difference',
             icon: ClockCheck,
@@ -113,18 +106,25 @@ export const siteConfig = {
                 'Compare current time across multiple timezones with live updates and IANA support.',
         },
         {
-            href: '/tools/word-counter',
-            label: 'Word Counter',
-            icon: WholeWord,
-            description:
-                'Analyze your text with detailed word, character, and readability metrics.',
-        },
-        {
             href: '/tools/zodiac-sign',
             label: 'Zodiac Sign Finder',
             icon: ZodiacCapricorn,
             description:
                 'Find a matching zodiac sign from a birth date using western or vedic presets.',
+        },
+        {
+            href: '/tools/anagram-generator',
+            label: 'Anagram Generator',
+            icon: Shuffle,
+            description:
+                'Generate unique anagrams of any word using multiple filtering options.',
+        },
+        {
+            href: '/tools/word-counter',
+            label: 'Word Counter',
+            icon: WholeWord,
+            description:
+                'Analyze your text with detailed word, character, and readability metrics.',
         },
         {
             href: '/tools/base-conversions',
