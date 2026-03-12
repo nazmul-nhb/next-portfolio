@@ -268,7 +268,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                     onClick={() =>
                                         setLimit(
                                             limit === 'all'
-                                                ? anagrams.length < 100
+                                                ? anagrams.length > 0 && anagrams.length < 100
                                                     ? anagrams.length
                                                     : 100
                                                 : 'all'
@@ -278,7 +278,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                     variant="outline"
                                 >
                                     {limit === 'all'
-                                        ? `Reset to ${anagrams.length < 100 ? anagrams.length : '100'}`
+                                        ? `Reset to ${anagrams.length > 0 && anagrams.length < 100 ? anagrams.length : '100'}`
                                         : 'Get All Anagrams'}
                                 </Button>
                             </div>
