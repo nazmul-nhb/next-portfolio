@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
-import { CaseSensitive, Pilcrow, TextWrap, Type, WholeWord } from 'lucide-react';
+import { CaseSensitive, ChartSpline, Pilcrow, TextWrap, Type, WholeWord } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { countWords, formatWithPlural, parseMSec, roundNumber } from 'nhb-toolbox';
 import { useMemo, useState } from 'react';
@@ -176,7 +176,9 @@ export default function WordCounter() {
 
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base">Advanced Stats</CardTitle>
+                            <CardTitle className="text-base flex gap-1 items-center">
+                                <ChartSpline className="size-4" /> Advanced Stats
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <motion.div

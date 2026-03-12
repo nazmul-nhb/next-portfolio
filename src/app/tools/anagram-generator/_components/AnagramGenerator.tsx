@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import { FileJson, Puzzle, Shuffle, X } from 'lucide-react';
+import { ChartSpline, FileJson, Puzzle, Shuffle, X } from 'lucide-react';
 import { useDebouncedValue, useMount } from 'nhb-hooks';
 import { generateAnagrams, isNumber, parseJSON } from 'nhb-toolbox';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -153,7 +153,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
 
                         <CardContent>
                             <Input
-                                className="w-full font-cascadia text-xl! py-4"
+                                className="w-full font-cascadia text-xl! py-6"
                                 onChange={(e) => setWord(e.target.value)}
                                 placeholder="Enter a word..."
                                 type="text"
@@ -220,7 +220,6 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                         </div>
                                     ) : (
                                         <Button
-                                            // className="w-full"
                                             onClick={() => fileInputRef.current?.click()}
                                             size="default"
                                             variant="outline"
@@ -313,9 +312,9 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                 </CardDescription>
                             </CardHeader>
 
-                            <CardContent className="max-h-[min(332px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
+                            <CardContent className="max-h-[min(348px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
                                 <motion.div
-                                    className="flex flex-wrap justify-between gap-2"
+                                    className="flex flex-wrap justify-self-start justify-between gap-2"
                                     layout
                                 >
                                     <AnimatePresence mode="popLayout">
@@ -365,7 +364,9 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                     {debouncedWord.trim() && (
                         <Card>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-base">Stats</CardTitle>
+                                <CardTitle className="text-base flex gap-1 items-center">
+                                    <ChartSpline className="size-4" /> Stats
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <motion.div
