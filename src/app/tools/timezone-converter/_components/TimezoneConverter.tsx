@@ -3,13 +3,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ClockPlus, Globe, GlobeLock, Trash2 } from 'lucide-react';
 import { useClock, useMount, useStorage } from 'nhb-hooks';
-import { type Chronos, convertStringCase, extractObjectKeys, isValidArray } from 'nhb-toolbox';
+import {
+    type Chronos,
+    convertStringCase,
+    extractObjectKeys,
+    formatUTCOffset,
+    isValidArray,
+} from 'nhb-toolbox';
 import { TIME_ZONE_IDS, TIME_ZONES } from 'nhb-toolbox/constants';
 import type { $TimeZoneIdentifier, TimeZone, UTCOffset } from 'nhb-toolbox/date/types';
 import { uuid } from 'nhb-toolbox/hash';
 import type { $UUID } from 'nhb-toolbox/hash/types';
+import type { LooseLiteral } from 'nhb-toolbox/utils/types';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
@@ -52,18 +60,12 @@ import {
 
 // Generate UTC offsets in 15-minute intervals
 const generateUTCOffsets = () => {
-    const offsets = [];
+    const offsets: UTCOffset[] = [];
+
     for (let hours = -12; hours <= 14; hours++) {
         for (let minutes = 0; minutes < 60; minutes += 15) {
-            if (minutes === 0) {
-                const sign = hours >= 0 ? '+' : '';
-                const offset = `UTC${sign}${String(hours).padStart(2, '0')}:00`;
-                offsets.push(offset);
-            } else {
-                const sign = hours >= 0 ? '+' : '';
-                const offset = `UTC${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                offsets.push(offset);
-            }
+            const offset = formatUTCOffset(hours * 60 + minutes);
+            offsets.push(offset);
         }
     }
     return offsets;
@@ -78,6 +80,12 @@ const TZ_OPTIONS = {
 };
 
 const TZ_TYPE_OPTIONS = extractObjectKeys(TZ_OPTIONS, true);
+
+const getTzName = (tzType: keyof typeof TZ_OPTIONS, tz: LooseLiteral<TimeZone>) => {
+    return tzType === 'timezoneName' && tz in TIME_ZONES
+        ? TIME_ZONES[tz as TimeZone].tzName
+        : tz;
+};
 
 const timeZoneAddFormSchema = z.object({
     tzType: z.enum(TZ_TYPE_OPTIONS),
@@ -107,7 +115,7 @@ export default function TimezoneConverter() {
 
     const form = useForm<TimeZoneAddFormValues>({
         resolver: zodResolver(timeZoneAddFormSchema),
-        mode: 'all',
+        mode: 'onSubmit',
         defaultValues: {
             tzType: 'timezoneIdentifier',
             timezone: time.$getNativeTimeZoneId(),
@@ -116,8 +124,20 @@ export default function TimezoneConverter() {
     });
 
     const tzType = form.watch('tzType');
+    const timezone = form.watch('timezone');
+
+    const doesExists = (type: keyof TimeZoneEntry, label: string) => {
+        return store?.value?.some((val) => val?.[type] === label);
+    };
 
     const handleAddTimezone = (values: TimeZoneAddFormValues) => {
+        for (const key of ['label', 'timezone'] as const) {
+            if (doesExists(key, values[key])) {
+                toast.error(`Timezone with the ${key}: ${values[key]} already exists!`);
+                return;
+            }
+        }
+
         const newEntry: TimeZoneEntry = {
             id: uuid(),
             timezone: values.timezone as ValidTimeZone,
@@ -126,7 +146,11 @@ export default function TimezoneConverter() {
 
         store.set(store.value ? [...store.value, newEntry] : [newEntry]);
 
-        form.reset();
+        form.reset({
+            tzType,
+            timezone: timeZoneOptions[0],
+            label: getTzName(tzType, timeZoneOptions[0]),
+        });
     };
 
     const handleRemoveEntry = (id: string) => {
@@ -135,18 +159,17 @@ export default function TimezoneConverter() {
         }
     };
 
-    const timezone = form.watch('timezone');
-
     useEffect(() => {
-        const currentLabel = form.getValues('label');
+        // const currentLabel = form.getValues('label');
 
-        if (!form.formState.dirtyFields.label || !currentLabel) {
-            form.setValue('label', timezone, {
-                shouldValidate: true,
-                shouldDirty: false,
-            });
-        }
-    }, [timezone, form]);
+        // if (!form.formState.dirtyFields.label || !currentLabel) {
+        // Logic to keep non-dirty or user provided inputs
+        // }
+        form.setValue('label', getTzName(tzType, timezone), {
+            shouldValidate: true,
+            shouldDirty: false,
+        });
+    }, [timezone, form, tzType]);
 
     useEffect(() => {
         settimeZoneOptions(TZ_OPTIONS[tzType]);
@@ -285,12 +308,10 @@ export default function TimezoneConverter() {
                                                                         key={item}
                                                                         value={item}
                                                                     >
-                                                                        {tzType ===
-                                                                        'timezoneName'
-                                                                            ? TIME_ZONES[
-                                                                                  item as TimeZone
-                                                                              ].tzName
-                                                                            : item}
+                                                                        {getTzName(
+                                                                            tzType,
+                                                                            item
+                                                                        )}
                                                                     </ComboboxItem>
                                                                 )}
                                                             </ComboboxList>
