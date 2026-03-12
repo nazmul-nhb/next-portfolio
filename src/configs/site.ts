@@ -1,4 +1,5 @@
 import {
+    ArrowLeftRight,
     Binary,
     Briefcase,
     ClockCheck,
@@ -125,6 +126,13 @@ export const siteConfig = {
             icon: WholeWord,
             description:
                 'Analyze your text with detailed word, character, and readability metrics.',
+        },
+        {
+            href: '/tools/text-diff-checker',
+            label: 'Text Diff Checker',
+            icon: ArrowLeftRight,
+            description:
+                'Compare two texts side-by-side and view detailed differences with line-by-line highlighting.',
         },
         {
             href: '/tools/base-conversions',

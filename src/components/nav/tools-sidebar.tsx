@@ -30,7 +30,7 @@ export function ToolsSidebar() {
                 <p className="text-xs text-muted-foreground">Personal productivity utilities</p>
             </div>
 
-            <nav className="flex-1 space-y-0.5 p-3">
+            <nav className="flex-1 overflow-y-auto space-y-0.5 p-3">
                 <Link
                     className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         pathname === '/tools'
