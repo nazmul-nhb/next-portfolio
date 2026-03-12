@@ -78,6 +78,7 @@ export const PHOTO_CARD_SECTION_OPTIONS = PHOTO_CARD_SECTION_IDS.map((value) => 
 
 export const PKG_FIELDS = [
     'author',
+    'time',
     'contributors',
     'dist-tags',
     'description',

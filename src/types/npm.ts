@@ -1,3 +1,4 @@
+import type { ISOTimeString } from 'nhb-toolbox/date/types';
 import type { Prettify } from 'nhb-toolbox/utils/types';
 import type { PKG_FIELDS } from '@/lib/constants';
 
@@ -22,9 +23,9 @@ export interface PackageDetails {
 }
 
 interface Time {
-    created: string;
-    modified: string;
-    [version: string]: string;
+    created: ISOTimeString;
+    modified: ISOTimeString;
+    [version: string]: ISOTimeString;
 }
 
 interface Versions {

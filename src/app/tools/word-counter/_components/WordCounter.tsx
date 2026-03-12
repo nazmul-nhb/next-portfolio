@@ -4,7 +4,7 @@ import { motion, type Variants } from 'framer-motion';
 import { CaseSensitive, Pilcrow, TextWrap, Type, WholeWord } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { countWords, formatWithPlural, parseMSec, roundNumber } from 'nhb-toolbox';
-import { type ChangeEvent, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -100,10 +100,6 @@ export default function WordCounter() {
         { label: 'Paragraphs', value: stats.paragraphs, icon: <Pilcrow />, color: 'teal' },
     ];
 
-    const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        setInputText(e.target.value);
-    };
-
     return useMount(
         <div className="space-y-8">
             <TitleWithShare
@@ -128,7 +124,7 @@ export default function WordCounter() {
                     <CardContent>
                         <Textarea
                             className="w-full min-h-64 max-h-112 custom-scroll font-cascadia text-sm"
-                            onChange={handleInputChange}
+                            onChange={(e) => setInputText(e.target.value)}
                             placeholder="Type or paste your text here..."
                             value={inputText}
                         />

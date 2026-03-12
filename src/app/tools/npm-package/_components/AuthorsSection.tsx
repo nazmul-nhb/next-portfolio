@@ -1,5 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
-import { Mail, User, Users } from 'lucide-react';
+import { ExternalLink, Mail, User, Users } from 'lucide-react';
 import { isValidArray } from 'nhb-toolbox';
 import { Fragment } from 'react/jsx-runtime';
 import LivePreviewButton from '@/components/misc/live-preview';
@@ -104,7 +104,16 @@ function Maintributors({ title, data }: MaintainerProps) {
                             className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm"
                             key={idx}
                         >
-                            <span className="font-medium truncate">{maintainer.name}</span>
+                            {maintainer.url ? (
+                                <a
+                                    className="font-medium flex items-center gap-1 truncate underline hover:opacity-90"
+                                    href={maintainer.url}
+                                >
+                                    <ExternalLink className="size-3.5" /> {maintainer.name}
+                                </a>
+                            ) : (
+                                <span className="font-medium truncate">{maintainer.name}</span>
+                            )}
                             {maintainer.email && (
                                 <a
                                     className="text-xs text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap ml-2"

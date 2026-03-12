@@ -1,11 +1,12 @@
 import { motion, type Variants } from 'framer-motion';
-import { Code, FileText } from 'lucide-react';
+import { Code, FileText, PackageCheck, PackagePlus } from 'lucide-react';
 import { FaGitAlt } from 'react-icons/fa';
 import { RiNpmjsLine } from 'react-icons/ri';
 import LivePreviewButton from '@/components/misc/live-preview';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatRelativeTime } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
 
 interface PackageInfoProps {
@@ -30,6 +31,23 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                     {data.license && <Badge>{data.license}</Badge>}
                 </CardHeader>
                 <CardContent className="space-y-5">
+                    {data.time && (
+                        <div className="flex flex-wrap gap-2">
+                            {data.time.created && (
+                                <Badge variant="secondary">
+                                    <PackagePlus className="size-3 mr-1" />
+                                    Created: {formatRelativeTime(data.time.created)}
+                                </Badge>
+                            )}
+                            {data.time.modified && (
+                                <Badge variant="secondary">
+                                    <PackageCheck className="size-3 mr-1" />
+                                    Modified: {formatRelativeTime(data.time.modified)}
+                                </Badge>
+                            )}
+                        </div>
+                    )}
+
                     {data.description && (
                         <div>
                             <p className="text-xs font-medium text-muted-foreground mb-2">
