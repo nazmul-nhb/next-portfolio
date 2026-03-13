@@ -133,7 +133,7 @@ export const siteConfig = {
             label: 'Text Diff Checker',
             icon: ArrowLeftRight,
             description:
-                'Compare two texts side-by-side and view detailed differences with line-by-line highlighting.',
+                'Compare two texts and view detailed differences with line-by-line highlighting.',
         },
         {
             href: '/tools/base-conversions',

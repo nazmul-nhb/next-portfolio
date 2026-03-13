@@ -13,7 +13,7 @@ export const contentType = 'image/png';
 export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
-            description="Compare two texts side-by-side and view detailed differences with line-by-line highlighting."
+            description="Compare two texts and view detailed differences with line-by-line highlighting."
             siteTitle={`Text Diff Checker » ${siteConfig.name}`}
             tag="Text Diff Checker"
             title={`Text Diff Checker from ${siteConfig.name}`}

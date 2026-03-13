@@ -67,7 +67,7 @@ export default function TextDiffChecker() {
     return useMount(
         <div className="space-y-8">
             <TitleWithShare
-                description="Compare two texts side-by-side and view detailed differences with line-by-line highlighting."
+                description="Compare two texts and view detailed differences with line-by-line highlighting."
                 route="/tools/text-diff-checker"
                 title="Text Diff Checker"
             />

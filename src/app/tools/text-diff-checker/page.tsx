@@ -4,7 +4,7 @@ import { buildCanonicalUrl } from '@/lib/utils';
 import TextDiffChecker from './_components/TextDiffChecker';
 
 const description =
-    'Compare two texts side-by-side and view detailed differences with line-by-line highlighting. Perfect for tracking changes, reviewing edits, and understanding text modifications.';
+    'Compare two texts and view detailed differences with line-by-line highlighting. Perfect for tracking changes, reviewing edits, and understanding text modifications.';
 
 export const metadata: Metadata = {
     title: 'Text Diff Checker',
