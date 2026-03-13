@@ -5,6 +5,7 @@ import {
     ClockCheck,
     ClockFading,
     Contact,
+    FerrisWheel,
     FileText,
     FileUser,
     FolderKanban,
@@ -120,6 +121,13 @@ export const siteConfig = {
             icon: Shuffle,
             description:
                 'Generate unique anagrams of any word using multiple filtering options.',
+        },
+        {
+            href: '/tools/spin-wheel',
+            label: 'Spinning Wheel',
+            icon: FerrisWheel,
+            description:
+                'Make random decisions with an interactive spinning wheel. Add custom options, and share link.',
         },
         {
             href: '/tools/word-counter',
