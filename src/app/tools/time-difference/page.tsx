@@ -7,11 +7,12 @@ const description =
     'Calculate the difference between two dates in any time unit (years, months, weeks, days, hours, minutes, seconds, or milliseconds).';
 
 export const metadata: Metadata = {
-    title: 'Difference Calculator',
+    title: 'Time Difference Calculator',
     description,
     keywords: [
         ...siteConfig.keywords,
         ...Object.values(siteConfig.links),
+        'time difference calculator',
         'difference calculator',
         'date difference',
         'time difference',
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     ],
     alternates: { canonical: buildCanonicalUrl('/tools/time-difference') },
     openGraph: {
-        title: `Difference Calculator from ${siteConfig.name}`,
+        title: `Time Difference Calculator from ${siteConfig.name}`,
         description,
         url: buildCanonicalUrl('/tools/time-difference'),
         siteName: siteConfig.name,

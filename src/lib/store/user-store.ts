@@ -8,7 +8,7 @@ import { Cipher } from 'nhb-toolbox/hash';
 import { create } from 'zustand';
 import { persist, type StorageValue } from 'zustand/middleware';
 import { ENV } from '@/configs/env';
-import type { UserRole } from '@/types';
+import type { AuthProviders, UserRole } from '@/types';
 
 export interface UserProfile {
     id: number;
@@ -19,7 +19,7 @@ export interface UserProfile {
     role: UserRole;
     preferred_currency?: string;
     email_verified: boolean;
-    provider: 'credentials' | 'google';
+    provider: AuthProviders;
 }
 
 interface UserState {

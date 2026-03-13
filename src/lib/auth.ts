@@ -3,11 +3,12 @@ import { eq } from 'drizzle-orm';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
+import { normalizeNumber } from 'nhb-toolbox';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
-import type { UserRole } from '@/types';
+import type { AuthProviders, Uncertain, UserRole } from '@/types';
 
 /** Re-verify the user against the DB every 5 minutes inside the jwt callback.
  * Catches deletions/suspensions without requiring a new sign-in.
@@ -23,7 +24,7 @@ declare module 'next-auth' {
             image?: string | null;
             role: UserRole;
             email_verified: boolean;
-            provider: 'credentials' | 'google';
+            provider: AuthProviders;
             /** false when the account has been deleted or deactivated by an admin */
             active: boolean;
         };
@@ -32,13 +33,12 @@ declare module 'next-auth' {
     interface User {
         role?: UserRole;
         email_verified?: boolean;
-        provider?: 'credentials' | 'google';
+        provider?: AuthProviders;
     }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: ENV.authSecret,
-    useSecureCookies: ENV.nodeEnv === 'production',
     pages: {
         signIn: '/auth/login',
         error: '/auth/error',
@@ -169,9 +169,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // Re-verify on every request older than DB_CHECK_INTERVAL_MS.
             // Catches: deleted accounts, deactivations, role changes.
             const now = Date.now();
-            const needsCheck =
-                !token.lastDbCheck ||
-                now - (token.lastDbCheck as number) > DB_CHECK_INTERVAL_MS;
+            const lastChecked = normalizeNumber(token.lastDbCheck);
+            const needsCheck = !lastChecked || now - lastChecked > DB_CHECK_INTERVAL_MS;
 
             if (token.id && needsCheck) {
                 try {
@@ -213,12 +212,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             session.user.id = token.id as string;
             session.user.name = token.name as string;
             session.user.email = token.email as string;
-            session.user.image = token.picture as string | null | undefined;
+            session.user.image = token.picture as Uncertain<string>;
             session.user.role = (token.role ?? 'user') as UserRole;
             session.user.email_verified = (token.email_verified ?? false) as boolean;
-            session.user.provider = (token.provider ?? 'credentials') as
-                | 'credentials'
-                | 'google';
+            session.user.provider = (token.provider ?? 'credentials') as AuthProviders;
             // Exposed to client so AuthSync / proxy can react immediately
             session.user.active = token.active !== false;
 

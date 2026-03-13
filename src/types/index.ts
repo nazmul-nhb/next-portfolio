@@ -8,6 +8,8 @@ import type { FONT_OPTIONS } from '@/lib/constants';
 
 export type Uncertain<T> = T | null | undefined;
 
+export type AuthProviders = 'credentials' | 'google';
+
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
     size?: number;
 };
