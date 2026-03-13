@@ -12,7 +12,7 @@ import { siteConfig } from '@/configs/site';
 
 function isActive(href: string, pathname: string) {
     if (href === '/tools') return pathname === '/tools';
-    return pathname.startsWith(href);
+    return pathname.startsWith(href.split('?')[0]);
 }
 
 export function ToolsSidebar() {
