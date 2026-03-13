@@ -163,24 +163,10 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                             />
                         </CardContent>
                     </Card>
-                    {/* Error Message */}
-                    {error && (
-                        <motion.div
-                            animate={{ opacity: 1, y: 0 }}
-                            className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-sm text-destructive"
-                            initial={{ opacity: 0, y: -10 }}
-                            transition={{
-                                type: 'spring',
-                                stiffness: 200,
-                                damping: 20,
-                            }}
-                        >
-                            {error}
-                        </motion.div>
-                    )}
+
                     {/* Dictionary Mode */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <CardTitle className="text-base">Dictionary Mode</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
@@ -193,7 +179,12 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">No Filter</SelectItem>
-                                    <SelectItem value="builtin">Built-in Dictionary</SelectItem>
+                                    <SelectItem value="builtin">
+                                        Built-in Dictionary
+                                        <span className="text-xs text-muted-foreground/70 shrink-0">
+                                            ({dictionary?.length ?? 0} words)
+                                        </span>
+                                    </SelectItem>
                                     <SelectItem value="custom">Custom Dictionary</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -226,7 +217,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                             size="default"
                                             variant="outline"
                                         >
-                                            <FileJson className="size-4 mr-2" />
+                                            <FileJson className="size-4" />
                                             Choose JSON File
                                         </Button>
                                     )}
@@ -238,16 +229,32 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                         type="file"
                                     />
                                     <CodeBlock className="text-xs">
-                                        {`Format: { "words": ["word1", "word2", ...] }`}
+                                        {`JSON File with Format: { "words": ["word1", "word2", ...] }`}
                                     </CodeBlock>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
 
+                    {/* Error Message */}
+                    {error && (
+                        <motion.div
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-sm text-destructive"
+                            initial={{ opacity: 0, y: -10 }}
+                            transition={{
+                                type: 'spring',
+                                stiffness: 200,
+                                damping: 20,
+                            }}
+                        >
+                            {error}
+                        </motion.div>
+                    )}
+
                     {/* Limit Control */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <CardTitle className="text-base">Anagram Limit</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
@@ -285,7 +292,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                     variant="outline"
                                 >
                                     {limit === 'all'
-                                        ? `Reset to ${isBelow100 ? anagrams.length : '100'}`
+                                        ? `Reset to ${isBelow100 ? anagrams.length : 100}`
                                         : 'Get All Anagrams'}
                                 </Button>
                             </div>
@@ -319,7 +326,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                 </CardDescription>
                             </CardHeader>
 
-                            <CardContent className="max-h-[min(348px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
+                            <CardContent className="max-h-[min(256px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
                                 <motion.div
                                     className="flex flex-wrap justify-self-start justify-between gap-2"
                                     layout
@@ -370,7 +377,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                     {/* Stats Card */}
                     {debouncedWord.trim() && (
                         <Card>
-                            <CardHeader className="pb-3">
+                            <CardHeader>
                                 <CardTitle className="text-base flex gap-1 items-center">
                                     <ChartSpline className="size-4" /> Stats
                                 </CardTitle>

@@ -6,12 +6,6 @@ import AnagramGenerator from '@/app/tools/anagram-generator/_components/AnagramG
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 
-async function loadDictionary() {
-    const filePath = join(process.cwd(), 'src', 'data', 'english-words.json');
-    const content = await fs.readFile(filePath, 'utf8');
-    return parseJSON<{ words: string[] }>(content, false);
-}
-
 const description =
     'Generate unique anagrams of any word. Choose from with/without built-in dictionary, or upload a custom word list.';
 
@@ -36,6 +30,12 @@ export const metadata: Metadata = {
         siteName: siteConfig.name,
     },
 };
+
+async function loadDictionary() {
+    const filePath = join(process.cwd(), 'src', 'data', 'english-words.json');
+    const content = await fs.readFile(filePath, 'utf8');
+    return parseJSON<{ words: string[] }>(content, false);
+}
 
 export default async function Page() {
     const { words } = await loadDictionary();

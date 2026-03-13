@@ -133,7 +133,7 @@ export default function TimezoneConverter() {
     const handleAddTimezone = (values: TimeZoneAddFormValues) => {
         for (const key of ['label', 'timezone'] as const) {
             if (doesExists(key, values[key])) {
-                toast.error(`Timezone with the ${key}: ${values[key]} already exists!`);
+                toast.error(`Card with the ${key}: ${values[key]} already exists!`);
                 return;
             }
         }
@@ -145,6 +145,10 @@ export default function TimezoneConverter() {
         };
 
         store.set(store.value ? [...store.value, newEntry] : [newEntry]);
+
+        toast.success(
+            `Card ${values.timezone} with label: ${values.label} successfully added!`
+        );
 
         form.reset({
             tzType,
@@ -160,11 +164,6 @@ export default function TimezoneConverter() {
     };
 
     useEffect(() => {
-        // const currentLabel = form.getValues('label');
-
-        // if (!form.formState.dirtyFields.label || !currentLabel) {
-        // Logic to keep non-dirty or user provided inputs
-        // }
         form.setValue('label', getTzName(tzType, timezone), {
             shouldValidate: true,
             shouldDirty: false,
@@ -348,8 +347,8 @@ export default function TimezoneConverter() {
                                                             size="lg"
                                                             type="submit"
                                                         >
-                                                            <ClockPlus className="size-4" />
-                                                            Add Timezone
+                                                            <ClockPlus className="size-4 mb-0.5" />
+                                                            Add Timezone Card
                                                         </Button>
                                                     </div>
                                                 </FormControl>
