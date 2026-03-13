@@ -19,6 +19,7 @@ export default function TitleWithShare({ className, description, route, title }:
                 <ShareButton
                     buttonLabel="Share this tool"
                     route={route}
+                    shareLabel="Share this tool"
                     shareText={`${title} from ${siteConfig.name}`}
                 />
             </div>

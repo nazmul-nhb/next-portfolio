@@ -59,6 +59,7 @@
     "nhb-hooks": "^1.40.21",
     "nhb-toolbox": "^4.28.80",
     "nodemailer": "^8.0.1",
+    "qrcode.react": "^4.2.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",

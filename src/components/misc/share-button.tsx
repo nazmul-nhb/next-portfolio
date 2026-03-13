@@ -73,8 +73,14 @@ export default function ShareButton({
     return useMount(
         <Popover modal onOpenChange={setOpenPopup} open={openPopup}>
             <PopoverTrigger asChild>
-                <Button aria-label={shareLabel} size="sm" variant="outline" {...buttonProps}>
-                    {showIcon && <Share2 className={cn('size-4', className)} />}{' '}
+                <Button
+                    aria-label={shareLabel}
+                    className="text-sm"
+                    size="sm"
+                    variant="outline"
+                    {...buttonProps}
+                >
+                    {showIcon && <Share2 className={cn('size-3.5', className)} />}{' '}
                     {buttonLabel && buttonLabel}
                 </Button>
             </PopoverTrigger>

@@ -21,6 +21,7 @@ import {
     MessageSquareQuote,
     Newspaper,
     PenTool,
+    QrCode,
     Shuffle,
     Tag,
     Users,
@@ -154,6 +155,13 @@ export const siteConfig = {
             icon: Tag,
             description:
                 'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
+        },
+        {
+            href: '/tools/qr-code-generator',
+            label: 'QR Code Generator',
+            icon: QrCode,
+            description:
+                'Generate QR codes from text or URLs with customizable size, colors, and error correction levels.',
         },
         {
             href: '/tools/npm-package',
