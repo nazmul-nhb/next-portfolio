@@ -27,16 +27,18 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                 className={cn(
                                     'flex items-start gap-2 py-1 px-2 rounded',
                                     'transition-colors duration-200',
-                                    line.type === 'added' && 'bg-green-500/10',
-                                    line.type === 'removed' && 'bg-red-500/10',
-                                    line.type === 'unchanged' && 'hover:bg-muted/50',
-                                    line.type === 'modified' && 'bg-amber-500/10'
+                                    {
+                                        'bg-green-500/10': line.type === 'added',
+                                        'bg-red-500/10': line.type === 'removed',
+                                        'bg-gray-600/10': line.type === 'unchanged',
+                                        'bg-amber-500/10': line.type === 'modified',
+                                    }
                                 )}
                                 initial={{ opacity: 0, x: -10 }}
                                 key={idx}
                                 transition={{ duration: 0.2 }}
                             >
-                                {/* Line Number and Type Indicator */}
+                                {/* Type Indicator and Line Numbers */}
                                 <div className="flex items-baseline gap-2 min-w-fit shrink-0">
                                     <div
                                         className={cn(
@@ -44,7 +46,7 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                             {
                                                 'bg-green-500/25': line.type === 'added',
                                                 'bg-red-500/25': line.type === 'removed',
-                                                'hover:bg-muted/50': line.type === 'unchanged',
+                                                'bg-gray-600/25': line.type === 'unchanged',
                                                 'bg-amber-600/25': line.type === 'modified',
                                             }
                                         )}
@@ -57,6 +59,27 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                                 ? '~'
                                                 : '='}
                                     </div>
+                                    {/* Line numbers */}
+                                    <div className="text-xs text-muted-foreground text-right">
+                                        {line.type !== 'added' ? (
+                                            <span>{line.originalLineNum}</span>
+                                        ) : (
+                                            <span className="text-transparent">0</span>
+                                        )}
+                                        {line.type === 'modified' && (
+                                            <span className="ml-1">→</span>
+                                        )}
+                                    </div>
+                                    {line.type === 'modified' && (
+                                        <div className="text-xs text-muted-foreground">
+                                            <span>{line.modifiedLineNum}</span>
+                                        </div>
+                                    )}
+                                    {(line.type === 'added' || line.type === 'unchanged') && (
+                                        <div className="text-xs text-muted-foreground">
+                                            <span>{line.modifiedLineNum}</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Content */}

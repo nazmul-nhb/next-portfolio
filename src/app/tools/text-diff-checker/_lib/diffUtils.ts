@@ -4,7 +4,8 @@ export interface DiffLine {
     type: DiffLineType;
     original?: string;
     modified?: string;
-    index: number;
+    originalLineNum?: number;
+    modifiedLineNum?: number;
 }
 
 export interface DiffResult {
@@ -84,7 +85,6 @@ export function computeTextDiff(originalText: string, modifiedText: string): Dif
     const diffLines: DiffLine[] = [];
     let i = originalLen;
     let j = modifiedLen;
-    let lineIndex = 0;
 
     while (i > 0 || j > 0) {
         if (i > 0 && j > 0 && originalLines[i - 1] === modifiedLines[j - 1]) {
@@ -93,7 +93,8 @@ export function computeTextDiff(originalText: string, modifiedText: string): Dif
                 type: 'unchanged',
                 original: originalLines[i - 1],
                 modified: modifiedLines[j - 1],
-                index: lineIndex,
+                originalLineNum: i,
+                modifiedLineNum: j,
             });
             i--;
             j--;
@@ -102,7 +103,7 @@ export function computeTextDiff(originalText: string, modifiedText: string): Dif
             diffLines.unshift({
                 type: 'added',
                 modified: modifiedLines[j - 1],
-                index: lineIndex,
+                modifiedLineNum: j,
             });
             j--;
         } else if (i > 0) {
@@ -110,11 +111,10 @@ export function computeTextDiff(originalText: string, modifiedText: string): Dif
             diffLines.unshift({
                 type: 'removed',
                 original: originalLines[i - 1],
-                index: lineIndex,
+                originalLineNum: i,
             });
             i--;
         }
-        lineIndex++;
     }
 
     // Post-process: Detect and pair similar removed/added lines as "modified"
@@ -145,7 +145,8 @@ export function computeTextDiff(originalText: string, modifiedText: string): Dif
                             type: 'modified',
                             original: line.original,
                             modified: nextLine.modified,
-                            index: idx,
+                            originalLineNum: line.originalLineNum,
+                            modifiedLineNum: nextLine.modifiedLineNum,
                         });
                         usedIndices.add(idx);
                         usedIndices.add(jdx);
