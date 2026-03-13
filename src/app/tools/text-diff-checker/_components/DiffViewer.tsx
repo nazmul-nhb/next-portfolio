@@ -3,6 +3,7 @@ import { Diff } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { DiffResult } from '../_lib/diffUtils';
+import { getCharacterDifferences } from '../_lib/diffUtils';
 
 interface DiffViewerProps {
     diffResult: DiffResult;
@@ -18,7 +19,7 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="max-h-150 overflow-y-auto overflow-x-hidden custom-scroll">
+                <div className="max-h-[min(360px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
                     <div className="space-y-1 font-cascadia text-xs bg-muted/30 rounded-lg p-4">
                         {diffResult.lines.map((line, idx) => (
                             <motion.div
@@ -40,10 +41,12 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                     <div
                                         className={cn(
                                             'size-4 rounded-full flex items-center justify-center text-xs font-bold text-white',
-                                            line.type === 'added' && 'bg-green-600',
-                                            line.type === 'removed' && 'bg-red-600',
-                                            line.type === 'unchanged' && 'bg-gray-600',
-                                            line.type === 'modified' && 'bg-amber-600'
+                                            {
+                                                'bg-green-500/25': line.type === 'added',
+                                                'bg-red-500/25': line.type === 'removed',
+                                                'hover:bg-muted/50': line.type === 'unchanged',
+                                                'bg-amber-600': line.type === 'modified',
+                                            }
                                         )}
                                     >
                                         {line.type === 'added'
@@ -59,16 +62,20 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                 {/* Content */}
                                 <div className="flex-1 min-w-0 wrap-break-word">
                                     {line.type === 'added' && (
-                                        <div className="text-green-700 dark:text-green-400">
-                                            <span className="font-semibold">+</span>{' '}
-                                            {line.modified}
-                                        </div>
+                                        <CharacterDiffDisplay
+                                            color="green"
+                                            isAdded
+                                            modified={line.modified || ''}
+                                            original=""
+                                        />
                                     )}
                                     {line.type === 'removed' && (
-                                        <div className="text-red-700 dark:text-red-400">
-                                            <span className="font-semibold">−</span>{' '}
-                                            {line.original}
-                                        </div>
+                                        <CharacterDiffDisplay
+                                            color="red"
+                                            isRemoved
+                                            modified=""
+                                            original={line.original || ''}
+                                        />
                                     )}
                                     {line.type === 'unchanged' && (
                                         <div className="text-muted-foreground">
@@ -77,16 +84,11 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                         </div>
                                     )}
                                     {line.type === 'modified' && (
-                                        <div className="space-y-1">
-                                            <div className="text-amber-700 dark:text-amber-400">
-                                                <span className="font-semibold">−</span>{' '}
-                                                {line.original}
-                                            </div>
-                                            <div className="text-amber-700 dark:text-amber-400 ml-3">
-                                                <span className="font-semibold">+</span>{' '}
-                                                {line.modified}
-                                            </div>
-                                        </div>
+                                        <CharacterDiffDisplay
+                                            color="amber"
+                                            modified={line.modified || ''}
+                                            original={line.original || ''}
+                                        />
                                     )}
                                 </div>
                             </motion.div>
@@ -95,5 +97,81 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                 </div>
             </CardContent>
         </Card>
+    );
+}
+
+interface CharacterDiffDisplayProps {
+    original: string;
+    modified: string;
+    color: 'green' | 'red' | 'amber';
+    isAdded?: boolean;
+    isRemoved?: boolean;
+}
+
+function CharacterDiffDisplay({
+    original,
+    modified,
+    color,
+    isAdded,
+    isRemoved,
+}: CharacterDiffDisplayProps) {
+    const charDiff = getCharacterDifferences(original, modified);
+
+    const colorClasses = {
+        green: 'text-green-700 dark:text-green-400',
+        red: 'text-red-700 dark:text-red-400',
+        amber: 'text-amber-700 dark:text-amber-400',
+    };
+
+    const highlightClasses = {
+        green: 'bg-green-200/50 dark:bg-green-900/40 font-semibold',
+        red: 'bg-red-200/50 dark:bg-red-900/40 font-semibold',
+        amber: 'bg-amber-200/50 dark:bg-amber-900/40 font-semibold',
+    };
+
+    return (
+        <div className={cn('space-y-1', colorClasses[color])}>
+            {/* Show original text if not added */}
+            {!isAdded && (
+                <div>
+                    <span className="font-semibold">{isRemoved ? '−' : '−'}</span>{' '}
+                    {charDiff.original.length > 0 ? (
+                        <span>
+                            {charDiff.original.map((char, idx) => (
+                                <span
+                                    className={char.highlighted ? highlightClasses[color] : ''}
+                                    key={idx}
+                                >
+                                    {char.text}
+                                </span>
+                            ))}
+                        </span>
+                    ) : (
+                        <span>-</span>
+                    )}
+                </div>
+            )}
+
+            {/* Show modified text if not removed */}
+            {!isRemoved && (
+                <div className={isAdded ? '' : 'ml-3'}>
+                    <span className="font-semibold">+</span>{' '}
+                    {charDiff.modified.length > 0 ? (
+                        <span>
+                            {charDiff.modified.map((char, idx) => (
+                                <span
+                                    className={char.highlighted ? highlightClasses[color] : ''}
+                                    key={idx}
+                                >
+                                    {char.text}
+                                </span>
+                            ))}
+                        </span>
+                    ) : (
+                        <span>-</span>
+                    )}
+                </div>
+            )}
+        </div>
     );
 }

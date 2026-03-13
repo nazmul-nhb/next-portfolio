@@ -72,12 +72,12 @@ export default function TextDiffChecker() {
                 title="Text Diff Checker"
             />
 
-            <div className="space-y-6">
-                {/* Input Section */}
-                <div className="grid gap-4 lg:grid-cols-2">
+            {/* Input Section */}
+            <div className="grid gap-4 lg:grid-cols-2">
+                <div className="space-y-4">
                     {/* Original Text */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <CardTitle className="text-base flex items-center justify-between">
                                 <span>Original Text</span>
                                 <Badge variant="outline">
@@ -90,7 +90,7 @@ export default function TextDiffChecker() {
                         </CardHeader>
                         <CardContent>
                             <Textarea
-                                className="w-full min-h-50 max-h-50 overflow-y-auto custom-scroll font-cascadia text-sm"
+                                className="w-full min-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
                                 onChange={(e) => setOriginalText(e.target.value)}
                                 placeholder="Enter original text..."
                                 value={originalText}
@@ -100,7 +100,7 @@ export default function TextDiffChecker() {
 
                     {/* Modified Text */}
                     <Card>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                             <CardTitle className="text-base flex items-center justify-between">
                                 <span>Modified Text</span>
                                 <Badge variant="outline">
@@ -113,49 +113,55 @@ export default function TextDiffChecker() {
                         </CardHeader>
                         <CardContent>
                             <Textarea
-                                className="w-full min-h-50 max-h-50 overflow-y-auto custom-scroll font-cascadia text-sm"
+                                className="w-full min-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
                                 onChange={(e) => setModifiedText(e.target.value)}
                                 placeholder="Enter modified text..."
                                 value={modifiedText}
                             />
                         </CardContent>
                     </Card>
-                </div>
 
-                {/* Action Buttons */}
-                <Card>
-                    <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                            <Button onClick={handleSwap} size="sm" variant="outline">
-                                <ArrowLeftRight className="size-4" />
-                                Swap
-                            </Button>
-                            <Button onClick={handleClearAll} size="sm" variant="destructive">
-                                <Trash2 className="size-4" />
-                                Clear All
-                            </Button>
-                            {hasDifferences && (
-                                <CopyButton
-                                    buttonText={{ before: 'Copy Both', after: 'Copied' }}
+                    {/* Action Buttons */}
+                    <Card>
+                        <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                                <Button onClick={handleSwap} size="sm" variant="outline">
+                                    <ArrowLeftRight className="size-4" />
+                                    Swap
+                                </Button>
+                                <Button
+                                    onClick={handleClearAll}
                                     size="sm"
-                                    textToCopy={`Original:\n${originalText}\n\nModified:\n${modifiedText}`}
-                                    variant="outline"
-                                />
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-
+                                    variant="destructive"
+                                >
+                                    <Trash2 className="size-4" />
+                                    Clear All
+                                </Button>
+                                {hasDifferences && (
+                                    <CopyButton
+                                        buttonText={{ before: 'Copy Both', after: 'Copied' }}
+                                        size="sm"
+                                        textToCopy={`Original:\n${originalText}\n\nModified:\n${modifiedText}`}
+                                        variant="outline"
+                                    />
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
                 {/* Diff Viewer Section */}
-                {(originalText || modifiedText) && (
+                {originalText || modifiedText ? (
                     <motion.div
                         animate="visible"
                         initial="hidden"
                         transition={{ duration: 0.4 }}
                         variants={itemVariants}
                     >
+                        {/* Diff View */}
+                        <DiffViewer diffResult={diffResult} />
+
                         {/* Stats Card */}
-                        <Card className="mb-6">
+                        <Card className="mt-4">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-base">
                                     <ChartSpline className="size-4" />
@@ -231,14 +237,8 @@ export default function TextDiffChecker() {
                                 </motion.div>
                             </CardContent>
                         </Card>
-
-                        {/* Diff View */}
-                        <DiffViewer diffResult={diffResult} />
                     </motion.div>
-                )}
-
-                {/* Empty State */}
-                {!originalText && !modifiedText && (
+                ) : (
                     <EmptyData
                         description="Enter text in both areas to see the diff comparison."
                         Icon={Diff}
