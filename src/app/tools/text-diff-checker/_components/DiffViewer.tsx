@@ -19,7 +19,7 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="max-h-[min(360px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
+                <div className="max-h-[min(380px,calc(100vh-20rem))] overflow-y-auto overflow-x-hidden custom-scroll">
                     <div className="space-y-1 font-cascadia text-xs bg-muted/30 rounded-lg p-4">
                         {diffResult.lines.map((line, idx) => (
                             <motion.div
@@ -45,7 +45,7 @@ export default function DiffViewer({ diffResult }: DiffViewerProps) {
                                                 'bg-green-500/25': line.type === 'added',
                                                 'bg-red-500/25': line.type === 'removed',
                                                 'hover:bg-muted/50': line.type === 'unchanged',
-                                                'bg-amber-600': line.type === 'modified',
+                                                'bg-amber-600/25': line.type === 'modified',
                                             }
                                         )}
                                     >
@@ -139,7 +139,9 @@ function CharacterDiffDisplay({
                         <span>
                             {charDiff.original.map((char, idx) => (
                                 <span
-                                    className={char.highlighted ? highlightClasses[color] : ''}
+                                    className={cn({
+                                        [highlightClasses[color]]: char.highlighted,
+                                    })}
                                     key={idx}
                                 >
                                     {char.text}
@@ -160,7 +162,9 @@ function CharacterDiffDisplay({
                         <span>
                             {charDiff.modified.map((char, idx) => (
                                 <span
-                                    className={char.highlighted ? highlightClasses[color] : ''}
+                                    className={cn({
+                                        [highlightClasses[color]]: char.highlighted,
+                                    })}
                                     key={idx}
                                 >
                                     {char.text}
