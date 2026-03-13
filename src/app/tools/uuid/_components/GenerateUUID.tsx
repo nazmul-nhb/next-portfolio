@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Key, RefreshCw } from 'lucide-react';
-import { useMount } from 'nhb-hooks';
+import { useDebouncedValue, useMount } from 'nhb-hooks';
 import { debounceAction, isNonEmptyString } from 'nhb-toolbox';
 import { isUUID, uuid } from 'nhb-toolbox/hash';
 import type { $UUID } from 'nhb-toolbox/hash/types';
@@ -50,32 +50,30 @@ const UUIDGeneratorSchema = z
         uppercase: z.boolean(),
     })
     .superRefine(({ version, name, namespace }, ctx) => {
-        if ((version === 'v3' || version === 'v5') && !isNonEmptyString(name)) {
-            ctx.addIssue({
-                code: 'custom',
-                message: `Name is required for ${version} UUIDs`,
-                path: ['name'],
-            });
-        }
+        if (version === 'v3' || version === 'v5') {
+            if (!isNonEmptyString(name)) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: `Name is required for ${version} UUIDs`,
+                    path: ['name'],
+                });
+            }
 
-        if ((version === 'v3' || version === 'v5') && !isNonEmptyString(namespace)) {
-            ctx.addIssue({
-                code: 'custom',
-                message: `Namespace is required for ${version} UUIDs`,
-                path: ['namespace'],
-            });
-        }
+            if (!isNonEmptyString(namespace)) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: `Namespace is required for ${version} UUIDs`,
+                    path: ['namespace'],
+                });
+            }
 
-        if (
-            (version === 'v3' || version === 'v5') &&
-            isNonEmptyString(namespace) &&
-            !isUUID(namespace)
-        ) {
-            ctx.addIssue({
-                code: 'custom',
-                message: 'Namespace must be a valid UUID',
-                path: ['namespace'],
-            });
+            if (isNonEmptyString(namespace) && !isUUID(namespace)) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: 'Namespace must be a valid UUID',
+                    path: ['namespace'],
+                });
+            }
         }
     });
 
@@ -101,18 +99,19 @@ export default function GenerateUUID() {
     });
 
     const version = generatorForm.watch('version');
-    const name = generatorForm.watch('name');
-    const namespace = generatorForm.watch('namespace');
     const uppercase = generatorForm.watch('uppercase');
+
+    const [debouncedName] = useDebouncedValue(generatorForm.watch('name'), 500);
+    const [debouncedNamespace] = useDebouncedValue(generatorForm.watch('namespace'), 500);
 
     const requiresNamespace = version === 'v3' || version === 'v5';
 
     const handleGenerateNew = useCallback(() => {
         if (requiresNamespace) {
-            if (!isNonEmptyString(name) || !isNonEmptyString(namespace)) {
+            if (!isNonEmptyString(debouncedName) || !isNonEmptyString(debouncedNamespace)) {
                 setGeneratedUUID(null);
             }
-            if (!isUUID(namespace)) {
+            if (!isUUID(debouncedNamespace)) {
                 setGeneratedUUID(null);
             }
         }
@@ -123,8 +122,8 @@ export default function GenerateUUID() {
             if (requiresNamespace) {
                 result = uuid({
                     version,
-                    name,
-                    namespace: namespace as $UUID,
+                    name: debouncedName,
+                    namespace: debouncedNamespace as $UUID,
                     uppercase,
                 });
             } else {
@@ -140,7 +139,7 @@ export default function GenerateUUID() {
         } catch {
             setGeneratedUUID(null);
         }
-    }, [version, name, namespace, uppercase, requiresNamespace]);
+    }, [version, debouncedName, debouncedNamespace, uppercase, requiresNamespace]);
 
     useEffect(() => {
         debounceAction(handleGenerateNew, 500)();
@@ -156,7 +155,7 @@ export default function GenerateUUID() {
     };
 
     const autoGenerateNamespace = () => {
-        generatorForm.setValue('namespace', uuid({ version: 'v4' }), { shouldValidate: true });
+        generatorForm.setValue('namespace', uuid(), { shouldValidate: true });
     };
 
     return useMount(
@@ -274,18 +273,15 @@ export default function GenerateUUID() {
                                         )}
                                     />
 
-                                    {!isUUID(namespace) &&
-                                    isNonEmptyString(namespace) ? null : (
-                                        <Button
-                                            onClick={autoGenerateNamespace}
-                                            size="sm"
-                                            type="button"
-                                            variant="outline"
-                                        >
-                                            <RefreshCw className="size-4 mr-2" />
-                                            Auto-generate Namespace
-                                        </Button>
-                                    )}
+                                    <Button
+                                        onClick={autoGenerateNamespace}
+                                        size="sm"
+                                        type="button"
+                                        variant="outline"
+                                    >
+                                        <RefreshCw className="size-4" />
+                                        Auto-generate Namespace
+                                    </Button>
                                 </Fragment>
                             )}
 

@@ -11,7 +11,7 @@ export default defineScriptConfig({
         },
     },
     count: {
-        defaultPath: '.',
-        excludePaths: ['node_modules', 'dist', 'build'],
+        defaultPath: 'node_modules/nhb-toolbox/dist/esm',
+        excludePaths: ['node_modules', '.next', '.VSCodeCounter'],
     },
 });
