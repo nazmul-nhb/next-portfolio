@@ -10,14 +10,14 @@ import { Button } from '@/components/ui/button';
 import FloatingButton from '@/components/ui/floating-button';
 import { siteConfig } from '@/configs/site';
 
-function isActive(href: string, pathname: string) {
-    if (href === '/tools') return pathname === '/tools';
-    return pathname.startsWith(href.split('?')[0]);
-}
-
 export function ToolsSidebar() {
     const pathname = usePathname();
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    function isActive(href: `/${string}`) {
+        if (href === '/tools') return pathname === '/tools';
+        return pathname.startsWith(href.split('?')[0]);
+    }
 
     useEffect(() => {
         if (pathname) setDrawerOpen(false);
@@ -33,7 +33,7 @@ export function ToolsSidebar() {
             <nav className="flex-1 overflow-y-auto space-y-0.5 p-3">
                 <Link
                     className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                        pathname === '/tools'
+                        isActive('/tools')
                             ? 'bg-primary text-primary-foreground shadow-sm'
                             : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
@@ -43,11 +43,10 @@ export function ToolsSidebar() {
                     All Tools
                 </Link>
                 {siteConfig.toolsMenus.map((item) => {
-                    const active = isActive(item.href, pathname);
                     return (
                         <Link
                             className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                                active
+                                isActive(item.href)
                                     ? 'bg-primary text-primary-foreground shadow-sm'
                                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             }`}
@@ -130,11 +129,10 @@ export function ToolsSidebar() {
                                     All Tools
                                 </Link>
                                 {siteConfig.toolsMenus.map((item) => {
-                                    const active = isActive(item.href, pathname);
                                     return (
                                         <Link
                                             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                                                active
+                                                isActive(item.href)
                                                     ? 'bg-primary text-primary-foreground'
                                                     : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                                             }`}
