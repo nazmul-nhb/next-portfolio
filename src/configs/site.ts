@@ -179,7 +179,7 @@ export const siteConfig = {
         },
         {
             href: '/tools/photo-card',
-            label: 'Photo Cards',
+            label: 'Photo Card Generator',
             icon: ImagePlus,
             description:
                 'Create polished photo cards with layered images, custom typography, live preview, and more.',
