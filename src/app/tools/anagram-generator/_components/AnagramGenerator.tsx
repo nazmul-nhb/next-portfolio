@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { ChartSpline, FileJson, Puzzle, Shuffle, X } from 'lucide-react';
 import { useDebouncedValue, useMount } from 'nhb-hooks';
-import { generateAnagrams, isNumber, parseJSON } from 'nhb-toolbox';
+import { generateAnagrams, isUndefined, normalizeNumber, parseJSON } from 'nhb-toolbox';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
@@ -127,6 +127,8 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
             fileInputRef.current?.click();
         }
     };
+
+    const isBelow100 = anagrams.length > 0 && anagrams.length < 100;
 
     return useMount(
         <div className="space-y-8">
@@ -256,19 +258,24 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                     max="1000"
                                     min="1"
                                     onChange={(e) => {
-                                        const val = parseInt(e.target.value, 10);
-                                        if (isNumber(val)) setLimit(val);
+                                        const val = normalizeNumber(e.target.value);
+                                        if (!isUndefined(val)) setLimit(val);
                                     }}
                                     type="number"
-                                    value={limit === 'all' ? '100' : limit}
+                                    value={
+                                        limit === 'all'
+                                            ? isBelow100
+                                                ? anagrams.length
+                                                : 100
+                                            : limit
+                                    }
                                 />
 
                                 <Button
-                                    // disabled={ isNumber(limit) && anagrams.length <= limit}
                                     onClick={() =>
                                         setLimit(
                                             limit === 'all'
-                                                ? anagrams.length > 0 && anagrams.length < 100
+                                                ? isBelow100
                                                     ? anagrams.length
                                                     : 100
                                                 : 'all'
@@ -278,14 +285,14 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                                     variant="outline"
                                 >
                                     {limit === 'all'
-                                        ? `Reset to ${anagrams.length > 0 && anagrams.length < 100 ? anagrams.length : '100'}`
+                                        ? `Reset to ${isBelow100 ? anagrams.length : '100'}`
                                         : 'Get All Anagrams'}
                                 </Button>
                             </div>
 
                             <p className="text-xs text-muted-foreground">
                                 {limit === 'all'
-                                    ? 'Generating all possible anagrams. This may take a moment for longer words.'
+                                    ? 'Generating all possible anagrams may take a moment for longer words.'
                                     : `Maximum ${limit} anagrams will be generated.`}
                             </p>
                         </CardContent>
