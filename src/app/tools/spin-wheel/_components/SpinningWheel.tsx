@@ -372,8 +372,8 @@ export default function SpinningWheel() {
                                     ) : (
                                         <EmptyData
                                             description="Add at least 2 options to spin the wheel"
-                                            Icon={ShipWheel}
-                                            title="Not enough options"
+                                            Icon={Plus}
+                                            title="Add Options"
                                         />
                                     )}
                                 </AnimatePresence>
@@ -430,50 +430,53 @@ export default function SpinningWheel() {
 
                     {/* Result Display */}
                     <AnimatePresence mode="wait">
-                        {result && (
-                            <motion.div
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                className="w-full"
-                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                key="result"
-                                transition={{
-                                    type: 'spring',
-                                    stiffness: 200,
-                                    damping: 20,
-                                }}
-                            >
-                                <Card className="border-green-500/30 bg-green-50/30 dark:bg-green-950/20 w-full">
-                                    <CardContent className="space-y-3">
-                                        <div className="p-1 rounded-md bg-background border border-green-500/50">
-                                            <CodeBlock className="text-center text-xl font-black">
-                                                🎉 Winner: {result}
-                                            </CodeBlock>
-                                        </div>
-                                        <div className="flex gap-2 items-center flex-wrap">
-                                            <CopyButton
-                                                buttonText={{
-                                                    after: 'Result Copied',
-                                                    before: 'Copy Result',
-                                                }}
-                                                className="flex-1 w-full"
-                                                size="lg"
-                                                successMsg="Result copied to clipboard!"
-                                                textToCopy={result}
-                                            />
-                                            <ShareButton
-                                                buttonLabel="Share Wheel"
-                                                buttonProps={{ size: 'lg' }}
-                                                className="text-base flex-1 w-full"
-                                                route={sharableLink}
-                                                shareLabel="Share current wheel"
-                                                shareText="Make random decision with this custom spinning wheel"
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        )}
+                        <motion.div
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            className="w-full"
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            key="result"
+                            transition={{
+                                type: 'spring',
+                                stiffness: 200,
+                                damping: 20,
+                            }}
+                        >
+                            <Card className="border-green-500/30 bg-green-50/30 dark:bg-green-950/20 w-full">
+                                <CardContent className="space-y-3">
+                                    <div className="p-1 rounded-md bg-background border border-green-500/50">
+                                        <CodeBlock className="text-center text-xl font-black">
+                                            {result
+                                                ? `🎉 Winner: ${result}`
+                                                : options.length >= 2
+                                                  ? 'Spin to Get Your Result'
+                                                  : 'Add Options to Spin the Wheel'}
+                                        </CodeBlock>
+                                    </div>
+                                    <div className="flex gap-2 items-center flex-wrap">
+                                        <CopyButton
+                                            buttonProps={{ disabled: !result }}
+                                            buttonText={{
+                                                after: 'Result Copied',
+                                                before: 'Copy Result',
+                                            }}
+                                            className="flex-1 w-full"
+                                            size="lg"
+                                            successMsg="Result copied to clipboard!"
+                                            textToCopy={result || ''}
+                                        />
+                                        <ShareButton
+                                            buttonLabel="Share Wheel"
+                                            buttonProps={{ size: 'lg' }}
+                                            className="text-base flex-1 w-full"
+                                            route={sharableLink}
+                                            shareLabel="Share current wheel"
+                                            shareText="Make random decision with this custom spinning wheel"
+                                        />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     </AnimatePresence>
                 </div>
 
