@@ -10,7 +10,7 @@ import {
     SquareMenu,
     Trash2,
 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMount, useStorage } from 'nhb-hooks';
 import {
     clampNumber,
@@ -103,6 +103,7 @@ function describeArc(
 
 export default function SpinningWheel() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [optionInput, setOptionInput] = useState('');
     const [spinning, setSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
@@ -121,8 +122,14 @@ export default function SpinningWheel() {
             optionsStore.set(values);
             setResult(null);
             setRotation(0);
+
+            if (searchParams.get('items')) {
+                router.push('/tools/spin-wheel');
+                setOptions(values);
+                optionsStore.set(values);
+            }
         },
-        [optionsStore.set]
+        [optionsStore.set, searchParams, router.push]
     );
 
     // Initialize from URL params or storage on mount
@@ -131,14 +138,15 @@ export default function SpinningWheel() {
 
         if (isNonEmptyString(itemsParam)) {
             const urlOptions = trimString(itemsParam.split(','));
+
             if (urlOptions.length >= 2) {
                 if (urlOptions.length > 36) {
                     toast.error('Maximum 36 options allowed, removing rest of the options!');
-                    syncOptionsResult(urlOptions.slice(0, 36));
+                    setOptions(urlOptions.slice(0, 36));
                     return;
                 }
 
-                syncOptionsResult(urlOptions);
+                setOptions(urlOptions);
 
                 return;
             }
@@ -147,13 +155,13 @@ export default function SpinningWheel() {
         if (optionsStore.value && optionsStore.value.length > 1) {
             if (optionsStore.value.length > 36) {
                 toast.error('Maximum 36 options allowed, removing rest of the options!');
-                syncOptionsResult(optionsStore.value.slice(0, 36));
+                setOptions(optionsStore.value.slice(0, 36));
                 return;
             }
 
-            syncOptionsResult(optionsStore.value);
+            setOptions(optionsStore.value);
         }
-    }, [searchParams, optionsStore.value, syncOptionsResult]);
+    }, [searchParams, optionsStore.value]);
 
     const handleAddOption = () => {
         const trimmed = trimString(optionInput);
@@ -405,7 +413,7 @@ export default function SpinningWheel() {
                         </Button>
                         <Button
                             className="flex-1"
-                            disabled={spinning}
+                            disabled={spinning || searchParams.has('items')}
                             onClick={clearOptions}
                             size="lg"
                             variant="destructive"
