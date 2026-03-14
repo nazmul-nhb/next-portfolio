@@ -1,15 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    ArrowBigDown,
-    Plus,
-    RefreshCw,
-    ShipWheel,
-    Shuffle,
-    SquareMenu,
-    Trash2,
-} from 'lucide-react';
+import { Plus, RefreshCw, ShipWheel, Shuffle, SquareMenu, Trash2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useMount, useStorage } from 'nhb-hooks';
 import {
@@ -18,10 +10,13 @@ import {
     isNonEmptyString,
     shuffleArray,
     trimString,
+    truncateString,
 } from 'nhb-toolbox';
+import type { HSL } from 'nhb-toolbox/colors/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
+import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
@@ -42,11 +37,10 @@ const DEFAULT_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
  * Helper function to generate color using HSL
  * Distributes colors evenly around the hue spectrum
  */
-function generateColorForSlice(index: number, total: number): string {
+function generateColorForSlice(index: number, total: number): HSL {
     const hue = (index / total) * 360;
-    const saturation = 70;
-    const lightness = 50;
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+    return `hsl(${hue}, ${66}%, ${55}%)`;
 }
 
 /**
@@ -182,7 +176,7 @@ export default function SpinningWheel() {
         setResult(null);
 
         // Generate random rotation - between 5-10 full rotations plus random offset
-        const fullRotations = getRandomNumber({ max: options.length * 3 });
+        const fullRotations = getRandomNumber({ min: 7, max: options.length + 7 });
         const randomOffset = getRandomNumber({ max: 359 }); // 0-359
         const totalRotation = fullRotations * 360 + randomOffset;
 
@@ -370,10 +364,10 @@ export default function SpinningWheel() {
                             >
                                 <Card className="border-green-500/30 bg-green-50/30 dark:bg-green-950/20 w-full">
                                     <CardContent className="space-y-3">
-                                        <div className="p-3 rounded-md bg-background border-2 border-green-500/50">
-                                            <p className="text-center text-xl font-bold overflow-hidden text-ellipsis">
-                                                🎉 Winner! {result}
-                                            </p>
+                                        <div className="p-1 rounded-md bg-background border border-green-500/50">
+                                            <CodeBlock className="text-center text-xl font-bold">
+                                                🎉 Winner: {result}
+                                            </CodeBlock>
                                         </div>
                                         <div className="flex gap-2 items-center flex-wrap">
                                             <CopyButton
@@ -404,19 +398,17 @@ export default function SpinningWheel() {
 
                 {/* Right Column - Wheel & Result */}
                 {options.length >= 2 ? (
-                    <Card className="w-full relative">
-                        {/* Pointer Triangle */}
-                        <div className="absolute top-2 z-10 w-full translate-x-1/2 flex items-center justify-between">
-                            <ArrowBigDown />
-                        </div>
-
+                    <Card className="w-full max-h-fit relative overflow-hidden p-0">
                         {/* SVG Wheel */}
                         <svg
-                            className="w-full h-full max-h-fit p-0"
+                            className="w-full h-full max-h-fit"
+                            preserveAspectRatio="xMidYMid meet"
+                            style={{ aspectRatio: '1 / 1', minHeight: '300px' }}
                             viewBox="0 0 400 400"
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <title>Spinning Wheel</title>
+                            {/* Rotating wheel group */}
                             <g
                                 style={{
                                     transform: `rotate(${rotation}deg)`,
@@ -429,6 +421,7 @@ export default function SpinningWheel() {
                                     const startAngle = index * sliceAngle;
                                     const endAngle = (index + 1) * sliceAngle;
                                     const color = generateColorForSlice(index, options.length);
+                                    const isWinner = result === option;
 
                                     // Calculate text position (middle of slice, at 80% radius)
                                     const textAngle = startAngle + sliceAngle / 2;
@@ -441,7 +434,26 @@ export default function SpinningWheel() {
                                     );
 
                                     return (
-                                        <g key={`slice-${index}`}>
+                                        <motion.g
+                                            animate={
+                                                isWinner
+                                                    ? {
+                                                          filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
+                                                          opacity: 1,
+                                                      }
+                                                    : {
+                                                          filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0.1))',
+                                                          opacity: 0.9,
+                                                      }
+                                            }
+                                            key={`slice-${index}`}
+                                            transition={{
+                                                type: 'spring',
+                                                stiffness: 300,
+                                                damping: 25,
+                                                delay: isWinner ? 0.25 : 0,
+                                            }}
+                                        >
                                             {/* Slice */}
                                             <path
                                                 d={describeArc(
@@ -452,26 +464,29 @@ export default function SpinningWheel() {
                                                     endAngle
                                                 )}
                                                 fill={color}
-                                                stroke="var(--background)"
-                                                strokeWidth="2"
+                                                stroke={'var(--primary)'}
+                                                strokeWidth={isWinner ? '5' : '2'}
                                             />
 
                                             {/* Text */}
                                             <text
                                                 className="text-xs font-semibold pointer-events-none select-none"
                                                 dominantBaseline="middle"
-                                                fill="var(--foreground)"
+                                                fill={
+                                                    isWinner
+                                                        ? 'var(--accent-foreground)'
+                                                        : 'var(--foreground)'
+                                                }
                                                 fontFamily="var(--font-family)"
-                                                fontSize="12"
+                                                fontSize={isWinner ? 18 : 13}
+                                                fontWeight={isWinner ? 900 : 400}
                                                 textAnchor="middle"
                                                 x={textPos.x}
                                                 y={textPos.y}
                                             >
-                                                {option.length > 12
-                                                    ? `${option.substring(0, 10)}...`
-                                                    : option}
+                                                {truncateString(option, 8)}
                                             </text>
-                                        </g>
+                                        </motion.g>
                                     );
                                 })}
 
