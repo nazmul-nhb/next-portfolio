@@ -2,6 +2,7 @@
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 import { ImageOff, Layers3 } from 'lucide-react';
+import { clampNumber } from 'nhb-toolbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Card,
@@ -34,10 +35,6 @@ type Props = {
     onTextChange: (id: string, patch: Partial<TextLayer>) => void;
     onAddImages?: (files: File[], section: 'canvas' | 'header' | 'footer') => void;
 };
-
-function clamp(value: number, min: number, max: number) {
-    return Math.min(max, Math.max(min, Math.round(value)));
-}
 
 /**
  * Interactive canvas preview component with draggable and resizable layers
@@ -210,7 +207,7 @@ export default function PhotoCardCanvas({
                 if (maintainRatio) {
                     // Keep aspect ratio
                     const delta = Math.max(deltaX, deltaY);
-                    let nextWidth = clamp(
+                    let nextWidth = clampNumber(
                         startWidth + delta,
                         24,
                         sectionBounds.width - layer.x
@@ -228,12 +225,12 @@ export default function PhotoCardCanvas({
                     });
                 } else {
                     // Free resize
-                    const nextWidth = clamp(
+                    const nextWidth = clampNumber(
                         startWidth + deltaX,
                         24,
                         sectionBounds.width - layer.x
                     );
-                    const nextHeight = clamp(
+                    const nextHeight = clampNumber(
                         startHeight + deltaY,
                         24,
                         sectionBounds.height - layer.y
@@ -273,7 +270,7 @@ export default function PhotoCardCanvas({
                     (pointerEvent.clientX - startX) / scale,
                     (pointerEvent.clientY - startY) / scale
                 );
-                let nextFontSize = clamp(startFontSize + delta / 4, 8, 400);
+                let nextFontSize = clampNumber(startFontSize + delta / 4, 8, 400);
                 let metrics = measureTextLayer({
                     ...layer,
                     fontSize: nextFontSize,

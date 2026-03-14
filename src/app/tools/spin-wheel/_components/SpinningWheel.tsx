@@ -38,6 +38,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -181,7 +182,7 @@ export default function SpinningWheel() {
             return;
         }
 
-        if (options.length >= 36) {
+        if (options.length > 36) {
             toast.error('Maximum 36 options allowed!');
             return;
         }
@@ -292,7 +293,7 @@ export default function SpinningWheel() {
             />
 
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
-                {/* Left Column - Input */}
+                {/* Left Column */}
                 <div className="space-y-4">
                     {/* Options Input */}
                     <Card>
@@ -314,7 +315,7 @@ export default function SpinningWheel() {
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') handleAddOption();
                                     }}
-                                    placeholder="Enter an option..."
+                                    placeholder="Enter an option (maximum 16 characters)"
                                     value={optionInput}
                                 />
                                 <Button
@@ -390,9 +391,9 @@ export default function SpinningWheel() {
                     </Card>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <Button
-                            className="flex-1"
+                            className="px-3 shrink-0"
                             disabled={spinning || options.length < 2}
                             onClick={handleShuffle}
                             size="lg"
@@ -402,17 +403,17 @@ export default function SpinningWheel() {
                             Shuffle
                         </Button>
                         <Button
-                            className="flex-1"
+                            className="px-3 shrink-0"
                             disabled={spinning}
                             onClick={handleReset}
                             size="lg"
                             variant="destructive"
                         >
                             <RefreshCw className="size-4 mb-0.5" />
-                            Reset Default
+                            Reset Spinner
                         </Button>
                         <Button
-                            className="flex-1"
+                            className="px-3 shrink-0"
                             disabled={spinning || searchParams.has('items')}
                             onClick={clearOptions}
                             size="lg"
@@ -422,7 +423,7 @@ export default function SpinningWheel() {
                             Clear Options
                         </Button>
                         <Button
-                            className="text-base px-12 font-semibold"
+                            className="text-base px-3 shrink-0 font-semibold"
                             disabled={spinning || options.length < 2}
                             onClick={handleSpin}
                             size="lg"
@@ -432,7 +433,7 @@ export default function SpinningWheel() {
                                     'animate-spin': spinning,
                                 })}
                             />
-                            Spin!
+                            Spin the Wheel
                         </Button>
                     </div>
 
@@ -453,12 +454,19 @@ export default function SpinningWheel() {
                             <Card className="border-green-500/30 bg-green-50/30 dark:bg-green-950/20 w-full">
                                 <CardContent className="space-y-3">
                                     <div className="p-1 rounded-md bg-background border border-green-500/50">
-                                        <CodeBlock className="text-center text-xl font-black">
-                                            {result
-                                                ? `🎉 Winner: ${result}`
-                                                : options.length >= 2
-                                                  ? 'Spin to Get Your Result'
-                                                  : 'Add Options to Spin the Wheel'}
+                                        <CodeBlock className="text-center text-xl flex items-center justify-center font-black">
+                                            {result ? (
+                                                `🎉 Winner: ${result}`
+                                            ) : spinning ? (
+                                                <span className="flex items-center gap-2">
+                                                    <ShipWheel className="animate-spin" />
+                                                    Spinning...
+                                                </span>
+                                            ) : options.length >= 2 ? (
+                                                'Spin to Get Your Result'
+                                            ) : (
+                                                'Add Options to Spin the Wheel'
+                                            )}
                                         </CodeBlock>
                                     </div>
                                     <div className="flex gap-2 items-center flex-wrap">
@@ -488,9 +496,9 @@ export default function SpinningWheel() {
                     </AnimatePresence>
                 </div>
 
-                {/* Right Column - Wheel & Result */}
+                {/* Right Column */}
                 {options.length >= 2 ? (
-                    <Card className="w-full max-h-fit relative overflow-visible p-0">
+                    <Card className="w-full min-h-fit relative overflow-visible p-0">
                         {/* Fixed Pointer at top */}
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
                             {/* Arrow Triangle */}
@@ -514,7 +522,7 @@ export default function SpinningWheel() {
                             viewBox="0 0 400 400"
                             xmlns="http://www.w3.org/2000/svg"
                         >
-                            <title>Spinning Wheel</title>
+                            <title>Spinning Wheel by {siteConfig.name}</title>
                             {/* Rotating wheel group */}
                             <g
                                 style={{
@@ -533,13 +541,8 @@ export default function SpinningWheel() {
 
                                     // Calculate text position (middle of slice, at 80% radius)
                                     const textAngle = startAngle + sliceAngle / 2;
-                                    const textRadius = 120;
-                                    const textPos = polarToCartesian(
-                                        200,
-                                        200,
-                                        textRadius,
-                                        textAngle
-                                    );
+
+                                    const textPos = polarToCartesian(200, 200, 88, textAngle);
 
                                     const arc = describeArc(
                                         200,
@@ -548,6 +551,11 @@ export default function SpinningWheel() {
                                         startAngle,
                                         endAngle
                                     );
+
+                                    // const textRotation =
+                                    //     textAngle > 90 && textAngle < 270
+                                    //         ? textAngle + 270
+                                    //         : textAngle + 90;
 
                                     return (
                                         <motion.g
@@ -607,10 +615,12 @@ export default function SpinningWheel() {
                                                 fontSize={isWinner ? 18 : 13}
                                                 fontWeight={isWinner ? 900 : 400}
                                                 textAnchor="middle"
+                                                transform={`rotate(${textAngle + 90} ${textPos.x} ${textPos.y})`}
+                                                // transform={`rotate(${textRotation} ${textPos.x} ${textPos.y})`}
                                                 x={textPos.x}
                                                 y={textPos.y}
                                             >
-                                                {truncateString(option, 8)}
+                                                {truncateString(option, 12)}
                                             </text>
                                         </motion.g>
                                     );
@@ -641,7 +651,7 @@ export default function SpinningWheel() {
                                     <circle
                                         cx="200"
                                         cy="200"
-                                        fill="var(--primary)"
+                                        fill="var(--background)"
                                         opacity="0.18"
                                         r="16"
                                     />
@@ -655,7 +665,7 @@ export default function SpinningWheel() {
                                         y="184"
                                     >
                                         <div className="flex items-center justify-center w-full h-full">
-                                            <ShipWheel className="size-8 text-foreground" />
+                                            <ShipWheel className="size-8" />
                                         </div>
                                     </foreignObject>
                                 </motion.g>
