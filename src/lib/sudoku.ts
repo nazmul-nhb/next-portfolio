@@ -1,7 +1,3 @@
-/**
- * Sudoku puzzle generator and solver using backtracking
- */
-
 export type SudokuDifficulty = 'easy' | 'medium' | 'hard';
 
 const EMPTY = 0;

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import TypingSpeedTest from './_components/TypingSpeedTest';
@@ -33,12 +34,11 @@ export const metadata: Metadata = {
 export default function TypingTestPage() {
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                    Typing Speed Test
-                </h1>
-                <p className="mt-2 text-sm text-muted-foreground max-w-2xl">{description}</p>
-            </div>
+            <TitleWithShare
+                description={description}
+                route="/tools/typing-test"
+                title="Typing Speed Test"
+            />
             <TypingSpeedTest />
         </div>
     );

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import WordCloudGenerator from './_components/WordCloudGenerator';
@@ -32,12 +33,11 @@ export const metadata: Metadata = {
 export default function WordCloudPage() {
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                    Word Cloud Generator
-                </h1>
-                <p className="mt-2 text-sm text-muted-foreground max-w-2xl">{description}</p>
-            </div>
+            <TitleWithShare
+                description={description}
+                route="/tools/word-cloud"
+                title="Word Cloud Generator"
+            />
             <WordCloudGenerator />
         </div>
     );

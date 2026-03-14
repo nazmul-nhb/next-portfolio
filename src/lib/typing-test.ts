@@ -1,6 +1,4 @@
-/**
- * Typing speed test utilities
- */
+import { getRandomNumber } from 'nhb-toolbox';
 
 export interface TypingMetrics {
     wpm: number;
@@ -39,7 +37,7 @@ const PASSAGES = [
  * Get random passage for typing test
  */
 export function getRandomPassage(): string {
-    return PASSAGES[Math.floor(Math.random() * PASSAGES.length)];
+    return PASSAGES[getRandomNumber({ max: PASSAGES.length })];
 }
 
 /**
@@ -99,7 +97,7 @@ export function formatWPM(wpm: number): string {
 /**
  * Get WPM category
  */
-export function getWPMCategory(wpm: number): string {
+export function getWPMCategory(wpm: number) {
     if (wpm < 20) return 'Beginner';
     if (wpm < 40) return 'Intermediate';
     if (wpm < 60) return 'Proficient';
@@ -117,14 +115,12 @@ export function getAccuracyColor(accuracy: number): string {
     return 'text-red-600 dark:text-red-400';
 }
 
+type MatchStats = 'correct' | 'incorrect' | 'missing' | 'extra' | null;
+
 /**
  * Highlight correct and incorrect characters
  */
-export function getCharacterStatus(
-    passage: string,
-    typed: string,
-    index: number
-): 'correct' | 'incorrect' | 'missing' | 'extra' | null {
+export function getCharacterStatus(passage: string, typed: string, index: number): MatchStats {
     if (index >= typed.length) {
         return index < passage.length ? 'missing' : null;
     }

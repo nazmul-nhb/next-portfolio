@@ -2,7 +2,7 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { Copy, RotateCcw, Shuffle, Zap } from 'lucide-react';
+import { BadgeQuestionMark, BrushCleaning, RotateCcw, Shuffle, Zap } from 'lucide-react';
 import { useStorage } from 'nhb-hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -156,7 +156,7 @@ export default function SudokuGame() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shuffle className="size-5" />
-                                Sudoku Grid
+                                Play Sudoku
                             </CardTitle>
                             <CardDescription>
                                 {isComplete ? (
@@ -246,10 +246,10 @@ export default function SudokuGame() {
 
                             <Button
                                 className="w-full gap-2"
-                                onClick={() => window.location.reload()}
-                                variant="ghost"
+                                onClick={gameStore.remove}
+                                variant="destructive"
                             >
-                                <Copy className="size-4" />
+                                <BrushCleaning className="size-4" />
                                 Clear Storage
                             </Button>
                         </CardContent>
@@ -257,7 +257,9 @@ export default function SudokuGame() {
 
                     <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
                         <CardHeader>
-                            <CardTitle className="text-base">How to Play</CardTitle>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <BadgeQuestionMark /> How to Play
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm space-y-1 text-blue-900 dark:text-blue-100">
                             <p>• Use arrow keys to navigate</p>

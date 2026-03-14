@@ -210,14 +210,14 @@ export const siteConfig = {
         },
         {
             href: '/tools/word-cloud',
-            label: 'Word Cloud Generator',
+            label: 'Word Cloud',
             icon: Cloud,
             description:
                 'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
         },
         {
             href: '/tools/typing-test',
-            label: 'Typing Speed Test',
+            label: 'Typing Speed',
             icon: Keyboard,
             description:
                 'Test your typing speed with real-time metrics, accuracy tracking, and multiple duration modes.',

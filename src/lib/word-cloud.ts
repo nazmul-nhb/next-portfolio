@@ -1,6 +1,4 @@
-/**
- * Word Cloud utilities for text processing and layout
- */
+import type { HSL } from 'nhb-toolbox/colors/types';
 
 export interface WordFrequency {
     word: string;
@@ -122,8 +120,8 @@ export function calculateFontSize(
 /**
  * Generate color palette (hue-based)
  */
-export function generateColorPalette(count: number): string[] {
-    const colors: string[] = [];
+export function generateColorPalette(count: number): HSL[] {
+    const colors: HSL[] = [];
 
     for (let i = 0; i < count; i++) {
         const hue = (i / count) * 360;

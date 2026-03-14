@@ -58,7 +58,7 @@ const itemVariants: Variants = {
 };
 
 export default function TypingSpeedTest() {
-    const sessionStore = useStorage<TestSession | null>({ key: 'nhb-typing-test-session' });
+    const sessionStore = useStorage<TestSession>({ key: 'nhb-typing-test-session' });
 
     // State
     const [testState, setTestState] = useState<TestState>('idle');
@@ -69,7 +69,7 @@ export default function TypingSpeedTest() {
     const [metrics, setMetrics] = useState<TypingMetrics | null>(null);
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<ReturnType<typeof setInterval>>(null);
 
     // Load saved duration preference
     useEffect(() => {
@@ -78,6 +78,10 @@ export default function TypingSpeedTest() {
             setTimeLeft(sessionStore.value.duration);
         }
     }, [sessionStore.value]);
+
+    // const result = useTimer(duration, 'second');
+
+    // const res = formatTimer(result, {style: 'short', maxUnits: 1})
 
     // Timer effect
     useEffect(() => {
@@ -171,22 +175,35 @@ export default function TypingSpeedTest() {
 
                             {/* Text Input */}
                             {testState !== 'idle' && (
-                                <Textarea
-                                    autoFocus
-                                    className={cn(
-                                        'w-full p-3 rounded border resize-none',
-                                        'bg-background border-input text-sm font-mono',
-                                        'focus:outline-none focus:ring-2 focus:ring-primary',
-                                        testState === 'completed' &&
-                                            'opacity-50 cursor-not-allowed'
-                                    )}
-                                    disabled={testState === 'completed'}
-                                    onChange={(e) => setTyped(e.target.value)}
-                                    placeholder="Start typing here..."
-                                    ref={inputRef}
-                                    rows={6}
-                                    value={typed}
-                                />
+                                <div className="space-y-6">
+                                    <Textarea
+                                        autoFocus
+                                        className={cn(
+                                            'w-full p-3 rounded border resize-none',
+                                            'bg-background border-input text-sm font-mono',
+                                            'focus:outline-none focus:ring-2 focus:ring-primary',
+                                            {
+                                                'opacity-50 cursor-not-allowed':
+                                                    testState === 'completed',
+                                            }
+                                        )}
+                                        disabled={testState === 'completed'}
+                                        onChange={(e) => setTyped(e.target.value)}
+                                        placeholder="Start typing here..."
+                                        ref={inputRef}
+                                        rows={6}
+                                        value={typed}
+                                    />
+
+                                    <Button
+                                        disabled={testState === 'completed'}
+                                        onClick={() => setTestState('completed')}
+                                        type="button"
+                                        variant={'destructive'}
+                                    >
+                                        Submit
+                                    </Button>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
