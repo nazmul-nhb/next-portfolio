@@ -13,6 +13,7 @@ import {
 import { useSearchParams } from 'next/navigation';
 import { useMount, useStorage } from 'nhb-hooks';
 import {
+    clampNumber,
     generateQueryParams,
     getRandomNumber,
     isNonEmptyString,
@@ -21,7 +22,7 @@ import {
     truncateString,
 } from 'nhb-toolbox';
 import type { HSL } from 'nhb-toolbox/colors/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
@@ -106,6 +107,7 @@ export default function SpinningWheel() {
     const [spinning, setSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
     const [result, setResult] = useState<string | null>(null);
+    const [hoveredSliceIndex, setHoveredSliceIndex] = useState<number | null>(null);
     const animationRef = useRef<number | null>(null);
 
     // Load options from storage or URL params
@@ -113,71 +115,96 @@ export default function SpinningWheel() {
 
     const [options, setOptions] = useState<string[]>(DEFAULT_OPTIONS);
 
+    const syncOptionsResult = useCallback(
+        (values: string[]) => {
+            setOptions(values);
+            optionsStore.set(values);
+            setResult(null);
+            setRotation(0);
+        },
+        [optionsStore.set]
+    );
+
     // Initialize from URL params or storage on mount
     useEffect(() => {
         const itemsParam = searchParams.get('items');
 
         if (isNonEmptyString(itemsParam)) {
             const urlOptions = trimString(itemsParam.split(','));
-            if (urlOptions.length > 1) {
-                setOptions(urlOptions);
-                optionsStore.set(urlOptions);
+            if (urlOptions.length >= 2) {
+                if (urlOptions.length > 36) {
+                    toast.error('Maximum 36 options allowed, removing rest of the options!');
+                    syncOptionsResult(urlOptions.slice(0, 36));
+                    return;
+                }
+
+                syncOptionsResult(urlOptions);
 
                 return;
             }
         }
 
         if (optionsStore.value && optionsStore.value.length > 1) {
-            setOptions(optionsStore.value);
+            if (optionsStore.value.length > 36) {
+                toast.error('Maximum 36 options allowed, removing rest of the options!');
+                syncOptionsResult(optionsStore.value.slice(0, 36));
+                return;
+            }
+
+            syncOptionsResult(optionsStore.value);
         }
-    }, [searchParams, optionsStore.value, optionsStore.set]);
+    }, [searchParams, optionsStore.value, syncOptionsResult]);
 
     const handleAddOption = () => {
-        const trimmed = optionInput.trim();
+        const trimmed = trimString(optionInput);
+
         if (!trimmed) {
             toast.error('Please enter an option');
             return;
         }
 
-        if (options.includes(trimmed)) {
+        if (trimmed.length > 16) {
+            toast.error('Please keep the option below 16 characters');
+            return;
+        }
+
+        if (options.some((o) => o.toLowerCase() === trimmed.toLowerCase())) {
             toast.error('This option already exists');
             return;
         }
 
-        const newOptions = [...options, trimmed];
-        setOptions(newOptions);
-        optionsStore.set(newOptions);
+        if (options.length >= 36) {
+            toast.error('Maximum 36 options allowed!');
+            return;
+        }
+
+        const newOptions = [trimmed, ...options];
+
+        syncOptionsResult(newOptions);
+
         setOptionInput('');
-        toast.success('Option added');
+        toast.success('Option added to the wheel');
     };
 
     const handleRemoveOption = (index: number) => {
         const newOptions = options.filter((_, i) => i !== index);
-        setOptions(newOptions);
-        optionsStore.set(newOptions);
-        toast.success('Option removed');
+        syncOptionsResult(newOptions);
+        toast.success('Option removed from the wheel');
     };
 
     const handleShuffle = () => {
         const shuffled = shuffleArray(options);
-        setOptions(shuffled);
-        optionsStore.set(shuffled);
-        toast.success('Options shuffled');
+        syncOptionsResult(shuffled);
+        toast.success('Wheel options are reordered');
     };
 
     const handleReset = () => {
-        setOptions(DEFAULT_OPTIONS);
-        optionsStore.set(DEFAULT_OPTIONS);
-        setResult(null);
-        setRotation(0);
+        syncOptionsResult(DEFAULT_OPTIONS);
         toast.success('Wheel reset to default');
     };
 
     const clearOptions = () => {
-        setOptions([]);
-        optionsStore.set([]);
-        setResult(null);
-        setRotation(0);
+        syncOptionsResult([]);
         toast.success('Wheel options are cleared');
     };
 
@@ -199,7 +226,7 @@ export default function SpinningWheel() {
         // Use Framer Motion for smooth spinning (easing out over 5+ seconds)
         const startRotation = rotation;
         const startTime = Date.now();
-        const duration = 5000; // 5 seconds
+        const duration = clampNumber(options.length * 1000, 5000, 10000);
 
         const animate = () => {
             const elapsed = Date.now() - startTime;
@@ -267,12 +294,14 @@ export default function SpinningWheel() {
                                 Add Options
                             </CardTitle>
                             <CardDescription>
-                                Add options to your wheel (minimum 2 required)
+                                Add options to your wheel (minimum 2 required, maximum 36
+                                allowed)
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <div className="flex gap-2">
                                 <Input
+                                    disabled={options.length >= 36}
                                     onChange={(e) => setOptionInput(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') handleAddOption();
@@ -280,7 +309,11 @@ export default function SpinningWheel() {
                                     placeholder="Enter an option..."
                                     value={optionInput}
                                 />
-                                <Button onClick={handleAddOption} size="lg">
+                                <Button
+                                    disabled={options.length >= 36}
+                                    onClick={handleAddOption}
+                                    size="lg"
+                                >
                                     <Plus className="size-4" /> Add
                                 </Button>
                             </div>
@@ -288,45 +321,68 @@ export default function SpinningWheel() {
                                 <SquareMenu className="size-4 mb-0.5" /> Options (
                                 {options.length})
                             </h3>
-                            <div className="space-y-2 max-h-58 overflow-y-auto custom-scroll pr-2">
-                                {options.map((option, index) => (
-                                    <motion.div
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className="flex items-center justify-between p-2 rounded-md bg-muted/50 border"
-                                        exit={{ opacity: 0, x: -10 }}
-                                        initial={{ opacity: 0, x: 10 }}
-                                        key={`${option}-${index}`}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            <div
-                                                className="size-3 rounded-full shrink-0"
-                                                style={{
-                                                    backgroundColor: generateColorForSlice(
-                                                        index,
-                                                        options.length
-                                                    ),
+                            <motion.div
+                                className="space-y-2 h-58 overflow-y-auto overflow-x-hidden custom-scroll pr-2"
+                                layout
+                            >
+                                <AnimatePresence>
+                                    {options.length > 0 ? (
+                                        options.map((option, index) => (
+                                            <motion.div
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="flex items-center justify-between p-2 rounded-md bg-muted/50 border"
+                                                exit={{ opacity: 0, y: -12 }}
+                                                initial={{ opacity: 0, y: 12 }}
+                                                key={option}
+                                                layout
+                                                transition={{
+                                                    layout: {
+                                                        duration: 0.25,
+                                                        ease: 'easeInOut',
+                                                    },
+                                                    opacity: { duration: 0.18 },
+                                                    y: { duration: 0.18 },
                                                 }}
-                                            />
-                                            <span className="text-sm truncate text-muted-foreground">
-                                                {option}
-                                            </span>
-                                        </div>
-                                        <Button
-                                            className="h-auto p-1 text-destructive"
-                                            onClick={() => handleRemoveOption(index)}
-                                            size="sm"
-                                            variant="ghost"
-                                        >
-                                            <Trash2 className="size-3.5" />
-                                        </Button>
-                                    </motion.div>
-                                ))}
-                            </div>
+                                            >
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <div
+                                                        className="size-3 rounded-full shrink-0"
+                                                        style={{
+                                                            backgroundColor:
+                                                                generateColorForSlice(
+                                                                    index,
+                                                                    options.length
+                                                                ),
+                                                        }}
+                                                    />
+                                                    <span className="text-sm truncate text-muted-foreground">
+                                                        {option}
+                                                    </span>
+                                                </div>
+                                                <Button
+                                                    className="h-auto p-1 text-destructive"
+                                                    onClick={() => handleRemoveOption(index)}
+                                                    size="sm"
+                                                    variant="ghost"
+                                                >
+                                                    <Trash2 className="size-3.5" />
+                                                </Button>
+                                            </motion.div>
+                                        ))
+                                    ) : (
+                                        <EmptyData
+                                            description="Add at least 2 options to spin the wheel"
+                                            Icon={ShipWheel}
+                                            title="Not enough options"
+                                        />
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
                         </CardContent>
                     </Card>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                         <Button
                             className="flex-1"
                             disabled={spinning || options.length < 2}
@@ -345,7 +401,7 @@ export default function SpinningWheel() {
                             variant="destructive"
                         >
                             <RefreshCw className="size-4 mb-0.5" />
-                            Default
+                            Reset Default
                         </Button>
                         <Button
                             className="flex-1"
@@ -390,7 +446,7 @@ export default function SpinningWheel() {
                                 <Card className="border-green-500/30 bg-green-50/30 dark:bg-green-950/20 w-full">
                                     <CardContent className="space-y-3">
                                         <div className="p-1 rounded-md bg-background border border-green-500/50">
-                                            <CodeBlock className="text-center text-xl font-bold">
+                                            <CodeBlock className="text-center text-xl font-black">
                                                 🎉 Winner: {result}
                                             </CodeBlock>
                                         </div>
@@ -428,15 +484,15 @@ export default function SpinningWheel() {
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
                             {/* Arrow Triangle */}
                             <div
-                                className="w-0 h-0"
+                                className="size-0"
                                 style={{
-                                    borderLeft: '12px solid transparent',
-                                    borderRight: '12px solid transparent',
-                                    borderTop: '16px solid var(--primary)',
+                                    borderLeft: '20px solid transparent',
+                                    borderRight: '20px solid transparent',
+                                    borderTop: '36px solid var(--primary)',
                                 }}
                             />
                             {/* Arrow Stick */}
-                            <div className="w-1 h-3 bg-primary" />
+                            {/* <div className="w-1 h-3 -mt-1 bg-primary" /> */}
                         </div>
 
                         {/* SVG Wheel */}
@@ -462,6 +518,7 @@ export default function SpinningWheel() {
                                     const endAngle = (index + 1) * sliceAngle;
                                     const color = generateColorForSlice(index, options.length);
                                     const isWinner = result === option;
+                                    const isHovered = hoveredSliceIndex === index;
 
                                     // Calculate text position (middle of slice, at 80% radius)
                                     const textAngle = startAngle + sliceAngle / 2;
@@ -473,6 +530,14 @@ export default function SpinningWheel() {
                                         textAngle
                                     );
 
+                                    const arc = describeArc(
+                                        200,
+                                        200,
+                                        150,
+                                        startAngle,
+                                        endAngle
+                                    );
+
                                     return (
                                         <motion.g
                                             animate={
@@ -481,12 +546,17 @@ export default function SpinningWheel() {
                                                           filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))',
                                                           opacity: 1,
                                                       }
-                                                    : {
-                                                          filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0.1))',
-                                                          opacity: 0.9,
-                                                      }
+                                                    : isHovered
+                                                      ? {
+                                                            filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.6))',
+                                                            opacity: 1,
+                                                        }
+                                                      : {
+                                                            filter: 'drop-shadow(0 0 0px rgba(255, 255, 255, 0.1))',
+                                                            opacity: 0.85,
+                                                        }
                                             }
-                                            key={`slice-${index}`}
+                                            key={`${option}-slice`}
                                             transition={{
                                                 type: 'spring',
                                                 stiffness: 300,
@@ -496,16 +566,21 @@ export default function SpinningWheel() {
                                         >
                                             {/* Slice */}
                                             <path
-                                                d={describeArc(
-                                                    200,
-                                                    200,
-                                                    150,
-                                                    startAngle,
-                                                    endAngle
-                                                )}
+                                                d={arc}
                                                 fill={color}
+                                                onMouseEnter={() =>
+                                                    !spinning && setHoveredSliceIndex(index)
+                                                }
+                                                onMouseLeave={() => setHoveredSliceIndex(null)}
                                                 stroke={'var(--primary)'}
-                                                strokeWidth={isWinner ? '5' : '2'}
+                                                strokeWidth={
+                                                    isWinner ? '4.5' : isHovered ? '3.5' : '2'
+                                                }
+                                                style={{
+                                                    cursor: !spinning ? 'pointer' : 'default',
+                                                    transition:
+                                                        'stroke-width 0.2s ease, stroke 0.2s ease',
+                                                }}
                                             />
 
                                             {/* Text */}
@@ -531,14 +606,48 @@ export default function SpinningWheel() {
                                 })}
 
                                 {/* Center Circle */}
-                                <circle
-                                    cx="200"
-                                    cy="200"
-                                    fill="var(--background)"
-                                    r="20"
-                                    stroke="var(--accent)"
-                                    strokeWidth="3"
-                                />
+                                <motion.g
+                                    onClick={handleSpin}
+                                    style={{
+                                        cursor: 'pointer',
+                                        transformOrigin: '200px 200px',
+                                    }}
+                                    transition={{ type: 'spring', stiffness: 320, damping: 18 }}
+                                    whileHover={{ scale: 1.08 }}
+                                    whileTap={{ scale: 0.92 }}
+                                >
+                                    {/* Outer hub */}
+                                    <circle
+                                        cx="200"
+                                        cy="200"
+                                        fill="var(--background)"
+                                        r="22"
+                                        stroke="var(--primary)"
+                                        strokeWidth="3"
+                                    />
+
+                                    {/* Inner highlight */}
+                                    <circle
+                                        cx="200"
+                                        cy="200"
+                                        fill="var(--primary)"
+                                        opacity="0.18"
+                                        r="16"
+                                    />
+
+                                    {/* Lucide ShipWheel icon */}
+                                    <foreignObject
+                                        height="32"
+                                        pointerEvents="none"
+                                        width="32"
+                                        x="184"
+                                        y="184"
+                                    >
+                                        <div className="flex items-center justify-center w-full h-full">
+                                            <ShipWheel className="size-8 text-foreground" />
+                                        </div>
+                                    </foreignObject>
+                                </motion.g>
                             </g>
                         </svg>
                     </Card>
