@@ -1,7 +1,15 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, RefreshCw, ShipWheel, Shuffle, SquareMenu, Trash2 } from 'lucide-react';
+import {
+    BrushCleaning,
+    Plus,
+    RefreshCw,
+    ShipWheel,
+    Shuffle,
+    SquareMenu,
+    Trash2,
+} from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useMount, useStorage } from 'nhb-hooks';
 import {
@@ -165,6 +173,14 @@ export default function SpinningWheel() {
         toast.success('Wheel reset to default');
     };
 
+    const clearOptions = () => {
+        setOptions([]);
+        optionsStore.set([]);
+        setResult(null);
+        setRotation(0);
+        toast.success('Wheel options are cleared');
+    };
+
     const handleSpin = () => {
         if (spinning) return;
         if (options.length < 2) {
@@ -202,13 +218,12 @@ export default function SpinningWheel() {
                 const normalizedRotation = currentRotation % 360;
                 const sliceAngle = 360 / options.length;
 
-                // Calculate which slice is at the top
-                // The pointer is at the top, so we check which slice overlaps with top
-                const adjustedIndex =
-                    Math.floor((360 - normalizedRotation + sliceAngle / 2) / sliceAngle) %
-                    options.length;
+                // Calculate which slice is at the pointer (top)
+                // The pointer is fixed at the top, so we find which slice aligns with it
+                const winnerIndex =
+                    Math.floor((360 - normalizedRotation) / sliceAngle) % options.length;
 
-                setResult(options[adjustedIndex]);
+                setResult(options[winnerIndex]);
                 setSpinning(false);
             }
         };
@@ -329,8 +344,18 @@ export default function SpinningWheel() {
                             size="lg"
                             variant="destructive"
                         >
-                            <RefreshCw className="size-4" />
-                            Reset
+                            <RefreshCw className="size-4 mb-0.5" />
+                            Default
+                        </Button>
+                        <Button
+                            className="flex-1"
+                            disabled={spinning}
+                            onClick={clearOptions}
+                            size="lg"
+                            variant="destructive"
+                        >
+                            <BrushCleaning className="size-4 mb-0.5" />
+                            Clear Options
                         </Button>
                         <Button
                             className="text-base px-12 font-semibold"
@@ -381,12 +406,12 @@ export default function SpinningWheel() {
                                                 textToCopy={result}
                                             />
                                             <ShareButton
-                                                buttonLabel="Share wheel"
+                                                buttonLabel="Share Wheel"
                                                 buttonProps={{ size: 'lg' }}
                                                 className="text-base flex-1 w-full"
                                                 route={sharableLink}
                                                 shareLabel="Share current wheel"
-                                                shareText="Make random decision with the spinning wheel"
+                                                shareText="Make random decision with this custom spinning wheel"
                                             />
                                         </div>
                                     </CardContent>
@@ -398,7 +423,22 @@ export default function SpinningWheel() {
 
                 {/* Right Column - Wheel & Result */}
                 {options.length >= 2 ? (
-                    <Card className="w-full max-h-fit relative overflow-hidden p-0">
+                    <Card className="w-full max-h-fit relative overflow-visible p-0">
+                        {/* Fixed Pointer at top */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
+                            {/* Arrow Triangle */}
+                            <div
+                                className="w-0 h-0"
+                                style={{
+                                    borderLeft: '12px solid transparent',
+                                    borderRight: '12px solid transparent',
+                                    borderTop: '16px solid var(--primary)',
+                                }}
+                            />
+                            {/* Arrow Stick */}
+                            <div className="w-1 h-3 bg-primary" />
+                        </div>
+
                         {/* SVG Wheel */}
                         <svg
                             className="w-full h-full max-h-fit"
