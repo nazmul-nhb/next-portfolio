@@ -1,0 +1,152 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { getConflicts } from '@/lib/sudoku';
+import { cn } from '@/lib/utils';
+
+interface SudokuGridProps {
+    puzzle: number[][];
+    current: number[][];
+    solved: number[][];
+    onCellChange: (row: number, col: number, value: number) => void;
+}
+
+const GRID_SIZE = 9;
+const BOX_SIZE = 3;
+
+export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGridProps) {
+    const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
+
+    const handleCellClick = (row: number, col: number) => {
+        if (puzzle[row][col] === 0) {
+            setSelectedCell({ row, col });
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!selectedCell) return;
+
+        const { row, col } = selectedCell;
+
+        // Navigate with arrow keys
+        if (e.key === 'ArrowUp' && row > 0) {
+            e.preventDefault();
+            setSelectedCell({ row: row - 1, col });
+        } else if (e.key === 'ArrowDown' && row < GRID_SIZE - 1) {
+            e.preventDefault();
+            setSelectedCell({ row: row + 1, col });
+        } else if (e.key === 'ArrowLeft' && col > 0) {
+            e.preventDefault();
+            setSelectedCell({ row, col: col - 1 });
+        } else if (e.key === 'ArrowRight' && col < GRID_SIZE - 1) {
+            e.preventDefault();
+            setSelectedCell({ row, col: col + 1 });
+        }
+        // Number input
+        else if (e.key >= '1' && e.key <= '9') {
+            e.preventDefault();
+            const num = +e.key;
+            onCellChange(row, col, num);
+        }
+        // Clear cell
+        else if (e.key === 'Delete' || e.key === 'Backspace') {
+            e.preventDefault();
+            onCellChange(row, col, 0);
+        }
+    };
+
+    // Get all cells that have conflicts with selected cell
+    const getHighlightedCells = (): Set<string> => {
+        const highlighted = new Set<string>();
+
+        if (!selectedCell) return highlighted;
+
+        const { row, col } = selectedCell;
+
+        // Highlight row
+        for (let i = 0; i < GRID_SIZE; i++) {
+            highlighted.add(`${row}-${i}`);
+        }
+
+        // Highlight column
+        for (let i = 0; i < GRID_SIZE; i++) {
+            highlighted.add(`${i}-${col}`);
+        }
+
+        // Highlight box
+        const boxRow = Math.floor(row / BOX_SIZE) * BOX_SIZE;
+        const boxCol = Math.floor(col / BOX_SIZE) * BOX_SIZE;
+
+        for (let i = boxRow; i < boxRow + BOX_SIZE; i++) {
+            for (let j = boxCol; j < boxCol + BOX_SIZE; j++) {
+                highlighted.add(`${i}-${j}`);
+            }
+        }
+
+        return highlighted;
+    };
+
+    const highlightedCells = getHighlightedCells();
+
+    return (
+        <div
+            className="inline-block border-2 border-gray-900 dark:border-gray-100"
+            onKeyDown={handleKeyDown}
+            ref={gridRef}
+            role="grid"
+            tabIndex={0}
+        >
+            {current.map((row, rowIdx) => (
+                <div className="flex" key={rowIdx}>
+                    {row.map((cell, colIdx) => {
+                        const cellKey = `${rowIdx}-${colIdx}`;
+                        const isSelected =
+                            selectedCell?.row === rowIdx && selectedCell?.col === colIdx;
+                        const isHighlighted = highlightedCells.has(cellKey);
+                        const isPuzzleCell = puzzle[rowIdx][colIdx] !== 0;
+                        const conflicts = isPuzzleCell
+                            ? new Set<string>()
+                            : getConflicts(current, rowIdx, colIdx);
+                        const hasConflict = conflicts.size > 0;
+
+                        // Determine borders (thick every 3 cells)
+                        const borderRight =
+                            (colIdx + 1) % BOX_SIZE === 0 && colIdx !== GRID_SIZE - 1;
+                        const borderBottom =
+                            (rowIdx + 1) % BOX_SIZE === 0 && rowIdx !== GRID_SIZE - 1;
+
+                        return (
+                            <button
+                                className={cn(
+                                    'w-12 h-12 flex items-center justify-center',
+                                    'text-lg font-bold transition-colors',
+                                    'border border-gray-300 dark:border-gray-600',
+                                    borderRight &&
+                                        'border-r-2 border-r-gray-900 dark:border-r-gray-100',
+                                    borderBottom &&
+                                        'border-b-2 border-b-gray-900 dark:border-b-gray-100',
+                                    isPuzzleCell
+                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 cursor-default'
+                                        : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800',
+                                    isSelected && 'ring-2 ring-blue-500 dark:ring-blue-400',
+                                    isHighlighted &&
+                                        !isSelected &&
+                                        'bg-blue-100 dark:bg-blue-900/40',
+                                    hasConflict &&
+                                        'bg-red-100 dark:bg-red-900/40 text-red-900 dark:text-red-100'
+                                )}
+                                disabled={isPuzzleCell}
+                                key={cellKey}
+                                onClick={() => handleCellClick(rowIdx, colIdx)}
+                                type="button"
+                            >
+                                {cell !== 0 && cell}
+                            </button>
+                        );
+                    })}
+                </div>
+            ))}
+        </div>
+    );
+}

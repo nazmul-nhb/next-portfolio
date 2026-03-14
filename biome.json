@@ -32,7 +32,8 @@
             "a11y": {
                 "useButtonType": "info",
                 "useKeyWithClickEvents": "off",
-                "noStaticElementInteractions": "off"
+                "noStaticElementInteractions": "off",
+                "useSemanticElements": "info"
             },
             "suspicious": {
                 "noUnknownAtRules": "warn",

@@ -4,6 +4,7 @@ import {
     Briefcase,
     ClockCheck,
     ClockFading,
+    Cloud,
     Contact,
     FerrisWheel,
     FileText,
@@ -11,9 +12,11 @@ import {
     FolderKanban,
     Globe,
     GraduationCap,
+    Grid3x3,
     Home,
     ImagePlus,
     Info,
+    Keyboard,
     LayoutDashboard,
     Lightbulb,
     MessageCircle,
@@ -197,6 +200,27 @@ export const siteConfig = {
             label: 'Expense Manager',
             icon: Wallet,
             description: 'Track income, expenses, loans, repayments, and net cash in hand.',
+        },
+        {
+            href: '/tools/sudoku',
+            label: 'Sudoku',
+            icon: Grid3x3,
+            description:
+                'Generate valid puzzles, solve with backtracking, and play with difficulty levels.',
+        },
+        {
+            href: '/tools/word-cloud',
+            label: 'Word Cloud Generator',
+            icon: Cloud,
+            description:
+                'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
+        },
+        {
+            href: '/tools/typing-test',
+            label: 'Typing Speed Test',
+            icon: Keyboard,
+            description:
+                'Test your typing speed with real-time metrics, accuracy tracking, and multiple duration modes.',
         },
     ] satisfies Array<{ href: Route; label: string; icon: ComponentType; description: string }>,
     adminMenus: [
