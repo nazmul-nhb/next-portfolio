@@ -2,9 +2,19 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { BadgeQuestionMark, BrushCleaning, RotateCcw, Shuffle, Zap } from 'lucide-react';
+import {
+    BadgeQuestionMark,
+    BrushCleaning,
+    CircleGauge,
+    Flame,
+    Grid3x3,
+    RotateCcw,
+    Shuffle,
+    Zap,
+} from 'lucide-react';
 import { useStorage } from 'nhb-hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -13,6 +23,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import {
     Select,
     SelectContent,
@@ -20,7 +31,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useStopwatch } from '@/lib/hooks/use-stopwatch';
 import { copyGrid, generateSudoku, type SudokuDifficulty, solveSudoku } from '@/lib/sudoku';
+import { parseMsToDuration } from '@/lib/utils';
 import SudokuGrid from './SudokuGrid';
 
 interface GameState {
@@ -28,6 +41,11 @@ interface GameState {
     solved: number[][];
     current: number[][];
     difficulty: SudokuDifficulty;
+    scores: {
+        current: Partial<Record<SudokuDifficulty, number>>;
+        best: Record<SudokuDifficulty, number>;
+        totalSolved: Record<SudokuDifficulty, number>;
+    };
 }
 
 const containerVariants: Variants = {
@@ -50,8 +68,69 @@ const itemVariants: Variants = {
 export default function SudokuGame() {
     const gameStore = useStorage<GameState | null>({ key: 'nhb-sudoku-game' });
 
-    const [gameState, setGameState] = useState<GameState | null>(null);
+    // const [gameState, setGameState] = useState<GameState | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<SudokuDifficulty>('medium');
+
+    const handleCellChange = useCallback(
+        (row: number, col: number, value: number) => {
+            if (!gameStore.value) return;
+
+            // Don't allow changing puzzle clues
+            if (gameStore.value.puzzle[row][col] !== 0) return;
+
+            const newCurrent = gameStore.value.current.map((r) => [...r]);
+            newCurrent[row][col] = value;
+
+            const updatedState = { ...gameStore.value, current: newCurrent };
+            // setGameState(updatedState);
+            gameStore.set(updatedState);
+        },
+        [gameStore]
+    );
+
+    const handleSolve = useCallback(() => {
+        if (!gameStore.value) return;
+
+        const newState = {
+            ...gameStore.value,
+            current: copyGrid(gameStore.value.solved),
+        };
+
+        // setGameState(newState);
+        gameStore.set(newState);
+    }, [gameStore]);
+
+    const isComplete = useMemo(() => {
+        if (!gameStore.value) return false;
+
+        return gameStore.value.current.every((row) => row.every((cell) => cell !== 0));
+    }, [gameStore.value]);
+
+    const isSolved = useMemo(() => {
+        if (!gameStore.value) return false;
+
+        return gameStore.value.current.every((row, i) =>
+            row.every((cell, j) => cell === gameStore.value?.solved[i][j])
+        );
+    }, [gameStore.value]);
+
+    const stopwatch = useStopwatch({
+        autoStart: true,
+        interval: 50,
+        // paused: isComplete,
+    });
+
+    const handleReset = useCallback(() => {
+        if (!gameStore.value) return;
+
+        const newState = {
+            ...gameStore.value,
+            current: copyGrid(gameStore.value.puzzle),
+        };
+
+        // setGameState(newState);
+        gameStore.set(newState);
+    }, [gameStore]);
 
     const generateNewGame = useCallback(
         (difficulty: SudokuDifficulty) => {
@@ -64,83 +143,41 @@ export default function SudokuGame() {
                 solved,
                 current: copyGrid(puzzle),
                 difficulty,
+                scores: {
+                    current: { [difficulty]: 0 },
+                    best: gameStore.value?.scores.best ?? { easy: 0, hard: 0, medium: 0 },
+                    totalSolved: gameStore.value?.scores.totalSolved ?? {
+                        easy: 0,
+                        hard: 0,
+                        medium: 0,
+                    },
+                },
             };
 
-            setGameState(newState);
+            stopwatch.reset();
+
+            // setGameState(newState);
             setSelectedDifficulty(difficulty);
             gameStore.set(newState);
         },
-        [gameStore]
+        [gameStore, stopwatch.reset]
     );
+
+    useEffect(() => {
+        if (isComplete) stopwatch.pause();
+    }, [isComplete, stopwatch.pause]);
 
     // Initialize game
     useEffect(() => {
         if (gameStore.value) {
-            setGameState(gameStore.value);
+            // setGameState(gameStore.value);
             setSelectedDifficulty(gameStore.value.difficulty);
         } else {
             generateNewGame('medium');
         }
-    }, [gameStore.value, generateNewGame]);
 
-    const handleCellChange = useCallback(
-        (row: number, col: number, value: number) => {
-            if (!gameState) return;
-
-            // Don't allow changing puzzle clues
-            if (gameState.puzzle[row][col] !== 0) return;
-
-            const newCurrent = gameState.current.map((r) => [...r]);
-            newCurrent[row][col] = value;
-
-            const updatedState = { ...gameState, current: newCurrent };
-            setGameState(updatedState);
-            gameStore.set(updatedState);
-        },
-        [gameState, gameStore]
-    );
-
-    const handleReset = useCallback(() => {
-        if (!gameState) return;
-
-        const newState = {
-            ...gameState,
-            current: copyGrid(gameState.puzzle),
-        };
-
-        setGameState(newState);
-        gameStore.set(newState);
-    }, [gameState, gameStore]);
-
-    const handleSolve = useCallback(() => {
-        if (!gameState) return;
-
-        const newState = {
-            ...gameState,
-            current: copyGrid(gameState.solved),
-        };
-
-        setGameState(newState);
-        gameStore.set(newState);
-    }, [gameState, gameStore]);
-
-    const isComplete = useMemo(() => {
-        if (!gameState) return false;
-
-        return gameState.current.every((row) => row.every((cell) => cell !== 0));
-    }, [gameState]);
-
-    const isSolved = useMemo(() => {
-        if (!gameState) return false;
-
-        return gameState.current.every((row, i) =>
-            row.every((cell, j) => cell === gameState.solved[i][j])
-        );
-    }, [gameState]);
-
-    if (!gameState) {
-        return null;
-    }
+        if (!isComplete) stopwatch.start();
+    }, [gameStore.value, isComplete, generateNewGame, stopwatch.start]);
 
     return (
         <motion.div
@@ -152,46 +189,59 @@ export default function SudokuGame() {
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1fr_minmax(20rem,350px)]">
                 {/* Main Grid */}
                 <motion.div variants={itemVariants}>
-                    <Card className="overflow-hidden">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shuffle className="size-5" />
-                                Play Sudoku
-                            </CardTitle>
-                            <CardDescription>
-                                {isComplete ? (
-                                    <span
-                                        className={
-                                            isSolved
-                                                ? 'text-emerald-600 dark:text-emerald-400'
-                                                : 'text-red-600 dark:text-red-400'
-                                        }
-                                    >
-                                        {isSolved ? '✓ Puzzle Solved!' : '✗ Incorrect Solution'}
-                                    </span>
-                                ) : (
-                                    'Use keyboard (1-9) or arrow keys to navigate'
-                                )}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex justify-center">
-                                <SudokuGrid
-                                    current={gameState.current}
-                                    onCellChange={handleCellChange}
-                                    puzzle={gameState.puzzle}
-                                    solved={gameState.solved}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {gameStore.value ? (
+                        <Card className="overflow-hidden">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Grid3x3 className="size-5" />
+                                    Play Sudoku
+                                </CardTitle>
+                                <CardDescription>
+                                    {isComplete ? (
+                                        <span
+                                            className={
+                                                isSolved
+                                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                                    : 'text-red-600 dark:text-red-400'
+                                            }
+                                        >
+                                            {isSolved
+                                                ? '✓ Puzzle Solved!'
+                                                : '✗ Incorrect Solution'}
+                                        </span>
+                                    ) : (
+                                        'Use keyboard (1-9) or arrow keys to navigate'
+                                    )}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex justify-center">
+                                    <SudokuGrid
+                                        current={gameStore.value.current}
+                                        onCellChange={handleCellChange}
+                                        puzzle={gameStore.value.puzzle}
+                                        solved={gameStore.value.solved}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <EmptyData
+                            description="There is something wrong with your game settings, please reload the window!"
+                            Icon={Grid3x3}
+                            title="Invalid Game State"
+                        />
+                    )}
                 </motion.div>
 
                 {/* Controls Panel */}
                 <motion.div className="space-y-4" variants={itemVariants}>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Difficulty</CardTitle>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <CircleGauge className="size-4" />
+                                Difficulty
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <Select
@@ -223,7 +273,10 @@ export default function SudokuGame() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Actions</CardTitle>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Flame className="size-4" /> Actions{' '}
+                                {parseMsToDuration(stopwatch.elapsed)}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <Button
@@ -258,14 +311,25 @@ export default function SudokuGame() {
                     <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <BadgeQuestionMark /> How to Play
+                                <BadgeQuestionMark className="size-4" /> How to Play
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm space-y-1 text-blue-900 dark:text-blue-100">
-                            <p>• Use arrow keys to navigate</p>
-                            <p>• Press 1-9 to enter numbers</p>
-                            <p>• Press Delete/Backspace to clear</p>
-                            <p>• Red cells indicate conflicts</p>
+                            <ul className="ml-8 list-item list-disc space-y-1">
+                                <li>Use arrow keys to navigate</li>
+                                <li>
+                                    Press{' '}
+                                    <KbdGroup>
+                                        <Kbd>1</Kbd>-<Kbd>9</Kbd>
+                                    </KbdGroup>{' '}
+                                    to enter numbers
+                                </li>
+                                <li>
+                                    Press <Kbd>Delete</Kbd>/<Kbd>Backspace</Kbd>/<Kbd>0</Kbd> to
+                                    clear
+                                </li>
+                                <li>Red cells indicate conflicts</li>
+                            </ul>
                         </CardContent>
                     </Card>
                 </motion.div>

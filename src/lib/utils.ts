@@ -191,3 +191,43 @@ export function stripHtml(input: unknown) {
 export function eliminateEmptyStrings(arr: Uncertain<string>[]): string[] {
     return [...arr].filter(isNonEmptyString);
 }
+
+/**
+ * Converts milliseconds to a human readable duration string.
+ *
+ * Units supported: weeks → milliseconds.
+ * Zero values are omitted from the output.
+ */
+export function parseMsToDuration(ms: number): string {
+    const WEEK = 7 * 24 * 60 * 60 * 1000;
+    const DAY = 24 * 60 * 60 * 1000;
+    const HOUR = 60 * 60 * 1000;
+    const MINUTE = 60 * 1000;
+    const SECOND = 1000;
+
+    const parts: string[] = [];
+
+    const weeks = Math.floor(ms / WEEK);
+    if (weeks) parts.push(`${weeks} week${weeks > 1 ? 's' : ''}`);
+    ms %= WEEK;
+
+    const days = Math.floor(ms / DAY);
+    if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    ms %= DAY;
+
+    const hours = Math.floor(ms / HOUR);
+    if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+    ms %= HOUR;
+
+    const minutes = Math.floor(ms / MINUTE);
+    if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+    ms %= MINUTE;
+
+    const seconds = Math.floor(ms / SECOND);
+    if (seconds) parts.push(`${seconds} sec${seconds > 1 ? 's' : ''}`);
+    ms %= SECOND;
+
+    if (ms) parts.push(`${ms} ms`);
+
+    return parts.join(' ');
+}

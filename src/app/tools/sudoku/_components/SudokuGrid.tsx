@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { getConflicts } from '@/lib/sudoku';
 import { cn } from '@/lib/utils';
 import type { TypedKeyboardEvent } from '@/types/hot-keys';
@@ -17,7 +17,6 @@ const BOX_SIZE = 3;
 
 export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGridProps) {
     const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
-    const gridRef = useRef<HTMLDivElement>(null);
 
     const handleCellClick = (row: number, col: number) => {
         if (puzzle[row][col] === 0) {
@@ -87,7 +86,6 @@ export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGrid
         <div
             className="inline-block border-2 border-gray-900 dark:border-gray-100"
             onKeyDown={handleKeyDown}
-            ref={gridRef}
             role="grid"
             tabIndex={0}
         >
@@ -113,7 +111,7 @@ export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGrid
                         return (
                             <button
                                 className={cn(
-                                    'w-12 h-12 flex items-center justify-center',
+                                    'size-9 sm:size-11 md:size-12 flex items-center justify-center',
                                     'text-lg font-bold transition-colors',
                                     'border border-gray-300 dark:border-gray-600',
                                     borderRight &&
@@ -128,7 +126,7 @@ export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGrid
                                         !isSelected &&
                                         'bg-blue-100 dark:bg-blue-900/40',
                                     hasConflict &&
-                                        'bg-red-100 dark:bg-red-900/40 text-red-900 dark:text-red-100'
+                                        'bg-red-100 dark:bg-red-900/75 text-red-900 dark:text-red-100'
                                 )}
                                 disabled={isPuzzleCell}
                                 key={cellKey}
