@@ -1,5 +1,6 @@
 'use client';
 
+import { isNumber } from 'nhb-toolbox';
 import { getAccuracyColor, type TypingMetrics } from '@/lib/typing-test';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +15,7 @@ export default function TypingStats({ metrics }: TypingStatsProps) {
                 <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">WPM</span>
                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {metrics.wpm}
+                        {isNumber(metrics.wpm) ? metrics.wpm : 0}
                     </span>
                 </div>
             </div>

@@ -204,9 +204,7 @@ export default function WordCloudGenerator() {
                                     max={500}
                                     min={10}
                                     onChange={(e) =>
-                                        setMaxWords(
-                                            Math.max(10, parseInt(e.target.value) || 100)
-                                        )
+                                        setMaxWords(Math.max(10, +e.target.value || 100))
                                     }
                                     type="number"
                                     value={maxWords}

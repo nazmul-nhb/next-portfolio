@@ -37,7 +37,7 @@ const PASSAGES = [
  * Get random passage for typing test
  */
 export function getRandomPassage(): string {
-    return PASSAGES[getRandomNumber({ max: PASSAGES.length })];
+    return PASSAGES[getRandomNumber({ max: PASSAGES.length - 1 })];
 }
 
 /**
@@ -55,7 +55,7 @@ export function calculateMetrics(
 
     // Compare character by character
     for (let i = 0; i < typed.length; i++) {
-        if (i < passage.length) {
+        if (i < passage?.length) {
             if (typed[i] === passage[i]) {
                 correctChars++;
             } else {
@@ -68,7 +68,7 @@ export function calculateMetrics(
     }
 
     // Count missed characters
-    const missedChars = Math.max(0, passage.length - typed.length);
+    const missedChars = Math.max(0, passage?.length - typed.length);
     const totalErrors = errors + missedChars;
 
     // Calculate WPM (words per 5 characters)
@@ -122,10 +122,10 @@ type MatchStats = 'correct' | 'incorrect' | 'missing' | 'extra' | null;
  */
 export function getCharacterStatus(passage: string, typed: string, index: number): MatchStats {
     if (index >= typed.length) {
-        return index < passage.length ? 'missing' : null;
+        return index < passage?.length ? 'missing' : null;
     }
 
-    if (index >= passage.length) {
+    if (index >= passage?.length) {
         return 'extra';
     }
 

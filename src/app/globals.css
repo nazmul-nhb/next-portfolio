@@ -12,6 +12,7 @@
 	--font-source-sans: var(--font-source-sans);
 	--font-tiro: var(--font-tiro-bangla);
 	--font-anek: var(--font-anek-bangla);
+	/* --font-data-type: var(--font-data-type); */
 	--font-cascadia: var(--font-cascadia-code);
 	--font-digital: var(--font-digital-clock);
 	--color-sidebar-ring: var(--sidebar-ring);

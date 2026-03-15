@@ -16,7 +16,7 @@ export default function TypingDisplay({ passage, typed, testState }: TypingDispl
                 'p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 font-mono text-sm leading-relaxed'
             )}
         >
-            {passage.split('').map((char, idx) => {
+            {passage?.split('').map((char, idx) => {
                 const status = getCharacterStatus(passage, typed, idx);
                 const isCurrentChar = idx === typed.length && testState === 'running';
 

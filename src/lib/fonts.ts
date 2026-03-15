@@ -85,3 +85,9 @@ export const digitalClock = localFont({
     src: '../data/digital-clock.ttf',
     variable: '--font-digital-clock',
 });
+
+// export const dataType = localFont({
+//     src: '../data/data-type.ttf',
+//     variable: '--font-data-type',
+//     preload: true,
+// });
