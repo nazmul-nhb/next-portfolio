@@ -191,7 +191,7 @@ export default function TypingSpeedTest() {
                                         onChange={(e) => setTyped(e.target.value)}
                                         placeholder="Start typing here..."
                                         ref={inputRef}
-                                        rows={6}
+                                        rows={8}
                                         value={typed}
                                     />
 

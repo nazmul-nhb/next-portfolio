@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { getConflicts } from '@/lib/sudoku';
 import { cn } from '@/lib/utils';
+import type { TypedKeyboardEvent } from '@/types/hot-keys';
 
 interface SudokuGridProps {
     puzzle: number[][];
@@ -24,34 +25,27 @@ export default function SudokuGrid({ puzzle, current, onCellChange }: SudokuGrid
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (e: TypedKeyboardEvent<HTMLDivElement>) => {
         if (!selectedCell) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const key = e.key;
 
         const { row, col } = selectedCell;
 
-        // Navigate with arrow keys
-        if (e.key === 'ArrowUp' && row > 0) {
-            e.preventDefault();
+        if (key === 'ArrowUp' && row > 0) {
             setSelectedCell({ row: row - 1, col });
-        } else if (e.key === 'ArrowDown' && row < GRID_SIZE - 1) {
-            e.preventDefault();
+        } else if (key === 'ArrowDown' && row < GRID_SIZE - 1) {
             setSelectedCell({ row: row + 1, col });
-        } else if (e.key === 'ArrowLeft' && col > 0) {
-            e.preventDefault();
+        } else if (key === 'ArrowLeft' && col > 0) {
             setSelectedCell({ row, col: col - 1 });
-        } else if (e.key === 'ArrowRight' && col < GRID_SIZE - 1) {
-            e.preventDefault();
+        } else if (key === 'ArrowRight' && col < GRID_SIZE - 1) {
             setSelectedCell({ row, col: col + 1 });
-        }
-        // Number input
-        else if (e.key >= '1' && e.key <= '9') {
-            e.preventDefault();
-            const num = +e.key;
-            onCellChange(row, col, num);
-        }
-        // Clear cell
-        else if (e.key === 'Delete' || e.key === 'Backspace') {
-            e.preventDefault();
+        } else if (key >= '1' && key <= '9') {
+            onCellChange(row, col, +key);
+        } else if (key === 'Delete' || key === 'Backspace' || key === '0') {
             onCellChange(row, col, 0);
         }
     };
