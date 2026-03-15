@@ -11,6 +11,8 @@ import {
     Tiro_Bangla,
 } from 'next/font/google';
 
+import localFont from 'next/font/local';
+
 export const geistSans = Geist({
     variable: '--font-geist-sans',
     subsets: ['latin'],
@@ -77,4 +79,9 @@ export const playfairDisplay = Playfair_Display({
 export const robotoMono = Roboto_Mono({
     variable: '--font-roboto-mono',
     subsets: ['latin'],
+});
+
+export const digitalClock = localFont({
+    src: '../data/digital-clock.ttf',
+    variable: '--font-digital-clock',
 });

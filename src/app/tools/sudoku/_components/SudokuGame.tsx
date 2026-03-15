@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import {
     BadgeQuestionMark,
     BrushCleaning,
+    Calculator,
     CircleGauge,
     Flame,
     Grid3x3,
@@ -12,10 +13,13 @@ import {
     Play,
     RotateCcw,
     Shuffle,
+    Timer,
     Zap,
 } from 'lucide-react';
 import { useStorage } from 'nhb-hooks';
+import { toTitleCase } from 'nhb-toolbox/change-case';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import ScoreCard from '@/app/tools/sudoku/_components/ScoreCard';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
@@ -115,8 +119,6 @@ export default function SudokuGame() {
     const handleSolve = useCallback(() => {
         if (!gameStore.value) return;
 
-        setProvidedSolution(true);
-
         const newState = {
             ...gameStore.value,
             isSolvedByUser: false,
@@ -124,6 +126,7 @@ export default function SudokuGame() {
         };
 
         setIsPaused(false);
+        setProvidedSolution(true);
 
         gameStore.set(newState);
     }, [gameStore]);
@@ -152,6 +155,7 @@ export default function SudokuGame() {
         };
 
         setIsPaused(false);
+        setProvidedSolution(false);
 
         gameStore.set(newState);
     }, [gameStore]);
@@ -182,8 +186,9 @@ export default function SudokuGame() {
             stopwatch.reset();
 
             setIsPaused(false);
-
+            setProvidedSolution(false);
             setSelectedDifficulty(difficulty);
+
             gameStore.set(newState);
         },
         [gameStore, stopwatch.reset]
@@ -205,9 +210,8 @@ export default function SudokuGame() {
 
                 const prevBest = prevBestScores[selectedDifficulty];
 
-                if (!prevBest || prevBest > stopwatch.elapsed) {
-                    newBest[selectedDifficulty] = stopwatch.elapsed;
-                }
+                newBest[selectedDifficulty] =
+                    prevBest === 0 ? stopwatch.elapsed : Math.min(prevBest, stopwatch.elapsed);
 
                 const prevTotal = gameStore.value?.scores.totalSolved;
 
@@ -294,15 +298,40 @@ export default function SudokuGame() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex justify-center">
+                                <div className="flex gap-4 flex-wrap">
                                     <SudokuGrid
                                         current={gameStore.value.current}
                                         handlePauseGame={handlePauseGame}
                                         isPaused={isPaused}
+                                        isSolved={isSolved}
                                         onCellChange={handleCellChange}
                                         puzzle={gameStore.value.puzzle}
-                                        solved={gameStore.value.solved}
                                     />
+
+                                    <div className="space-y-5">
+                                        <ScoreCard
+                                            className=""
+                                            Icon={Timer}
+                                            score={parseMsToDuration(stopwatch.elapsed)}
+                                            title="Elapsed Time"
+                                        />
+                                        <ScoreCard
+                                            Icon={Zap}
+                                            score={parseMsToDuration(
+                                                gameStore.value.scores.best[selectedDifficulty]
+                                            )}
+                                            title={`Best Time in ${toTitleCase(selectedDifficulty)} Mode`}
+                                        />
+                                        <ScoreCard
+                                            Icon={Calculator}
+                                            score={
+                                                gameStore.value.scores.totalSolved[
+                                                    selectedDifficulty
+                                                ]
+                                            }
+                                            title={`Total Puzzles Solved in ${toTitleCase(selectedDifficulty)} Mode`}
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -331,7 +360,7 @@ export default function SudokuGame() {
                                 }
                                 value={selectedDifficulty}
                             >
-                                <SelectTrigger>
+                                <SelectTrigger className="w-full">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -355,12 +384,15 @@ export default function SudokuGame() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <Flame className="size-4" /> Actions{' '}
-                                {parseMsToDuration(stopwatch.elapsed)}
+                                <Flame className="size-4" /> Actions
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-wrap gap-4">
-                            <Button className="" onClick={handlePauseGame} variant="outline">
+                            <Button
+                                disabled={isSolved}
+                                onClick={handlePauseGame}
+                                variant="outline"
+                            >
                                 {isPaused ? (
                                     <Play className="size-4" />
                                 ) : (
@@ -369,21 +401,17 @@ export default function SudokuGame() {
                                 {isPaused ? 'Start' : 'Pause'}
                             </Button>
 
-                            <Button className="" onClick={handleReset} variant="outline">
+                            <Button onClick={handleReset} variant="destructive">
                                 <RotateCcw className="size-4" />
                                 Reset
                             </Button>
 
-                            <Button className="" onClick={handleSolve} variant="outline">
+                            <Button disabled={isSolved} onClick={handleSolve} variant="default">
                                 <Zap className="size-4" />
                                 Show Solution
                             </Button>
 
-                            <Button
-                                className=""
-                                onClick={gameStore.remove}
-                                variant="destructive"
-                            >
+                            <Button onClick={gameStore.remove} variant="destructive">
                                 <BrushCleaning className="size-4" />
                                 Clear Records
                             </Button>

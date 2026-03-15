@@ -208,7 +208,7 @@ export function parseMsToDuration(ms: number): string {
     const padAndFormat = (value: number, unit: string, pad = 2) => {
         const padded = String(value).padStart(pad, '0');
 
-        return padded.concat(' ', unit, value > 1 ? 's' : '');
+        return padded.concat(' ', unit);
     };
 
     const parts: string[] = [];
@@ -222,18 +222,18 @@ export function parseMsToDuration(ms: number): string {
     ms %= DAY;
 
     const hours = Math.floor(ms / HOUR);
-    if (hours) parts.push(padAndFormat(hours, 'hour'));
+    if (hours) parts.push(padAndFormat(hours, 'hr'));
     ms %= HOUR;
 
     const minutes = Math.floor(ms / MINUTE);
-    parts.push(padAndFormat(minutes, 'minute'));
+    parts.push(padAndFormat(minutes, 'min'));
     ms %= MINUTE;
 
     const seconds = Math.floor(ms / SECOND);
-    parts.push(padAndFormat(seconds, 'second'));
+    parts.push(padAndFormat(seconds, 'sec'));
     ms %= SECOND;
 
     parts.push(String(ms).padStart(3, '0').concat(' ms'));
 
-    return parts.join(' ');
+    return parts.join(' : ');
 }

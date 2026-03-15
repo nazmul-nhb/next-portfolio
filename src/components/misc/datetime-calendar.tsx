@@ -193,10 +193,10 @@ export default function DateTimeCalendar() {
                     )}
                     type="button"
                 >
-                    <span className="text-sm leading-none font-bold tabular-nums">
+                    <span className="text-base leading-tight animate-pulse animation-duration-1000 font-bold tabular-nums font-digital tracking-wider">
                         {formatted}
                     </span>
-                    <span className="text-xs leading-none opacity-75 tabular-nums">
+                    <span className="text-xs leading-none opacity-80 tabular-nums font-source-sans">
                         {time.format('mmm DD')}
                     </span>
                 </button>

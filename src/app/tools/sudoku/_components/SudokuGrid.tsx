@@ -9,7 +9,7 @@ import type { TypedKeyboardEvent } from '@/types/hot-keys';
 interface SudokuGridProps {
     puzzle: number[][];
     current: number[][];
-    solved: number[][];
+    isSolved: boolean;
     isPaused: boolean;
     handlePauseGame: () => void;
     onCellChange: (row: number, col: number, value: number) => void;
@@ -21,6 +21,7 @@ const BOX_SIZE = 3;
 export default function SudokuGrid({
     puzzle,
     isPaused,
+    isSolved,
     handlePauseGame,
     current,
     onCellChange,
@@ -43,10 +44,6 @@ export default function SudokuGrid({
 
         const { row, col } = selectedCell;
 
-        if (key === ' ') {
-            handlePauseGame();
-        }
-
         if (key === 'ArrowUp' && row > 0) {
             setSelectedCell({ row: row - 1, col });
         } else if (key === 'ArrowDown' && row < GRID_SIZE - 1) {
@@ -59,6 +56,8 @@ export default function SudokuGrid({
             onCellChange(row, col, +key);
         } else if (key === 'Delete' || key === 'Backspace' || key === '0') {
             onCellChange(row, col, 0);
+        } else if (key === ' ' && !isSolved) {
+            handlePauseGame();
         }
     };
 
@@ -97,7 +96,7 @@ export default function SudokuGrid({
 
     return (
         <div
-            className="inline-block relative border-2 border-gray-900 dark:border-gray-100"
+            className="inline-block h-fit w-fit relative border-2 border-gray-900 dark:border-gray-100"
             onKeyDown={handleKeyDown}
             role="grid"
             tabIndex={0}
@@ -105,7 +104,7 @@ export default function SudokuGrid({
             {/* Sudoku Grid */}
             <div
                 className={cn({
-                    'blur-sm pointer-events-none select-none': isPaused,
+                    'blur-sm pointer-events-none select-none h-fit': isPaused,
                 })}
             >
                 {current.map((row, rowIdx) => (
@@ -130,8 +129,8 @@ export default function SudokuGrid({
                             return (
                                 <button
                                     className={cn(
-                                        'size-9 sm:size-11 md:size-12 flex items-center justify-center hover:border-none',
-                                        'text-lg font-bold transition-colors',
+                                        'size-8 sm:size-11 md:size-12 flex items-center justify-center',
+                                        'text-lg font-bold transition-colors focus:outline-none',
                                         'border border-gray-300 dark:border-gray-600',
                                         isPuzzleCell
                                             ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 cursor-default'
@@ -141,14 +140,12 @@ export default function SudokuGrid({
                                                 borderRight,
                                             'border-b-2 border-b-gray-900 dark:border-b-gray-100':
                                                 borderBottom,
-                                            'ring-2 ring-blue-500 dark:ring-blue-400':
+                                            'border-2 border-gray-900 dark:border-gray-100':
                                                 isSelected,
                                             'bg-blue-100 dark:bg-blue-900/40':
                                                 isHighlighted && !isSelected,
                                             'bg-red-100 dark:bg-red-900/75 text-red-900 dark:text-red-100':
                                                 hasConflict,
-                                            //   'text-transparent dark:text-transparent':
-                                            //       isPaused,
                                         }
                                     )}
                                     disabled={isPuzzleCell}

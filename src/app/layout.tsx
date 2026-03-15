@@ -19,6 +19,7 @@ import { siteConfig } from '@/configs/site';
 import {
     anekBangla,
     cascadiaCode,
+    digitalClock,
     geistMono,
     geistSans,
     inter,
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: ChildrenProp) {
                     poppins.variable,
                     playfairDisplay.variable,
                     robotoMono.variable,
+                    digitalClock.variable,
                     'antialiased'
                 )}
                 suppressHydrationWarning
