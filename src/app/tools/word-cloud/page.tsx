@@ -5,7 +5,7 @@ import { buildCanonicalUrl } from '@/lib/utils';
 import WordCloudGenerator from './_components/WordCloudGenerator';
 
 const description =
-    'Paste text and create a visual word cloud with customizable fonts, colors, and layout. Export as PNG or JPEG.';
+    'Generate interactive word clouds from text with customizable fonts, colors, and layouts. Export as PNG or JPEG with spiral or random word placement.';
 
 export const metadata: Metadata = {
     title: 'Word Cloud Generator',

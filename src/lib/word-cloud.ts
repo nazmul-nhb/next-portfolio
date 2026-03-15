@@ -1,4 +1,5 @@
 import type { HSL } from 'nhb-toolbox/colors/types';
+import { LOWERCASED_WORDS } from 'nhb-toolbox/constants';
 
 export interface WordFrequency {
     word: string;
@@ -66,6 +67,7 @@ const DEFAULT_STOPWORDS = new Set([
     'where',
     'why',
     'how',
+    ...LOWERCASED_WORDS,
 ]);
 
 /**

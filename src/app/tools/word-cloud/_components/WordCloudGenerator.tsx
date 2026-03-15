@@ -2,9 +2,10 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { Download, Shuffle } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { useCallback, useRef, useState } from 'react';
+import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -13,6 +14,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -38,16 +40,16 @@ const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+        transition: { staggerChildren: 0.08, delayChildren: 0.2 },
     },
 };
 
 const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
+    hidden: { opacity: 0, scale: 0.8 },
     visible: {
         opacity: 1,
-        y: 0,
-        transition: { duration: 0.4, ease: 'easeOut' },
+        scale: 1,
+        transition: { duration: 0.3, ease: 'easeOut' },
     },
 };
 
@@ -106,11 +108,14 @@ export default function WordCloudGenerator() {
             // Download
             const link = document.createElement('a');
             link.href = tempCanvas.toDataURL(`image/${format}`);
-            link.download = `word-cloud.${format}`;
+            link.download = `word-cloud-${Date.now()}.${format}`;
             link.click();
         },
         [backgroundColor]
     );
+
+    const hasText = text.trim().length > 0;
+    const wordCount = words().length;
 
     return useMount(
         <motion.div
@@ -119,15 +124,15 @@ export default function WordCloudGenerator() {
             initial="hidden"
             variants={containerVariants}
         >
-            <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1fr_minmax(20rem,350px)]">
-                {/* Main Content */}
-                <div className="space-y-6">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
+                {/* Input and Controls Section */}
+                <div className="space-y-4">
                     {/* Text Input */}
                     <motion.div variants={itemVariants}>
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Shuffle className="size-5" />
+                                    <FileText className="size-5" />
                                     Paste Text
                                 </CardTitle>
                                 <CardDescription>
@@ -137,7 +142,7 @@ export default function WordCloudGenerator() {
                             </CardHeader>
                             <CardContent>
                                 <Textarea
-                                    className="font-mono text-sm"
+                                    className="font-cascadia text-sm h-40 max-h-60 overflow-y-auto custom-scroll"
                                     onChange={(e) => setText(e.target.value)}
                                     placeholder="Paste your text here..."
                                     rows={10}
@@ -147,171 +152,170 @@ export default function WordCloudGenerator() {
                         </Card>
                     </motion.div>
 
-                    {/* Word Cloud Preview */}
+                    {/* Settings */}
                     <motion.div variants={itemVariants}>
                         <Card>
                             <CardHeader>
-                                <CardTitle>Preview</CardTitle>
-                                <CardDescription>
-                                    {words().length === 0
-                                        ? 'Paste text to generate word cloud'
-                                        : `${words().length} words found`}
-                                </CardDescription>
+                                <CardTitle className="text-base">Settings</CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        'w-full rounded border',
-                                        words().length === 0 &&
-                                            'bg-gray-100 dark:bg-gray-800 h-64 flex items-center justify-center'
-                                    )}
-                                    ref={canvasRef}
-                                >
-                                    {words().length > 0 ? (
-                                        <WordCloudCanvas
-                                            backgroundColor={backgroundColor}
-                                            fontFamily={fontFamily}
-                                            words={wordPositions()}
+                            <CardContent className="space-y-4">
+                                <div className="space-y-4">
+                                    <Label className="text-sm font-medium">Max Words</Label>
+                                    <Input
+                                        max={500}
+                                        min={10}
+                                        onChange={(e) => setMaxWords(+e.target.value)}
+                                        type="number"
+                                        value={maxWords}
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-sm font-medium">Layout</Label>
+                                    <Select
+                                        onValueChange={(val) =>
+                                            setLayoutType(val as LayoutType)
+                                        }
+                                        value={layoutType}
+                                    >
+                                        <SelectTrigger className="mt-1">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="spiral">Spiral</SelectItem>
+                                            <SelectItem value="random">Random</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-sm font-medium">Font</Label>
+                                    <Select
+                                        onValueChange={(val) =>
+                                            setFontFamily(val as FontFamily)
+                                        }
+                                        value={fontFamily}
+                                    >
+                                        <SelectTrigger className="mt-1">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Arial">Arial</SelectItem>
+                                            <SelectItem value="Georgia">Georgia</SelectItem>
+                                            <SelectItem value="Courier">Courier</SelectItem>
+                                            <SelectItem value="Verdana">Verdana</SelectItem>
+                                            <SelectItem value="Times New Roman">
+                                                Times New Roman
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-sm font-medium">
+                                        Background Color
+                                    </Label>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <input
+                                            className="w-12 h-10 rounded cursor-pointer"
+                                            onChange={(e) => setBackgroundColor(e.target.value)}
+                                            type="color"
+                                            value={backgroundColor}
                                         />
-                                    ) : (
-                                        <p className="text-muted-foreground">
-                                            No words to display
-                                        </p>
-                                    )}
+                                        <input
+                                            className={cn(
+                                                'flex-1 px-3 py-2 border rounded-md',
+                                                'bg-background border-input text-sm',
+                                                'focus:outline-none focus:ring-2 focus:ring-primary'
+                                            )}
+                                            onChange={(e) => setBackgroundColor(e.target.value)}
+                                            type="text"
+                                            value={backgroundColor}
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
                 </div>
 
-                {/* Controls Sidebar */}
-                <motion.div className="space-y-4" variants={itemVariants}>
-                    {/* Word Settings */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Settings</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label className="text-sm font-medium">Max Words</Label>
-                                <input
-                                    className={cn(
-                                        'w-full mt-1 px-3 py-2 border rounded-md',
-                                        'bg-background border-input',
-                                        'text-sm transition-colors',
-                                        'focus:outline-none focus:ring-2 focus:ring-primary'
-                                    )}
-                                    max={500}
-                                    min={10}
-                                    onChange={(e) =>
-                                        setMaxWords(Math.max(10, +e.target.value || 100))
-                                    }
-                                    type="number"
-                                    value={maxWords}
-                                />
-                            </div>
-
-                            <div>
-                                <Label className="text-sm font-medium">Layout</Label>
-                                <Select
-                                    onValueChange={(val) => setLayoutType(val as LayoutType)}
-                                    value={layoutType}
-                                >
-                                    <SelectTrigger className="mt-1">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="spiral">Spiral</SelectItem>
-                                        <SelectItem value="random">Random</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label className="text-sm font-medium">Font</Label>
-                                <Select
-                                    onValueChange={(val) => setFontFamily(val as FontFamily)}
-                                    value={fontFamily}
-                                >
-                                    <SelectTrigger className="mt-1">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Arial">Arial</SelectItem>
-                                        <SelectItem value="Georgia">Georgia</SelectItem>
-                                        <SelectItem value="Courier">Courier</SelectItem>
-                                        <SelectItem value="Verdana">Verdana</SelectItem>
-                                        <SelectItem value="Times New Roman">
-                                            Times New Roman
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label className="text-sm font-medium">Background</Label>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <input
-                                        className="w-12 h-10 rounded cursor-pointer"
-                                        onChange={(e) => setBackgroundColor(e.target.value)}
-                                        type="color"
-                                        value={backgroundColor}
-                                    />
-                                    <input
-                                        className={cn(
-                                            'flex-1 px-3 py-2 border rounded-md',
-                                            'bg-background border-input text-sm',
-                                            'focus:outline-none focus:ring-2 focus:ring-primary'
+                {/* Preview and Export Section */}
+                <div className="space-y-4">
+                    {/* Word Cloud Preview */}
+                    {hasText ? (
+                        <motion.div animate="visible" initial="hidden" variants={itemVariants}>
+                            <Card className="flex flex-col">
+                                <CardHeader>
+                                    <CardTitle className="text-base">Preview</CardTitle>
+                                    <CardDescription>
+                                        {wordCount === 0
+                                            ? 'Processing text...'
+                                            : `${wordCount} words found`}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1">
+                                    <div
+                                        className="w-full rounded border overflow-hidden"
+                                        ref={canvasRef}
+                                    >
+                                        {wordCount > 0 ? (
+                                            <WordCloudCanvas
+                                                backgroundColor={backgroundColor}
+                                                fontFamily={fontFamily}
+                                                words={wordPositions()}
+                                            />
+                                        ) : (
+                                            <div className="bg-gray-100 dark:bg-gray-800 h-64 flex items-center justify-center">
+                                                <p className="text-muted-foreground">
+                                                    Processing...
+                                                </p>
+                                            </div>
                                         )}
-                                        onChange={(e) => setBackgroundColor(e.target.value)}
-                                        type="text"
-                                        value={backgroundColor}
-                                    />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    ) : (
+                        <EmptyData
+                            description="Paste text on the left to generate a word cloud."
+                            Icon={FileText}
+                            title="No Text Provided"
+                        />
+                    )}
 
                     {/* Export */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Export</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Button
-                                className="w-full gap-2"
-                                disabled={words().length === 0}
-                                onClick={() => handleExport('png')}
-                                variant="outline"
-                            >
-                                <Download className="size-4" />
-                                Download PNG
-                            </Button>
+                    {hasText && (
+                        <motion.div
+                            animate="visible"
+                            initial="hidden"
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                            variants={itemVariants}
+                        >
+                            <Card>
+                                <CardContent className="flex flex-wrap gap-2 pt-6">
+                                    <Button
+                                        className="flex-1"
+                                        disabled={wordCount === 0}
+                                        onClick={() => handleExport('png')}
+                                    >
+                                        <Download className="size-4" />
+                                        Download PNG
+                                    </Button>
 
-                            <Button
-                                className="w-full gap-2"
-                                disabled={words().length === 0}
-                                onClick={() => handleExport('jpeg')}
-                                variant="outline"
-                            >
-                                <Download className="size-4" />
-                                Download JPEG
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Info */}
-                    <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-                        <CardHeader>
-                            <CardTitle className="text-base">Info</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm space-y-1 text-blue-900 dark:text-blue-100">
-                            <p>• Larger words appear more frequently</p>
-                            <p>• Common words are automatically removed</p>
-                            <p>• All processing happens in browser</p>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                                    <Button
+                                        className="flex-1"
+                                        disabled={wordCount === 0}
+                                        onClick={() => handleExport('jpeg')}
+                                        variant="secondary"
+                                    >
+                                        <Download className="size-4" />
+                                        Download JPEG
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+                </div>
             </div>
         </motion.div>
     );
