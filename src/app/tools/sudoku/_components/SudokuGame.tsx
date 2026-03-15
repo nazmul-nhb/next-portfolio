@@ -8,6 +8,8 @@ import {
     CircleGauge,
     Flame,
     Grid3x3,
+    Pause,
+    Play,
     RotateCcw,
     Shuffle,
     Zap,
@@ -36,16 +38,19 @@ import { copyGrid, generateSudoku, type SudokuDifficulty, solveSudoku } from '@/
 import { parseMsToDuration } from '@/lib/utils';
 import SudokuGrid from './SudokuGrid';
 
+type Scores = Record<SudokuDifficulty, number>;
+
 interface GameState {
     puzzle: number[][];
     solved: number[][];
     current: number[][];
     difficulty: SudokuDifficulty;
     scores: {
-        current: Partial<Record<SudokuDifficulty, number>>;
-        best: Record<SudokuDifficulty, number>;
-        totalSolved: Record<SudokuDifficulty, number>;
+        current: Partial<Scores>;
+        best: Scores;
+        totalSolved: Scores;
     };
+    isSolvedByUser: boolean;
 }
 
 const containerVariants: Variants = {
@@ -67,8 +72,14 @@ const itemVariants: Variants = {
 
 export default function SudokuGame() {
     const gameStore = useStorage<GameState | null>({ key: 'nhb-sudoku-game' });
+    const [isPaused, setIsPaused] = useState(false);
+    const [providedSolution, setProvidedSolution] = useState(false);
 
-    // const [gameState, setGameState] = useState<GameState | null>(null);
+    const stopwatch = useStopwatch({
+        autoStart: true,
+        interval: 50,
+    });
+
     const [selectedDifficulty, setSelectedDifficulty] = useState<SudokuDifficulty>('medium');
 
     const handleCellChange = useCallback(
@@ -81,22 +92,39 @@ export default function SudokuGame() {
             const newCurrent = gameStore.value.current.map((r) => [...r]);
             newCurrent[row][col] = value;
 
-            const updatedState = { ...gameStore.value, current: newCurrent };
-            // setGameState(updatedState);
+            const updatedState: GameState = {
+                ...gameStore.value,
+                current: newCurrent,
+                isSolvedByUser: false,
+                scores: {
+                    current: { [selectedDifficulty]: stopwatch.elapsed },
+                    best: { ...gameStore.value?.scores.best },
+                    totalSolved: gameStore.value?.scores.totalSolved ?? {
+                        easy: 0,
+                        hard: 0,
+                        medium: 0,
+                    },
+                },
+            };
+
             gameStore.set(updatedState);
         },
-        [gameStore]
+        [gameStore, selectedDifficulty, stopwatch.elapsed]
     );
 
     const handleSolve = useCallback(() => {
         if (!gameStore.value) return;
 
+        setProvidedSolution(true);
+
         const newState = {
             ...gameStore.value,
+            isSolvedByUser: false,
             current: copyGrid(gameStore.value.solved),
         };
 
-        // setGameState(newState);
+        setIsPaused(false);
+
         gameStore.set(newState);
     }, [gameStore]);
 
@@ -114,21 +142,17 @@ export default function SudokuGame() {
         );
     }, [gameStore.value]);
 
-    const stopwatch = useStopwatch({
-        autoStart: true,
-        interval: 50,
-        // paused: isComplete,
-    });
-
     const handleReset = useCallback(() => {
         if (!gameStore.value) return;
 
         const newState = {
             ...gameStore.value,
+            isSolvedByUser: false,
             current: copyGrid(gameStore.value.puzzle),
         };
 
-        // setGameState(newState);
+        setIsPaused(false);
+
         gameStore.set(newState);
     }, [gameStore]);
 
@@ -143,6 +167,7 @@ export default function SudokuGame() {
                 solved,
                 current: copyGrid(puzzle),
                 difficulty,
+                isSolvedByUser: false,
                 scores: {
                     current: { [difficulty]: 0 },
                     best: gameStore.value?.scores.best ?? { easy: 0, hard: 0, medium: 0 },
@@ -156,7 +181,8 @@ export default function SudokuGame() {
 
             stopwatch.reset();
 
-            // setGameState(newState);
+            setIsPaused(false);
+
             setSelectedDifficulty(difficulty);
             gameStore.set(newState);
         },
@@ -164,20 +190,73 @@ export default function SudokuGame() {
     );
 
     useEffect(() => {
-        if (isComplete) stopwatch.pause();
-    }, [isComplete, stopwatch.pause]);
+        if (isComplete) {
+            stopwatch.pause();
+
+            if (
+                isSolved &&
+                !providedSolution &&
+                gameStore.value &&
+                !gameStore.value.isSolvedByUser
+            ) {
+                const prevBestScores = gameStore.value?.scores.best;
+
+                const newBest = { ...prevBestScores };
+
+                const prevBest = prevBestScores[selectedDifficulty];
+
+                if (!prevBest || prevBest > stopwatch.elapsed) {
+                    newBest[selectedDifficulty] = stopwatch.elapsed;
+                }
+
+                const prevTotal = gameStore.value?.scores.totalSolved;
+
+                const newTotalSolved = {
+                    ...prevTotal,
+                    [selectedDifficulty]: prevTotal[selectedDifficulty] + 1,
+                };
+
+                const newState: GameState = {
+                    ...gameStore.value,
+                    isSolvedByUser: true,
+                    scores: {
+                        current: { [selectedDifficulty]: stopwatch.elapsed },
+                        best: newBest,
+                        totalSolved: newTotalSolved,
+                    },
+                };
+
+                gameStore.set(newState);
+            }
+        }
+    }, [
+        stopwatch.pause,
+        stopwatch.elapsed,
+        gameStore.set,
+        gameStore.value,
+        isComplete,
+        isSolved,
+        providedSolution,
+        selectedDifficulty,
+    ]);
 
     // Initialize game
     useEffect(() => {
         if (gameStore.value) {
-            // setGameState(gameStore.value);
             setSelectedDifficulty(gameStore.value.difficulty);
         } else {
             generateNewGame('medium');
         }
 
-        if (!isComplete) stopwatch.start();
-    }, [gameStore.value, isComplete, generateNewGame, stopwatch.start]);
+        if (!isComplete && !isPaused) stopwatch.start();
+    }, [gameStore.value, isComplete, isPaused, generateNewGame, stopwatch.start]);
+
+    const handlePauseGame = () => {
+        if (!gameStore.value) return;
+
+        setIsPaused((prev) => !prev);
+        stopwatch.toggle();
+    };
 
     return (
         <motion.div
@@ -218,6 +297,8 @@ export default function SudokuGame() {
                                 <div className="flex justify-center">
                                     <SudokuGrid
                                         current={gameStore.value.current}
+                                        handlePauseGame={handlePauseGame}
+                                        isPaused={isPaused}
                                         onCellChange={handleCellChange}
                                         puzzle={gameStore.value.puzzle}
                                         solved={gameStore.value.solved}
@@ -278,32 +359,33 @@ export default function SudokuGame() {
                                 {parseMsToDuration(stopwatch.elapsed)}
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Button
-                                className="w-full gap-2"
-                                onClick={handleReset}
-                                variant="outline"
-                            >
+                        <CardContent className="flex flex-wrap gap-4">
+                            <Button className="" onClick={handlePauseGame} variant="outline">
+                                {isPaused ? (
+                                    <Play className="size-4" />
+                                ) : (
+                                    <Pause className="size-4" />
+                                )}
+                                {isPaused ? 'Start' : 'Pause'}
+                            </Button>
+
+                            <Button className="" onClick={handleReset} variant="outline">
                                 <RotateCcw className="size-4" />
                                 Reset
                             </Button>
 
-                            <Button
-                                className="w-full gap-2"
-                                onClick={handleSolve}
-                                variant="outline"
-                            >
+                            <Button className="" onClick={handleSolve} variant="outline">
                                 <Zap className="size-4" />
                                 Show Solution
                             </Button>
 
                             <Button
-                                className="w-full gap-2"
+                                className=""
                                 onClick={gameStore.remove}
                                 variant="destructive"
                             >
                                 <BrushCleaning className="size-4" />
-                                Clear Storage
+                                Clear Records
                             </Button>
                         </CardContent>
                     </Card>

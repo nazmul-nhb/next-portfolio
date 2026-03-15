@@ -67,7 +67,7 @@ export type NavigationKey =
 /**
  * Editing and special keys.
  */
-export type EditingKey = 'Enter' | 'Escape' | 'Space' | 'Tab' | 'Backspace' | 'Delete';
+export type EditingKey = ' ' | 'Enter' | 'Escape' | 'Tab' | 'Backspace' | 'Delete';
 /**
  * Punctuation keys commonly used in keyboard shortcuts.
  * These are the literal characters as they appear in KeyboardEvent.key

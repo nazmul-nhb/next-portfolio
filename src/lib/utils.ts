@@ -205,29 +205,35 @@ export function parseMsToDuration(ms: number): string {
     const MINUTE = 60 * 1000;
     const SECOND = 1000;
 
+    const padAndFormat = (value: number, unit: string, pad = 2) => {
+        const padded = String(value).padStart(pad, '0');
+
+        return padded.concat(' ', unit, value > 1 ? 's' : '');
+    };
+
     const parts: string[] = [];
 
     const weeks = Math.floor(ms / WEEK);
-    if (weeks) parts.push(`${weeks} week${weeks > 1 ? 's' : ''}`);
+    if (weeks) parts.push(padAndFormat(weeks, 'week'));
     ms %= WEEK;
 
     const days = Math.floor(ms / DAY);
-    if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    if (days) parts.push(padAndFormat(days, 'day'));
     ms %= DAY;
 
     const hours = Math.floor(ms / HOUR);
-    if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+    if (hours) parts.push(padAndFormat(hours, 'hour'));
     ms %= HOUR;
 
     const minutes = Math.floor(ms / MINUTE);
-    if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+    parts.push(padAndFormat(minutes, 'minute'));
     ms %= MINUTE;
 
     const seconds = Math.floor(ms / SECOND);
-    if (seconds) parts.push(`${seconds} sec${seconds > 1 ? 's' : ''}`);
+    parts.push(padAndFormat(seconds, 'second'));
     ms %= SECOND;
 
-    if (ms) parts.push(`${ms} ms`);
+    parts.push(String(ms).padStart(3, '0').concat(' ms'));
 
     return parts.join(' ');
 }
