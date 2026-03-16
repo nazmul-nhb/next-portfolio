@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import {
     Card,
     CardContent,
@@ -12,7 +13,7 @@ import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import Navigate from './_components/Navigate';
 
-const description = 'Utilities for daily productivity and personal management.';
+const description = 'Utilities for daily productivity, personal management and fun.';
 
 export const metadata: Metadata = {
     title: 'Tools',
@@ -37,12 +38,12 @@ export const metadata: Metadata = {
 export default function ToolsPage() {
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">All Tools</h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                    Utilities available for your account.
-                </p>
-            </div>
+            <TitleWithShare
+                description={description}
+                route="/tools"
+                shareLabel="Share this page"
+                title={`All Tools (${siteConfig.toolsMenus.length})`}
+            />
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {siteConfig.toolsMenus.map(({ description, href, icon: Icon, label }) => (

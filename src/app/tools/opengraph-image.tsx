@@ -13,7 +13,7 @@ export const contentType = 'image/png';
 export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
-            description="Utilities for daily productivity and personal management."
+            description="Utilities for daily productivity, personal management and fun."
             siteTitle={`Tools » ${siteConfig.name}`}
             tag={`Productivity Tools`}
             title={`Tools from ${siteConfig.name}`}

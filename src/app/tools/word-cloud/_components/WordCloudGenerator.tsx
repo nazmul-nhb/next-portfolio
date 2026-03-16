@@ -2,15 +2,18 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { FileText, ImageDown, ScanEye, Settings2 } from 'lucide-react';
+import { AlertOctagon, FileText, ImageDown, ScanEye, Settings2, Text } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
+import { clampNumber, countWords, formatWithPlural } from 'nhb-toolbox';
 import { useCallback, useRef, useState } from 'react';
 import EmptyData from '@/components/misc/empty-data';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -23,6 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { FONT_OPTIONS } from '@/lib/constants';
 import {
@@ -53,7 +57,7 @@ const itemVariants: Variants = {
     },
 };
 
-const FONT_FAMIILIES = [
+const FONT_FAMILIES = [
     {
         value: 'system-ui',
         label: 'System UI',
@@ -64,21 +68,21 @@ const FONT_FAMIILIES = [
         label: 'Arial',
         fontFamily: '"Arial"',
     },
+    ...FONT_OPTIONS,
     {
         value: 'times',
         label: 'Times New Roman',
         fontFamily: '"Times New Roman"',
     },
-    ...FONT_OPTIONS,
+    {
+        value: 'digital',
+        label: 'Digital Clock',
+        fontFamily: '"Digital-7 Mono"',
+    },
     {
         value: 'verdana',
         label: 'Verdana',
         fontFamily: '"Verdana"',
-    },
-    {
-        value: 'georgia',
-        label: 'Georgia',
-        fontFamily: '"Georgia"',
     },
     {
         value: 'courier',
@@ -93,6 +97,7 @@ export default function WordCloudGenerator() {
     const [text, setText] = useState('');
     const [maxWords, setMaxWords] = useState<number>(100);
     const [layoutType, setLayoutType] = useState<LayoutType>('random');
+    const [skipStopwords, setSkipStopwords] = useState(true);
     const [fontFamily, setFontFamily] = useState<string>('system-ui');
     const [backgroundColor, setBackgroundColor] = useState('#ffffff');
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -100,10 +105,10 @@ export default function WordCloudGenerator() {
     const words = useCallback(() => {
         if (!text.trim()) return [];
 
-        const processed = processText(text);
+        const processed = processText(text, skipStopwords);
         const frequencies = calculateFrequencies(processed);
         return getTopWords(frequencies, maxWords);
-    }, [text, maxWords]);
+    }, [text, maxWords, skipStopwords]);
 
     const wordPositions = useCallback((): WordPosition[] => {
         const wordList = words();
@@ -120,14 +125,11 @@ export default function WordCloudGenerator() {
             const canvas = canvasRef.current?.querySelector('canvas') as HTMLCanvasElement;
             if (!canvas) return;
 
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            // Create temporary canvas with background
+            // Create a high-quality temporary canvas
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = canvas.width;
             tempCanvas.height = canvas.height;
-            const tempCtx = tempCanvas.getContext('2d');
+            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
             if (!tempCtx) return;
 
@@ -135,12 +137,15 @@ export default function WordCloudGenerator() {
             tempCtx.fillStyle = backgroundColor;
             tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-            // Draw word cloud
+            // Draw word cloud with high quality settings
+            tempCtx.imageSmoothingEnabled = true;
+            tempCtx.imageSmoothingQuality = 'high';
             tempCtx.drawImage(canvas, 0, 0);
 
-            // Download
+            // Download with appropriate quality settings
             const link = document.createElement('a');
-            link.href = tempCanvas.toDataURL(`image/${format}`);
+            const quality = format === 'png' ? undefined : 1;
+            link.href = tempCanvas.toDataURL(`image/${format}`, quality);
             link.download = `word-cloud-${Date.now()}.${format}`;
             link.click();
         },
@@ -170,7 +175,7 @@ export default function WordCloudGenerator() {
                                 </CardTitle>
                                 <CardDescription>
                                     Enter or paste text to generate a word cloud. Stopwords
-                                    (the, and, is, etc.) are automatically removed.
+                                    (the, and, is, etc.) are removable.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -182,6 +187,15 @@ export default function WordCloudGenerator() {
                                     value={text}
                                 />
                             </CardContent>
+                            <CardFooter>
+                                <SmartAlert
+                                    description={
+                                        <span className="font-semibold">
+                                            Total {formatWithPlural(countWords(text), 'Word')}
+                                        </span>
+                                    }
+                                />
+                            </CardFooter>
                         </Card>
                     </motion.div>
 
@@ -198,9 +212,11 @@ export default function WordCloudGenerator() {
                                 <div className="space-y-2">
                                     <Label className="text-sm font-medium">Max Words</Label>
                                     <Input
-                                        max={500}
-                                        min={10}
-                                        onChange={(e) => setMaxWords(+e.target.value)}
+                                        max={9999}
+                                        min={2}
+                                        onChange={(e) =>
+                                            setMaxWords(clampNumber(+e.target.value, 1, 9999))
+                                        }
                                         type="number"
                                         value={maxWords}
                                     />
@@ -234,7 +250,7 @@ export default function WordCloudGenerator() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {FONT_FAMIILIES.map((font) => (
+                                            {FONT_FAMILIES.map((font) => (
                                                 <SelectItem
                                                     key={font.value}
                                                     value={font.fontFamily}
@@ -265,9 +281,27 @@ export default function WordCloudGenerator() {
                                         />
                                     </div>
                                 </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium">
+                                        Skip Stopwords
+                                    </Label>
+                                    <Switch
+                                        checked={skipStopwords}
+                                        onCheckedChange={setSkipStopwords}
+                                        size="default"
+                                    />
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>
+
+                    <SmartAlert
+                        className="border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-100"
+                        description="A simplified algorithm is implemented to generate spiral layout. Use a professional tool to generate better spiral word cloud layout."
+                        Icon={AlertOctagon}
+                        title="About Spiral Layout"
+                    />
                 </div>
 
                 {/* Preview and Export Section */}
@@ -281,9 +315,13 @@ export default function WordCloudGenerator() {
                                         <ScanEye className="size-4" /> Preview
                                     </CardTitle>
                                     <CardDescription>
-                                        {wordCount === 0
-                                            ? 'Processing text...'
-                                            : `${wordCount} words found`}
+                                        <SmartAlert
+                                            description={
+                                                wordCount === 0
+                                                    ? 'Paste text in the input area or set Max Words to more than 0'
+                                                    : `${formatWithPlural(wordCount, 'unique word')} found`
+                                            }
+                                        />
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1">
@@ -298,11 +336,11 @@ export default function WordCloudGenerator() {
                                                 words={wordPositions()}
                                             />
                                         ) : (
-                                            <div className="bg-gray-100 dark:bg-gray-800 h-64 flex items-center justify-center">
-                                                <p className="text-muted-foreground">
-                                                    Processing...
-                                                </p>
-                                            </div>
+                                            <EmptyData
+                                                description="Paste text in the input area or set Max Words to more than 0 to generate a word cloud."
+                                                Icon={Text}
+                                                title="No Text Provided"
+                                            />
                                         )}
                                     </div>
                                 </CardContent>
@@ -310,7 +348,7 @@ export default function WordCloudGenerator() {
                         </motion.div>
                     ) : (
                         <EmptyData
-                            description="Paste text on the left to generate a word cloud."
+                            description="Paste text in the input area to generate a word cloud."
                             Icon={FileText}
                             title="No Text Provided"
                         />
@@ -325,7 +363,7 @@ export default function WordCloudGenerator() {
                             variants={itemVariants}
                         >
                             <Card>
-                                <CardContent className="flex flex-wrap gap-2 pt-6">
+                                <CardContent className="flex flex-wrap gap-2">
                                     <Button
                                         className="flex-1"
                                         disabled={wordCount === 0}

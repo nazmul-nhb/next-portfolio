@@ -9,17 +9,24 @@ type Props = {
     description: string;
     route: Route;
     className?: string;
+    shareLabel?: string;
 };
 
-export default function TitleWithShare({ className, description, route, title }: Props) {
+export default function TitleWithShare({
+    className,
+    description,
+    route,
+    title,
+    shareLabel = 'Share this tool',
+}: Props) {
     return (
         <div className={className}>
             <div className="flex items-start gap-2 flex-wrap justify-between">
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h1>
                 <ShareButton
-                    buttonLabel="Share this tool"
+                    buttonLabel={shareLabel}
                     route={route}
-                    shareLabel="Share this tool"
+                    shareLabel={shareLabel}
                     shareText={`${title} from ${siteConfig.name}`}
                 />
             </div>

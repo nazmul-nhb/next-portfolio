@@ -73,12 +73,14 @@ const DEFAULT_STOPWORDS = new Set([
 /**
  * Normalize and process text
  */
-export function processText(text: string): string[] {
-    return text
+export function processText(text: string, skipStopwords: boolean = true): string[] {
+    const processed = text
         .toLowerCase()
         .replace(/[^\w\s'-]/g, '') // Remove punctuation except hyphens and apostrophes
         .split(/\s+/)
-        .filter((word) => word.length > 1 && !DEFAULT_STOPWORDS.has(word));
+        .filter((word) => word.length > 1);
+
+    return skipStopwords ? processed.filter((word) => !DEFAULT_STOPWORDS.has(word)) : processed;
 }
 
 /**
@@ -110,13 +112,13 @@ export function calculateFontSize(
     frequency: number,
     minFreq: number,
     maxFreq: number,
-    minSize: number = 12,
-    maxSize: number = 72
+    minSize: number = 24,
+    maxSize: number = 120
 ): number {
     if (maxFreq === minFreq) return (minSize + maxSize) / 2;
 
     const normalized = (frequency - minFreq) / (maxFreq - minFreq);
-    return Math.round(minSize + normalized * (maxSize - minSize)) * 2;
+    return Math.round(minSize + normalized * (maxSize - minSize));
 }
 
 /**
@@ -127,10 +129,20 @@ export function generateColorPalette(count: number): HSL[] {
 
     for (let i = 0; i < count; i++) {
         const hue = (i / count) * 360;
-        colors.push(`hsl(${Math.round(hue)}, 70%, 50%)`);
+        colors.push(`hsl(${Math.round(hue)}, 66%, 55%)`);
     }
 
     return colors;
+}
+
+/**
+ * Calculate text bounding box dimensions (approximate)
+ */
+function getTextBounds(text: string, fontSize: number): { width: number; height: number } {
+    // Rough estimate: average character width is about 0.6x font size
+    const width = text.length * fontSize * 0.55;
+    const height = fontSize * 1.2;
+    return { width, height };
 }
 
 /**
@@ -156,18 +168,30 @@ export function spiralLayout(
         const word = words[i];
         const fontSize = calculateFontSize(word.frequency, minFreq, maxFreq);
         const color = colors[i % colors.length];
+        const bounds = getTextBounds(word.word, fontSize);
 
         // Spiral outward
-        radius += 5 + fontSize / 10;
-        angle += Math.random() * 0.1 + 0.1;
+        radius += Math.max(10, fontSize / 5);
+        angle += Math.random() * 0.15 + 0.1;
 
-        const x = centerX + Math.cos(angle) * radius;
-        const y = centerY + Math.sin(angle) * radius;
+        let x = centerX + Math.cos(angle) * radius;
+        let y = centerY + Math.sin(angle) * radius;
+
+        // Clamp to canvas with text dimensions
+        const padding = 40;
+        x = Math.max(
+            padding + bounds.width / 2,
+            Math.min(width - padding - bounds.width / 2, x)
+        );
+        y = Math.max(
+            padding + bounds.height / 2,
+            Math.min(height - padding - bounds.height / 2, y)
+        );
 
         positioned.push({
             ...word,
-            x: Math.max(20, Math.min(width - 20, x)),
-            y: Math.max(30, Math.min(height - 30, y)),
+            x,
+            y,
             fontSize,
             color,
         });
@@ -187,12 +211,25 @@ export function randomLayout(
 ): WordPosition[] {
     const minFreq = Math.min(...words.map((w) => w.frequency));
     const maxFreq = Math.max(...words.map((w) => w.frequency));
+    const padding = 40;
 
-    return words.map((word, i) => ({
-        ...word,
-        x: Math.random() * (width - 100) + 50,
-        y: Math.random() * (height - 100) + 50,
-        fontSize: calculateFontSize(word.frequency, minFreq, maxFreq),
-        color: colors[i % colors.length],
-    }));
+    return words.map((word, i) => {
+        const fontSize = calculateFontSize(word.frequency, minFreq, maxFreq);
+        const bounds = getTextBounds(word.word, fontSize);
+
+        const x =
+            Math.random() * (width - 2 * padding - bounds.width) + padding + bounds.width / 2;
+        const y =
+            Math.random() * (height - 2 * padding - bounds.height) +
+            padding +
+            bounds.height / 2;
+
+        return {
+            ...word,
+            x,
+            y,
+            fontSize,
+            color: colors[i % colors.length],
+        };
+    });
 }

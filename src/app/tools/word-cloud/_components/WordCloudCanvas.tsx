@@ -20,7 +20,7 @@ export default function WordCloudCanvas({
         const canvas = canvasRef.current;
         if (!canvas || words.length === 0) return;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx) return;
 
         // Set canvas size
@@ -28,6 +28,10 @@ export default function WordCloudCanvas({
         const height = 1200;
         canvas.width = width;
         canvas.height = height;
+
+        // Enable high-quality rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         // Clear canvas
         ctx.fillStyle = backgroundColor;
@@ -40,11 +44,11 @@ export default function WordCloudCanvas({
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Add shadow for better readability
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 3;
-            ctx.shadowOffsetX = 1;
-            ctx.shadowOffsetY = 1;
+            // Add subtle shadow for better readability
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+            ctx.shadowBlur = 2;
+            ctx.shadowOffsetX = 0.5;
+            ctx.shadowOffsetY = 0.5;
 
             ctx.fillText(word.word, word.x, word.y);
 
