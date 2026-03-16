@@ -1,5 +1,7 @@
 'use client';
 
+import { Text } from 'lucide-react';
+import EmptyData from '@/components/misc/empty-data';
 import { getCharacterStatus } from '@/lib/tools/typing-test';
 import { cn } from '@/lib/utils';
 
@@ -10,10 +12,20 @@ interface TypingDisplayProps {
 }
 
 export default function TypingDisplay({ passage, typed, testState }: TypingDisplayProps) {
+    if (!passage) {
+        return (
+            <EmptyData
+                description="Please provide a text or generate a random text!"
+                Icon={Text}
+                title="No text to display"
+            />
+        );
+    }
+
     return (
         <div
             className={cn(
-                'p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 font-mono text-sm leading-relaxed'
+                'p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 font-cascadia text-sm leading-relaxed overflow-auto max-h-40 custom-scroll'
             )}
         >
             {passage?.split('').map((char, idx) => {

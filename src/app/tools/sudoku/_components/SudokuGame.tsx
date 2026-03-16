@@ -298,7 +298,10 @@ export default function SudokuGame() {
                                                 : '✗ Incorrect Solution'}
                                         </span>
                                     ) : (
-                                        'Use keyboard (1-9) or arrow keys to navigate'
+                                        <span>
+                                            Use keyboard <Kbd>1-9</Kbd> and arrow keys to
+                                            navigate
+                                        </span>
                                     )}
                                 </CardDescription>
                             </CardHeader>
@@ -334,7 +337,7 @@ export default function SudokuGame() {
                                                     selectedDifficulty
                                                 ]
                                             }
-                                            title={`Total Puzzles Solved in ${toTitleCase(selectedDifficulty)} Mode`}
+                                            title={`Total Solved in ${toTitleCase(selectedDifficulty)} Mode`}
                                         />
                                     </div>
                                 </div>
@@ -426,7 +429,7 @@ export default function SudokuGame() {
                     <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <BadgeQuestionMark className="size-4" /> How to Play
+                                <BadgeQuestionMark className="size-4 mb-0.5" /> How to Play
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm space-y-1 text-blue-900 dark:text-blue-100">

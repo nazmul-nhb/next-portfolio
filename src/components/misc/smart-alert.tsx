@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 interface Props extends AlertVariantProps {
     title?: ReactNode;
     description?: ReactNode;
-    Icon?: ComponentType;
+    Icon?: ComponentType<{ className?: string }>;
     className?: string;
 }
 

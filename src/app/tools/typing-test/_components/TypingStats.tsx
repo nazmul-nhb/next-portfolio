@@ -48,6 +48,16 @@ export default function TypingStats({ metrics }: TypingStatsProps) {
                         {metrics.correctChars}/{metrics.totalChars}
                     </span>
                 </div>
+                {metrics.totalChars > 0 && (
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                        <div
+                            className="bg-emerald-500 dark:bg-emerald-400 h-1.5 rounded-full transition-all duration-300"
+                            style={{
+                                width: `${(metrics.correctChars / metrics.totalChars) * 100}%`,
+                            }}
+                        />
+                    </div>
+                )}
             </div>
         </Fragment>
     );

@@ -42,13 +42,19 @@ export function getRandomPassage(): string {
 
 /**
  * Calculate typing metrics
+ * @param passage - The original text to type
+ * @param typed - What the user has typed
+ * @param secondsElapsed - How long the test has been running
+ * @returns Typing metrics including WPM, accuracy, errors, and character counts
  */
 export function calculateMetrics(
     passage: string,
     typed: string,
     secondsElapsed: number
 ): TypingMetrics {
-    const durationInMinutes = secondsElapsed / 60;
+    // Prevent division by zero - ensure minimum 1 second
+    const actualSeconds = Math.max(1, secondsElapsed);
+    const durationInMinutes = actualSeconds / 60;
 
     let correctChars = 0;
     let errors = 0;
@@ -71,10 +77,10 @@ export function calculateMetrics(
     const missedChars = Math.max(0, passage?.length - typed.length);
     const totalErrors = errors + missedChars;
 
-    // Calculate WPM (words per 5 characters)
-    const wpm = Math.round(correctChars / 5 / durationInMinutes);
+    // Calculate WPM (words per 5 characters) - standard typing test metric
+    const wpm = durationInMinutes > 0 ? Math.round(correctChars / 5 / durationInMinutes) : 0;
 
-    // Calculate accuracy
+    // Calculate accuracy based only on typed characters
     const totalChars = typed.length;
     const accuracy = totalChars === 0 ? 0 : Math.round((correctChars / totalChars) * 100);
 
