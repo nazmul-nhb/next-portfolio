@@ -83,7 +83,7 @@ export default function WordCounter() {
         };
     }, [inputText]);
 
-    const statItems: StatItem[] = [
+    const statItems = [
         {
             label: 'Characters',
             value: stats.characters,
@@ -98,7 +98,7 @@ export default function WordCounter() {
         },
         { label: 'Sentences', value: stats.sentences, icon: <TextWrap />, color: 'amber' },
         { label: 'Paragraphs', value: stats.paragraphs, icon: <Pilcrow />, color: 'teal' },
-    ];
+    ] as const satisfies StatItem[];
 
     return useMount(
         <div className="space-y-8">
@@ -138,8 +138,8 @@ export default function WordCounter() {
                         initial="hidden"
                         variants={containerVariants}
                     >
-                        {statItems.map((item, index) => (
-                            <motion.div key={index} variants={statVariants}>
+                        {statItems.map((item) => (
+                            <motion.div key={item.label} variants={statVariants}>
                                 <Card className="overflow-hidden h-full">
                                     <CardContent>
                                         <div className="space-y-2">

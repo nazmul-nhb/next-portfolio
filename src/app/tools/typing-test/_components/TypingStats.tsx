@@ -1,6 +1,7 @@
 'use client';
 
 import { isNumber } from 'nhb-toolbox';
+import { Fragment } from 'react/jsx-runtime';
 import { getAccuracyColor, type TypingMetrics } from '@/lib/tools/typing-test';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +11,7 @@ interface TypingStatsProps {
 
 export default function TypingStats({ metrics }: TypingStatsProps) {
     return (
-        <>
+        <Fragment>
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">WPM</span>
@@ -48,6 +49,6 @@ export default function TypingStats({ metrics }: TypingStatsProps) {
                     </span>
                 </div>
             </div>
-        </>
+        </Fragment>
     );
 }

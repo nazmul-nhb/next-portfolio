@@ -4,7 +4,7 @@ import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Keyboard, RotateCcw, Timer, Zap } from 'lucide-react';
 import { useMount, useStorage } from 'nhb-hooks';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -221,7 +221,7 @@ export default function TypingSpeedTest() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {testState === 'idle' ? (
-                                <>
+                                <Fragment>
                                     <div>
                                         <Label className="text-sm font-medium">Duration</Label>
                                         <Select
@@ -254,7 +254,7 @@ export default function TypingSpeedTest() {
                                         <Zap className="size-4" />
                                         Start Test
                                     </Button>
-                                </>
+                                </Fragment>
                             ) : (
                                 <div className="text-center">
                                     <div
