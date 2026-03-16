@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Button } from '@/components/ui/button';
 import FloatingButton from '@/components/ui/floating-button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { siteConfig } from '@/configs/site';
 
 export function ToolsSidebar() {
@@ -30,35 +31,40 @@ export function ToolsSidebar() {
                 <p className="text-xs text-muted-foreground">Personal productivity utilities</p>
             </div>
 
-            <nav className="flex-1 overflow-y-auto space-y-0.5 p-3">
-                <Link
-                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                        isActive('/tools')
-                            ? 'bg-primary text-primary-foreground shadow-sm'
-                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                    }`}
-                    href="/tools"
-                    onClick={() => setDrawerOpen(false)}
+            <nav>
+                <ScrollArea
+                    className="h-[calc(100vh-9.75rem)] scroll-smooth **:data-radix-scroll-area-viewport:scroll-smooth space-y-0.5 p-3"
+                    role="navigation"
                 >
-                    All Tools
-                </Link>
-                {siteConfig.toolsMenus.map((item) => {
-                    return (
-                        <Link
-                            className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                                isActive(item.href)
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                            }`}
-                            href={item.href}
-                            key={item.href}
-                            onClick={() => setDrawerOpen(false)}
-                        >
-                            <item.icon className="size-4" />
-                            {item.label}
-                        </Link>
-                    );
-                })}
+                    <Link
+                        className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                            isActive('/tools')
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        }`}
+                        href="/tools"
+                        onClick={() => setDrawerOpen(false)}
+                    >
+                        All Tools
+                    </Link>
+                    {siteConfig.toolsMenus.map((item) => {
+                        return (
+                            <Link
+                                className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                                    isActive(item.href)
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                }`}
+                                href={item.href}
+                                key={item.href}
+                                onClick={() => setDrawerOpen(false)}
+                            >
+                                <item.icon className="size-4" />
+                                {item.label}
+                            </Link>
+                        );
+                    })}
+                </ScrollArea>
             </nav>
 
             <div className="border-t border-border p-3">
@@ -75,8 +81,8 @@ export function ToolsSidebar() {
 
     return (
         <Fragment>
-            <aside className="hidden w-60 shrink-0 border-r border-border bg-card/50 md:block">
-                <div className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
+            <aside className="hidden w-fit shrink-0 border-r border-border bg-card/50 md:block">
+                <div className="sticky top-16 h-[calc(100vh-4rem)]">
                     <NavContent />
                 </div>
             </aside>

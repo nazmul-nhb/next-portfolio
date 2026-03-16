@@ -111,7 +111,7 @@ importers:
         specifier: ^4.28.80
         version: 4.28.80
       nodemailer:
-        specifier: ^8.0.2
+        specifier: ^8.0.0
         version: 8.0.2
       qrcode.react:
         specifier: ^4.2.0

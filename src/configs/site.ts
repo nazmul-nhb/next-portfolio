@@ -92,6 +92,12 @@ export const siteConfig = {
     ] satisfies TabItem[],
     toolsMenus: [
         {
+            href: '/tools/expense-manager',
+            label: 'Expense Manager',
+            icon: Wallet,
+            description: 'Track income, expenses, loans, repayments, and net cash in hand.',
+        },
+        {
             href: '/tools/age-calculator',
             label: 'Age Calculator',
             icon: ClockFading,
@@ -126,13 +132,6 @@ export const siteConfig = {
                 'Generate unique anagrams of any word using multiple filtering options.',
         },
         {
-            href: '/tools/spin-wheel',
-            label: 'Spinning Wheel',
-            icon: FerrisWheel,
-            description:
-                'Make random decisions with an interactive spinning wheel. Add custom options, and share link.',
-        },
-        {
             href: '/tools/word-counter',
             label: 'Word Counter',
             icon: WholeWord,
@@ -140,11 +139,60 @@ export const siteConfig = {
                 'Analyze your text with detailed word, character, and readability metrics.',
         },
         {
+            href: '/tools/typing-test',
+            label: 'Typing Speed',
+            icon: Keyboard,
+            description:
+                'Test your typing speed with real-time metrics, accuracy tracking, and multiple duration modes.',
+        },
+        {
             href: '/tools/text-diff-checker',
             label: 'Text Diff Checker',
             icon: ArrowLeftRight,
             description:
                 'Compare two texts and view detailed differences with line-by-line highlighting.',
+        },
+        {
+            href: '/tools/spin-wheel',
+            label: 'Spinning Wheel',
+            icon: FerrisWheel,
+            description:
+                'Make random decisions with an interactive spinning wheel. Add custom options, and share link.',
+        },
+        {
+            href: '/tools/sudoku',
+            label: 'Sudoku Puzzle',
+            icon: Grid3x3,
+            description:
+                'Generate sudoku puzzles, solve with backtracking, and play with difficulty levels.',
+        },
+        {
+            href: '/tools/qr-code-generator',
+            label: 'QR Code Generator',
+            icon: QrCode,
+            description:
+                'Generate QR codes from text or URLs with customizable size, colors, and error correction levels.',
+        },
+        {
+            href: '/tools/resume-builder',
+            label: 'Resume Builder',
+            icon: FileUser,
+            description:
+                'Create and manage professional resume with live preview, customizable fonts, and more.',
+        },
+        {
+            href: '/tools/photo-card',
+            label: 'Photo Card Generator',
+            icon: ImagePlus,
+            description:
+                'Create polished photo cards with layered images, custom typography, live preview, and more.',
+        },
+        {
+            href: '/tools/word-cloud',
+            label: 'Word Cloud Generator',
+            icon: CloudFog,
+            description:
+                'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
         },
         {
             href: '/tools/base-conversions',
@@ -168,59 +216,11 @@ export const siteConfig = {
                 'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
         },
         {
-            href: '/tools/qr-code-generator',
-            label: 'QR Code Generator',
-            icon: QrCode,
-            description:
-                'Generate QR codes from text or URLs with customizable size, colors, and error correction levels.',
-        },
-        {
             href: '/tools/npm-package',
             label: 'Package Details',
             icon: ImNpm,
             description:
                 'Search for npm package(s) and view comprehensive details including downloads and maintainers.',
-        },
-        {
-            href: '/tools/resume-builder',
-            label: 'Resume Builder',
-            icon: FileUser,
-            description:
-                'Create and manage professional resume with live preview, customizable fonts, and more.',
-        },
-        {
-            href: '/tools/photo-card',
-            label: 'Photo Card Generator',
-            icon: ImagePlus,
-            description:
-                'Create polished photo cards with layered images, custom typography, live preview, and more.',
-        },
-        {
-            href: '/tools/expense-manager',
-            label: 'Expense Manager',
-            icon: Wallet,
-            description: 'Track income, expenses, loans, repayments, and net cash in hand.',
-        },
-        {
-            href: '/tools/sudoku',
-            label: 'Sudoku',
-            icon: Grid3x3,
-            description:
-                'Generate valid puzzles, solve with backtracking, and play with difficulty levels.',
-        },
-        {
-            href: '/tools/word-cloud',
-            label: 'Word Cloud',
-            icon: CloudFog,
-            description:
-                'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
-        },
-        {
-            href: '/tools/typing-test',
-            label: 'Typing Speed',
-            icon: Keyboard,
-            description:
-                'Test your typing speed with real-time metrics, accuracy tracking, and multiple duration modes.',
         },
     ] satisfies Array<{ href: Route; label: string; icon: ComponentType; description: string }>,
     adminMenus: [

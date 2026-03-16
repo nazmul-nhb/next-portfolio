@@ -32,7 +32,11 @@ export const metadata: Metadata = {
 export default function SudokuPage() {
     return (
         <div className="space-y-8">
-            <TitleWithShare description={description} route="/tools/sudoku" title="Sudoku" />
+            <TitleWithShare
+                description={description}
+                route="/tools/sudoku"
+                title="Sudoku Puzzle"
+            />
             <SudokuGame />
         </div>
     );

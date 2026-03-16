@@ -41,7 +41,7 @@ export default function ManageUUID() {
         <div className="space-y-8">
             <TitleWithShare
                 description="Create UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing UUIDs to inspect their metadata."
-                route="/tools/uuid"
+                route="/tools/uuid?tab=generate"
                 title="UUID Generator & Decoder"
             />
 

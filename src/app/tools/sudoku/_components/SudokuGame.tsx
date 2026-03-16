@@ -60,7 +60,6 @@ interface GameState {
         best: SudokuScores;
         totalSolved: SudokuScores;
     };
-    isPaused: boolean;
     isSolvedByUser: boolean;
 }
 
@@ -89,7 +88,7 @@ export default function SudokuGame() {
     // Track latest elapsed time for persistence without causing effect re-runs
     const elapsedRef = useRef(0);
 
-    const [isPaused, setIsPaused] = useState(gameStore.value?.isPaused ?? false);
+    const [isPaused, setIsPaused] = useState(false);
     const [isProvidedSolution, setIsProvidedSolution] = useState(false);
     const [selectedDifficulty, setSelectedDifficulty] = useState<SudokuDifficulty>('medium');
 
@@ -171,7 +170,6 @@ export default function SudokuGame() {
                 current: copyGrid(puzzle),
                 difficulty,
                 isSolvedByUser: false,
-                isPaused: true,
                 scores: {
                     current: 0,
                     best: gameStore.value?.scores.best ?? DEFAULT_SCORES,
