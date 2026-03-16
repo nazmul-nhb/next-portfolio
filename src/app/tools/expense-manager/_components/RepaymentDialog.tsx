@@ -22,8 +22,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { getCurrentDateTimeLocal, toMinorUnits } from '@/lib/expenses';
 import { useApiMutation } from '@/lib/hooks/use-api';
+import { getCurrentDateTimeLocal, toMinorUnits } from '@/lib/tools/expenses';
 import { LoanRepaymentFormSchema } from '@/lib/zod-schema/expenses';
 import type { LoanItem } from '@/types/expenses';
 import type { RepaymentFormData } from './types';

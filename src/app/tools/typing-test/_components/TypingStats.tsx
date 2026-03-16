@@ -1,7 +1,7 @@
 'use client';
 
 import { isNumber } from 'nhb-toolbox';
-import { getAccuracyColor, type TypingMetrics } from '@/lib/typing-test';
+import { getAccuracyColor, type TypingMetrics } from '@/lib/tools/typing-test';
 import { cn } from '@/lib/utils';
 
 interface TypingStatsProps {

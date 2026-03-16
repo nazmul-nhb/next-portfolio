@@ -6,8 +6,6 @@ import { uuid } from 'nhb-toolbox/hash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { PHOTO_CARD_SECTION_LABELS } from '@/lib/constants';
-import type { SavedPhotoCard } from '@/lib/indexed-db';
-import { deleteSavedPhotoCard, listSavedPhotoCards, savePhotoCard } from '@/lib/indexed-db';
 import { clampLayerPositionToSection, getSectionBounds } from '@/lib/photo-card/layout';
 import {
     downloadBlob,
@@ -28,6 +26,12 @@ import {
     DEFAULT_PHOTO_CARD_CONFIG,
     normalizePhotoCardConfig,
 } from '@/lib/photo-card/utils';
+import type { SavedPhotoCard } from '@/lib/tools/indexed-db';
+import {
+    deleteSavedPhotoCard,
+    listSavedPhotoCards,
+    savePhotoCard,
+} from '@/lib/tools/indexed-db';
 import PhotoCardCanvas from './PhotoCardCanvas';
 import PhotoCardControls from './PhotoCardControls';
 

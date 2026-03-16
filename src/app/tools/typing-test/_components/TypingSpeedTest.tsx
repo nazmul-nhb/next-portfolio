@@ -29,7 +29,7 @@ import {
     getWPMCategory,
     type TestDuration,
     type TypingMetrics,
-} from '@/lib/typing-test';
+} from '@/lib/tools/typing-test';
 import { cn } from '@/lib/utils';
 import TypingDisplay from './TypingDisplay';
 import TypingStats from './TypingStats';

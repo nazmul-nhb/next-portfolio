@@ -24,7 +24,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import {
     calculateFrequencies,
     generateColorPalette,
@@ -33,7 +32,8 @@ import {
     randomLayout,
     spiralLayout,
     type WordPosition,
-} from '@/lib/word-cloud';
+} from '@/lib/tools/word-cloud';
+import { cn } from '@/lib/utils';
 import WordCloudCanvas from './WordCloudCanvas';
 
 const containerVariants: Variants = {

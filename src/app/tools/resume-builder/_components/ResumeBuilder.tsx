@@ -8,17 +8,17 @@ import { uuid } from 'nhb-toolbox/hash';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { confirmToast } from '@/components/misc/confirm';
+import { DEFAULT_RESUME_CONFIG } from '@/lib/resume-builder/defaults';
+import { ResumeConfigSchema } from '@/lib/resume-builder/schema';
+import type { ResumeConfig, ResumeImageLayer } from '@/lib/resume-builder/types';
+import { normalizeResumeConfig, reorderItems } from '@/lib/resume-builder/utils';
 import {
     deleteSavedResume,
     getSavedResume,
     listSavedResumes,
     saveResume,
     updateResume,
-} from '@/lib/indexed-db';
-import { DEFAULT_RESUME_CONFIG } from '@/lib/resume-builder/defaults';
-import { ResumeConfigSchema } from '@/lib/resume-builder/schema';
-import type { ResumeConfig, ResumeImageLayer } from '@/lib/resume-builder/types';
-import { normalizeResumeConfig, reorderItems } from '@/lib/resume-builder/utils';
+} from '@/lib/tools/indexed-db';
 import { hasErrorMessage } from '@/lib/utils';
 import { ResumeControls } from './ResumeControls';
 import { ResumePdfDocument } from './ResumePdfDocument';

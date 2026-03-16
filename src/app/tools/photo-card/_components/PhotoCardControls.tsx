@@ -38,7 +38,6 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PHOTO_CARD_SECTION_OPTIONS } from '@/lib/constants';
-import type { SavedPhotoCard } from '@/lib/indexed-db';
 import type {
     ImageLayer,
     PhotoCardConfig,
@@ -46,6 +45,7 @@ import type {
     PhotoCardSectionId,
     TextLayer,
 } from '@/lib/photo-card/types';
+import type { SavedPhotoCard } from '@/lib/tools/indexed-db';
 import ColorInputField from './ColorInputField';
 import DraftNumberInput from './DraftNumberInput';
 import ImageLayerEditor from './ImageLayerEditor';

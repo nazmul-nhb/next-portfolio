@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { expenses, loans } from '@/lib/drizzle/schema/expenses';
 import { users } from '@/lib/drizzle/schema/users';
-import { calculateNetBalance } from '@/lib/expenses';
+import { calculateNetBalance } from '@/lib/tools/expenses';
 import type { ExpenseSummary } from '@/types/expenses';
 
 /**

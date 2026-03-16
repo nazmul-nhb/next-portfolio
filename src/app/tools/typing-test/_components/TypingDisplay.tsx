@@ -1,6 +1,6 @@
 'use client';
 
-import { getCharacterStatus } from '@/lib/typing-test';
+import { getCharacterStatus } from '@/lib/tools/typing-test';
 import { cn } from '@/lib/utils';
 
 interface TypingDisplayProps {

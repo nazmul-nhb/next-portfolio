@@ -38,7 +38,12 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useStopwatch } from '@/lib/hooks/use-stopwatch';
-import { copyGrid, generateSudoku, type SudokuDifficulty, solveSudoku } from '@/lib/sudoku';
+import {
+    copyGrid,
+    generateSudoku,
+    type SudokuDifficulty,
+    solveSudoku,
+} from '@/lib/tools/sudoku';
 import { parseMsToDuration } from '@/lib/utils';
 import SudokuGrid from './SudokuGrid';
 

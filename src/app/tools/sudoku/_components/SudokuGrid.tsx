@@ -2,7 +2,7 @@
 
 import { Pause } from 'lucide-react';
 import { useState } from 'react';
-import { getConflicts } from '@/lib/sudoku';
+import { getConflicts } from '@/lib/tools/sudoku';
 import { cn } from '@/lib/utils';
 import type { TypedKeyboardEvent } from '@/types/hot-keys';
 

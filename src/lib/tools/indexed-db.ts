@@ -6,8 +6,8 @@ import {
     type InferSelectType,
     Locality,
 } from 'locality-idb';
-import type { PhotoCardConfig } from './photo-card/types';
-import type { ResumeConfig } from './resume-builder/types';
+import type { PhotoCardConfig } from '../photo-card/types';
+import type { ResumeConfig } from '../resume-builder/types';
 
 const dbSchema = defineSchema({
     photo_cards: {

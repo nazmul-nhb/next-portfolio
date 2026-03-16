@@ -12,8 +12,8 @@ import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/t
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { formatMoney } from '@/lib/expenses';
 import { useApiQuery } from '@/lib/hooks/use-api';
+import { formatMoney } from '@/lib/tools/expenses';
 import type { Uncertain } from '@/types';
 import type { ExpenseSummary, LoanItem, PaginatedExpenses } from '@/types/expenses';
 import { AddEntryDialog } from './AddEntryDialog';

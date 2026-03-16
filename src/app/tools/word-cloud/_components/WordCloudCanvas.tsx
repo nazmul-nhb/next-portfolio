@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { WordPosition } from '@/lib/word-cloud';
+import type { WordPosition } from '@/lib/tools/word-cloud';
 
 interface WordCloudCanvasProps {
     words: WordPosition[];

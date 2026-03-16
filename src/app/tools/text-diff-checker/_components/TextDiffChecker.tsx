@@ -18,7 +18,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { computeTextDiff } from '../_lib/diffUtils';
+import { computeTextDiff } from '../../../../lib/tools/text-diff';
 import DiffViewer from './DiffViewer';
 
 const itemVariants: Variants = {

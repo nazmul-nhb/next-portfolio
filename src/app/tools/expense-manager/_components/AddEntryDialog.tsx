@@ -36,8 +36,8 @@ import {
     deleteFromCloudinary,
     uploadMultipleToCloudinary,
 } from '@/lib/actions/cloudinary';
-import { getCurrentDateTimeLocal, toMinorUnits } from '@/lib/expenses';
 import { useApiMutation } from '@/lib/hooks/use-api';
+import { getCurrentDateTimeLocal, toMinorUnits } from '@/lib/tools/expenses';
 import { AddExpenseEntryFormSchema } from '@/lib/zod-schema/expenses';
 import { ReceiptGallery } from './ReceiptGallery';
 import type { AddEntryFormData } from './types';
