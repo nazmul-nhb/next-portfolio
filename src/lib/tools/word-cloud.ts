@@ -116,7 +116,7 @@ export function calculateFontSize(
     if (maxFreq === minFreq) return (minSize + maxSize) / 2;
 
     const normalized = (frequency - minFreq) / (maxFreq - minFreq);
-    return Math.round(minSize + normalized * (maxSize - minSize));
+    return Math.round(minSize + normalized * (maxSize - minSize)) * 2;
 }
 
 /**

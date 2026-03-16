@@ -321,7 +321,7 @@ export default function SudokuGame() {
                         <Card className="overflow-hidden">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Grid3x3 className="size-5" />
+                                    <Grid3x3 className="size-5 mb-0.5" />
                                     Play Sudoku
                                 </CardTitle>
                                 <CardDescription>
@@ -339,8 +339,10 @@ export default function SudokuGame() {
                                         </span>
                                     ) : (
                                         <span>
-                                            Use keyboard <Kbd>1-9</Kbd> and arrow keys to
-                                            navigate
+                                            Use keyboard <Kbd>1-9</Kbd> to fill a cell,{' '}
+                                            <Kbd>Arrow</Kbd> keys to navigate and{' '}
+                                            <Kbd>Delete</Kbd>,<Kbd>Backspace</Kbd> or{' '}
+                                            <Kbd>0</Kbd> to clear a cell.
                                         </span>
                                     )}
                                 </CardDescription>
@@ -358,7 +360,6 @@ export default function SudokuGame() {
 
                                     <div className="space-y-5">
                                         <ScoreCard
-                                            className=""
                                             Icon={Timer}
                                             score={parseMsToDuration(stopwatch.elapsed)}
                                             title="Elapsed Time"

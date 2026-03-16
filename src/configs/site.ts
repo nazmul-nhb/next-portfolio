@@ -4,7 +4,7 @@ import {
     Briefcase,
     ClockCheck,
     ClockFading,
-    Cloud,
+    CloudFog,
     Contact,
     FerrisWheel,
     FileText,
@@ -211,7 +211,7 @@ export const siteConfig = {
         {
             href: '/tools/word-cloud',
             label: 'Word Cloud',
-            icon: Cloud,
+            icon: CloudFog,
             description:
                 'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
         },

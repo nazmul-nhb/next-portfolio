@@ -20,7 +20,7 @@ export default function ScoreCard({ className, Icon, score, title }: Props) {
         >
             <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                    <Icon className="size-4" /> {title}
+                    <Icon className="size-4 mb-0.5" /> {title}
                 </CardTitle>
             </CardHeader>
             <CardContent>

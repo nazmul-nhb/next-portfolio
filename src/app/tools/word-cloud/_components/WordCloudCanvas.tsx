@@ -24,8 +24,8 @@ export default function WordCloudCanvas({
         if (!ctx) return;
 
         // Set canvas size
-        const width = 800;
-        const height = 600;
+        const width = 1600;
+        const height = 1200;
         canvas.width = width;
         canvas.height = height;
 

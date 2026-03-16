@@ -2,7 +2,7 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { Download, FileText } from 'lucide-react';
+import { FileText, ImageDown, ScanEye, Settings2 } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { useCallback, useRef, useState } from 'react';
 import EmptyData from '@/components/misc/empty-data';
@@ -24,6 +24,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { FONT_OPTIONS } from '@/lib/constants';
 import {
     calculateFrequencies,
     generateColorPalette,
@@ -33,7 +34,6 @@ import {
     spiralLayout,
     type WordPosition,
 } from '@/lib/tools/word-cloud';
-import { cn } from '@/lib/utils';
 import WordCloudCanvas from './WordCloudCanvas';
 
 const containerVariants: Variants = {
@@ -53,14 +53,47 @@ const itemVariants: Variants = {
     },
 };
 
+const FONT_FAMIILIES = [
+    {
+        value: 'system-ui',
+        label: 'System UI',
+        fontFamily: 'system-ui',
+    },
+    {
+        value: 'arial',
+        label: 'Arial',
+        fontFamily: '"Arial"',
+    },
+    {
+        value: 'times',
+        label: 'Times New Roman',
+        fontFamily: '"Times New Roman"',
+    },
+    ...FONT_OPTIONS,
+    {
+        value: 'verdana',
+        label: 'Verdana',
+        fontFamily: '"Verdana"',
+    },
+    {
+        value: 'georgia',
+        label: 'Georgia',
+        fontFamily: '"Georgia"',
+    },
+    {
+        value: 'courier',
+        label: 'Courier',
+        fontFamily: '"Courier"',
+    },
+] as const;
+
 type LayoutType = 'spiral' | 'random';
-type FontFamily = 'Arial' | 'Georgia' | 'Courier' | 'Verdana' | 'Times New Roman';
 
 export default function WordCloudGenerator() {
     const [text, setText] = useState('');
     const [maxWords, setMaxWords] = useState<number>(100);
-    const [layoutType, setLayoutType] = useState<LayoutType>('spiral');
-    const [fontFamily, setFontFamily] = useState<FontFamily>('Arial');
+    const [layoutType, setLayoutType] = useState<LayoutType>('random');
+    const [fontFamily, setFontFamily] = useState<string>('system-ui');
     const [backgroundColor, setBackgroundColor] = useState('#ffffff');
     const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +112,7 @@ export default function WordCloudGenerator() {
         const colors = generateColorPalette(wordList.length);
         const layout = layoutType === 'spiral' ? spiralLayout : randomLayout;
 
-        return layout(wordList, 800, 600, colors);
+        return layout(wordList, 1600, 1200, colors);
     }, [words, layoutType]);
 
     const handleExport = useCallback(
@@ -142,7 +175,7 @@ export default function WordCloudGenerator() {
                             </CardHeader>
                             <CardContent>
                                 <Textarea
-                                    className="font-cascadia text-sm h-40 max-h-60 overflow-y-auto custom-scroll"
+                                    className="font-cascadia text-sm min-h-32 max-h-48 overflow-y-auto custom-scroll"
                                     onChange={(e) => setText(e.target.value)}
                                     placeholder="Paste your text here..."
                                     rows={10}
@@ -156,10 +189,13 @@ export default function WordCloudGenerator() {
                     <motion.div variants={itemVariants}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-base">Settings</CardTitle>
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <Settings2 className="size-4" />
+                                    Settings
+                                </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
+                            <CardContent className="flex flex-wrap gap-4">
+                                <div className="space-y-2">
                                     <Label className="text-sm font-medium">Max Words</Label>
                                     <Input
                                         max={500}
@@ -170,7 +206,7 @@ export default function WordCloudGenerator() {
                                     />
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     <Label className="text-sm font-medium">Layout</Label>
                                     <Select
                                         onValueChange={(val) =>
@@ -188,46 +224,41 @@ export default function WordCloudGenerator() {
                                     </Select>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     <Label className="text-sm font-medium">Font</Label>
                                     <Select
-                                        onValueChange={(val) =>
-                                            setFontFamily(val as FontFamily)
-                                        }
+                                        onValueChange={(val) => setFontFamily(val)}
                                         value={fontFamily}
                                     >
                                         <SelectTrigger className="mt-1">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Arial">Arial</SelectItem>
-                                            <SelectItem value="Georgia">Georgia</SelectItem>
-                                            <SelectItem value="Courier">Courier</SelectItem>
-                                            <SelectItem value="Verdana">Verdana</SelectItem>
-                                            <SelectItem value="Times New Roman">
-                                                Times New Roman
-                                            </SelectItem>
+                                            {FONT_FAMIILIES.map((font) => (
+                                                <SelectItem
+                                                    key={font.value}
+                                                    value={font.fontFamily}
+                                                >
+                                                    {font.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     <Label className="text-sm font-medium">
                                         Background Color
                                     </Label>
-                                    <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex flex-wrap items-center gap-2 mt-1">
                                         <input
-                                            className="w-12 h-10 rounded cursor-pointer"
+                                            className="w-12 h-9.5 py-0 rounded cursor-pointer border"
                                             onChange={(e) => setBackgroundColor(e.target.value)}
                                             type="color"
                                             value={backgroundColor}
                                         />
-                                        <input
-                                            className={cn(
-                                                'flex-1 px-3 py-2 border rounded-md',
-                                                'bg-background border-input text-sm',
-                                                'focus:outline-none focus:ring-2 focus:ring-primary'
-                                            )}
+                                        <Input
+                                            className="w-24"
                                             onChange={(e) => setBackgroundColor(e.target.value)}
                                             type="text"
                                             value={backgroundColor}
@@ -246,7 +277,9 @@ export default function WordCloudGenerator() {
                         <motion.div animate="visible" initial="hidden" variants={itemVariants}>
                             <Card className="flex flex-col">
                                 <CardHeader>
-                                    <CardTitle className="text-base">Preview</CardTitle>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <ScanEye className="size-4" /> Preview
+                                    </CardTitle>
                                     <CardDescription>
                                         {wordCount === 0
                                             ? 'Processing text...'
@@ -298,7 +331,7 @@ export default function WordCloudGenerator() {
                                         disabled={wordCount === 0}
                                         onClick={() => handleExport('png')}
                                     >
-                                        <Download className="size-4" />
+                                        <ImageDown className="size-4 mb-0.5" />
                                         Download PNG
                                     </Button>
 
@@ -308,7 +341,7 @@ export default function WordCloudGenerator() {
                                         onClick={() => handleExport('jpeg')}
                                         variant="secondary"
                                     >
-                                        <Download className="size-4" />
+                                        <ImageDown className="size-4 mb-0.5" />
                                         Download JPEG
                                     </Button>
                                 </CardContent>

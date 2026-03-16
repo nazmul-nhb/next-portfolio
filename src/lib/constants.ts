@@ -5,12 +5,12 @@ export const FONT_OPTIONS = [
     {
         value: 'inter',
         label: 'Inter',
-        fontFamily: 'Inter',
+        fontFamily: '"Inter"',
     },
     {
         value: 'poppins',
         label: 'Poppins',
-        fontFamily: 'Poppins',
+        fontFamily: '"Poppins"',
     },
     {
         value: 'playfair',
