@@ -90,7 +90,7 @@ export default function TextDiffChecker() {
                         </CardHeader>
                         <CardContent>
                             <Textarea
-                                className="w-full min-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
+                                className="w-full min-h-32 max-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
                                 onChange={(e) => setOriginalText(e.target.value)}
                                 placeholder="Enter original text..."
                                 value={originalText}
@@ -113,7 +113,7 @@ export default function TextDiffChecker() {
                         </CardHeader>
                         <CardContent>
                             <Textarea
-                                className="w-full min-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
+                                className="w-full min-h-32 max-h-40 overflow-y-auto custom-scroll font-cascadia text-sm"
                                 onChange={(e) => setModifiedText(e.target.value)}
                                 placeholder="Enter modified text..."
                                 value={modifiedText}
