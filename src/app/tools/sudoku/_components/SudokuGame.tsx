@@ -17,8 +17,9 @@ import {
     Zap,
 } from 'lucide-react';
 import { useStorage } from 'nhb-hooks';
+import { throttleAction } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ScoreCard from '@/app/tools/sudoku/_components/ScoreCard';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
@@ -40,14 +41,14 @@ import {
 import { useStopwatch } from '@/lib/hooks/use-stopwatch';
 import {
     copyGrid,
+    DEFAULT_SCORES,
     generateSudoku,
     type SudokuDifficulty,
+    type SudokuScores,
     solveSudoku,
 } from '@/lib/tools/sudoku';
 import { parseMsToDuration } from '@/lib/utils';
 import SudokuGrid from './SudokuGrid';
-
-type Scores = Record<SudokuDifficulty, number>;
 
 interface GameState {
     puzzle: number[][];
@@ -55,10 +56,11 @@ interface GameState {
     current: number[][];
     difficulty: SudokuDifficulty;
     scores: {
-        current: Partial<Scores>;
-        best: Scores;
-        totalSolved: Scores;
+        current: number;
+        best: SudokuScores;
+        totalSolved: SudokuScores;
     };
+    isPaused: boolean;
     isSolvedByUser: boolean;
 }
 
@@ -81,45 +83,37 @@ const itemVariants: Variants = {
 
 export default function SudokuGame() {
     const gameStore = useStorage<GameState | null>({ key: 'nhb-sudoku-game' });
-    const [isPaused, setIsPaused] = useState(false);
-    const [providedSolution, setProvidedSolution] = useState(false);
 
-    const stopwatch = useStopwatch({
-        autoStart: true,
-        interval: 50,
-    });
+    const stopwatch = useStopwatch({ interval: 50 });
 
+    // Track latest elapsed time for persistence without causing effect re-runs
+    const elapsedRef = useRef(0);
+
+    const [isPaused, setIsPaused] = useState(gameStore.value?.isPaused ?? false);
+    const [isProvidedSolution, setIsProvidedSolution] = useState(false);
     const [selectedDifficulty, setSelectedDifficulty] = useState<SudokuDifficulty>('medium');
 
-    const handleCellChange = useCallback(
-        (row: number, col: number, value: number) => {
-            if (!gameStore.value) return;
+    useEffect(() => {
+        elapsedRef.current = stopwatch.elapsed;
+    }, [stopwatch.elapsed]);
 
-            // Don't allow changing puzzle clues
-            if (gameStore.value.puzzle[row][col] !== 0) return;
+    const handleCellChange = throttleAction((row: number, col: number, value: number) => {
+        if (!gameStore.value) return;
 
-            const newCurrent = gameStore.value.current.map((r) => [...r]);
-            newCurrent[row][col] = value;
+        // Don't allow changing puzzle clues
+        if (gameStore.value.puzzle[row][col] !== 0) return;
 
-            const updatedState: GameState = {
-                ...gameStore.value,
-                current: newCurrent,
-                isSolvedByUser: false,
-                scores: {
-                    current: { [selectedDifficulty]: stopwatch.elapsed },
-                    best: { ...gameStore.value?.scores.best },
-                    totalSolved: gameStore.value?.scores.totalSolved ?? {
-                        easy: 0,
-                        hard: 0,
-                        medium: 0,
-                    },
-                },
-            };
+        const newCurrent = gameStore.value.current.map((r) => [...r]);
+        newCurrent[row][col] = value;
 
-            gameStore.set(updatedState);
-        },
-        [gameStore, selectedDifficulty, stopwatch.elapsed]
-    );
+        const updatedState: GameState = {
+            ...gameStore.value,
+            current: newCurrent,
+            isSolvedByUser: false,
+        };
+
+        gameStore.set(updatedState);
+    }, 100);
 
     const handleSolve = useCallback(() => {
         if (!gameStore.value) return;
@@ -131,7 +125,7 @@ export default function SudokuGame() {
         };
 
         setIsPaused(false);
-        setProvidedSolution(true);
+        setIsProvidedSolution(true);
 
         gameStore.set(newState);
     }, [gameStore]);
@@ -150,7 +144,7 @@ export default function SudokuGame() {
         );
     }, [gameStore.value]);
 
-    const handleReset = useCallback(() => {
+    const handleReset = throttleAction(() => {
         if (!gameStore.value) return;
 
         const newState = {
@@ -160,10 +154,10 @@ export default function SudokuGame() {
         };
 
         setIsPaused(false);
-        setProvidedSolution(false);
+        setIsProvidedSolution(false);
 
         gameStore.set(newState);
-    }, [gameStore]);
+    });
 
     const generateNewGame = useCallback(
         (difficulty: SudokuDifficulty) => {
@@ -177,49 +171,75 @@ export default function SudokuGame() {
                 current: copyGrid(puzzle),
                 difficulty,
                 isSolvedByUser: false,
+                isPaused: true,
                 scores: {
-                    current: { [difficulty]: 0 },
-                    best: gameStore.value?.scores.best ?? { easy: 0, hard: 0, medium: 0 },
-                    totalSolved: gameStore.value?.scores.totalSolved ?? {
-                        easy: 0,
-                        hard: 0,
-                        medium: 0,
-                    },
+                    current: 0,
+                    best: gameStore.value?.scores.best ?? DEFAULT_SCORES,
+                    totalSolved: gameStore.value?.scores.totalSolved ?? DEFAULT_SCORES,
                 },
             };
 
             stopwatch.reset();
 
             setIsPaused(false);
-            setProvidedSolution(false);
+            setIsProvidedSolution(false);
             setSelectedDifficulty(difficulty);
 
             gameStore.set(newState);
         },
-        [gameStore, stopwatch.reset]
+        [gameStore.set, gameStore.value?.scores, stopwatch.reset]
     );
 
+    // ! Initialize game and stopwatch from localStorage
+    useEffect(() => {
+        if (gameStore.value) {
+            setSelectedDifficulty(gameStore.value.difficulty);
+            stopwatch.reset(gameStore.value.scores.current);
+        } else {
+            generateNewGame('medium');
+        }
+    }, [gameStore.value, stopwatch.reset, generateNewGame]);
+
+    // ! Manage stopwatch play/pause based on game state
+    useEffect(() => {
+        // Don't start if game state is not ready
+        if (!gameStore.value) return;
+
+        // If game is complete, always pause
+        if (isComplete) {
+            stopwatch.pause();
+            return;
+        }
+
+        // If user paused the game, pause stopwatch
+        if (isPaused) {
+            stopwatch.pause();
+            return;
+        }
+
+        // Otherwise, start the stopwatch
+        stopwatch.start();
+    }, [isPaused, isComplete, gameStore.value, stopwatch.start, stopwatch.pause]);
+
+    // ! Auto detect when completed and save scores
     useEffect(() => {
         if (isComplete) {
             stopwatch.pause();
 
             if (
                 isSolved &&
-                !providedSolution &&
+                !isProvidedSolution &&
                 gameStore.value &&
                 !gameStore.value.isSolvedByUser
             ) {
                 const prevBestScores = gameStore.value?.scores.best;
-
                 const newBest = { ...prevBestScores };
-
                 const prevBest = prevBestScores[selectedDifficulty];
 
                 newBest[selectedDifficulty] =
                     prevBest === 0 ? stopwatch.elapsed : Math.min(prevBest, stopwatch.elapsed);
 
                 const prevTotal = gameStore.value?.scores.totalSolved;
-
                 const newTotalSolved = {
                     ...prevTotal,
                     [selectedDifficulty]: prevTotal[selectedDifficulty] + 1,
@@ -229,7 +249,7 @@ export default function SudokuGame() {
                     ...gameStore.value,
                     isSolvedByUser: true,
                     scores: {
-                        current: { [selectedDifficulty]: stopwatch.elapsed },
+                        current: stopwatch.elapsed,
                         best: newBest,
                         totalSolved: newTotalSolved,
                     },
@@ -239,33 +259,53 @@ export default function SudokuGame() {
             }
         }
     }, [
-        stopwatch.pause,
-        stopwatch.elapsed,
-        gameStore.set,
-        gameStore.value,
         isComplete,
         isSolved,
-        providedSolution,
+        isProvidedSolution,
         selectedDifficulty,
+        gameStore,
+        stopwatch.elapsed,
+        stopwatch.pause,
     ]);
 
-    // Initialize game
+    // ! Persist current score to localStorage periodically (every 200ms)
+    // This ensures the current time is saved in case user refreshes
     useEffect(() => {
-        if (gameStore.value) {
-            setSelectedDifficulty(gameStore.value.difficulty);
-        } else {
-            generateNewGame('medium');
-        }
+        if (!gameStore.value || isComplete || isPaused) return;
 
-        if (!isComplete && !isPaused) stopwatch.start();
-    }, [gameStore.value, isComplete, isPaused, generateNewGame, stopwatch.start]);
+        const intervalId = setInterval(() => {
+            const currentState = gameStore.value;
+            if (!currentState) return;
 
-    const handlePauseGame = () => {
+            gameStore.set({
+                ...currentState,
+                scores: {
+                    ...currentState.scores,
+                    current: elapsedRef.current,
+                },
+            });
+        }, 200);
+
+        return () => clearInterval(intervalId);
+    }, [gameStore, isComplete, isPaused]);
+
+    const handlePauseGame = throttleAction(() => {
         if (!gameStore.value) return;
 
-        setIsPaused((prev) => !prev);
-        stopwatch.toggle();
-    };
+        const newIsPaused = !isPaused;
+        setIsPaused(newIsPaused);
+
+        // Save current score to localStorage when pausing
+        if (newIsPaused) {
+            gameStore.set({
+                ...gameStore.value,
+                scores: {
+                    ...gameStore.value.scores,
+                    current: stopwatch.elapsed,
+                },
+            });
+        }
+    }, 100);
 
     return (
         <motion.div
@@ -306,7 +346,7 @@ export default function SudokuGame() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex gap-4 flex-wrap">
+                                <div className="flex gap-4 flex-wrap justify-between">
                                     <SudokuGrid
                                         current={gameStore.value.current}
                                         handlePauseGame={handlePauseGame}
@@ -357,7 +397,7 @@ export default function SudokuGame() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <CircleGauge className="size-4" />
+                                <CircleGauge className="size-4 mb-0.5" />
                                 Difficulty
                             </CardTitle>
                         </CardHeader>
@@ -383,7 +423,7 @@ export default function SudokuGame() {
                                 onClick={() => generateNewGame(selectedDifficulty)}
                                 variant="default"
                             >
-                                <Shuffle className="size-4" />
+                                <Shuffle className="size-4 mb-0.5" />
                                 New Puzzle
                             </Button>
                         </CardContent>
@@ -392,7 +432,7 @@ export default function SudokuGame() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <Flame className="size-4" /> Actions
+                                <Flame className="size-4 mb-0.5" /> Actions
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-wrap gap-4">
@@ -402,25 +442,25 @@ export default function SudokuGame() {
                                 variant="outline"
                             >
                                 {isPaused ? (
-                                    <Play className="size-4" />
+                                    <Play className="size-4 mb-0.5" />
                                 ) : (
-                                    <Pause className="size-4" />
+                                    <Pause className="size-4 mb-0.5" />
                                 )}
                                 {isPaused ? 'Start' : 'Pause'}
                             </Button>
 
                             <Button onClick={handleReset} variant="destructive">
-                                <RotateCcw className="size-4" />
+                                <RotateCcw className="size-4 mb-0.5" />
                                 Reset
                             </Button>
 
                             <Button disabled={isSolved} onClick={handleSolve} variant="default">
-                                <Zap className="size-4" />
+                                <Zap className="size-4 mb-0.5" />
                                 Show Solution
                             </Button>
 
                             <Button onClick={gameStore.remove} variant="destructive">
-                                <BrushCleaning className="size-4" />
+                                <BrushCleaning className="size-4 mb-0.5" />
                                 Clear Records
                             </Button>
                         </CardContent>

@@ -1,4 +1,8 @@
-export type SudokuDifficulty = 'easy' | 'medium' | 'hard';
+export const DEFAULT_SCORES = { easy: 0, hard: 0, medium: 0 } as const;
+
+export type SudokuDifficulty = keyof typeof DEFAULT_SCORES;
+
+export type SudokuScores = Record<SudokuDifficulty, number>;
 
 const EMPTY = 0;
 const GRID_SIZE = 9;
