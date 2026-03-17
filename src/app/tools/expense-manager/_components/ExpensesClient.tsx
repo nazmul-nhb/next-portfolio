@@ -1,14 +1,14 @@
 'use client';
 
-import { AlertTriangle, Plus } from 'lucide-react';
+import { AlertTriangle, Plus, User } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { generateQueryParams } from 'nhb-toolbox';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
+import EmptyData from '@/components/misc/empty-data';
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,6 @@ import { RepaymentDialog } from './RepaymentDialog';
 import { SummaryCards } from './SummaryCards';
 
 export function ExpensesClient() {
-    const router = useRouter();
     const { data: session, status } = useSession();
 
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -34,12 +33,6 @@ export function ExpensesClient() {
     const [dateRange, setDateRange] = useState<Uncertain<DateRange>>(null);
     const [page, setPage] = useState(1);
     const [repaymentLoan, setRepaymentLoan] = useState<LoanItem | null>(null);
-
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.push('/auth/login?redirectTo=/tools/expense-manager');
-        }
-    }, [status, router]);
 
     const range = useMemo(() => {
         if (timeframe === 'all' || !dateRange) return null;
@@ -102,8 +95,6 @@ export function ExpensesClient() {
         return <ExpensePageSkeleton />;
     }
 
-    if (!session?.user) return null;
-
     return (
         <div className="space-y-8">
             <Alert className="mb-8 border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900 dark:text-yellow-50 select-none">
@@ -123,60 +114,84 @@ export function ExpensesClient() {
                     .
                 </AlertDescription>
             </Alert>
-            <div className="space-y-3">
-                <TitleWithShare
-                    description="Track income, expenses, borrowed loans, lent loans, and cash in hand."
-                    route="/tools/expense-manager"
-                    title="Expense Manager"
+            <TitleWithShare
+                description="Track income, expenses, borrowed loans, lent loans, and cash in hand."
+                route="/tools/expense-manager"
+                title="Expense Manager"
+            />
+            {status === 'unauthenticated' || !session?.user ? (
+                <EmptyData
+                    description={
+                        <div>
+                            You need to login to access <b>Expense Manager</b>. Please{' '}
+                            <Link href="/auth/login?redirectTo=/tools/expense-manager">
+                                <Button className="p-0" variant="link">
+                                    login here
+                                </Button>
+                            </Link>{' '}
+                            or{' '}
+                            <Link href="/tools">
+                                <Button className="p-0" variant="link">
+                                    explore other tools
+                                </Button>
+                            </Link>
+                            .
+                        </div>
+                    }
+                    Icon={User}
+                    title="Login to Access"
                 />
+            ) : (
+                <Fragment>
+                    <div className="flex gap-2 justify-end">
+                        <Button onClick={() => setIsAddOpen(true)}>
+                            <Plus className="size-4" />
+                            Add Entry
+                        </Button>
+                        <Button asChild variant="outline">
+                            <Link href="/settings">Account Settings</Link>
+                        </Button>
+                    </div>
 
-                <div className="flex gap-2 justify-end">
-                    <Button onClick={() => setIsAddOpen(true)}>
-                        <Plus className="size-4" />
-                        Add Entry
-                    </Button>
-                    <Button asChild variant="outline">
-                        <Link href="/settings">Account Settings</Link>
-                    </Button>
-                </div>
-            </div>
-            <CurrencyCard currencyData={currencyData} />
-            <SummaryCards money={money} summary={summary} />
-            <EntriesSection
-                dateRange={dateRange}
-                entries={entries}
-                filter={filter}
-                money={money}
-                page={page}
-                query={query}
-                setDateRange={setDateRange}
-                setFilter={setFilter}
-                setPage={setPage}
-                setQuery={setQuery}
-                setTimeframe={(value) => {
-                    setPage(() => 1);
-                    setTimeframe(value);
-                }}
-                timeframe={timeframe}
-                totalPages={totalPages}
-            />
-            <LoansSection
-                borrowedLoans={borrowedLoans}
-                lentLoans={lentLoans}
-                money={money}
-                onAddPayment={setRepaymentLoan}
-            />
-            <AddEntryDialog
-                currency={currency}
-                isAddOpen={isAddOpen}
-                setIsAddOpen={setIsAddOpen}
-            />
-            <RepaymentDialog
-                currency={currency}
-                loan={repaymentLoan}
-                money={money}
-                setLoan={setRepaymentLoan}
-            />
+                    <CurrencyCard currencyData={currencyData} />
+                    <SummaryCards money={money} summary={summary} />
+                    <EntriesSection
+                        dateRange={dateRange}
+                        entries={entries}
+                        filter={filter}
+                        money={money}
+                        page={page}
+                        query={query}
+                        setDateRange={setDateRange}
+                        setFilter={setFilter}
+                        setPage={setPage}
+                        setQuery={setQuery}
+                        setTimeframe={(value) => {
+                            setPage(() => 1);
+                            setTimeframe(value);
+                        }}
+                        timeframe={timeframe}
+                        totalPages={totalPages}
+                    />
+                    <LoansSection
+                        borrowedLoans={borrowedLoans}
+                        lentLoans={lentLoans}
+                        money={money}
+                        onAddPayment={setRepaymentLoan}
+                    />
+                    <AddEntryDialog
+                        currency={currency}
+                        isAddOpen={isAddOpen}
+                        setIsAddOpen={setIsAddOpen}
+                    />
+                    <RepaymentDialog
+                        currency={currency}
+                        loan={repaymentLoan}
+                        money={money}
+                        setLoan={setRepaymentLoan}
+                    />
+                </Fragment>
+            )}
         </div>
     );
 }

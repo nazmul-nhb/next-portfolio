@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import { siteConfig } from '@/configs/site';
-import { auth } from '@/lib/auth';
 import { buildCanonicalUrl } from '@/lib/utils';
 import { ExpensesClient } from './_components/ExpensesClient';
 
@@ -26,12 +24,6 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function ExpensesPage() {
-    const session = await auth();
-
-    if (!session?.user) {
-        redirect('/auth/login?redirectTo=/tools/expense-manager');
-    }
-
+export default function ExpensesPage() {
     return <ExpensesClient />;
 }
