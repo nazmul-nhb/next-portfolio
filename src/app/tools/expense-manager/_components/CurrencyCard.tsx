@@ -1,5 +1,6 @@
 import { Wallet } from 'lucide-react';
 import { CURRENCY_CODES } from 'nhb-toolbox/constants';
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 import { useEffect, useState } from 'react';
 import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ type Props = {
 };
 
 export function CurrencyCard({ currencyData }: Props) {
-    const [currencyDraft, setCurrencyDraft] = useState('BDT');
+    const [currencyDraft, setCurrencyDraft] = useState<CurrencyCode>('BDT');
 
     const { mutate: updateCurrency, isPending: updatingCurrency } = useApiMutation<
         CurrencyResponse,
@@ -58,7 +59,10 @@ export function CurrencyCard({ currencyData }: Props) {
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Select onValueChange={setCurrencyDraft} value={currencyDraft}>
+                <Select
+                    onValueChange={(val) => setCurrencyDraft(val as CurrencyCode)}
+                    value={currencyDraft}
+                >
                     <SelectTrigger className="w-full sm:w-40">
                         <SelectValue placeholder="Currency" />
                     </SelectTrigger>

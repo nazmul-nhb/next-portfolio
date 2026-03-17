@@ -7,6 +7,7 @@ import {
     timestamp,
     varchar,
 } from 'drizzle-orm/pg-core';
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 import { siteConfig } from '@/configs/site';
 
 /** Enum for user roles */
@@ -25,7 +26,7 @@ export const users = pgTable('users', {
     bio: text(),
     role: userRoleEnum().default('user').notNull(),
     provider: authProviderEnum().default('credentials').notNull(),
-    preferred_currency: varchar({ length: 8 }).default('BDT').notNull(),
+    preferred_currency: varchar({ length: 8 }).$type<CurrencyCode>().default('BDT').notNull(),
     email_verified: boolean().default(false).notNull(),
     is_active: boolean().default(true).notNull(),
     created_at: timestamp().defaultNow().notNull(),
