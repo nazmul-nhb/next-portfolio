@@ -1,5 +1,6 @@
 import {
     ArrowLeftRight,
+    BarChart3,
     Binary,
     Briefcase,
     ClockCheck,
@@ -193,6 +194,13 @@ export const siteConfig = {
             icon: CloudFog,
             description:
                 'Paste text and generate a visual word cloud with customizable fonts, colors, and more.',
+        },
+        {
+            href: '/tools/chart-generator',
+            label: 'Chart Generator',
+            icon: BarChart3,
+            description:
+                'Create beautiful, interactive charts and graphs from JSON data. Export as SVG or PNG.',
         },
         {
             href: '/tools/base-conversions',
