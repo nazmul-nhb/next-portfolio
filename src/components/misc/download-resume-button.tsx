@@ -3,7 +3,8 @@
 import { pdf } from '@react-pdf/renderer';
 import { Download, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
-import { SiAdobeacrobatreader, SiGoogledrive } from 'react-icons/si';
+import { FaFilePdf } from 'react-icons/fa6';
+import { SiGoogledrive } from 'react-icons/si';
 import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 import { ResumePDF } from './resume-pdf';
@@ -96,8 +97,10 @@ export function DownloadResumeButton({
                 onClick={handleDownload}
                 type="button"
             >
-                <SiAdobeacrobatreader
-                    className={cn('size-4 text-red-400', { 'animate-spin': downloading })}
+                <FaFilePdf
+                    className={cn('size-4 text-red-400', {
+                        'animate-caret-blink': downloading,
+                    })}
                 />
                 Download as PDF
                 <Download className="size-3 opacity-50 transition-opacity group-hover:opacity-100" />

@@ -14,9 +14,9 @@ export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
             description="Generate and solve Sudoku puzzles with different difficulty levels. Play with keyboard navigation and real-time conflict detection."
-            siteTitle={`Sudoku Game » ${siteConfig.name}`}
+            siteTitle={`Sudoku Puzzle » ${siteConfig.name}`}
             tag="Sudoku"
-            title={`Sudoku Game from ${siteConfig.name}`}
+            title={`Sudoku Puzzle from ${siteConfig.name}`}
             url={buildCanonicalUrl('/tools/sudoku')}
         />
     );
