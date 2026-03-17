@@ -1,5 +1,6 @@
 import type { HSL } from 'nhb-toolbox/colors/types';
 import { LOWERCASED_WORDS } from 'nhb-toolbox/constants';
+import { FONT_OPTIONS } from '@/lib/constants';
 
 export interface WordFrequency {
     word: string;
@@ -12,6 +13,54 @@ export interface WordPosition extends WordFrequency {
     fontSize: number;
     color: string;
 }
+
+export const WORD_CLOUD_DEFAULTS = {
+    canvasWidth: 1600,
+    canvasHeight: 1200,
+
+    minFontSize: 40,
+    maxFontSize: 160,
+
+    minFontWeight: 300,
+    maxFontWeight: 900,
+
+    minRotation: 5,
+    maxRotation: 270,
+} as const;
+
+export const FONT_FAMILIES_WORD_CLOUD = [
+    {
+        value: 'system-ui',
+        label: 'System UI',
+        fontFamily: 'system-ui',
+    },
+    {
+        value: 'arial',
+        label: 'Arial',
+        fontFamily: '"Arial"',
+    },
+    ...FONT_OPTIONS,
+    {
+        value: 'times',
+        label: 'Times New Roman',
+        fontFamily: '"Times New Roman"',
+    },
+    {
+        value: 'digital',
+        label: 'Digital Clock',
+        fontFamily: '"Digital-7 Mono"',
+    },
+    {
+        value: 'verdana',
+        label: 'Verdana',
+        fontFamily: '"Verdana"',
+    },
+    {
+        value: 'courier',
+        label: 'Courier',
+        fontFamily: '"Courier"',
+    },
+] as const;
 
 const DEFAULT_STOPWORDS = new Set([
     'the',
@@ -75,10 +124,11 @@ const DEFAULT_STOPWORDS = new Set([
  */
 export function processText(text: string, skipStopwords: boolean = true): string[] {
     const processed = text
-        .toLowerCase()
-        .replace(/[^\w\s'-]/g, '') // Remove punctuation except hyphens and apostrophes
+        .normalize('NFC') // IMPORTANT for combining chars like Bangla
+        .toLocaleLowerCase()
+        .replace(/[^\p{L}\p{M}\p{N}\s'-]/gu, '') // keep letters + marks + numbers
         .split(/\s+/)
-        .filter((word) => word.length > 1);
+        .filter((word) => word.length >= (skipStopwords ? 2 : 1));
 
     return skipStopwords ? processed.filter((word) => !DEFAULT_STOPWORDS.has(word)) : processed;
 }

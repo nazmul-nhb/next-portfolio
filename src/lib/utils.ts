@@ -9,6 +9,7 @@ import {
     isObjectWithKeys,
     isString,
 } from 'nhb-toolbox';
+import type { Percent } from 'nhb-toolbox/number/types';
 import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
@@ -236,4 +237,12 @@ export function parseMsToDuration(ms: number): string {
     parts.push(String(ms).padStart(3, '0').concat(' ms'));
 
     return parts.join(' : ');
+}
+
+/**
+ * Convert opacity (0–100) to hex alpha
+ */
+export function opacityToHex(opacity: Percent): string {
+    const value = Math.round((Math.min(Math.max(opacity, 0), 100) / 100) * 255);
+    return value.toString(16).padStart(2, '0').toUpperCase();
 }

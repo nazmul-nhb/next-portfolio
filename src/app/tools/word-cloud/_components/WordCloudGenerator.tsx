@@ -1,11 +1,20 @@
 'use client';
 
+import {
+    AnimatedWordRenderer,
+    DefaultTooltipRenderer,
+    type Word,
+    WordCloud,
+    type WordCloudProps,
+} from '@isoterik/react-word-cloud';
+
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { AlertOctagon, FileText, ImageDown, ScanEye, Settings2, Text } from 'lucide-react';
+import { FileText, ImageDown, ScanEye, Settings2, Text } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
-import { clampNumber, countWords, formatWithPlural } from 'nhb-toolbox';
+import { clampNumber, countWords, formatWithPlural, getRandomNumber } from 'nhb-toolbox';
 import { useCallback, useRef, useState } from 'react';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import EmptyData from '@/components/misc/empty-data';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
@@ -28,17 +37,14 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { FONT_OPTIONS } from '@/lib/constants';
 import {
     calculateFrequencies,
-    generateColorPalette,
+    FONT_FAMILIES_WORD_CLOUD,
     getTopWords,
     processText,
-    randomLayout,
-    spiralLayout,
-    type WordPosition,
+    WORD_CLOUD_DEFAULTS,
 } from '@/lib/tools/word-cloud';
-import WordCloudCanvas from './WordCloudCanvas';
+import { opacityToHex } from '@/lib/utils';
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -57,52 +63,27 @@ const itemVariants: Variants = {
     },
 };
 
-const FONT_FAMILIES = [
-    {
-        value: 'system-ui',
-        label: 'System UI',
-        fontFamily: 'system-ui',
-    },
-    {
-        value: 'arial',
-        label: 'Arial',
-        fontFamily: '"Arial"',
-    },
-    ...FONT_OPTIONS,
-    {
-        value: 'times',
-        label: 'Times New Roman',
-        fontFamily: '"Times New Roman"',
-    },
-    {
-        value: 'digital',
-        label: 'Digital Clock',
-        fontFamily: '"Digital-7 Mono"',
-    },
-    {
-        value: 'verdana',
-        label: 'Verdana',
-        fontFamily: '"Verdana"',
-    },
-    {
-        value: 'courier',
-        label: 'Courier',
-        fontFamily: '"Courier"',
-    },
-] as const;
-
-type LayoutType = 'spiral' | 'random';
+const {
+    canvasHeight,
+    canvasWidth,
+    minFontSize,
+    maxFontSize,
+    minFontWeight,
+    maxFontWeight,
+    minRotation,
+    maxRotation,
+} = WORD_CLOUD_DEFAULTS;
 
 export default function WordCloudGenerator() {
     const [text, setText] = useState('');
     const [maxWords, setMaxWords] = useState<number>(100);
-    const [layoutType, setLayoutType] = useState<LayoutType>('random');
     const [skipStopwords, setSkipStopwords] = useState(true);
+    const [useRotation, setUseRotation] = useState(false);
     const [fontFamily, setFontFamily] = useState<string>('system-ui');
     const [backgroundColor, setBackgroundColor] = useState('#ffffff');
     const canvasRef = useRef<HTMLDivElement>(null);
 
-    const words = useCallback(() => {
+    const getWords = useCallback(() => {
         if (!text.trim()) return [];
 
         const processed = processText(text, skipStopwords);
@@ -110,50 +91,131 @@ export default function WordCloudGenerator() {
         return getTopWords(frequencies, maxWords);
     }, [text, maxWords, skipStopwords]);
 
-    const wordPositions = useCallback((): WordPosition[] => {
-        const wordList = words();
-        if (wordList.length === 0) return [];
-
-        const colors = generateColorPalette(wordList.length);
-        const layout = layoutType === 'spiral' ? spiralLayout : randomLayout;
-
-        return layout(wordList, 1600, 1200, colors);
-    }, [words, layoutType]);
-
     const handleExport = useCallback(
-        (format: 'png' | 'jpeg') => {
-            const canvas = canvasRef.current?.querySelector('canvas') as HTMLCanvasElement;
-            if (!canvas) return;
+        (format: 'svg' | 'png' | 'jpg') => {
+            const svgElement = canvasRef.current?.querySelector('svg') as SVGSVGElement;
+            if (!svgElement) return;
 
-            // Create a high-quality temporary canvas
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+            let svgString = new XMLSerializer().serializeToString(svgElement);
 
-            if (!tempCtx) return;
+            // Ensure namespace
+            if (!svgString.includes('xmlns')) {
+                svgString = svgString.replace(
+                    '<svg',
+                    '<svg xmlns="http://www.w3.org/2000/svg"'
+                );
+            }
 
-            // Fill background
-            tempCtx.fillStyle = backgroundColor;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            if (format === 'svg') {
+                const blob = new Blob([svgString], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
 
-            // Draw word cloud with high quality settings
-            tempCtx.imageSmoothingEnabled = true;
-            tempCtx.imageSmoothingQuality = 'high';
-            tempCtx.drawImage(canvas, 0, 0);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `word-cloud-${Date.now()}.svg`;
+                link.click();
 
-            // Download with appropriate quality settings
-            const link = document.createElement('a');
-            const quality = format === 'png' ? undefined : 1;
-            link.href = tempCanvas.toDataURL(`image/${format}`, quality);
-            link.download = `word-cloud-${Date.now()}.${format}`;
-            link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) return;
+
+            const viewBox = svgElement.viewBox.baseVal;
+
+            const width = viewBox.width || canvasWidth;
+            const height = viewBox.height || canvasHeight;
+
+            const scale = window.devicePixelRatio || 1;
+
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+
+            ctx.scale(scale, scale);
+
+            // Background
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, width, height);
+
+            const img = new Image();
+
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const link = document.createElement('a');
+                const quality = format === 'jpg' ? 1 : undefined;
+
+                link.href = canvas.toDataURL(`image/${format}`, quality);
+                link.download = `word-cloud-${Date.now()}.${format}`;
+                link.click();
+            };
+
+            img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
         },
         [backgroundColor]
     );
 
+    const animatedWordRenderer: WordCloudProps['renderTooltip'] = (data) => (
+        <DefaultTooltipRenderer
+            containerStyle={{
+                borderRadius: '8px',
+                flexDirection: 'column',
+                minWidth: '96px',
+                background: `${data.word?.fill}${opacityToHex(90)}`,
+            }}
+            data={data}
+            placement="bottom"
+            textStyle={{
+                fontFamily: 'ui-monospace',
+                fontSize: '16px',
+            }}
+            transform={false}
+        />
+    );
+
+    const wordEntries: Word[] = getWords().map((entry) => ({
+        text: entry.word,
+        value: entry.frequency,
+    }));
+
+    const values = wordEntries.map((w) => w.value);
+
+    const minFreq = values.length ? Math.min(...values) : 0;
+    const maxFreq = values.length ? Math.max(...values) : 0;
+
+    const calculateFontSize = useCallback(
+        (wordOccurrences: number) => {
+            if (maxFreq === minFreq) return maxFontSize / 2;
+
+            const normalizedValue = (wordOccurrences - minFreq) / (maxFreq - minFreq);
+            const fontSize = minFontSize + normalizedValue * (maxFontSize - minFontSize);
+            return Math.round(fontSize);
+        },
+        [maxFreq, minFreq]
+    );
+
+    const calculateFontWeight = useCallback(
+        (wordOccurrences: number) => {
+            if (maxFreq === minFreq) return maxFontWeight;
+
+            const normalizedValue = (wordOccurrences - minFreq) / (maxFreq - minFreq);
+
+            return Math.round(
+                minFontWeight + normalizedValue * (maxFontWeight - minFontWeight)
+            );
+        },
+        [maxFreq, minFreq]
+    );
+
+    const resolveRotate = useCallback(() => {
+        return useRotation ? getRandomNumber({ min: minRotation, max: maxRotation }) : 0;
+    }, [useRotation]);
+
     const hasText = text.trim().length > 0;
-    const wordCount = words().length;
+    const wordCount = wordEntries.length;
 
     return useMount(
         <motion.div
@@ -212,32 +274,15 @@ export default function WordCloudGenerator() {
                                 <div className="space-y-2">
                                     <Label className="text-sm font-medium">Max Words</Label>
                                     <Input
-                                        max={9999}
+                                        className="w-20"
+                                        max={999}
                                         min={2}
                                         onChange={(e) =>
-                                            setMaxWords(clampNumber(+e.target.value, 1, 9999))
+                                            setMaxWords(clampNumber(+e.target.value, 1, 999))
                                         }
                                         type="number"
                                         value={maxWords}
                                     />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium">Layout</Label>
-                                    <Select
-                                        onValueChange={(val) =>
-                                            setLayoutType(val as LayoutType)
-                                        }
-                                        value={layoutType}
-                                    >
-                                        <SelectTrigger className="mt-1">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="spiral">Spiral</SelectItem>
-                                            <SelectItem value="random">Random</SelectItem>
-                                        </SelectContent>
-                                    </Select>
                                 </div>
 
                                 <div className="space-y-2">
@@ -250,7 +295,7 @@ export default function WordCloudGenerator() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {FONT_FAMILIES.map((font) => (
+                                            {FONT_FAMILIES_WORD_CLOUD.map((font) => (
                                                 <SelectItem
                                                     key={font.value}
                                                     value={font.fontFamily}
@@ -268,7 +313,7 @@ export default function WordCloudGenerator() {
                                     </Label>
                                     <div className="flex flex-wrap items-center gap-2 mt-1">
                                         <input
-                                            className="w-12 h-9.5 py-0 rounded cursor-pointer border"
+                                            className="w-10 h-9.5 py-0 rounded cursor-pointer border"
                                             onChange={(e) => setBackgroundColor(e.target.value)}
                                             type="color"
                                             value={backgroundColor}
@@ -289,18 +334,28 @@ export default function WordCloudGenerator() {
                                     <Switch
                                         checked={skipStopwords}
                                         onCheckedChange={setSkipStopwords}
-                                        size="default"
+                                        size="lg"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium">
+                                        Random Rotation
+                                    </Label>
+                                    <Switch
+                                        checked={useRotation}
+                                        onCheckedChange={setUseRotation}
+                                        size="lg"
                                     />
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
 
-                    <SmartAlert
-                        className="border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-100"
-                        description="A simplified algorithm is implemented to generate spiral layout. Use a professional tool to generate better spiral word cloud layout."
-                        Icon={AlertOctagon}
-                        title="About Spiral Layout"
+                    <PoweredBy
+                        description="Visual word cloud is generated using @isoterik/react-word-cloud."
+                        name="@isoterik/react-word-cloud"
+                        url="https://github.com/isoteriksoftware/react-word-cloud.git"
                     />
                 </div>
 
@@ -318,8 +373,8 @@ export default function WordCloudGenerator() {
                                         <SmartAlert
                                             description={
                                                 wordCount === 0
-                                                    ? 'Paste text in the input area or set Max Words to more than 0'
-                                                    : `${formatWithPlural(wordCount, 'unique word')} found`
+                                                    ? 'Paste text in the input area to generate word cloud.'
+                                                    : `${formatWithPlural(wordCount, 'unique word')} selected`
                                             }
                                         />
                                     </CardDescription>
@@ -330,11 +385,37 @@ export default function WordCloudGenerator() {
                                         ref={canvasRef}
                                     >
                                         {wordCount > 0 ? (
-                                            <WordCloudCanvas
-                                                backgroundColor={backgroundColor}
-                                                fontFamily={fontFamily}
-                                                words={wordPositions()}
-                                            />
+                                            <div
+                                                className="flex items-center h-fit justify-center"
+                                                style={{ backgroundColor }}
+                                            >
+                                                <WordCloud
+                                                    enableTooltip
+                                                    font={fontFamily}
+                                                    fontSize={(w) => calculateFontSize(w.value)}
+                                                    fontWeight={(w) =>
+                                                        calculateFontWeight(w.value)
+                                                    }
+                                                    height={canvasHeight}
+                                                    key={`${maxWords}-${text.length}-${useRotation}-${skipStopwords}`}
+                                                    padding={4}
+                                                    renderTooltip={animatedWordRenderer}
+                                                    renderWord={(data, ref) => (
+                                                        <AnimatedWordRenderer
+                                                            animationDelay={25}
+                                                            data={data}
+                                                            ref={ref}
+                                                        />
+                                                    )}
+                                                    rotate={resolveRotate}
+                                                    spiral="rectangular"
+                                                    svgProps={{
+                                                        preserveAspectRatio: 'xMidYMid meet',
+                                                    }}
+                                                    width={canvasWidth}
+                                                    words={structuredClone(wordEntries)}
+                                                />
+                                            </div>
                                         ) : (
                                             <EmptyData
                                                 description="Paste text in the input area or set Max Words to more than 0 to generate a word cloud."
@@ -367,7 +448,18 @@ export default function WordCloudGenerator() {
                                     <Button
                                         className="flex-1"
                                         disabled={wordCount === 0}
+                                        onClick={() => handleExport('svg')}
+                                        variant="default"
+                                    >
+                                        <ImageDown className="size-4 mb-0.5" />
+                                        Download SVG
+                                    </Button>
+
+                                    <Button
+                                        className="flex-1"
+                                        disabled={wordCount === 0}
                                         onClick={() => handleExport('png')}
+                                        variant="outline"
                                     >
                                         <ImageDown className="size-4 mb-0.5" />
                                         Download PNG
@@ -376,11 +468,11 @@ export default function WordCloudGenerator() {
                                     <Button
                                         className="flex-1"
                                         disabled={wordCount === 0}
-                                        onClick={() => handleExport('jpeg')}
+                                        onClick={() => handleExport('jpg')}
                                         variant="secondary"
                                     >
                                         <ImageDown className="size-4 mb-0.5" />
-                                        Download JPEG
+                                        Download JPG
                                     </Button>
                                 </CardContent>
                             </Card>

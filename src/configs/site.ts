@@ -192,7 +192,7 @@ export const siteConfig = {
             label: 'Word Cloud Generator',
             icon: CloudFog,
             description:
-                'Paste text and generate a visual word cloud with customizable fonts, colors, and layout.',
+                'Paste text and generate a visual word cloud with customizable fonts, colors, and more.',
         },
         {
             href: '/tools/base-conversions',

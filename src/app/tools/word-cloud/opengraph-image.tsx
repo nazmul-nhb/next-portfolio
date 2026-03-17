@@ -13,7 +13,7 @@ export const contentType = 'image/png';
 export default async function Image() {
     return new ImageResponse(
         <OgImageLayout
-            description="Generate interactive word clouds from text with customizable fonts, colors, and layouts. Export as PNG or JPEG."
+            description="Generate interactive word clouds from text with customizable fonts, colors, and more. Export as SVG, PNG or JPG."
             siteTitle={`Word Cloud Generator » ${siteConfig.name}`}
             tag="Word Cloud Generator"
             title={`Word Cloud Generator from ${siteConfig.name}`}
