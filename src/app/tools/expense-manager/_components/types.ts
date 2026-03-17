@@ -1,3 +1,4 @@
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 import type z from 'zod';
 import type {
     AddExpenseEntryFormSchema,
@@ -8,5 +9,5 @@ export type AddEntryFormData = z.infer<typeof AddExpenseEntryFormSchema>;
 export type RepaymentFormData = z.infer<typeof LoanRepaymentFormSchema>;
 
 export type CurrencyResponse = {
-    preferred_currency: string;
+    preferred_currency: CurrencyCode;
 };

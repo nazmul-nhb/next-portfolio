@@ -1,12 +1,11 @@
-import { Calendar, List, Search, Trash2, Wallet2, X } from 'lucide-react';
+import { Calendar, List, Search, Wallet2, X } from 'lucide-react';
 import { Chronos } from 'nhb-toolbox';
-import { type Dispatch, Fragment, type SetStateAction, useMemo, useState } from 'react';
+import { type Dispatch, type SetStateAction, useMemo, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
 import { confirmToast } from '@/components/misc/confirm';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -16,19 +15,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import type { Uncertain } from '@/types';
 import type { ExpenseItem } from '@/types/expenses';
-import { ReceiptGallery } from './ReceiptGallery';
+import ExpenseTable from './ExpenseTable';
 
 type EntriesSectionProps = {
     entries: ExpenseItem[];
@@ -263,7 +254,7 @@ export function EntriesSection({
                     )}
 
                     <div className="space-y-3">
-                        <EntriesAllView
+                        <ExpenseTable
                             deletingEntry={deletingEntry}
                             deletingEntryId={deletingEntryId}
                             entries={entries}
@@ -298,163 +289,5 @@ export function EntriesSection({
                 </div>
             )}
         </section>
-    );
-}
-
-type ALlViewProps = {
-    deletingEntry: boolean;
-    deletingEntryId: number | null;
-    entries: ExpenseItem[];
-    money: (value: number) => string;
-    handleDeleteEntry: (id: number) => void;
-};
-
-function EntriesAllView({
-    deletingEntry,
-    deletingEntryId,
-    entries,
-    handleDeleteEntry,
-    money,
-}: ALlViewProps) {
-    return (
-        <Fragment>
-            <div className="hidden overflow-x-auto rounded-xl border border-border/60 bg-card md:block">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="">Title</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Proofs</TableHead>
-                            <TableHead>Created</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {entries.map((entry) => {
-                            const chr = new Chronos(entry.entry_date);
-                            const created = new Chronos(entry.created_at);
-
-                            return (
-                                <TableRow key={entry.id}>
-                                    <TableCell>
-                                        <p className="font-medium">{entry.title}</p>
-                                        {entry.description && (
-                                            <p className="line-clamp-1 text-xs text-muted-foreground">
-                                                {entry.description}
-                                            </p>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="capitalize">{entry.type}</TableCell>
-                                    <TableCell
-                                        className={`font-semibold text-right ${
-                                            entry.type === 'income'
-                                                ? 'text-green-600 dark:text-green-400'
-                                                : 'text-red-600 dark:text-red-400'
-                                        }`}
-                                    >
-                                        {entry.type === 'income' ? '+' : '-'}
-                                        {money(entry.amount)}
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {chr.format('mmm DD, YYYY hh:mm a')}
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {entry.receipts.length > 0 ? (
-                                            <ReceiptGallery
-                                                maxPreview={4}
-                                                receipts={entry.receipts.map(
-                                                    (item) => item.image_url
-                                                )}
-                                            />
-                                        ) : (
-                                            'No proofs'
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {created.format('mmm DD, YYYY hh:mm a')}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button
-                                            disabled={
-                                                deletingEntry && deletingEntryId === entry.id
-                                            }
-                                            loading={
-                                                deletingEntry && deletingEntryId === entry.id
-                                            }
-                                            onClick={() => handleDeleteEntry(entry.id)}
-                                            size="icon"
-                                            variant="destructive"
-                                        >
-                                            {(deletingEntry &&
-                                                deletingEntryId === entry.id) || (
-                                                <Trash2 className="size-4" />
-                                            )}
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </div>
-
-            <div className="grid gap-3 md:hidden">
-                {entries.map((entry) => {
-                    const chr = new Chronos(entry.entry_date);
-                    return (
-                        <Card key={entry.id}>
-                            <CardContent className="space-y-3 pt-5 pb-4">
-                                <div className="flex items-start justify-between gap-2">
-                                    <div>
-                                        <p className="font-medium">{entry.title}</p>
-                                        {entry.description && (
-                                            <p className="line-clamp-2 text-xs text-muted-foreground">
-                                                {entry.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <p
-                                        className={`text-sm font-semibold ${
-                                            entry.type === 'income'
-                                                ? 'text-green-600 dark:text-green-400'
-                                                : 'text-red-600 dark:text-red-400'
-                                        }`}
-                                    >
-                                        {entry.type === 'income' ? '+' : '-'}
-                                        {money(entry.amount)}
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                    <span className="capitalize">{entry.type}</span>
-                                    <span>{chr.format('mmm DD, YYYY hh:mm a')}</span>
-                                </div>
-                                {entry.receipts.length > 0 && (
-                                    <ReceiptGallery
-                                        maxPreview={8}
-                                        receipts={entry.receipts.map((item) => item.image_url)}
-                                    />
-                                )}
-                                <div className="flex justify-end">
-                                    <Button
-                                        disabled={deletingEntry && deletingEntryId === entry.id}
-                                        loading={deletingEntry && deletingEntryId === entry.id}
-                                        onClick={() => handleDeleteEntry(entry.id)}
-                                        size="default"
-                                        variant="destructive"
-                                    >
-                                        {(deletingEntry && deletingEntryId === entry.id) || (
-                                            <Trash2 className="size-4 mb-px" />
-                                        )}
-                                        Delete
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
-            </div>
-        </Fragment>
     );
 }

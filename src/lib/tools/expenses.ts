@@ -1,4 +1,5 @@
 import { isNumber } from 'nhb-toolbox';
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 
 export const MONEY_SCALE = 100;
 
@@ -17,7 +18,7 @@ export function fromMinorUnits(value: number) {
 }
 
 /** Formats a minor-unit amount using Intl currency formatting. */
-export function formatMoney(value: number, currency: string, locale = 'en-US') {
+export function formatMoney(value: number, currency: CurrencyCode, locale = 'en-US') {
     return new Intl.NumberFormat(locale, {
         style: 'currency',
         currency,

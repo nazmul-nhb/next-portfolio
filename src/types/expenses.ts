@@ -7,6 +7,7 @@ import type {
     receipts,
     expenses as expenseEntries,
 } from '@/lib/drizzle/schema/expenses';
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 
 export type ExpenseType = (typeof expenseTypeEnum.enumValues)[number];
 export type LoanType = (typeof loanTypeEnum.enumValues)[number];
@@ -46,7 +47,7 @@ export interface PaginatedExpenses {
 }
 
 export interface ExpenseSummary {
-    currency: string;
+    currency: CurrencyCode;
     total_income: number;
     total_expense: number;
     borrowed_outstanding: number;
