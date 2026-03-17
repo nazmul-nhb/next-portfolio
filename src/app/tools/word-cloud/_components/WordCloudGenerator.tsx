@@ -444,9 +444,8 @@ export default function WordCloudGenerator() {
                             variants={itemVariants}
                         >
                             <Card>
-                                <CardContent className="flex flex-wrap gap-2">
+                                <CardContent className="flex flex-wrap justify-between gap-2">
                                     <Button
-                                        className="flex-1"
                                         disabled={wordCount === 0}
                                         onClick={() => handleExport('svg')}
                                         variant="default"
@@ -456,7 +455,6 @@ export default function WordCloudGenerator() {
                                     </Button>
 
                                     <Button
-                                        className="flex-1"
                                         disabled={wordCount === 0}
                                         onClick={() => handleExport('png')}
                                         variant="outline"
@@ -466,7 +464,6 @@ export default function WordCloudGenerator() {
                                     </Button>
 
                                     <Button
-                                        className="flex-1"
                                         disabled={wordCount === 0}
                                         onClick={() => handleExport('jpg')}
                                         variant="secondary"
