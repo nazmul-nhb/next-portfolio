@@ -489,7 +489,7 @@ export default function ChartGenerator() {
                                         Settings
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
+                                <CardContent className="flex flex-wrap gap-4">
                                     <div className="space-y-2">
                                         <Label className="text-sm font-medium">
                                             Chart Type
@@ -540,8 +540,8 @@ export default function ChartGenerator() {
                                         </Select>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
+                                    <div className="flex flex-wrap gap-3">
+                                        <div className="flex gap-3 items-center justify-between">
                                             <Label className="text-sm font-medium">
                                                 Show Gridlines
                                             </Label>
@@ -551,7 +551,7 @@ export default function ChartGenerator() {
                                             />
                                         </div>
 
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex gap-3 items-center justify-between">
                                             <Label className="text-sm font-medium">
                                                 Show Labels
                                             </Label>
@@ -561,7 +561,7 @@ export default function ChartGenerator() {
                                             />
                                         </div>
 
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex gap-3 items-center justify-between">
                                             <Label className="text-sm font-medium">
                                                 Show Legend
                                             </Label>
@@ -572,11 +572,12 @@ export default function ChartGenerator() {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 w-full">
                                         <Label className="text-sm font-medium">
                                             Chart Title
                                         </Label>
                                         <Input
+                                            className="w-full"
                                             onChange={(e) => setChartTitle(e.target.value)}
                                             placeholder="Optional title"
                                             value={chartTitle}
