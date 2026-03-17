@@ -2,17 +2,16 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { AlertCircle, Download, Eye, FileJson, Settings2, Trash2 } from 'lucide-react';
+import { AlertCircle, Download, FileJson, ScanEye, Settings2, Trash2 } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { parseJSON } from 'nhb-toolbox';
-import { useCallback, useRef, useState } from 'react';
+import { Fragment, useCallback, useRef, useState } from 'react';
 import {
     Area,
     AreaChart,
     Bar,
     BarChart,
     CartesianGrid,
-    Cell,
     ComposedChart,
     Funnel,
     FunnelChart,
@@ -26,7 +25,9 @@ import {
     ResponsiveContainer,
     Scatter,
     ScatterChart,
+    Sector,
     Tooltip,
+    Trapezoid,
     Treemap,
     XAxis,
     YAxis,
@@ -91,6 +92,85 @@ const CHART_TYPES: { value: ChartType; label: string }[] = [
     { value: 'treemap', label: 'Treemap' },
     { value: 'funnel', label: 'Funnel' },
 ];
+
+function getFillFromPayload(payload: unknown): string | undefined {
+    if (!payload || typeof payload !== 'object') return undefined;
+    const maybeFill = (payload as { fill?: unknown }).fill;
+    return typeof maybeFill === 'string' ? maybeFill : undefined;
+}
+
+function ColoredPieSector(props: Record<string, unknown>) {
+    const { payload, fill, ...sectorProps } = props as {
+        payload?: unknown;
+        fill?: unknown;
+    } & Record<string, unknown>;
+
+    const payloadFill = getFillFromPayload(payload);
+    const resolvedFill = payloadFill ?? (typeof fill === 'string' ? fill : undefined);
+
+    return <Sector {...sectorProps} fill={resolvedFill} />;
+}
+
+function ColoredFunnelTrapezoid(props: Record<string, unknown>) {
+    const { payload, fill, ...trapezoidProps } = props as {
+        payload?: unknown;
+        fill?: unknown;
+    } & Record<string, unknown>;
+
+    const payloadFill = getFillFromPayload(payload);
+    const resolvedFill = payloadFill ?? (typeof fill === 'string' ? fill : undefined);
+
+    return <Trapezoid {...trapezoidProps} fill={resolvedFill} />;
+}
+
+function TreemapNodeContent(props: Record<string, unknown>) {
+    const {
+        x,
+        y,
+        width,
+        height,
+        depth,
+        index,
+        name,
+        payload,
+        fill: propFill,
+    } = props as {
+        x?: number;
+        y?: number;
+        width?: number;
+        height?: number;
+        depth?: number;
+        index?: number;
+        name?: string;
+        payload?: unknown;
+        fill?: unknown;
+    };
+
+    if (!width || !height || width <= 0 || height <= 0) return null;
+
+    const payloadFill = getFillFromPayload(payload);
+    const resolvedFill = payloadFill ?? (typeof propFill === 'string' ? propFill : '#8884d8');
+
+    const showLabel = depth === 1 && width > 48 && height > 24;
+    const label = typeof name === 'string' ? name : `${index ?? ''}`;
+
+    return (
+        <g>
+            <rect fill={resolvedFill} height={height} stroke="#fff" width={width} x={x} y={y} />
+            {showLabel ? (
+                <text
+                    fill="#fff"
+                    fontSize={14}
+                    pointerEvents="none"
+                    x={(x ?? 0) + 6}
+                    y={(y ?? 0) + 18}
+                >
+                    {label}
+                </text>
+            ) : null}
+        </g>
+    );
+}
 
 export default function ChartGenerator() {
     const [rawJson, setRawJson] = useState('');
@@ -214,8 +294,25 @@ export default function ChartGenerator() {
                 return (
                     <BarChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis dataKey={xAxisKey} />
-                        <YAxis />
+                        <XAxis
+                            dataKey={xAxisKey}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                        />
+                        <YAxis
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
+                        />
                         {showLegend && <Legend />}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => (
@@ -233,8 +330,25 @@ export default function ChartGenerator() {
                 return (
                     <LineChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis dataKey={xAxisKey} />
-                        <YAxis />
+                        <XAxis
+                            dataKey={xAxisKey}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                        />
+                        <YAxis
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
+                        />
                         {showLegend && <Legend />}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => (
@@ -254,8 +368,25 @@ export default function ChartGenerator() {
                 return (
                     <AreaChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis dataKey={xAxisKey} />
-                        <YAxis />
+                        <XAxis
+                            dataKey={xAxisKey}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                        />
+                        <YAxis
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
+                        />
                         {showLegend && <Legend />}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => (
@@ -273,35 +404,52 @@ export default function ChartGenerator() {
                     </AreaChart>
                 );
 
-            case 'pie':
+            case 'pie': {
+                const pieData = transformedData.map((item, idx) => ({
+                    ...item,
+                    fill: colors[idx % colors.length],
+                }));
+
                 return (
                     <PieChart {...commonProps}>
                         {showLegend && <Legend />}
                         <Tooltip />
                         <Pie
-                            data={transformedData}
+                            data={pieData}
                             dataKey={yAxisKeys[0]}
                             isAnimationActive={true}
                             label={showLabels}
                             nameKey={xAxisKey}
-                        >
-                            {transformedData.map((_, index) => (
-                                <Cell
-                                    fill={colors[index % colors.length]}
-                                    key={`cell-${index}`}
-                                />
-                            ))}
-                        </Pie>
+                            shape={<ColoredPieSector />}
+                        />
                     </PieChart>
                 );
+            }
 
             case 'scatter':
                 return (
                     <ScatterChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis dataKey={yAxisKeys[0]} name={yAxisKeys[0]} />
+                        <XAxis
+                            dataKey={yAxisKeys[0]}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                            name={yAxisKeys[0]}
+                        />
                         <YAxis
                             dataKey={yAxisKeys[1] || yAxisKeys[0]}
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
                             name={yAxisKeys[1] || yAxisKeys[0]}
                         />
                         {showLegend && <Legend />}
@@ -335,8 +483,25 @@ export default function ChartGenerator() {
                 return (
                     <ComposedChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis dataKey={xAxisKey} />
-                        <YAxis />
+                        <XAxis
+                            dataKey={xAxisKey}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                        />
+                        <YAxis
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
+                        />
                         {showLegend && <Legend />}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => {
@@ -365,41 +530,44 @@ export default function ChartGenerator() {
                     </ComposedChart>
                 );
 
-            case 'treemap':
+            case 'treemap': {
+                const treemapData = transformedData.map((item, idx) => ({
+                    ...item,
+                    fill: colors[idx % colors.length],
+                }));
+
                 return (
                     <Treemap
-                        data={transformedData}
+                        content={<TreemapNodeContent />}
+                        data={treemapData}
                         dataKey={yAxisKeys[0]}
                         fill={colors[0]}
                         isAnimationActive={true}
                         stroke="#fff"
-                    >
-                        {transformedData.map((_, index) => (
-                            <Cell fill={colors[index % colors.length]} key={`cell-${index}`} />
-                        ))}
-                    </Treemap>
+                    />
                 );
+            }
 
-            case 'funnel':
+            case 'funnel': {
+                const funnelData = transformedData.map((item, idx) => ({
+                    ...item,
+                    fill: colors[idx % colors.length],
+                }));
+
                 return (
                     <FunnelChart {...commonProps}>
                         {showLegend && <Legend />}
                         <Tooltip />
                         <Funnel
-                            data={transformedData}
+                            data={funnelData}
                             dataKey={yAxisKeys[0]}
                             isAnimationActive={true}
                             nameKey={xAxisKey}
-                        >
-                            {transformedData.map((_, index) => (
-                                <Cell
-                                    fill={colors[index % colors.length]}
-                                    key={`cell-${index}`}
-                                />
-                            ))}
-                        </Funnel>
+                            shape={<ColoredFunnelTrapezoid />}
+                        />
                     </FunnelChart>
                 );
+            }
 
             default:
                 return null;
@@ -616,7 +784,7 @@ export default function ChartGenerator() {
                 {/* Preview and Export Section */}
                 <div className="space-y-4">
                     {hasValidData ? (
-                        <>
+                        <Fragment>
                             <motion.div
                                 animate="visible"
                                 initial="hidden"
@@ -625,7 +793,7 @@ export default function ChartGenerator() {
                                 <Card className="flex flex-col h-full">
                                     <CardHeader>
                                         <CardTitle className="text-base flex items-center gap-2">
-                                            <Eye className="size-4" /> Preview
+                                            <ScanEye className="size-4" /> Preview
                                         </CardTitle>
                                         <CardDescription>
                                             {chartTitle ||
@@ -670,7 +838,7 @@ export default function ChartGenerator() {
                                     </CardContent>
                                 </Card>
                             </motion.div>
-                        </>
+                        </Fragment>
                     ) : (
                         <EmptyData
                             description="Paste JSON array or upload a file to generate a chart."

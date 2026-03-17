@@ -1,3 +1,4 @@
+import { isNumber } from 'nhb-toolbox';
 import type { ChartDataPoint } from '@/types/chart';
 
 export const COLOR_PALETTES = {
@@ -26,7 +27,7 @@ export function detectAxisKeys(data: ChartDataPoint[]) {
 
     for (const key of keys) {
         const value = firstItem[key];
-        if (typeof value === 'number' || !Number.isNaN(Number(value))) {
+        if (isNumber(value) || !Number.isNaN(Number(value))) {
             yAxisKeys.push(key);
         } else if (yAxisKeys.length === 0) {
             xAxisKey = key;
@@ -94,8 +95,39 @@ export function exportChartAsImage(
     format: 'png' | 'svg',
     filename: string
 ) {
+    const getNumericAttr = (value: string | null) => {
+        if (!value) return undefined;
+        const trimmed = value.trim();
+        if (!trimmed) return undefined;
+        if (trimmed.endsWith('%')) return undefined;
+        const parsed = Number.parseFloat(trimmed);
+        return Number.isFinite(parsed) ? parsed : undefined;
+    };
+
+    const bounds = svgElement.getBoundingClientRect();
+    const attrWidth = getNumericAttr(svgElement.getAttribute('width'));
+    const attrHeight = getNumericAttr(svgElement.getAttribute('height'));
+
+    const fallbackViewBox = svgElement.viewBox?.baseVal;
+    const viewBoxWidth = fallbackViewBox?.width || undefined;
+    const viewBoxHeight = fallbackViewBox?.height || undefined;
+
+    const width = Math.round(bounds.width) || attrWidth || viewBoxWidth || 800;
+    const height = Math.round(bounds.height) || attrHeight || viewBoxHeight || 800;
+
+    if (!width || !height) {
+        throw new Error('Unable to determine chart size for export');
+    }
+
+    const svgForExport = svgElement.cloneNode(true) as SVGSVGElement;
+    svgForExport.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svgForExport.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+    svgForExport.setAttribute('width', `${width}`);
+    svgForExport.setAttribute('height', `${height}`);
+
+    const svgString = new XMLSerializer().serializeToString(svgForExport);
+
     if (format === 'svg') {
-        const svgString = new XMLSerializer().serializeToString(svgElement);
         const blob = new Blob([svgString], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -106,21 +138,27 @@ export function exportChartAsImage(
     } else if (format === 'png') {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const rect = svgElement.getBoundingClientRect();
-
-        canvas.width = rect.width;
-        canvas.height = rect.height;
 
         if (!ctx) return;
 
-        // Draw white background
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const scale = window.devicePixelRatio || 1;
 
-        const svgString = new XMLSerializer().serializeToString(svgElement);
+        canvas.width = Math.ceil(width * scale);
+        canvas.height = Math.ceil(height * scale);
+
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+        // Background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+
         const img = new Image();
+        let svgUrl: string | null = null;
+
         img.onload = () => {
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, 0, 0, width, height);
+            if (svgUrl) URL.revokeObjectURL(svgUrl);
+
             canvas.toBlob((blob) => {
                 if (!blob) return;
                 const url = URL.createObjectURL(blob);
@@ -131,6 +169,13 @@ export function exportChartAsImage(
                 URL.revokeObjectURL(url);
             }, 'image/png');
         };
-        img.src = `data:image/svg+xml;base64,${encodeURIComponent(svgString)}`;
+
+        img.onerror = () => {
+            if (svgUrl) URL.revokeObjectURL(svgUrl);
+        };
+
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        svgUrl = URL.createObjectURL(svgBlob);
+        img.src = svgUrl;
     }
 }

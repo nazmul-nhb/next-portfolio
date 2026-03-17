@@ -14,7 +14,7 @@ export const chartConfigSchema = z.object({
         'composed',
         'treemap',
         'funnel',
-    ] as const),
+    ]),
     title: z.string().optional(),
     xAxisLabel: z.string().optional(),
     yAxisLabel: z.string().optional(),
