@@ -1,6 +1,6 @@
 # Portfolio & Blog Site
 
-A modern, full-stack portfolio and blogging platform built with **Next.js 16**, **React 19**, **TailwindCSS**, and **Drizzle ORM**. Features a rich admin dashboard, blog editor, project showcase, resume generator, real-time (*almost*) messaging, and more.
+A modern, full-stack portfolio and blogging platform built with **Next.js 16**, **React 19**, **TailwindCSS**, **Framer Motion** and **Drizzle ORM**. Features a rich admin dashboard, blog editor, project showcase, resume generator, real-time (*almost*) messaging, productivity tools and more.
 
 > This is my personal portfolio and blog site, designed to showcase my projects, skills, experience, and thoughts. It serves as a platform for me to share my work and insights with the world. The code is open-source and can be used as a reference or starting point for your own portfolio or blog projects. However, please note that this project is not licensed for redistribution, so it cannot be used for commercial purposes or shared without permission.
 
