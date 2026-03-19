@@ -1,7 +1,7 @@
 import { isBoolean } from 'nhb-toolbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-interface UseStopwatchOptions {
+interface StopwatchOptions {
     /** Start automatically when mounted */
     autoStart?: boolean;
 
@@ -15,7 +15,7 @@ interface UseStopwatchOptions {
     paused?: boolean;
 }
 
-interface UseStopwatchReturn {
+interface StopwatchResult {
     /**
      * The elapsed time in milliseconds.
      *
@@ -66,7 +66,7 @@ interface UseStopwatchReturn {
  * A high-precision stopwatch hook using timestamp based timing.
  * Accurate regardless of interval drift or tab throttling.
  */
-export function useStopwatch(options: UseStopwatchOptions = {}): UseStopwatchReturn {
+export function useStopwatch(options: StopwatchOptions = {}): StopwatchResult {
     const { autoStart = false, interval = 100, initialTime = 0, paused = false } = options;
 
     const [elapsed, setElapsed] = useState(initialTime);
@@ -131,8 +131,7 @@ export function useStopwatch(options: UseStopwatchOptions = {}): UseStopwatchRet
      * Toggle running state.
      */
     const toggle = useCallback(() => {
-        if (runningRef.current) pause();
-        else start();
+        runningRef.current ? pause() : start();
     }, [pause, start]);
 
     /**
@@ -152,8 +151,7 @@ export function useStopwatch(options: UseStopwatchOptions = {}): UseStopwatchRet
     useEffect(() => {
         if (!isBoolean(paused)) return;
 
-        if (paused) pause();
-        else start();
+        paused ? pause() : start();
     }, [paused, pause, start]);
 
     /**

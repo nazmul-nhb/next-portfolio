@@ -62,6 +62,9 @@ import {
     validateChartData,
 } from '@/lib/tools/chart';
 import type { ChartDataPoint, ChartType } from '@/types/chart';
+import { useTimerMs } from '@/lib/hooks/use-timer';
+import CodeBlock from '@/components/misc/code-block';
+import { parseMsToDuration } from '@/lib/utils';
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -574,6 +577,8 @@ export default function ChartGenerator() {
         }
     };
 
+    const { remaining } = useTimerMs('7h', { interval: 100 });
+
     return useMount(
         <motion.div
             animate="visible"
@@ -584,6 +589,9 @@ export default function ChartGenerator() {
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 {/* Input and Controls Section */}
                 <div className="space-y-4">
+                    <CodeBlock className="font-digital">
+                        {parseMsToDuration(remaining)}
+                    </CodeBlock>
                     {/* JSON Input */}
                     <motion.div variants={itemVariants}>
                         <Card>
