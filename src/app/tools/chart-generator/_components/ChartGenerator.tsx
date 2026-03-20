@@ -13,7 +13,7 @@ import {
     Trash2,
 } from 'lucide-react';
 import { useMount, useTimerMs } from 'nhb-hooks';
-import { parseJSON } from 'nhb-toolbox';
+import { isObject, isString, parseJSON } from 'nhb-toolbox';
 import { Fragment, useCallback, useRef, useState } from 'react';
 import {
     Area,
@@ -105,9 +105,9 @@ const CHART_TYPES: { value: ChartType; label: string }[] = [
 ];
 
 function getFillFromPayload(payload: unknown): string | undefined {
-    if (!payload || typeof payload !== 'object') return undefined;
-    const maybeFill = (payload as { fill?: unknown }).fill;
-    return typeof maybeFill === 'string' ? maybeFill : undefined;
+    if (!payload || !isObject(payload)) return undefined;
+    const maybeFill = payload.fill;
+    return isString(maybeFill) ? maybeFill : undefined;
 }
 
 function ColoredPieSector(props: Record<string, unknown>) {
@@ -117,7 +117,7 @@ function ColoredPieSector(props: Record<string, unknown>) {
     } & Record<string, unknown>;
 
     const payloadFill = getFillFromPayload(payload);
-    const resolvedFill = payloadFill ?? (typeof fill === 'string' ? fill : undefined);
+    const resolvedFill = payloadFill ?? (isString(fill) ? fill : undefined);
 
     return <Sector {...sectorProps} fill={resolvedFill} />;
 }
@@ -129,7 +129,7 @@ function ColoredFunnelTrapezoid(props: Record<string, unknown>) {
     } & Record<string, unknown>;
 
     const payloadFill = getFillFromPayload(payload);
-    const resolvedFill = payloadFill ?? (typeof fill === 'string' ? fill : undefined);
+    const resolvedFill = payloadFill ?? (isString(fill) ? fill : undefined);
 
     return <Trapezoid {...trapezoidProps} fill={resolvedFill} />;
 }
@@ -160,10 +160,10 @@ function TreemapNodeContent(props: Record<string, unknown>) {
     if (!width || !height || width <= 0 || height <= 0) return null;
 
     const payloadFill = getFillFromPayload(payload);
-    const resolvedFill = payloadFill ?? (typeof propFill === 'string' ? propFill : '#8884d8');
+    const resolvedFill = payloadFill ?? (isString(propFill) ? propFill : '#8884d8');
 
     const showLabel = depth === 1 && width > 48 && height > 24;
-    const label = typeof name === 'string' ? name : `${index ?? ''}`;
+    const label = isString(name) ? name : `${index ?? ''}`;
 
     return (
         <g>

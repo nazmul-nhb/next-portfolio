@@ -12,6 +12,7 @@ import {
     normalizeResumeHref,
     sortResumeSections,
 } from '@/lib/resume-builder/utils';
+import { isString } from 'nhb-toolbox';
 
 interface ResumePreviewerProps {
     config: ResumeConfig;
@@ -247,7 +248,7 @@ export default function ResumePreviewer({ config }: ResumePreviewerProps) {
                     })}
 
                     {config.customSections.map((section) => {
-                        if (section.fieldType !== 'list' && typeof section.value === 'string') {
+                        if (section.fieldType !== 'list' && isString(section.value)) {
                             if (!section.value.trim()) {
                                 return null;
                             }

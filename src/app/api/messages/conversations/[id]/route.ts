@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { isString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { auth } from '@/lib/auth';
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         const body = await req.json();
         const { content } = body;
 
-        if (!content || typeof content !== 'string' || !content.trim()) {
+        if (!content || !isString(content) || !content.trim()) {
             return sendErrorResponse('Message content is required', 400);
         }
 

@@ -13,6 +13,7 @@ import {
     Trash2,
 } from 'lucide-react';
 import Image from 'next/image';
+import { isString } from 'nhb-toolbox';
 import { uuid } from 'nhb-toolbox/hash';
 import { Fragment, useCallback, useMemo, useState } from 'react';
 import { FaFilePdf } from 'react-icons/fa6';
@@ -875,7 +876,7 @@ export function ResumeControls({
                                             </div>
 
                                             {section.fieldType === 'textarea' &&
-                                                typeof section.value === 'string' && (
+                                                isString(section.value) && (
                                                     <Textarea
                                                         className="min-h-24 max-h-40 custom-scroll"
                                                         onChange={(e) =>
@@ -889,7 +890,7 @@ export function ResumeControls({
                                                 )}
 
                                             {section.fieldType === 'text' &&
-                                                typeof section.value === 'string' && (
+                                                isString(section.value) && (
                                                     <Input
                                                         onChange={(e) =>
                                                             onCustomSectionUpdate(section.id, {

@@ -8,6 +8,7 @@ import {
     normalizeResumeHref,
     sortResumeSections,
 } from '@/lib/resume-builder/utils';
+import { isString } from 'nhb-toolbox';
 
 const styles = StyleSheet.create({
     page: {
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
 });
 
 function renderTextSection(section: CustomSection, fontFamily: string) {
-    if (typeof section.value !== 'string' || !section.value.trim()) {
+    if (!isString(section.value) || !section.value.trim()) {
         return null;
     }
 

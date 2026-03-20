@@ -4,6 +4,7 @@ import { DndContext, type DragEndEvent, useDraggable } from '@dnd-kit/core';
 import { AlertTriangle, ExternalLink, Globe, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useWindowResize } from 'nhb-hooks';
+import { isString } from 'nhb-toolbox';
 import {
     type CSSProperties,
     type PointerEvent as ReactPointerEvent,
@@ -292,7 +293,7 @@ function BrowserWindow({ url, favicon, title, onClose, position }: BrowserWindow
                 }
 
                 const data = (await response.json()) as GitHubReadmeApiResponse;
-                if (data.encoding !== 'base64' || typeof data.content !== 'string') {
+                if (data.encoding !== 'base64' || !isString(data.content)) {
                     throw new Error('GitHub returned an unsupported README format.');
                 }
 
