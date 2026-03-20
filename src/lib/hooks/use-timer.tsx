@@ -82,16 +82,71 @@ export interface TimerResult {
 }
 
 /**
- * * Countdown timer hook with millisecond precision.
+ * Countdown timer hook with millisecond precision.
  *
- * @param time
- * `time` is parsed with {@link https://toolbox.nazmul-nhb.dev/docs/utilities/date/parse-time#parsemsec parseMSec} from `nhb-toolbox`.
- * Numeric values are interpreted as seconds, not milliseconds, so `useTimerMs(5)` counts down from `5000` milliseconds.
- * If you already have a millisecond value, pass it as a unit string such as `'1500ms'` or `'2s'` to keep the intent explicit.
+ * @remarks
+ * - Internally uses a deadline-based approach (`Date.now()`) for accurate timing.
+ * - The `interval` option only controls how often the UI updates, **not** the actual countdown precision.
  *
- * Invalid input resolves to `0` milliseconds after normalization.
- * @param options Options to control the timer.
- * @returns
+ * @param time - Initial countdown duration (parsed via `parseMSec`)
+ * @param options - Timer configuration options
+ *
+ * @returns Timer state and control methods
+ *
+ * - For a structured duration object, consider using {@link https://toolbox.nazmul-nhb.dev/docs/classes/Chronos Chronos} powered {@link https://github.com/nazmul-nhb/nhb-hooks?tab=readme-ov-file#usetimer useTimer} without any explicit controls
+ *
+ * ### Time parsing behavior
+ * The `time` argument is parsed using {@link https://toolbox.nazmul-nhb.dev/docs/utilities/date/parse-time#parsemsec parseMSec} from `nhb-toolbox`:
+ *
+ * - {@link Numeric} values are interpreted as **seconds**
+ *   - `useTimerMs(5)` or `useTimerMs('5')` or `useTimerMs('5s')` → `5s` or `5000ms`
+ * - String values support explicit units
+ *   - `'1500ms'`, `'2s'`, `'1m'`, etc.
+ * - If you already have milliseconds, prefer explicit units
+ *   - `'1500ms'` instead of `1500`
+ * - Invalid input is normalized to `0`
+ *
+ * @example
+ * Basic usage
+ * ```tsx
+ * const { remaining, start, pause } = useTimerMs(5);
+ * ```
+ *
+ * @example
+ * Explicit milliseconds
+ * ```tsx
+ * const timer = useTimerMs('1500ms');
+ * ```
+ *
+ * @example
+ * Auto start
+ * ```tsx
+ * const timer = useTimerMs('10s', { autoStart: true });
+ * ```
+ *
+ * @example
+ * Controlled pause
+ * ```tsx
+ * const [paused, setPaused] = useState(false);
+ *
+ * const timer = useTimerMs(10, { paused });
+ * ```
+ *
+ * @example
+ * Reset with custom value
+ * ```tsx
+ * const { reset } = useTimerMs('5s');
+ *
+ * reset(2000); // reset to 2 seconds
+ * ```
+ *
+ * @example
+ * Resume from existing remaining time
+ * ```tsx
+ * const timer = useTimerMs('10s', {
+ *   initialRemainingMs: 3000,
+ * });
+ * ```
  */
 export function useTimerMs(time: TimeWithUnit | Numeric, options?: TimerOptions): TimerResult {
     const {

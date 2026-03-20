@@ -80,8 +80,58 @@ export interface StopwatchResult {
 /**
  * High-precision stopwatch hook using timestamp-based timing.
  *
- * The stopwatch remains accurate even if the render interval drifts or the
- * browser throttles timers in background tabs.
+ * @remarks
+ * - Uses `Date.now()` to calculate elapsed time, ensuring accuracy even if:
+ *   - The render interval drifts
+ *   - The browser throttles timers (e.g. background tabs)
+ * - The `interval` option only controls UI update frequency, **not** timing precision
+ * - Elapsed time is accumulated using an internal offset, allowing seamless pause/resume cycles
+ *
+ * @param options - Stopwatch configuration options
+ *
+ * @returns Stopwatch state and control methods
+ *
+ * @example
+ * Basic usage
+ * ```tsx
+ * const { elapsed, start, pause } = useStopwatch();
+ * ```
+ *
+ * @example
+ * Auto start
+ * ```tsx
+ * const timer = useStopwatch({ autoStart: true });
+ * ```
+ *
+ * @example
+ * Controlled pause (external state)
+ * ```tsx
+ * const [paused, setPaused] = useState(false);
+ *
+ * const { elapsed } = useStopwatch({ paused });
+ * ```
+ *
+ * @example
+ * Custom update interval
+ * ```tsx
+ * const timer = useStopwatch({ interval: 50 });
+ * ```
+ *
+ * @example
+ * Reset with custom time
+ * ```tsx
+ * const { reset } = useStopwatch();
+ *
+ * reset(2000); // reset to 2 seconds
+ * ```
+ *
+ * @example
+ * Resume from existing elapsed time
+ * ```tsx
+ * const timer = useStopwatch({
+ *   initialTime: 5000,
+ * });
+ * ```
  */
 export function useStopwatch(options: StopwatchOptions = {}): StopwatchResult {
     const { autoStart = false, interval = 100, initialTime = 0, paused = false } = options;
