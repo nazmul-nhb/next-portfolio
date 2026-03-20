@@ -16,7 +16,7 @@ import {
     Timer,
     Zap,
 } from 'lucide-react';
-import { useStorage } from 'nhb-hooks';
+import { useStopwatch, useStorage } from 'nhb-hooks';
 import { throttleAction } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -38,7 +38,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useStopwatch } from '@/lib/hooks/use-stopwatch';
 import {
     copyGrid,
     DEFAULT_SCORES,

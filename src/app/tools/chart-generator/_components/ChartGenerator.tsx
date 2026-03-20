@@ -12,7 +12,7 @@ import {
     Settings2,
     Trash2,
 } from 'lucide-react';
-import { useMount } from 'nhb-hooks';
+import { useMount, useTimerMs } from 'nhb-hooks';
 import { parseJSON } from 'nhb-toolbox';
 import { Fragment, useCallback, useRef, useState } from 'react';
 import {
@@ -63,7 +63,6 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { useTimerMs } from '@/lib/hooks/use-timer';
 import {
     COLOR_PALETTES,
     type ColorPaletteName,

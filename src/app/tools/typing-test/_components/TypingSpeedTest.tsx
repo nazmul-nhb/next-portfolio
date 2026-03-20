@@ -12,7 +12,7 @@ import {
     Timer,
     Zap,
 } from 'lucide-react';
-import { useStorage } from 'nhb-hooks';
+import { useStopwatch, useStorage } from 'nhb-hooks';
 import { parseMs } from 'nhb-toolbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CodeBlock from '@/components/misc/code-block';
@@ -36,7 +36,6 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { useStopwatch } from '@/lib/hooks/use-stopwatch';
 import {
     calculateMetrics,
     getAccuracyColor,
