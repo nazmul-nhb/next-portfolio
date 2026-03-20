@@ -2,7 +2,16 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { AlertCircle, Download, FileJson, ScanEye, Settings2, Trash2 } from 'lucide-react';
+import {
+    AlertCircle,
+    Download,
+    FileJson,
+    Pause,
+    Play,
+    ScanEye,
+    Settings2,
+    Trash2,
+} from 'lucide-react';
 import { useMount } from 'nhb-hooks';
 import { parseJSON } from 'nhb-toolbox';
 import { Fragment, useCallback, useRef, useState } from 'react';
@@ -33,6 +42,7 @@ import {
     YAxis,
 } from 'recharts';
 import { toast } from 'sonner';
+import CodeBlock from '@/components/misc/code-block';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,6 +63,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useTimerMs } from '@/lib/hooks/use-timer';
 import {
     COLOR_PALETTES,
     type ColorPaletteName,
@@ -61,10 +72,8 @@ import {
     transformChartData,
     validateChartData,
 } from '@/lib/tools/chart';
-import type { ChartDataPoint, ChartType } from '@/types/chart';
-import { useTimerMs } from '@/lib/hooks/use-timer';
-import CodeBlock from '@/components/misc/code-block';
 import { parseMsToDuration } from '@/lib/utils';
+import type { ChartDataPoint, ChartType } from '@/types/chart';
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -577,7 +586,7 @@ export default function ChartGenerator() {
         }
     };
 
-    const { remaining } = useTimerMs('7h', { interval: 100 });
+    const { remaining, toggle, isRunning } = useTimerMs('2m', { interval: 100 });
 
     return useMount(
         <motion.div
@@ -589,9 +598,12 @@ export default function ChartGenerator() {
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 {/* Input and Controls Section */}
                 <div className="space-y-4">
-                    <CodeBlock className="font-digital">
+                    <CodeBlock className="text-lg font-digital">
                         {parseMsToDuration(remaining)}
                     </CodeBlock>
+                    <Button onClick={toggle} variant={'destructive'}>
+                        {isRunning ? <Pause /> : <Play />}
+                    </Button>
                     {/* JSON Input */}
                     <motion.div variants={itemVariants}>
                         <Card>
