@@ -323,9 +323,8 @@ export default function QRCodeGenerator() {
                             variants={itemVariants}
                         >
                             <Card>
-                                <CardContent className="flex flex-wrap gap-2 justify-between">
+                                <CardContent className="flex flex-wrap gap-2">
                                     <Button
-                                        className="flex-1"
                                         onClick={handleDownload}
                                         size="default"
                                         variant="default"
@@ -334,7 +333,6 @@ export default function QRCodeGenerator() {
                                         Download PNG
                                     </Button>
                                     <Button
-                                        className="flex-1"
                                         onClick={handleDownloadSVG}
                                         size="default"
                                         variant="secondary"
@@ -347,7 +345,6 @@ export default function QRCodeGenerator() {
                                             before: 'Copy Value',
                                             after: 'Value Copied',
                                         }}
-                                        className="flex-1"
                                         size="default"
                                         textToCopy={qrValue}
                                         variant="outline"

@@ -1031,16 +1031,12 @@ export default function ChartGenerator() {
                             >
                                 <Card>
                                     <CardContent className="flex flex-wrap gap-2">
-                                        <Button
-                                            className="flex-1"
-                                            onClick={() => handleExport('png')}
-                                        >
+                                        <Button onClick={() => handleExport('png')}>
                                             <Download className="size-4 mb-0.5" />
                                             Download PNG
                                         </Button>
 
                                         <Button
-                                            className="flex-1"
                                             onClick={() => handleExport('svg')}
                                             variant="secondary"
                                         >
@@ -1051,6 +1047,7 @@ export default function ChartGenerator() {
                                 </Card>
 
                                 <PoweredBy
+                                    className="mt-4"
                                     description="This tool uses recharts for chart generation and rendering."
                                     name="recharts"
                                     url="https://github.com/recharts/recharts"
