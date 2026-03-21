@@ -8,6 +8,7 @@ import {
     FileJson,
     Pause,
     Play,
+    RefreshCcw,
     ScanEye,
     Settings2,
     Trash2,
@@ -585,7 +586,10 @@ export default function ChartGenerator() {
         }
     };
 
-    const { remaining, toggle, isRunning } = useTimerMs('2m', { interval: 100 });
+    const { remaining, reset, pause, start, toggle, isRunning } = useTimerMs('2m', {
+        interval: 100,
+        autoStart: true,
+    });
 
     return useMount(
         <motion.div
@@ -597,12 +601,37 @@ export default function ChartGenerator() {
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 {/* Input and Controls Section */}
                 <div className="space-y-4">
-                    <CodeBlock className="text-lg font-digital">
-                        {parseMsToDuration(remaining)}
-                    </CodeBlock>
-                    <Button onClick={toggle} variant={'destructive'}>
-                        {isRunning ? <Pause /> : <Play />}
-                    </Button>
+                    <div className="flex gap-3 flex-wrap items-center">
+                        <CodeBlock className="text-lg font-digital">
+                            {parseMsToDuration(remaining)}
+                        </CodeBlock>
+                        <Button onClick={toggle} size={'icon-lg'} variant={'destructive'}>
+                            {isRunning ? <Pause /> : <Play />}
+                        </Button>
+                        <Button
+                            onClick={() => reset()}
+                            size={'icon-lg'}
+                            variant={'destructive'}
+                        >
+                            <RefreshCcw />
+                        </Button>
+                        <Button
+                            disabled={!isRunning}
+                            onClick={pause}
+                            size={'icon-lg'}
+                            variant={'destructive'}
+                        >
+                            <Pause />
+                        </Button>
+                        <Button
+                            disabled={isRunning}
+                            onClick={start}
+                            size={'icon-lg'}
+                            variant={'destructive'}
+                        >
+                            <Play />
+                        </Button>
+                    </div>
                     {/* JSON Input */}
                     <motion.div variants={itemVariants}>
                         <Card>

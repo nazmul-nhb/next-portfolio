@@ -15,7 +15,7 @@ export default async function Image() {
         <OgImageLayout
             description="Test your typing speed and accuracy with real-time metrics, WPM tracking, and multiple duration modes."
             siteTitle={`Typing Speed Test » ${siteConfig.name}`}
-            tag="Typing Test"
+            tag="Typing Speed Test"
             title={`Typing Speed Test from ${siteConfig.name}`}
             url={buildCanonicalUrl('/tools/typing-test')}
         />

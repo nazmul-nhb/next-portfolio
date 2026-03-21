@@ -16,7 +16,7 @@ import {
     Timer,
     Zap,
 } from 'lucide-react';
-import { useStopwatch, useStorage } from 'nhb-hooks';
+import { useMount, useStopwatch, useStorage } from 'nhb-hooks';
 import { throttleAction } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -304,7 +304,7 @@ export default function SudokuGame() {
         }
     }, 100);
 
-    return (
+    return useMount(
         <motion.div
             animate="visible"
             className="space-y-8"

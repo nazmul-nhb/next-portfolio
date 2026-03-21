@@ -141,7 +141,7 @@ export const siteConfig = {
         },
         {
             href: '/tools/typing-test',
-            label: 'Typing Speed',
+            label: 'Typing Speed Test',
             icon: Keyboard,
             description:
                 'Test your typing speed with real-time metrics, accuracy tracking, and multiple duration modes.',

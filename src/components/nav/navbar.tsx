@@ -1,11 +1,12 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, Search } from 'lucide-react';
+import { Menu, Moon, Search, Sun } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes';
 import { useMount } from 'nhb-hooks';
 import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
@@ -90,6 +91,14 @@ export default function Navbar() {
         return pathname.startsWith(path);
     };
 
+    const { setTheme, theme } = useTheme();
+
+    const toggleTheme = useCallback(() => {
+        if (theme) {
+            setTheme(theme === 'dark' ? 'light' : 'dark');
+        }
+    }, [theme, setTheme]);
+
     return useMount(
         <Fragment>
             <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -130,17 +139,13 @@ export default function Navbar() {
                     {/* Right: Search + Profile + Actions */}
                     <div className="flex items-center gap-1.5">
                         {/* Search Button */}
-
                         <Button
                             className="size-9 rounded-full"
                             onClick={() => setSearchOpen(true)}
                             size="icon"
                             variant="ghost"
                         >
-                            <SmartTooltip
-                                content={'Search (Ctrl+K)'}
-                                trigger={<Search className="size-4" />}
-                            />
+                            <Search className="size-4" />
                         </Button>
 
                         {/* Secondary nav items (desktop only) */}
@@ -169,6 +174,19 @@ export default function Navbar() {
 
                         {/* Separator */}
                         <div className="mx-1 hidden h-6 w-px bg-border md:block" />
+                        {/* Toggle Theme */}
+                        <Button
+                            className="size-9 rounded-full"
+                            onClick={toggleTheme}
+                            size="icon"
+                            variant="ghost"
+                        >
+                            {theme === 'dark' ? (
+                                <Sun className="size-4" />
+                            ) : (
+                                <Moon className="size-4" />
+                            )}
+                        </Button>
 
                         {/* Auth Section */}
                         <NavbarAuth

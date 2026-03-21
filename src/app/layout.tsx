@@ -10,7 +10,6 @@ import Footer from '@/components/footer/footer';
 import { AuthSync } from '@/components/misc/auth-sync';
 import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
-import ThemeToggler from '@/components/misc/theme-toggler';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -84,13 +83,13 @@ export default function RootLayout({ children }: ChildrenProp) {
                 )}
                 suppressHydrationWarning
             >
-                <AuthProvider>
-                    <ReactQueryProvider>
-                        <NextThemesProvider
-                            attribute="class"
-                            defaultTheme="dark"
-                            themes={['dark', 'light']}
-                        >
+                <NextThemesProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    themes={['dark', 'light']}
+                >
+                    <AuthProvider>
+                        <ReactQueryProvider>
                             <TooltipProvider>
                                 <NextTopLoader
                                     color="#4682B4"
@@ -106,12 +105,12 @@ export default function RootLayout({ children }: ChildrenProp) {
                                 <Footer />
                                 <ChatBubble />
                                 <DateTimeCalendar />
-                                <ThemeToggler />
+                                {/* <ThemeToggler /> */}
                                 <Toaster />
                             </TooltipProvider>
-                        </NextThemesProvider>
-                    </ReactQueryProvider>
-                </AuthProvider>
+                        </ReactQueryProvider>
+                    </AuthProvider>
+                </NextThemesProvider>
             </body>
             <GoogleAnalytics gaId={ENV.google.analyticsId} />
         </html>

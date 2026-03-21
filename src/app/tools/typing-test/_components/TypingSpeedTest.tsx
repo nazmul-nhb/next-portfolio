@@ -12,7 +12,7 @@ import {
     Timer,
     Zap,
 } from 'lucide-react';
-import { useStopwatch, useStorage } from 'nhb-hooks';
+import { useMount, useStopwatch, useStorage } from 'nhb-hooks';
 import { parseMs } from 'nhb-toolbox';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CodeBlock from '@/components/misc/code-block';
@@ -196,7 +196,7 @@ export default function TypingSpeedTest() {
         return calculateMetrics(effectivePassage, typed, finalElapsed);
     }, [effectivePassage, typed, elapsedSeconds]);
 
-    return (
+    return useMount(
         <motion.div
             animate="visible"
             className="space-y-8"
