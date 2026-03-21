@@ -11,7 +11,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-/** Bangla weekday header abbreviations — Sun→Sat order (matches JS getDay()) */
+/** Bangla weekday header abbreviations — Sun→Sat order (matches JS `getDay()`) */
 const BANGLA_WEEKDAYS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'] as const;
 
 // ------------------------------------------------------------------

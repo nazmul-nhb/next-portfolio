@@ -1,6 +1,8 @@
 import { isNumber } from 'nhb-toolbox';
 import type { ChartDataPoint } from '@/types/chart';
 
+const EXPORT_MIN_WIDTH = 800;
+
 export const COLOR_PALETTES = {
     pastel: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
     vibrant: ['#FF1744', '#00BCD4', '#4CAF50', '#FFC107', '#FF9800'],
@@ -112,18 +114,26 @@ export function exportChartAsImage(
     const viewBoxWidth = fallbackViewBox?.width || undefined;
     const viewBoxHeight = fallbackViewBox?.height || undefined;
 
-    const width = Math.round(bounds.width) || attrWidth || viewBoxWidth || 800;
-    const height = Math.round(bounds.height) || attrHeight || viewBoxHeight || 800;
+    const width = Math.round(bounds.width) || attrWidth || viewBoxWidth || EXPORT_MIN_WIDTH;
+    const height = Math.round(bounds.height) || attrHeight || viewBoxHeight || 600;
 
     if (!width || !height) {
         throw new Error('Unable to determine chart size for export');
     }
 
+    const exportWidth = Math.max(width, EXPORT_MIN_WIDTH);
+    const exportScale = exportWidth / width;
+    const exportHeight = Math.round(height * exportScale);
+
     const svgForExport = svgElement.cloneNode(true) as SVGSVGElement;
     svgForExport.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svgForExport.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-    svgForExport.setAttribute('width', `${width}`);
-    svgForExport.setAttribute('height', `${height}`);
+    if (!svgForExport.getAttribute('viewBox')) {
+        svgForExport.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    }
+    svgForExport.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svgForExport.setAttribute('width', `${exportWidth}`);
+    svgForExport.setAttribute('height', `${exportHeight}`);
 
     const svgString = new XMLSerializer().serializeToString(svgForExport);
 
@@ -143,21 +153,19 @@ export function exportChartAsImage(
 
         const scale = window.devicePixelRatio || 1;
 
-        canvas.width = Math.ceil(width * scale);
-        canvas.height = Math.ceil(height * scale);
+        canvas.width = Math.ceil(exportWidth * scale);
+        canvas.height = Math.ceil(exportHeight * scale);
 
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
 
         // Background
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, exportWidth, exportHeight);
 
         const img = new Image();
-        let svgUrl: string | null = null;
 
         img.onload = () => {
-            ctx.drawImage(img, 0, 0, width, height);
-            if (svgUrl) URL.revokeObjectURL(svgUrl);
+            ctx.drawImage(img, 0, 0, exportWidth, exportHeight);
 
             canvas.toBlob((blob) => {
                 if (!blob) return;
@@ -171,11 +179,33 @@ export function exportChartAsImage(
         };
 
         img.onerror = () => {
-            if (svgUrl) URL.revokeObjectURL(svgUrl);
+            // No-op: the caller will surface the export failure.
         };
 
-        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        svgUrl = URL.createObjectURL(svgBlob);
-        img.src = svgUrl;
+        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
     }
+}
+
+export function getSvgExportScore(svgElement: SVGSVGElement) {
+    const getNumericAttr = (value: string | null) => {
+        if (!value) return undefined;
+        const trimmed = value.trim();
+        if (!trimmed || trimmed.endsWith('%')) return undefined;
+        const parsed = Number.parseFloat(trimmed);
+        return Number.isFinite(parsed) ? parsed : undefined;
+    };
+
+    const bounds = svgElement.getBoundingClientRect();
+    const attrWidth = getNumericAttr(svgElement.getAttribute('width'));
+    const attrHeight = getNumericAttr(svgElement.getAttribute('height'));
+    const viewBox = svgElement.viewBox?.baseVal;
+
+    const width = Math.round(bounds.width) || attrWidth || viewBox?.width || 0;
+    const height = Math.round(bounds.height) || attrHeight || viewBox?.height || 0;
+
+    return {
+        width,
+        height,
+        area: width * height,
+    };
 }

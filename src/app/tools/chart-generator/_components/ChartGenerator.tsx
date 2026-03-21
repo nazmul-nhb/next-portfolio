@@ -2,18 +2,8 @@
 
 import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
-import {
-    AlertCircle,
-    Download,
-    FileJson,
-    Pause,
-    Play,
-    RefreshCcw,
-    ScanEye,
-    Settings2,
-    Trash2,
-} from 'lucide-react';
-import { useMount, useTimerMs } from 'nhb-hooks';
+import { AlertCircle, Download, FileJson, ScanEye, Settings2, Trash2 } from 'lucide-react';
+import { useMount } from 'nhb-hooks';
 import { isObject, isString, parseJSON } from 'nhb-toolbox';
 import { Fragment, useCallback, useRef, useState } from 'react';
 import {
@@ -22,6 +12,7 @@ import {
     Bar,
     BarChart,
     CartesianGrid,
+    Cell,
     ComposedChart,
     Funnel,
     FunnelChart,
@@ -30,6 +21,9 @@ import {
     LineChart,
     Pie,
     PieChart,
+    PolarAngleAxis,
+    PolarGrid,
+    PolarRadiusAxis,
     Radar,
     RadarChart,
     ResponsiveContainer,
@@ -41,10 +35,12 @@ import {
     Treemap,
     XAxis,
     YAxis,
+    ZAxis,
 } from 'recharts';
 import { toast } from 'sonner';
-import CodeBlock from '@/components/misc/code-block';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import EmptyData from '@/components/misc/empty-data';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -69,10 +65,10 @@ import {
     type ColorPaletteName,
     detectAxisKeys,
     exportChartAsImage,
+    getSvgExportScore,
     transformChartData,
     validateChartData,
 } from '@/lib/tools/chart';
-import { parseMsToDuration } from '@/lib/utils';
 import type { ChartDataPoint, ChartType } from '@/types/chart';
 
 const containerVariants: Variants = {
@@ -100,10 +96,92 @@ const CHART_TYPES: { value: ChartType; label: string }[] = [
     { value: 'scatter', label: 'Scatter Chart' },
     { value: 'bubble', label: 'Bubble Chart' },
     { value: 'radar', label: 'Radar Chart' },
-    { value: 'composed', label: 'Composed (Bar + Line)' },
+    { value: 'composed', label: 'Composed (Bar+Line)' },
     { value: 'treemap', label: 'Treemap' },
     { value: 'funnel', label: 'Funnel' },
 ];
+
+const VALUE_LABEL_STYLE = {
+    fill: 'var(--foreground)',
+    stroke: 'none',
+};
+
+function renderLegend() {
+    return (
+        <Legend
+            formatter={(value) => (
+                <span style={{ color: 'var(--foreground)' }}>{String(value)}</span>
+            )}
+        />
+    );
+}
+
+const SAMPLE_PRESETS = [
+    {
+        chartType: 'bar',
+        label: 'Bar/Line/Area',
+        data: [
+            { month: 'Jan', desktop: 420, mobile: 280 },
+            { month: 'Feb', desktop: 380, mobile: 310 },
+            { month: 'Mar', desktop: 510, mobile: 360 },
+            { month: 'Apr', desktop: 610, mobile: 430 },
+        ],
+    },
+    {
+        chartType: 'pie',
+        label: 'Pie',
+        data: [
+            { month: 'Jan', cost: 280 },
+            { month: 'Feb', cost: 310 },
+            { month: 'Mar', cost: 360 },
+            { month: 'Apr', cost: 430 },
+        ],
+    },
+    {
+        chartType: 'scatter',
+        label: 'Scatter',
+        data: [
+            { label: 'A', x: 12, y: 18 },
+            { label: 'B', x: 24, y: 31 },
+            { label: 'C', x: 34, y: 20 },
+            { label: 'D', x: 45, y: 42 },
+        ],
+    },
+    {
+        chartType: 'bubble',
+        label: 'Bubble/Radar',
+        data: [
+            { name: 'A', value: 400, size: 18 },
+            { name: 'B', value: 300, size: 28 },
+            { name: 'C', value: 200, size: 14 },
+            { name: 'D', value: 500, size: 36 },
+        ],
+    },
+    {
+        chartType: 'treemap',
+        label: 'Treemap',
+        data: [
+            { name: 'Marketing', value: 420 },
+            { name: 'Sales', value: 330 },
+            { name: 'Engineering', value: 610 },
+            { name: 'Support', value: 240 },
+        ],
+    },
+    {
+        chartType: 'funnel',
+        label: 'Funnel',
+        data: [
+            { stage: 'Visited', value: 1200 },
+            { stage: 'Signed Up', value: 640 },
+            { stage: 'Activated', value: 280 },
+            { stage: 'Paid', value: 92 },
+        ],
+    },
+] satisfies Array<{
+    chartType: ChartType;
+    label: string;
+    data: ChartDataPoint[];
+}>;
 
 function getFillFromPayload(payload: unknown): string | undefined {
     if (!payload || !isObject(payload)) return undefined;
@@ -135,7 +213,7 @@ function ColoredFunnelTrapezoid(props: Record<string, unknown>) {
     return <Trapezoid {...trapezoidProps} fill={resolvedFill} />;
 }
 
-function TreemapNodeContent(props: Record<string, unknown>) {
+function TreemapNodeContent(props: Record<string, unknown> & { showLabels?: boolean }) {
     const {
         x,
         y,
@@ -146,6 +224,7 @@ function TreemapNodeContent(props: Record<string, unknown>) {
         name,
         payload,
         fill: propFill,
+        showLabels,
     } = props as {
         x?: number;
         y?: number;
@@ -156,6 +235,7 @@ function TreemapNodeContent(props: Record<string, unknown>) {
         name?: string;
         payload?: unknown;
         fill?: unknown;
+        showLabels?: boolean;
     };
 
     if (!width || !height || width <= 0 || height <= 0) return null;
@@ -163,7 +243,7 @@ function TreemapNodeContent(props: Record<string, unknown>) {
     const payloadFill = getFillFromPayload(payload);
     const resolvedFill = payloadFill ?? (isString(propFill) ? propFill : '#8884d8');
 
-    const showLabel = depth === 1 && width > 48 && height > 24;
+    const showLabel = showLabels && depth === 1 && width > 48 && height > 24;
     const label = isString(name) ? name : `${index ?? ''}`;
 
     return (
@@ -182,6 +262,31 @@ function TreemapNodeContent(props: Record<string, unknown>) {
             ) : null}
         </g>
     );
+}
+
+function findExportableChartSvg(container: HTMLDivElement | null) {
+    if (!container) return null;
+
+    const svgElements = Array.from(container.querySelectorAll('svg')) as SVGSVGElement[];
+    if (svgElements.length === 0) return null;
+
+    const chartSurfaces = svgElements.filter((svg) =>
+        svg.classList.contains('recharts-surface')
+    );
+    const candidates = chartSurfaces.length > 0 ? chartSurfaces : svgElements;
+
+    let bestSvg = candidates[0];
+    let bestArea = getSvgExportScore(bestSvg).area;
+
+    for (const svg of candidates.slice(1)) {
+        const { area } = getSvgExportScore(svg);
+        if (area > bestArea) {
+            bestArea = area;
+            bestSvg = svg;
+        }
+    }
+
+    return bestSvg;
 }
 
 export default function ChartGenerator() {
@@ -267,8 +372,17 @@ export default function ChartGenerator() {
         setDataErrors([]);
     };
 
+    const handleLoadSamplePreset = useCallback(
+        (preset: (typeof SAMPLE_PRESETS)[number]) => {
+            setChartType(preset.chartType);
+            handleJsonChange(JSON.stringify(preset.data, null, 2));
+            toast.success(`Loaded ${preset.label.toLowerCase()} sample`);
+        },
+        [handleJsonChange]
+    );
+
     const handleExport = useCallback((format: 'png' | 'svg') => {
-        const svgElement = chartRef.current?.querySelector('svg');
+        const svgElement = findExportableChartSvg(chartRef.current);
         if (!svgElement) {
             toast.error('Chart not found');
             return;
@@ -325,7 +439,7 @@ export default function ChartGenerator() {
                                     : undefined
                             }
                         />
-                        {showLegend && <Legend />}
+                        {showLegend ? renderLegend() : null}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => (
                             <Bar
@@ -424,13 +538,13 @@ export default function ChartGenerator() {
 
                 return (
                     <PieChart {...commonProps}>
-                        {showLegend && <Legend />}
+                        {showLegend ? renderLegend() : null}
                         <Tooltip />
                         <Pie
                             data={pieData}
                             dataKey={yAxisKeys[0]}
                             isAnimationActive={true}
-                            label={showLabels}
+                            label={showLabels ? VALUE_LABEL_STYLE : undefined}
                             nameKey={xAxisKey}
                             shape={<ColoredPieSector />}
                         />
@@ -443,7 +557,7 @@ export default function ChartGenerator() {
                     <ScatterChart {...commonProps}>
                         {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
                         <XAxis
-                            dataKey={yAxisKeys[0]}
+                            dataKey={xAxisKey}
                             label={
                                 xAxisLabel
                                     ? {
@@ -453,18 +567,20 @@ export default function ChartGenerator() {
                                       }
                                     : undefined
                             }
-                            name={yAxisKeys[0]}
+                            name={xAxisKey}
+                            type="category"
                         />
                         <YAxis
-                            dataKey={yAxisKeys[1] || yAxisKeys[0]}
+                            dataKey={yAxisKeys[0]}
                             label={
                                 yAxisLabel
                                     ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
                                     : undefined
                             }
-                            name={yAxisKeys[1] || yAxisKeys[0]}
+                            name={yAxisKeys[0]}
+                            type="number"
                         />
-                        {showLegend && <Legend />}
+                        {showLegend ? renderLegend() : null}
                         <Tooltip />
                         <Scatter
                             data={transformedData}
@@ -478,6 +594,9 @@ export default function ChartGenerator() {
             case 'radar':
                 return (
                     <RadarChart {...commonProps}>
+                        {showGridlines && <PolarGrid />}
+                        <PolarAngleAxis dataKey={xAxisKey} />
+                        <PolarRadiusAxis />
                         <Radar
                             dataKey={yAxisKeys[0]}
                             fill={colors[0]}
@@ -486,7 +605,7 @@ export default function ChartGenerator() {
                             name={yAxisKeys[0]}
                             stroke={colors[0]}
                         />
-                        {showLegend && <Legend />}
+                        {showLegend ? renderLegend() : null}
                         <Tooltip />
                     </RadarChart>
                 );
@@ -514,7 +633,7 @@ export default function ChartGenerator() {
                                     : undefined
                             }
                         />
-                        {showLegend && <Legend />}
+                        {showLegend ? renderLegend() : null}
                         <Tooltip />
                         {yAxisKeys.map((key, idx) => {
                             const barOrLine = idx === 0 ? 'bar' : 'line';
@@ -550,13 +669,70 @@ export default function ChartGenerator() {
 
                 return (
                     <Treemap
-                        content={<TreemapNodeContent />}
+                        content={(props) => (
+                            <TreemapNodeContent {...props} showLabels={showLabels} />
+                        )}
                         data={treemapData}
                         dataKey={yAxisKeys[0]}
                         fill={colors[0]}
                         isAnimationActive={true}
                         stroke="#fff"
                     />
+                );
+            }
+
+            case 'bubble': {
+                const bubbleSizeKey = yAxisKeys[1] || yAxisKeys[0];
+                const bubbleData = transformedData.map((item, idx) => ({
+                    ...item,
+                    bubbleColor: colors[idx % colors.length],
+                    bubbleSize:
+                        Number(item[bubbleSizeKey]) || Number(item[yAxisKeys[0]]) || idx + 1,
+                }));
+
+                return (
+                    <ScatterChart {...commonProps}>
+                        {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
+                        <XAxis
+                            dataKey={xAxisKey}
+                            label={
+                                xAxisLabel
+                                    ? {
+                                          value: xAxisLabel,
+                                          position: 'insideBottomRight',
+                                          offset: -5,
+                                      }
+                                    : undefined
+                            }
+                            name={xAxisKey}
+                            type="category"
+                        />
+                        <YAxis
+                            dataKey={yAxisKeys[0]}
+                            label={
+                                yAxisLabel
+                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
+                                    : undefined
+                            }
+                            name={yAxisKeys[0]}
+                            type="number"
+                        />
+                        <ZAxis dataKey="bubbleSize" range={[12, 48]} />
+                        {showLegend && renderLegend()}
+                        <Tooltip />
+                        <Scatter
+                            data={bubbleData}
+                            fillOpacity={0.8}
+                            isAnimationActive={true}
+                            name={yAxisKeys[0]}
+                            stroke="#ffffff"
+                            strokeWidth={1}
+                        >
+                            {bubbleData.map((entry, idx) => (
+                                <Cell fill={entry.bubbleColor} key={`bubble-${idx}`} />
+                            ))}
+                        </Scatter>
+                    </ScatterChart>
                 );
             }
 
@@ -568,12 +744,13 @@ export default function ChartGenerator() {
 
                 return (
                     <FunnelChart {...commonProps}>
-                        {showLegend && <Legend />}
+                        {showLegend && renderLegend()}
                         <Tooltip />
                         <Funnel
                             data={funnelData}
                             dataKey={yAxisKeys[0]}
                             isAnimationActive={true}
+                            label={showLabels ? VALUE_LABEL_STYLE : undefined}
                             nameKey={xAxisKey}
                             shape={<ColoredFunnelTrapezoid />}
                         />
@@ -586,11 +763,6 @@ export default function ChartGenerator() {
         }
     };
 
-    const { remaining, reset, pause, start, toggle, isRunning } = useTimerMs('2m', {
-        interval: 100,
-        autoStart: true,
-    });
-
     return useMount(
         <motion.div
             animate="visible"
@@ -601,37 +773,6 @@ export default function ChartGenerator() {
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
                 {/* Input and Controls Section */}
                 <div className="space-y-4">
-                    <div className="flex gap-3 flex-wrap items-center">
-                        <CodeBlock className="text-lg font-digital">
-                            {parseMsToDuration(remaining)}
-                        </CodeBlock>
-                        <Button onClick={toggle} size={'icon-lg'} variant={'destructive'}>
-                            {isRunning ? <Pause /> : <Play />}
-                        </Button>
-                        <Button
-                            onClick={() => reset()}
-                            size={'icon-lg'}
-                            variant={'destructive'}
-                        >
-                            <RefreshCcw />
-                        </Button>
-                        <Button
-                            disabled={!isRunning}
-                            onClick={pause}
-                            size={'icon-lg'}
-                            variant={'destructive'}
-                        >
-                            <Pause />
-                        </Button>
-                        <Button
-                            disabled={isRunning}
-                            onClick={start}
-                            size={'icon-lg'}
-                            variant={'destructive'}
-                        >
-                            <Play />
-                        </Button>
-                    </div>
                     {/* JSON Input */}
                     <motion.div variants={itemVariants}>
                         <Card>
@@ -646,6 +787,26 @@ export default function ChartGenerator() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium">
+                                        Sample Presets
+                                    </Label>
+                                    <SmartAlert description="Loads chart-specific demo JSON and switches the chart type." />
+
+                                    <div className="flex flex-wrap gap-2">
+                                        {SAMPLE_PRESETS.map((preset) => (
+                                            <Button
+                                                key={preset.chartType}
+                                                onClick={() => handleLoadSamplePreset(preset)}
+                                                size="sm"
+                                                variant="outline"
+                                            >
+                                                {preset.label}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <Textarea
                                     className="font-cascadia text-sm min-h-40 max-h-56 overflow-y-auto custom-scroll"
                                     onChange={(e) => handleJsonChange(e.target.value)}
@@ -757,33 +918,36 @@ export default function ChartGenerator() {
                                     </div>
 
                                     <div className="flex flex-wrap gap-3">
-                                        <div className="flex gap-3 items-center justify-between">
+                                        <div className="space-y-2">
                                             <Label className="text-sm font-medium">
                                                 Show Gridlines
                                             </Label>
                                             <Switch
                                                 checked={showGridlines}
                                                 onCheckedChange={setShowGridlines}
+                                                size="lg"
                                             />
                                         </div>
 
-                                        <div className="flex gap-3 items-center justify-between">
+                                        <div className="space-y-2">
                                             <Label className="text-sm font-medium">
                                                 Show Labels
                                             </Label>
                                             <Switch
                                                 checked={showLabels}
                                                 onCheckedChange={setShowLabels}
+                                                size="lg"
                                             />
                                         </div>
 
-                                        <div className="flex gap-3 items-center justify-between">
+                                        <div className="space-y-2">
                                             <Label className="text-sm font-medium">
                                                 Show Legend
                                             </Label>
                                             <Switch
                                                 checked={showLegend}
                                                 onCheckedChange={setShowLegend}
+                                                size="lg"
                                             />
                                         </div>
                                     </div>
@@ -866,7 +1030,7 @@ export default function ChartGenerator() {
                                 variants={itemVariants}
                             >
                                 <Card>
-                                    <CardContent className="flex flex-wrap gap-2 pt-6">
+                                    <CardContent className="flex flex-wrap gap-2">
                                         <Button
                                             className="flex-1"
                                             onClick={() => handleExport('png')}
@@ -885,6 +1049,12 @@ export default function ChartGenerator() {
                                         </Button>
                                     </CardContent>
                                 </Card>
+
+                                <PoweredBy
+                                    description="This tool uses recharts for chart generation and rendering."
+                                    name="recharts"
+                                    url="https://github.com/recharts/recharts"
+                                />
                             </motion.div>
                         </Fragment>
                     ) : (

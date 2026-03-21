@@ -82,7 +82,7 @@ const itemVariants: Variants = {
 export default function SudokuGame() {
     const gameStore = useStorage<GameState | null>({ key: 'nhb-sudoku-game' });
 
-    const stopwatch = useStopwatch({ interval: 50 });
+    const stopwatch = useStopwatch({ interval: 10 });
 
     // Track latest elapsed time for persistence without causing effect re-runs
     const elapsedRef = useRef(0);
