@@ -123,7 +123,7 @@ export default function WordCounter() {
 
                     <CardContent>
                         <Textarea
-                            className="w-full min-h-64 max-h-112 custom-scroll font-cascadia text-sm"
+                            className="w-full min-h-64 max-h-96 custom-scroll font-cascadia text-sm"
                             onChange={(e) => setInputText(e.target.value)}
                             placeholder="Type or paste your text here..."
                             value={inputText}

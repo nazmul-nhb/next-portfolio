@@ -108,6 +108,8 @@ function Maintributors({ title, data }: MaintainerProps) {
                                 <a
                                     className="font-medium flex items-center gap-1 truncate underline hover:opacity-90"
                                     href={maintainer.url}
+                                    rel="noopener noreferrer"
+                                    target="_blank"
                                 >
                                     <ExternalLink className="size-3.5" /> {maintainer.name}
                                 </a>
@@ -118,6 +120,8 @@ function Maintributors({ title, data }: MaintainerProps) {
                                 <a
                                     className="text-xs text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap ml-2"
                                     href={`mailto:${maintainer.email}`}
+                                    rel="noopener noreferrer"
+                                    target="_blank"
                                 >
                                     Email
                                 </a>

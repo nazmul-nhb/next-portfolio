@@ -180,7 +180,7 @@ export default function DateTimeCalendar() {
                     aria-label="Open calendar"
                     className={cn(
                         'fixed z-50 font-source-sans',
-                        'right-6 bottom-3',
+                        'right-3 bottom-3',
                         // isMobile ? 'left-6' : 'right-6',
                         // isMobile && !(isAdminPath(pathname) || pathname.startsWith('/tools'))
                         //     ? 'bottom-6'

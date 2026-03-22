@@ -1,5 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
-import { Code, FileText, PackageCheck, PackagePlus } from 'lucide-react';
+import { Code, Copyright, FileText, PackageCheck, PackagePlus } from 'lucide-react';
 import { FaGitAlt } from 'react-icons/fa';
 import { RiNpmjsLine } from 'react-icons/ri';
 import LivePreviewButton from '@/components/misc/live-preview';
@@ -28,7 +28,11 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                         Package Info
                     </CardTitle>
 
-                    {data.license && <Badge>{data.license}</Badge>}
+                    {data.license && (
+                        <Badge className="items-center gap-1 select-none">
+                            <Copyright className="size-3.5" /> {data.license}
+                        </Badge>
+                    )}
                 </CardHeader>
                 <CardContent className="space-y-5">
                     {data.time && (
