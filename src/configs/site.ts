@@ -282,4 +282,20 @@ export const SOCIAL_LINKS = [
     },
 ] as const;
 
+export type LinkWithLabel = { label: string; href: Route };
+
+export const QUICK_LINKS = [
+    { label: 'Home', href: '/' },
+    { label: 'Blogs', href: '/blogs' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
+] as const satisfies Array<LinkWithLabel>;
+
+export const RESOURCE_LINKS = [
+    { label: 'Projects', href: '/projects' },
+    { label: 'Resume', href: '/resume' },
+    { label: 'Messages', href: '/messages' },
+    { label: 'Tools', href: '/tools' },
+] as const satisfies Array<LinkWithLabel>;
+
 export type SiteConfig = typeof siteConfig;

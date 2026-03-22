@@ -116,16 +116,33 @@ function renderLegend() {
     );
 }
 
+const COMMON_PRESET_DATA = [
+    { month: 'Jan', desktop: 420, mobile: 280 },
+    { month: 'Feb', desktop: 380, mobile: 310 },
+    { month: 'Mar', desktop: 510, mobile: 360 },
+    { month: 'Apr', desktop: 610, mobile: 430 },
+];
+
 const SAMPLE_PRESETS = [
     {
         chartType: 'bar',
-        label: 'Bar/Line/Area',
-        data: [
-            { month: 'Jan', desktop: 420, mobile: 280 },
-            { month: 'Feb', desktop: 380, mobile: 310 },
-            { month: 'Mar', desktop: 510, mobile: 360 },
-            { month: 'Apr', desktop: 610, mobile: 430 },
-        ],
+        label: 'Bar',
+        data: COMMON_PRESET_DATA,
+    },
+    {
+        chartType: 'line',
+        label: 'Line',
+        data: COMMON_PRESET_DATA,
+    },
+    {
+        chartType: 'composed',
+        label: 'Composed',
+        data: COMMON_PRESET_DATA,
+    },
+    {
+        chartType: 'area',
+        label: 'Area',
+        data: COMMON_PRESET_DATA,
     },
     {
         chartType: 'pie',
@@ -149,12 +166,22 @@ const SAMPLE_PRESETS = [
     },
     {
         chartType: 'bubble',
-        label: 'Bubble/Radar',
+        label: 'Bubble',
         data: [
             { name: 'A', value: 400, size: 18 },
             { name: 'B', value: 300, size: 28 },
             { name: 'C', value: 200, size: 14 },
             { name: 'D', value: 500, size: 36 },
+        ],
+    },
+    {
+        chartType: 'radar',
+        label: 'Radar',
+        data: [
+            { name: 'A', size: 18 },
+            { name: 'B', size: 28 },
+            { name: 'C', size: 14 },
+            { name: 'D', size: 36 },
         ],
     },
     {
@@ -182,6 +209,8 @@ const SAMPLE_PRESETS = [
     label: string;
     data: ChartDataPoint[];
 }>;
+
+type SamplePreset = (typeof SAMPLE_PRESETS)[number];
 
 function getFillFromPayload(payload: unknown): string | undefined {
     if (!payload || !isObject(payload)) return undefined;
@@ -353,7 +382,6 @@ export default function ChartGenerator() {
                 try {
                     const content = e.target?.result as string;
                     handleJsonChange(content);
-                    toast.success('File uploaded successfully');
                 } catch {
                     toast.error('Failed to read file');
                     setDataErrors(['Failed to read file']);
@@ -373,29 +401,30 @@ export default function ChartGenerator() {
     };
 
     const handleLoadSamplePreset = useCallback(
-        (preset: (typeof SAMPLE_PRESETS)[number]) => {
+        (preset: SamplePreset) => {
             setChartType(preset.chartType);
             handleJsonChange(JSON.stringify(preset.data, null, 2));
-            toast.success(`Loaded ${preset.label.toLowerCase()} sample`);
         },
         [handleJsonChange]
     );
 
-    const handleExport = useCallback((format: 'png' | 'svg') => {
-        const svgElement = findExportableChartSvg(chartRef.current);
-        if (!svgElement) {
-            toast.error('Chart not found');
-            return;
-        }
+    const handleExport = useCallback(
+        (format: 'png' | 'svg') => {
+            const svgElement = findExportableChartSvg(chartRef.current);
+            if (!svgElement) {
+                toast.error('Chart not found');
+                return;
+            }
 
-        try {
-            const filename = `chart-${Date.now()}`;
-            exportChartAsImage(svgElement, format, filename);
-            toast.success(`Chart exported as ${format.toUpperCase()}`);
-        } catch {
-            toast.error('Failed to export chart');
-        }
-    }, []);
+            try {
+                const filename = `${chartType}-chart-${Date.now()}`;
+                exportChartAsImage(svgElement, format, filename);
+            } catch {
+                toast.error('Failed to export chart');
+            }
+        },
+        [chartType]
+    );
 
     const hasValidData =
         chartData.length > 0 && xAxisKey && yAxisKeys.length > 0 && dataErrors.length === 0;
@@ -798,7 +827,7 @@ export default function ChartGenerator() {
                                             <Button
                                                 key={preset.chartType}
                                                 onClick={() => handleLoadSamplePreset(preset)}
-                                                size="sm"
+                                                size="xs"
                                                 variant="outline"
                                             >
                                                 {preset.label}

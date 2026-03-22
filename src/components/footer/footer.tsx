@@ -1,23 +1,9 @@
-import type { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiMail, FiPhone } from 'react-icons/fi';
 import FooterBottom from '@/components/footer/footer-bottom';
 import { ENV } from '@/configs/env';
-import { SOCIAL_LINKS, siteConfig } from '@/configs/site';
-
-const quickLinks: { label: string; href: Route }[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Blogs', href: '/blogs' },
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-];
-
-const resourceLinks: { label: string; href: Route }[] = [
-    { label: 'Projects', href: '/projects' },
-    { label: 'Resume', href: '/resume' },
-    { label: 'Messages', href: '/messages' },
-];
+import { QUICK_LINKS, RESOURCE_LINKS, SOCIAL_LINKS, siteConfig } from '@/configs/site';
 
 export default function Footer() {
     const { mobile } = siteConfig;
@@ -71,7 +57,7 @@ export default function Footer() {
                                 Quick Links
                             </h3>
                             <nav className="flex flex-col items-center gap-2.5 md:items-start">
-                                {quickLinks.map((link) => (
+                                {QUICK_LINKS.map((link) => (
                                     <Link
                                         className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                                         href={link.href}
@@ -89,7 +75,7 @@ export default function Footer() {
                                 Resources
                             </h3>
                             <nav className="flex flex-col items-center gap-2.5 md:items-start">
-                                {resourceLinks.map((link) => (
+                                {RESOURCE_LINKS.map((link) => (
                                     <Link
                                         className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                                         href={link.href}
