@@ -77,7 +77,7 @@ export default function KeypadDrawer({ hasSelection, isPaused, gridRef, onInput 
                             className="overflow-hidden w-fit rounded-2xl border border-border/70 bg-card/95 shadow-2xl select-none backdrop-blur-md"
                             ref={keyPadRef}
                         >
-                            <div className="flex items-start justify-between gap-3 border-b border-border/70 px-4 py-3">
+                            <div className="flex items-start justify-between gap-3 border-b border-border/70 p-3 pb-1">
                                 <div className="space-y-0.5">
                                     <p className="text-sm font-semibold leading-none">Keypad</p>
                                     <p className="text-xs text-muted-foreground">
@@ -98,7 +98,7 @@ export default function KeypadDrawer({ hasSelection, isPaused, gridRef, onInput 
                                 </Button>
                             </div>
 
-                            <div className="space-y-3 p-3">
+                            <div className="space-y-3 p-2">
                                 <div className="flex flex-wrap gap-1">
                                     {keypadNumbers.map((value) => (
                                         <Button
