@@ -40,6 +40,7 @@ import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { ImNpm } from 'react-icons/im';
 import type { TabItem } from '@/types';
+import type { ChartType } from '@/types/chart';
 
 export const siteConfig = {
     name: 'Nazmul Hassan',
@@ -297,5 +298,17 @@ export const RESOURCE_LINKS = [
     { label: 'Messages', href: '/messages' },
     { label: 'Tools', href: '/tools' },
 ] as const satisfies Array<LinkWithLabel>;
+
+export const CHART_TYPES = [
+    { value: 'bar', label: 'Bar Chart' },
+    { value: 'line', label: 'Line Chart' },
+    { value: 'composed', label: 'Composed (Bar+Line)' },
+    { value: 'area', label: 'Area Chart' },
+    { value: 'pie', label: 'Pie Chart' },
+    { value: 'scatter', label: 'Scatter Chart' },
+    { value: 'radar', label: 'Radar Chart' },
+    { value: 'treemap', label: 'Treemap' },
+    { value: 'funnel', label: 'Funnel' },
+] as const satisfies Array<{ value: ChartType; label: string }>;
 
 export type SiteConfig = typeof siteConfig;

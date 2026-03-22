@@ -4,7 +4,6 @@ export type ChartType =
     | 'area'
     | 'pie'
     | 'scatter'
-    | 'bubble'
     | 'radar'
     | 'composed'
     | 'treemap'

@@ -12,7 +12,6 @@ import {
     Bar,
     BarChart,
     CartesianGrid,
-    Cell,
     ComposedChart,
     Funnel,
     FunnelChart,
@@ -35,7 +34,6 @@ import {
     Treemap,
     XAxis,
     YAxis,
-    ZAxis,
 } from 'recharts';
 import { toast } from 'sonner';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
@@ -60,6 +58,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { CHART_TYPES } from '@/configs/site';
 import {
     COLOR_PALETTES,
     type ColorPaletteName,
@@ -87,19 +86,6 @@ const itemVariants: Variants = {
         transition: { duration: 0.3, ease: 'easeOut' },
     },
 };
-
-const CHART_TYPES: { value: ChartType; label: string }[] = [
-    { value: 'bar', label: 'Bar Chart' },
-    { value: 'line', label: 'Line Chart' },
-    { value: 'area', label: 'Area Chart' },
-    { value: 'pie', label: 'Pie Chart' },
-    { value: 'scatter', label: 'Scatter Chart' },
-    { value: 'bubble', label: 'Bubble Chart' },
-    { value: 'radar', label: 'Radar Chart' },
-    { value: 'composed', label: 'Composed (Bar+Line)' },
-    { value: 'treemap', label: 'Treemap' },
-    { value: 'funnel', label: 'Funnel' },
-];
 
 const VALUE_LABEL_STYLE = {
     fill: 'var(--foreground)',
@@ -165,24 +151,9 @@ const SAMPLE_PRESETS = [
         ],
     },
     {
-        chartType: 'bubble',
-        label: 'Bubble',
-        data: [
-            { name: 'A', value: 400, size: 18 },
-            { name: 'B', value: 300, size: 28 },
-            { name: 'C', value: 200, size: 14 },
-            { name: 'D', value: 500, size: 36 },
-        ],
-    },
-    {
         chartType: 'radar',
         label: 'Radar',
-        data: [
-            { name: 'A', size: 18 },
-            { name: 'B', size: 28 },
-            { name: 'C', size: 14 },
-            { name: 'D', size: 36 },
-        ],
+        data: COMMON_PRESET_DATA,
     },
     {
         chartType: 'treemap',
@@ -634,6 +605,14 @@ export default function ChartGenerator() {
                             name={yAxisKeys[0]}
                             stroke={colors[0]}
                         />
+                        <Radar
+                            dataKey={yAxisKeys[1]}
+                            fill={colors[1]}
+                            fillOpacity={0.6}
+                            isAnimationActive={true}
+                            name={yAxisKeys[1]}
+                            stroke={colors[1]}
+                        />
                         {showLegend ? renderLegend() : null}
                         <Tooltip />
                     </RadarChart>
@@ -707,61 +686,6 @@ export default function ChartGenerator() {
                         isAnimationActive={true}
                         stroke="#fff"
                     />
-                );
-            }
-
-            case 'bubble': {
-                const bubbleSizeKey = yAxisKeys[1] || yAxisKeys[0];
-                const bubbleData = transformedData.map((item, idx) => ({
-                    ...item,
-                    bubbleColor: colors[idx % colors.length],
-                    bubbleSize:
-                        Number(item[bubbleSizeKey]) || Number(item[yAxisKeys[0]]) || idx + 1,
-                }));
-
-                return (
-                    <ScatterChart {...commonProps}>
-                        {showGridlines && <CartesianGrid strokeDasharray="3 3" />}
-                        <XAxis
-                            dataKey={xAxisKey}
-                            label={
-                                xAxisLabel
-                                    ? {
-                                          value: xAxisLabel,
-                                          position: 'insideBottomRight',
-                                          offset: -5,
-                                      }
-                                    : undefined
-                            }
-                            name={xAxisKey}
-                            type="category"
-                        />
-                        <YAxis
-                            dataKey={yAxisKeys[0]}
-                            label={
-                                yAxisLabel
-                                    ? { value: yAxisLabel, angle: -90, position: 'insideLeft' }
-                                    : undefined
-                            }
-                            name={yAxisKeys[0]}
-                            type="number"
-                        />
-                        <ZAxis dataKey="bubbleSize" range={[12, 48]} />
-                        {showLegend && renderLegend()}
-                        <Tooltip />
-                        <Scatter
-                            data={bubbleData}
-                            fillOpacity={0.8}
-                            isAnimationActive={true}
-                            name={yAxisKeys[0]}
-                            stroke="#ffffff"
-                            strokeWidth={1}
-                        >
-                            {bubbleData.map((entry, idx) => (
-                                <Cell fill={entry.bubbleColor} key={`bubble-${idx}`} />
-                            ))}
-                        </Scatter>
-                    </ScatterChart>
                 );
             }
 
