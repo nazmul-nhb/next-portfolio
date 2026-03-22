@@ -1,11 +1,11 @@
 'use client';
 
-import { Delete, Pause } from 'lucide-react';
-import { isBrowser } from 'nhb-toolbox';
-import { useEffect, useState } from 'react';
+import { Pause } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { getConflicts } from '@/lib/tools/sudoku';
 import { cn } from '@/lib/utils';
 import type { TypedKeyboardEvent } from '@/types/hot-keys';
+import KeypadDrawer from './KeypadDrawer';
 
 interface SudokuGridProps {
     puzzle: number[][];
@@ -29,14 +29,7 @@ export default function SudokuGrid({
 }: SudokuGridProps) {
     const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
 
-    const [showNumpad, setShowNumpad] = useState(false);
-
-    useEffect(() => {
-        const isTouchDevice =
-            isBrowser() && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
-        setShowNumpad(isTouchDevice);
-    }, []);
+    const gridRef = useRef<HTMLDivElement>(null);
 
     const handleCellClick = (row: number, col: number) => {
         if (puzzle[row][col] === 0) {
@@ -117,6 +110,7 @@ export default function SudokuGrid({
             <div
                 className="inline-block h-fit w-fit relative border-2 border-gray-900 dark:border-gray-100"
                 onKeyDown={handleKeyDown}
+                ref={gridRef}
                 role="grid"
                 tabIndex={0}
             >
@@ -195,41 +189,12 @@ export default function SudokuGrid({
                 )}
             </div>
 
-            {/* ✅ Number Pad (mobile-first) */}
-            {showNumpad && !isPaused && (
-                <div className="grid grid-cols-5 gap-2 w-full max-w-xs">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                        <button
-                            className="p-3 text-lg font-semibold border rounded-lg bg-white dark:bg-gray-900"
-                            key={n}
-                            onClick={() => handleInput(n)}
-                            type="button"
-                        >
-                            {n}
-                        </button>
-                    ))}
-
-                    {[6, 7, 8, 9].map((n) => (
-                        <button
-                            className="p-3 text-lg font-semibold border rounded-lg bg-white dark:bg-gray-900"
-                            key={n}
-                            onClick={() => handleInput(n)}
-                            type="button"
-                        >
-                            {n}
-                        </button>
-                    ))}
-
-                    {/* 0 → backspace */}
-                    <button
-                        className="p-3 flex items-center justify-center border rounded-lg bg-red-800/25 dark:bg-red-900/40"
-                        onClick={() => handleInput(0)}
-                        type="button"
-                    >
-                        <Delete className="size-5" />
-                    </button>
-                </div>
-            )}
+            <KeypadDrawer
+                gridRef={gridRef}
+                hasSelection={Boolean(selectedCell)}
+                isPaused={isPaused}
+                onInput={handleInput}
+            />
         </div>
     );
 }
