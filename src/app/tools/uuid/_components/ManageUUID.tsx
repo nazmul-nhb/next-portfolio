@@ -1,18 +1,19 @@
 'use client';
 
-import { Key, ListX } from 'lucide-react';
+import { ListX, RotateCcwKey, UserKey } from 'lucide-react';
 import type { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { generateQueryParams } from 'nhb-toolbox';
 import { useEffect, useState } from 'react';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
+import BulkGenerateUUID from '@/app/tools/uuid/_components/BulkUUID';
 import SmartAlert from '@/components/misc/smart-alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DecodeUUID from './DecodeUUID';
 import GenerateUUID from './GenerateUUID';
 
-const TABS = ['generate', 'decode'] as const;
+const TABS = ['generate', 'bulk', 'decode'] as const;
 
 type TabId = (typeof TABS)[number];
 
@@ -40,7 +41,7 @@ export default function ManageUUID() {
     return (
         <div className="space-y-8">
             <TitleWithShare
-                description="Create UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing UUIDs to inspect their metadata."
+                description="Create single or bulk UUIDs across all RFC 4122 versions (v1, v3-v8) and decode existing UUIDs to inspect their metadata."
                 route="/tools/uuid?tab=generate"
                 title="UUID Generator & Decoder"
             />
@@ -50,11 +51,15 @@ export default function ManageUUID() {
                 description={
                     <ul className="list-disc ml-6 space-y-1">
                         <li>
-                            <strong>v1, v4, v6, v7, v8:</strong> Click{' '}
+                            <strong>Single UUIDs:</strong> Click{' '}
                             <code className="font-cascadia rounded px-1 bg-accent-foreground text-secondary">
                                 Generate Another
                             </code>{' '}
-                            to create a new UUID
+                            to create a fresh UUID
+                        </li>
+                        <li>
+                            <strong>Bulk mode:</strong> Generate many UUIDs at once and export
+                            them as CSV, TXT, or JSON
                         </li>
                         <li>
                             <strong>v3 &amp; v5:</strong> Provide a name and either use an
@@ -77,12 +82,16 @@ export default function ManageUUID() {
             >
                 <TabsList className="mb-2" variant="line">
                     <TabsTrigger value={TABS[0]}>
-                        <Key />
-                        Generate UUID
+                        <RotateCcwKey className="size-3.5 mb-1" />
+                        Single
                     </TabsTrigger>
                     <TabsTrigger value={TABS[1]}>
-                        <ListX />
-                        Decode UUID
+                        <UserKey className="size-3.5 mb-1" />
+                        Bulk
+                    </TabsTrigger>
+                    <TabsTrigger value={TABS[2]}>
+                        <ListX className="size-3.5 mb-1" />
+                        Decode
                     </TabsTrigger>
                 </TabsList>
                 {/* Generator Section */}
@@ -91,12 +100,21 @@ export default function ManageUUID() {
 
                     <PoweredBy
                         className="mt-4"
-                        description="This tool uses uuid from my open-source package for pure JS uuid implementation."
+                        description="This tool uses uuid from my open-source package for pure JS UUID generation in both single and bulk modes."
+                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
+                    />
+                </TabsContent>
+                <TabsContent value={TABS[1]}>
+                    <BulkGenerateUUID />
+
+                    <PoweredBy
+                        className="mt-4"
+                        description="This tool uses uuid from my open-source package for pure JS UUID generation in both single and bulk modes."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
                     />
                 </TabsContent>
                 {/* Decoder Section */}
-                <TabsContent value={TABS[1]}>
+                <TabsContent value={TABS[2]}>
                     <DecodeUUID />
 
                     <PoweredBy
@@ -108,7 +126,7 @@ export default function ManageUUID() {
             </Tabs>
 
             <SmartAlert
-                className="bg-amber-800/10"
+                className="bg-amber-800/10 -mt-4"
                 description="All UUID generation and decoding happens locally in your browser. No data is sent to any server."
             />
         </div>

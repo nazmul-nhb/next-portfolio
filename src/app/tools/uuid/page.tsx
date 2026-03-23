@@ -5,7 +5,8 @@ import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
 import ManageUUID from './_components/ManageUUID';
 
-const description = 'Generate and decode UUIDs across all RFC 4122 versions (v1, v3-v8).';
+const description =
+    'Generate single or bulk UUIDs across all RFC 4122 versions (v1, v3-v8), export batches, and decode UUIDs.';
 
 export const metadata: Metadata = {
     title: 'UUID Generator & Decoder',
@@ -23,6 +24,10 @@ export const metadata: Metadata = {
         'uuid v6',
         'uuid v7',
         'uuid v8',
+        'bulk uuid',
+        'uuid export',
+        'uuid csv',
+        'uuid json',
         'RFC 4122',
         'uuid tools',
     ],

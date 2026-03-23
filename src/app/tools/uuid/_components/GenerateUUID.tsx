@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Key, RefreshCw } from 'lucide-react';
+import { Key, RefreshCw, RotateCcwKey } from 'lucide-react';
 import { useDebouncedValue, useMount } from 'nhb-hooks';
 import { debounceAction, isNonEmptyString } from 'nhb-toolbox';
 import { isUUID, uuid } from 'nhb-toolbox/hash';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
+import EmptyData from '@/components/misc/empty-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,8 +40,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-
-const UUID_VERSIONS = ['v1', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8'] as const;
+import { UUID_VERSIONS } from '@/lib/constants';
 
 const UUIDGeneratorSchema = z
     .object({
@@ -122,18 +122,15 @@ export default function GenerateUUID() {
             if (requiresNamespace) {
                 result = uuid({
                     version,
+                    uppercase,
                     name: debouncedName,
                     namespace: debouncedNamespace as $UUID,
-                    uppercase,
                 });
             } else {
                 result = uuid({ version, uppercase });
             }
 
-            setGeneratedUUID({
-                uuid: result,
-                version,
-            });
+            setGeneratedUUID({ uuid: result, version });
 
             toast.success(`Generated new ${version} UUID`);
         } catch {
@@ -163,7 +160,7 @@ export default function GenerateUUID() {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Key className="size-5" />
+                        <RotateCcwKey className="size-5" />
                         Generate UUID
                     </CardTitle>
                     <CardDescription>
@@ -292,7 +289,7 @@ export default function GenerateUUID() {
                                         onClick={debounceAction(handleGenerateNew, 300)}
                                         type="button"
                                     >
-                                        <Key className="size-4" />
+                                        <RotateCcwKey className="size-4" />
                                         Generate Another
                                     </Button>
                                 )}
@@ -311,28 +308,56 @@ export default function GenerateUUID() {
             </Card>
 
             {/* Generated UUID Display */}
-            {generatedUUID && (
-                <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Key className="size-5 text-green-600 dark:text-green-400" />
-                            Generated UUID ({generatedUUID.version.toUpperCase()})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <CodeBlock className="text-base py-3 px-4">
-                            {generatedUUID.uuid}
-                        </CodeBlock>
-                        <div className="flex flex-wrap gap-2">
-                            <CopyButton
-                                buttonText={{ after: 'UUID Copied', before: 'Copy UUID' }}
-                                successMsg="UUID copied to clipboard!"
-                                textToCopy={generatedUUID.uuid}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+            <Card
+                className={
+                    generatedUUID
+                        ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+                        : 'border-dashed bg-muted/20'
+                }
+            >
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Key
+                            className={
+                                generatedUUID
+                                    ? 'size-5 text-green-600 dark:text-green-400'
+                                    : 'size-5'
+                            }
+                        />
+                        {generatedUUID
+                            ? `Generated UUID (${generatedUUID.version.toUpperCase()})`
+                            : 'Generated UUID'}
+                    </CardTitle>
+                    <CardDescription>
+                        {generatedUUID
+                            ? 'Copy the generated UUID or create another one from the form on the left.'
+                            : 'Your generated UUID will appear here once the form is ready.'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {generatedUUID ? (
+                        <Fragment>
+                            <CodeBlock className="text-base py-3 px-4">
+                                {generatedUUID.uuid}
+                            </CodeBlock>
+                            <div className="flex flex-wrap gap-2">
+                                <CopyButton
+                                    buttonText={{ after: 'UUID Copied', before: 'Copy UUID' }}
+                                    successMsg="UUID copied to clipboard!"
+                                    textToCopy={generatedUUID.uuid}
+                                />
+                            </div>
+                        </Fragment>
+                    ) : (
+                        <EmptyData
+                            className="border-muted-foreground/20 bg-background/60"
+                            description="Keep typing on the left and the result will stay anchored in this panel."
+                            Icon={Key}
+                            title="No UUID generated yet"
+                        />
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

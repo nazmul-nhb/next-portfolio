@@ -90,7 +90,6 @@ export const siteConfig = {
         { title: 'Messages', path: '/messages', icon: MessageSquare },
         { title: 'Tools', path: '/tools', icon: FaTools },
         { title: 'Resume', path: '/resume', icon: FileText },
-        // { title: 'Settings', path: '/settings', icon: Settings },
     ] satisfies TabItem[],
     toolsMenus: [
         {
@@ -222,7 +221,7 @@ export const siteConfig = {
             label: 'UUID Tools',
             icon: Tag,
             description:
-                'Generate UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
+                'Generate single or bulk UUIDs across all RFC 4122 versions and decode existing UUIDs to inspect their structure.',
         },
         {
             href: '/tools/npm-package',
@@ -243,7 +242,7 @@ export const siteConfig = {
         { href: '/admin/users', label: 'Users', icon: Users },
         { href: '/admin/blogs', label: 'Blogs', icon: Newspaper },
         { href: '/admin/categories', label: 'Categories', icon: Tag },
-    ],
+    ] satisfies Array<{ href: Route; label: string; icon: ComponentType }>,
     links: {
         GitHub: 'https://github.com/nazmul-nhb',
         LinkedIn: 'https://linkedin.com/in/nazmul-nhb',
