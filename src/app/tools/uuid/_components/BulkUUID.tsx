@@ -236,7 +236,7 @@ export default function BulkGenerateUUID() {
 
     return useMount(
         <div className="grid gap-6 xl:grid-cols-2">
-            <Card>
+            <Card className="h-fit">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <UserKey className="size-4" />
@@ -421,11 +421,12 @@ export default function BulkGenerateUUID() {
             </Card>
 
             <Card
-                className={
+                className={cn(
+                    'h-fit',
                     generatedUUIDs.length
                         ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20'
                         : 'border-dashed bg-muted/20'
-                }
+                )}
             >
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -510,7 +511,7 @@ export default function BulkGenerateUUID() {
                                                 <TableCell className="font-medium text-center text-muted-foreground">
                                                     {item.index}
                                                 </TableCell>
-                                                <TableCell className="font-mono whitespace-normal break-all text-xs">
+                                                <TableCell className="font-cascadia whitespace-normal break-all text-xs">
                                                     {item.uuid}
                                                 </TableCell>
                                                 <TableCell className="text-center">

@@ -9,6 +9,7 @@ import type { $UUID } from 'nhb-toolbox/hash/types';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import type z from 'zod';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
@@ -40,7 +41,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { UUID_VERSIONS } from '@/lib/constants';
-import type z from 'zod';
+import { cn } from '@/lib/utils';
 import { UUIDGeneratorSchema } from '@/lib/zod-schema/tools';
 
 type UUIDGeneratorFormValues = z.infer<typeof UUIDGeneratorSchema>;
@@ -123,7 +124,7 @@ export default function GenerateUUID() {
 
     return useMount(
         <div className="grid gap-6 xl:grid-cols-2">
-            <Card>
+            <Card className="h-fit">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <RotateCcwKey className="size-5" />
@@ -275,11 +276,12 @@ export default function GenerateUUID() {
 
             {/* Generated UUID Display */}
             <Card
-                className={
+                className={cn(
+                    'h-fit',
                     generatedUUID
                         ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
                         : 'border-dashed bg-muted/20'
-                }
+                )}
             >
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
