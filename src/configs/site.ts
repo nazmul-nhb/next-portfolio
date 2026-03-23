@@ -2,6 +2,7 @@ import {
     ArrowLeftRight,
     BarChart3,
     Binary,
+    Book,
     Briefcase,
     ClockCheck,
     ClockFading,
@@ -202,6 +203,12 @@ export const siteConfig = {
             icon: BarChart3,
             description:
                 'Create beautiful, interactive charts and graphs from JSON data. Export as SVG or PNG.',
+        },
+        {
+            href: '/tools/mdict-viewer',
+            label: 'MDict Viewer',
+            icon: Book,
+            description: 'View MDict Dicionries',
         },
         {
             href: '/tools/base-conversions',

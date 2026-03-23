@@ -52,6 +52,7 @@
     "drizzle-zod": "^0.8.3",
     "framer-motion": "^12.38.0",
     "input-otp": "^1.4.2",
+    "js-mdict": "^7.0.0",
     "locality-idb": "^1.5.10",
     "lucide-react": "^0.577.0",
     "next": "16.2.0",

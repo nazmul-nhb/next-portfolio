@@ -35,6 +35,9 @@
                 "noStaticElementInteractions": "off",
                 "useSemanticElements": "info"
             },
+            "security": {
+                "noDangerouslySetInnerHtml": "info"
+            },
             "suspicious": {
                 "noUnknownAtRules": "warn",
                 "noArrayIndexKey": "info",
