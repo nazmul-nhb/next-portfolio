@@ -9,7 +9,6 @@ import type { $UUID } from 'nhb-toolbox/hash/types';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
 import CodeBlock from '@/components/misc/code-block';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
@@ -41,41 +40,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { UUID_VERSIONS } from '@/lib/constants';
-
-const UUIDGeneratorSchema = z
-    .object({
-        version: z.enum(UUID_VERSIONS),
-        name: z.string(),
-        namespace: z.string(),
-        uppercase: z.boolean(),
-    })
-    .superRefine(({ version, name, namespace }, ctx) => {
-        if (version === 'v3' || version === 'v5') {
-            if (!isNonEmptyString(name)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: `Name is required for ${version} UUIDs`,
-                    path: ['name'],
-                });
-            }
-
-            if (!isNonEmptyString(namespace)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: `Namespace is required for ${version} UUIDs`,
-                    path: ['namespace'],
-                });
-            }
-
-            if (isNonEmptyString(namespace) && !isUUID(namespace)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: 'Namespace must be a valid UUID',
-                    path: ['namespace'],
-                });
-            }
-        }
-    });
+import type z from 'zod';
+import { UUIDGeneratorSchema } from '@/lib/zod-schema/tools';
 
 type UUIDGeneratorFormValues = z.infer<typeof UUIDGeneratorSchema>;
 

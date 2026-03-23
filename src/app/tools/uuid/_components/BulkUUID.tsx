@@ -1,17 +1,18 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Download, FileJson, FileText, Key, RefreshCw, UserKey } from 'lucide-react';
+import { FileJson, FileText, Key, RefreshCw, Sheet, UserKey } from 'lucide-react';
 import { useDebouncedValue, useMount } from 'nhb-hooks';
-import { debounceAction, isNonEmptyString } from 'nhb-toolbox';
+import { debounceAction, isNonEmptyString, isNumber } from 'nhb-toolbox';
 import { isUUID, uuid } from 'nhb-toolbox/hash';
 import type { $UUID } from 'nhb-toolbox/hash/types';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import type { z } from 'zod';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
+import Loading from '@/components/misc/loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,45 +49,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { UUID_VERSIONS } from '@/lib/constants';
-
-const BULK_UUID_LIMIT = 100;
-
-const BulkUUIDGeneratorSchema = z
-    .object({
-        version: z.enum(UUID_VERSIONS),
-        name: z.string(),
-        namespace: z.string(),
-        uppercase: z.boolean(),
-        count: z.number().int().min(1).max(BULK_UUID_LIMIT),
-    })
-    .superRefine(({ version, name, namespace }, ctx) => {
-        if (version === 'v3' || version === 'v5') {
-            if (!isNonEmptyString(name)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: `Name is required for ${version} UUIDs`,
-                    path: ['name'],
-                });
-            }
-
-            if (!isNonEmptyString(namespace)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: `Namespace is required for ${version} UUIDs`,
-                    path: ['namespace'],
-                });
-            }
-
-            if (isNonEmptyString(namespace) && !isUUID(namespace)) {
-                ctx.addIssue({
-                    code: 'custom',
-                    message: 'Namespace must be a valid UUID',
-                    path: ['namespace'],
-                });
-            }
-        }
-    });
+import { BULK_UUID_LIMIT, UUID_VERSIONS } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import { BulkUUIDGeneratorSchema } from '@/lib/zod-schema/tools';
 
 type BulkUUIDGeneratorFormValues = z.infer<typeof BulkUUIDGeneratorSchema>;
 
@@ -116,6 +81,7 @@ function triggerDownload(content: string, filename: string, mimeType: string) {
 
 export default function BulkGenerateUUID() {
     const [generatedUUIDs, setGeneratedUUIDs] = useState<GeneratedBulkUUID[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const generatorForm = useForm<BulkUUIDGeneratorFormValues>({
         resolver: zodResolver(BulkUUIDGeneratorSchema),
@@ -141,12 +107,7 @@ export default function BulkGenerateUUID() {
     const handleGenerateBulkUUIDs = useCallback(() => {
         const countValue = Number(debouncedCount);
 
-        if (
-            !Number.isFinite(countValue) ||
-            !Number.isInteger(countValue) ||
-            countValue < 1 ||
-            countValue > BULK_UUID_LIMIT
-        ) {
+        if (!isNumber(countValue) || countValue < 1 || countValue > BULK_UUID_LIMIT) {
             setGeneratedUUIDs([]);
             return;
         }
@@ -164,6 +125,8 @@ export default function BulkGenerateUUID() {
         }
 
         try {
+            setIsLoading(true);
+
             const generated = Array.from({ length: countValue }, (_, index) => {
                 const position = index + 1;
                 const currentName =
@@ -194,6 +157,8 @@ export default function BulkGenerateUUID() {
             toast.success(`Generated ${generated.length} ${version} UUIDs`);
         } catch {
             setGeneratedUUIDs([]);
+        } finally {
+            setIsLoading(false);
         }
     }, [
         version,
@@ -465,11 +430,10 @@ export default function BulkGenerateUUID() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <UserKey
-                            className={
-                                generatedUUIDs.length
-                                    ? 'size-5 text-blue-600 dark:text-blue-400'
-                                    : 'size-5'
-                            }
+                            className={cn('size-5', {
+                                'size-5 text-blue-600 dark:text-blue-400':
+                                    generatedUUIDs.length > 0,
+                            })}
                         />
                         {generatedUUIDs.length
                             ? `Bulk UUIDs (${generatedUUIDs.length})`
@@ -482,9 +446,11 @@ export default function BulkGenerateUUID() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {generatedUUIDs.length ? (
+                    {isLoading && !generatedUUIDs.length ? (
+                        <Loading />
+                    ) : generatedUUIDs.length ? (
                         <Fragment>
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2 select-none">
                                 <Badge variant="outline">{generatedUUIDs.length} items</Badge>
                                 <Badge variant="outline">{version.toUpperCase()}</Badge>
                                 <Badge variant="outline">
@@ -502,7 +468,7 @@ export default function BulkGenerateUUID() {
                                     type="button"
                                     variant="outline"
                                 >
-                                    <Download className="size-3 mb-0.5" />
+                                    <Sheet className="size-3 mb-0.5" />
                                     CSV
                                 </Button>
                                 <Button
@@ -525,7 +491,7 @@ export default function BulkGenerateUUID() {
                                 </Button>
                             </div>
 
-                            <ScrollArea className="h-64 rounded-xl border border-border/60 bg-background/70">
+                            <ScrollArea className="h-100 rounded-xl border border-border/60 bg-background/70">
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
