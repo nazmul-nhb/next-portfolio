@@ -146,11 +146,11 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                                                             onClick={() =>
                                                                 handleRemoveOption(index)
                                                             }
-                                                            size="icon"
+                                                            size="icon-lg"
                                                             type="button"
-                                                            variant="ghost"
+                                                            variant="destructive"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <Trash2 className="size-4" />
                                                         </Button>
                                                     )}
                                                 </div>
@@ -164,11 +164,11 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                                 <Button
                                     className="w-full"
                                     onClick={handleAddOption}
-                                    size="sm"
+                                    size="lg"
                                     type="button"
                                     variant="outline"
                                 >
-                                    <Plus className="h-4 w-4 mr-2" />
+                                    <Plus className="size-4 mb-0.5" />
                                     Add Option
                                 </Button>
                             )}
@@ -178,14 +178,14 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                             control={form.control}
                             name="is_anonymous"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormItem className="flex flex-row items-center space-y-0">
                                     <FormControl>
                                         <Checkbox
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
                                         />
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">
+                                    <FormLabel className="font-normal cursor-pointer mt-0.5">
                                         Keep this poll anonymous
                                     </FormLabel>
                                 </FormItem>
@@ -197,12 +197,12 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                                 disabled={isPending}
                                 onClick={() => onOpenChange(false)}
                                 type="button"
-                                variant="outline"
+                                variant="destructive"
                             >
                                 Cancel
                             </Button>
-                            <Button disabled={isPending} type="submit">
-                                {isPending ? 'Creating...' : 'Create Poll'}
+                            <Button disabled={isPending} loading={isPending} type="submit">
+                                Create Poll
                             </Button>
                         </DialogFooter>
                     </form>

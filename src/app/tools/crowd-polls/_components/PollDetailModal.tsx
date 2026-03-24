@@ -2,6 +2,8 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { toTitleCase } from 'nhb-toolbox/change-case';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -35,9 +37,9 @@ export function PollDetailModal({
     if (!poll) return null;
 
     const statusIcons = {
-        upcoming: <Clock className="h-5 w-5" />,
-        active: <CheckCircle2 className="h-5 w-5 text-green-600" />,
-        expired: <AlertCircle className="h-5 w-5 text-red-600" />,
+        upcoming: <Clock className="size-5" />,
+        active: <CheckCircle2 className="size-5 text-green-600" />,
+        expired: <AlertCircle className="size-5 text-red-600" />,
     };
 
     const statusColors = {
@@ -68,10 +70,10 @@ export function PollDetailModal({
                             </DialogDescription>
                         </div>
                         <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${statusColors[poll.status]}`}
+                            className={`inline-flex items-center gap-1 px-2 py-1 mr-3 rounded-full text-xs font-medium border whitespace-nowrap ${statusColors[poll.status]}`}
                         >
                             {statusIcons[poll.status]}
-                            {poll.status}
+                            {toTitleCase(poll.status)}
                         </span>
                     </div>
                 </DialogHeader>
@@ -157,13 +159,13 @@ export function PollDetailModal({
                 </div>
 
                 <div className="flex justify-end gap-2 pt-4 border-t">
-                    <Button onClick={onClose} variant="outline">
+                    <Button onClick={onClose} variant="destructive">
                         {hasVoted || poll.status !== 'active' ? 'Close' : 'Cancel'}
                     </Button>
                     {canVote && (
-                        <div className="text-xs text-muted-foreground text-right">
+                        <Badge className="text-xs" variant="secondary">
                             Select an option to vote
-                        </div>
+                        </Badge>
                     )}
                 </div>
             </DialogContent>

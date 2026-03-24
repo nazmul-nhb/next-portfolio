@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { toTitleCase } from 'nhb-toolbox/change-case';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import type { PollDetail } from '@/types/polls';
@@ -14,9 +15,9 @@ interface PollCardProps {
 
 export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
     const statusIcons = {
-        upcoming: <Clock className="h-4 w-4" />,
-        active: <CheckCircle2 className="h-4 w-4 text-green-600" />,
-        expired: <AlertCircle className="h-4 w-4 text-red-600" />,
+        upcoming: <Clock className="size-4 mb-0.5" />,
+        active: <CheckCircle2 className="size-4 mb-0.5 text-green-600" />,
+        expired: <AlertCircle className="size-4 mb-0.5 text-red-600" />,
     };
 
     const statusColors = {
@@ -44,7 +45,7 @@ export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${statusColors[poll.status]}`}
                         >
                             {statusIcons[poll.status]}
-                            {poll.status}
+                            {toTitleCase(poll.status)}
                         </span>
                     </div>
                     <p className="text-xs text-muted-foreground">

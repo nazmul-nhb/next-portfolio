@@ -217,7 +217,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                 }}
                 onVote={handleVote}
                 poll={selectedPoll}
-                votedOptionId={isDetailModalVoting ? undefined : selectedPoll?.options[0]?.id}
+                // votedOptionId={isDetailModalVoting ? undefined : selectedPoll?.options[0]?.id}
             />
         </div>
     );
