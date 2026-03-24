@@ -26,6 +26,7 @@ import {
     MessageSquareQuote,
     Newspaper,
     PenTool,
+    PieChart,
     QrCode,
     Shuffle,
     Tag,
@@ -97,6 +98,13 @@ export const siteConfig = {
             label: 'Expense Manager',
             icon: Wallet,
             description: 'Track income, expenses, loans, repayments, and net cash in hand.',
+        },
+        {
+            href: '/tools/crowd-polls',
+            label: 'Crowd Polls',
+            icon: PieChart,
+            description:
+                'Create and participate in polls with anonymous voting and real-time result tracking.',
         },
         {
             href: '/tools/age-calculator',

@@ -339,8 +339,8 @@ export default function SudokuGame() {
                                             Use keyboard <Kbd>1-9</Kbd> to fill a cell,{' '}
                                             <Kbd>Arrow</Kbd> keys to navigate and{' '}
                                             <Kbd>Delete</Kbd>,<Kbd>Backspace</Kbd> or{' '}
-                                            <Kbd>0</Kbd> to clear a cell. Touch devices also
-                                            get a floating keypad on the right.
+                                            <Kbd>0</Kbd> to clear a cell. Touch devices also get
+                                            a floating keypad on the right.
                                         </span>
                                     )}
                                 </CardDescription>

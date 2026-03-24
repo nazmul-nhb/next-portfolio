@@ -3,6 +3,7 @@ export * from './blogs';
 export * from './career';
 export * from './expenses';
 export * from './messages';
+export * from './polls';
 export * from './projects';
 export * from './skills';
 export * from './testimonials';

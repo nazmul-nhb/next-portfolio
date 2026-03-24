@@ -95,7 +95,7 @@ export function formatDuration(startDate: string | Date, endDate: Uncertain<stri
 
 /** Group messages by date for Telegram-style date separators. */
 export function groupMessagesByDate(messages: Message[]) {
-    const groups: { date: string; msgs: Message[] }[] = [];
+    const groups: Array<{ date: string; msgs: Message[] }> = [];
 
     for (const msg of messages) {
         const dateLabel = getDateLabel(msg.created_at);

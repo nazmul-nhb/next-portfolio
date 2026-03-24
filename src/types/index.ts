@@ -37,7 +37,9 @@ export type TCollection =
     | 'Receipt'
     | 'Message'
     | 'Conversation'
-    | 'OTP';
+    | 'OTP'
+    | 'Poll'
+    | 'Vote';
 
 export type UserRole = SiteConfig['userRoles'][number];
 
