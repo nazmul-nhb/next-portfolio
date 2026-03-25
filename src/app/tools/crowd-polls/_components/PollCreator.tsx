@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Trash2 } from 'lucide-react';
-import type { GenericObject } from 'nhb-toolbox/object/types';
+import { Chronos } from 'nhb-toolbox';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,11 +26,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useApiMutation } from '@/lib/hooks/use-api';
-import { eliminateEmptyStrings, toDateTimeLocalValue } from '@/lib/utils';
+import { buildLocalISOString, eliminateEmptyStrings, toDateTimeLocalValue } from '@/lib/utils';
 import { CreatePollSchema } from '@/lib/zod-schema/polls';
 import type { PollCreationResponse } from '@/types/polls';
 import type { CreatePollFormData } from './types';
-import { Chronos } from 'nhb-toolbox';
 
 interface PollCreatorProps {
     isOpen: boolean;
@@ -40,12 +39,14 @@ interface PollCreatorProps {
 export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
     const [optionCount, setOptionCount] = useState(2);
 
+    const now = new Chronos();
+
     const form = useForm({
         resolver: zodResolver(CreatePollSchema),
         defaultValues: {
             question: '',
             options: ['', ''],
-            end_date: new Chronos().addDays(2).toLocalISOString().split('.')[0],
+            end_date: now.addDays(3).toLocalISOString().split('.')[0],
             start_date: toDateTimeLocalValue(),
             is_anonymous: false,
         },
@@ -83,7 +84,7 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
         }
     };
 
-    const onSubmit = (data: GenericObject) => {
+    const onSubmit = (data: CreatePollFormData) => {
         // Filter out empty options
         const filteredOptions = eliminateEmptyStrings(data.options);
 
@@ -96,9 +97,9 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
             question: data.question,
             options: filteredOptions,
             is_anonymous: data.is_anonymous,
-            start_date: data.start_date,
-            end_date: data.end_date,
-        } as CreatePollFormData);
+            start_date: buildLocalISOString(data.start_date, now.getUTCOffset()),
+            end_date: buildLocalISOString(data.end_date, now.getUTCOffset()),
+        });
     };
 
     return (
@@ -209,8 +210,8 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                                     </FormLabel>
                                     <FormControl>
                                         <Input
+                                            defaultValue={field.value || ''}
                                             type="datetime-local"
-                                            value={field.value || ''}
                                         />
                                     </FormControl>
                                     <FormMessage />

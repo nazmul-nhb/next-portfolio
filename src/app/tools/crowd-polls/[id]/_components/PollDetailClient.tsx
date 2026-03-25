@@ -4,22 +4,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     AlertCircle,
     ArrowLeft,
-    Calendar,
+    ChartColumnBig,
+    ChartLine,
+    ChartNoAxesCombined,
+    ChartPie,
     CheckCircle2,
-    Clock,
-    Edit,
     RotateCcw,
     Shield,
-    Trash2,
-    UserIcon,
     Users,
     X,
 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatDate, formatWithPlural } from 'nhb-toolbox';
-import { toTitleCase } from 'nhb-toolbox/change-case';
+import { Chronos, formatDate, formatWithPlural } from 'nhb-toolbox';
 import { Fragment, useState } from 'react';
 import {
     Bar,
@@ -33,6 +31,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
+import PollHeader from '@/app/tools/crowd-polls/[id]/_components/PollHeader';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
 import { Badge } from '@/components/ui/badge';
@@ -51,7 +50,8 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
-import type { PollDetail, PollVoterDetail } from '@/types/polls';
+import { buildLocalISOString, toDateTimeLocalValue } from '@/lib/utils';
+import type { PollDetailResponse, PollVoterDetail } from '@/types/polls';
 
 const CHART_COLORS = [
     '#3b82f6',
@@ -65,11 +65,6 @@ const CHART_COLORS = [
     '#84cc16',
     '#6366f1',
 ];
-
-interface PollDetailResponse extends PollDetail {
-    anonymous_votes: number;
-    logged_in_votes: number;
-}
 
 export function PollDetailClient({ pollId }: { pollId: number }) {
     const router = useRouter();
@@ -182,11 +177,13 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
     };
 
     const handleUpdateExpiry = () => {
-        updatePoll({ end_date: editEndDate || null });
+        updatePoll({
+            end_date: buildLocalISOString(editEndDate, new Chronos().getUTCOffset()),
+        });
     };
 
     const handleDelete = () => {
-        deletePoll({});
+        deletePoll({}, { onSuccess: () => router.push('/tools/crowd-polls') });
     };
 
     // Chart data
@@ -208,20 +205,6 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
         { name: 'Anonymous', value: poll.anonymous_votes, fill: '#94a3b8' },
     ];
 
-    const statusIcons = {
-        upcoming: <Clock className="size-4 mb-0.5" />,
-        active: <CheckCircle2 className="size-4 mb-0.5 text-green-600" />,
-        expired: <AlertCircle className="size-4 mb-0.5 text-red-600" />,
-    };
-
-    const statusColors = {
-        upcoming:
-            'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 border-blue-200 dark:border-blue-800',
-        active: 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-100 border-green-200 dark:border-green-800',
-        expired:
-            'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-100 border-red-200 dark:border-red-800',
-    };
-
     return (
         <Fragment>
             <div className="space-y-8">
@@ -242,89 +225,13 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 </div>
 
                 {/* Poll Header */}
-                <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                        <div className="flex-1 space-y-2">
-                            <h1 className="text-2xl md:text-3xl font-bold leading-tight">
-                                {poll.question}
-                            </h1>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
-                                <span className="flex items-center gap-1">
-                                    <Calendar className="size-4" />
-                                    {formatDate({
-                                        date: poll.created_at,
-                                        format: 'mmm DD, YYYY hh:mm a',
-                                    })}
-                                </span>
-                                {poll.creator_name && (
-                                    <span className="flex items-center gap-1">
-                                        <UserIcon className="size-4" />
-                                        {poll.creator_name}
-                                    </span>
-                                )}
-                                <span className="flex items-center gap-1">
-                                    <Users className="size-4" />
-                                    {formatWithPlural(poll.total_votes, 'vote')}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <span
-                                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border ${statusColors[poll.status]}`}
-                            >
-                                {statusIcons[poll.status]}
-                                {toTitleCase(poll.status)}
-                            </span>
-                            {poll.is_anonymous && (
-                                <Badge variant="secondary">
-                                    <Shield className="size-3 mr-1" />
-                                    Anonymous
-                                </Badge>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Expiry Info */}
-                    {poll.end_date && (
-                        <p className="text-sm text-muted-foreground">
-                            {poll.status === 'expired' ? 'Expired' : 'Expires'}:{' '}
-                            {formatDate({
-                                date: poll.end_date,
-                                format: 'mmm DD, YYYY hh:mm a',
-                            })}
-                        </p>
-                    )}
-
-                    {/* Admin/Creator Controls */}
-                    {canManage && (
-                        <div className="flex items-center gap-2">
-                            <Button
-                                onClick={() => {
-                                    setEditEndDate(
-                                        poll.end_date
-                                            ? new Date(poll.end_date).toISOString().slice(0, 16)
-                                            : ''
-                                    );
-                                    setShowEditDialog(true);
-                                }}
-                                size="sm"
-                                variant="outline"
-                            >
-                                <Edit className="size-4 mb-0.5" />
-                                Edit Expiry
-                            </Button>
-                            <Button
-                                onClick={() => setShowDeleteDialog(true)}
-                                size="sm"
-                                variant="destructive"
-                            >
-                                <Trash2 className="size-4 mb-1" />
-                                Delete
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                <PollHeader
+                    canManage={canManage}
+                    poll={poll}
+                    setEditEndDate={setEditEndDate}
+                    setShowDeleteDialog={setShowDeleteDialog}
+                    setShowEditDialog={setShowEditDialog}
+                />
 
                 <Separator />
 
@@ -348,6 +255,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                     {userId && (
                                         <Button
                                             disabled={isUnvoting}
+                                            loading={isUnvoting}
                                             onClick={handleUnvote}
                                             size="sm"
                                             variant="destructive"
@@ -363,9 +271,10 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                     <CardContent className="space-y-3">
                         <AnimatePresence>
                             {poll.options.map((option, index) => {
-                                const isVotedOption = poll.voted_option_id === option.id;
-                                const isClickable =
-                                    canVote && !isVoting && (!hasVoted || hasVoted);
+                                const isVotedOption =
+                                    hasVoted &&
+                                    Number(poll.voted_option_id) === Number(option.id);
+                                const isClickable = canVote && !isVoting;
 
                                 return (
                                     <motion.div
@@ -452,14 +361,16 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 {/* Analytics Section */}
                 {poll.total_votes > 0 && (
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold">Poll Analytics</h2>
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
+                            <ChartNoAxesCombined /> Poll Analytics
+                        </h2>
 
                         <div className="grid gap-6 md:grid-cols-2">
                             {/* Pie Chart - Vote Distribution */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Vote Distribution
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <ChartPie /> Vote Distribution
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -474,7 +385,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                                 label={({ name, percent }) =>
                                                     `${(name ?? '').length > 12 ? `${(name ?? '').slice(0, 10)}..` : name} ${((percent ?? 0) * 100).toFixed(0)}%`
                                                 }
-                                                labelLine={false}
+                                                labelLine={true}
                                                 outerRadius={100}
                                                 paddingAngle={2}
                                             />
@@ -488,8 +399,8 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                             {/* Bar Chart - Votes per Option */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Votes per Option
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <ChartColumnBig /> Votes per Option
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -513,7 +424,9 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                             {/* Voter Type Breakdown */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base">Voter Breakdown</CardTitle>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <Users /> Voter Breakdown
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <ResponsiveContainer height={250} width="100%">
@@ -556,7 +469,9 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                             {/* Summary Stats */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base">Quick Stats</CardTitle>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <ChartLine /> Stats
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
@@ -658,7 +573,9 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                             </label>
                             <Input
                                 id="end-date-input"
-                                onChange={(e) => setEditEndDate(e.target.value)}
+                                onChange={(e) =>
+                                    setEditEndDate(toDateTimeLocalValue(e.target.value))
+                                }
                                 type="datetime-local"
                                 value={editEndDate}
                             />

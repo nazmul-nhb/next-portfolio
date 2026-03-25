@@ -33,6 +33,11 @@ export interface PollDetail extends SelectPoll {
     voters?: PollVoterDetail[];
 }
 
+export interface PollDetailResponse extends PollDetail {
+    anonymous_votes: number;
+    logged_in_votes: number;
+}
+
 export interface PaginatedPolls {
     polls: PollDetail[];
     page: number;

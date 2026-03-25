@@ -91,12 +91,14 @@ export function PollCard({ poll }: PollCardProps) {
                             {formatWithPlural(poll.total_votes, 'vote')} • {poll.options.length}{' '}
                             options
                         </div>
-                        {hasVoted && (
-                            <Badge className="text-xs" variant="secondary">
+                        <Badge className="text-xs" variant="secondary">
+                            {hasVoted ? (
                                 <CheckCircle2 className="size-3 mr-1" />
-                                Voted
-                            </Badge>
-                        )}
+                            ) : (
+                                <AlertCircle className="size-3 mr-1" />
+                            )}
+                            {hasVoted ? 'Voted' : 'Vote now'}
+                        </Badge>
                     </CardFooter>
                 </Card>
             </Link>

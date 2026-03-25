@@ -43,6 +43,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signIn: '/auth/login',
         error: '/auth/error',
     },
+    cookies: {
+        sessionToken: {
+            name: siteConfig.tokenName,
+        },
+    },
     session: {
         strategy: 'jwt',
         maxAge: 30 * 24 * 60 * 60, // 30 days

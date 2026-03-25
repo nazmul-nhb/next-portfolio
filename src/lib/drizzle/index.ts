@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { ENV } from '@/configs/env';
+import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema';
 import {
     blogCategories,
     blogs,
@@ -46,5 +47,8 @@ export const db = drizzle(sql, {
         conversations,
         directMessages,
         otpCodes,
+        polls,
+        pollVotes,
+        pollOptions,
     },
 });

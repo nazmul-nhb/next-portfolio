@@ -1,3 +1,5 @@
+'use client';
+
 import { LogIn, LogOut, PenTool, Settings } from 'lucide-react';
 import Link from 'next/link';
 import type { Session } from 'next-auth';
@@ -110,7 +112,7 @@ export default function NavbarAuth({ user, isAdmin, pathname, status }: Props) {
                 </div>
             ) : (
                 <Button asChild className="rounded-full" size="sm" variant="default">
-                    <Link href="/auth/login">
+                    <Link href={`/auth/login?redirectTo=${pathname}`}>
                         <LogIn className="mr-1.5 size-3.5" />
                         Sign In
                     </Link>

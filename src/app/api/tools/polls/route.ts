@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { and, desc, type eq, ilike, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
@@ -81,6 +81,21 @@ export async function GET(req: NextRequest) {
                       .where(sql`${pollOptions.poll_id} IN (${sql.raw(pollIds.join(','))})`)
                 : [];
 
+        // Count actual votes per option from pollVotes (source of truth)
+        const voteCountRows =
+            pollIds.length > 0
+                ? await db
+                      .select({
+                          option_id: pollVotes.option_id,
+                          count: sql<number>`count(*)::int`,
+                      })
+                      .from(pollVotes)
+                      .where(sql`${pollVotes.poll_id} IN (${sql.raw(pollIds.join(','))})`)
+                      .groupBy(pollVotes.option_id)
+                : [];
+
+        const voteCountMap = new Map(voteCountRows.map((v) => [v.option_id, v.count]));
+
         // Fetch current user's votes for these polls
         const userVotes =
             pollIds.length > 0
@@ -117,13 +132,19 @@ export async function GET(req: NextRequest) {
         const responsePolls: PollDetail[] = pollRows.map((poll) => {
             const opts = optionMap.get(poll.id) || [];
             const calculatedStatus = getPollStatus(poll.start_date, poll.end_date, now);
+            const optsWithVotes = opts.map((opt) => {
+                const votes = voteCountMap.get(opt.id) ?? 0;
+                return { ...opt, votes };
+            });
+            const actualTotalVotes = optsWithVotes.reduce((sum, opt) => sum + opt.votes, 0);
             return {
                 ...poll,
-                options: opts.map((opt) => ({
+                total_votes: actualTotalVotes,
+                options: optsWithVotes.map((opt) => ({
                     ...opt,
                     percentage:
-                        poll.total_votes > 0
-                            ? Math.round((opt.votes / poll.total_votes) * 100)
+                        actualTotalVotes > 0
+                            ? Math.round((opt.votes / actualTotalVotes) * 100)
                             : 0,
                 })),
                 status: calculatedStatus,
@@ -171,8 +192,8 @@ export async function POST(req: NextRequest) {
                 user_id: userId,
                 question: pollData.question,
                 is_anonymous: isAnonymous,
-                start_date: pollData.start_date || new Date(),
-                end_date: pollData.end_date || null,
+                start_date: pollData.start_date ? new Date(pollData.start_date) : new Date(),
+                end_date: pollData.end_date ? new Date(pollData.end_date) : null,
             })
             .returning();
 

@@ -118,7 +118,7 @@ export default function AgeCalculator() {
         resolver: zodResolver(AgeCalculatorFormSchema),
         mode: 'all',
         defaultValues: {
-            birthDateTime: new Chronos().addDays(-1).toLocalISOString().split('.')[0],
+            birthDateTime: new Chronos().addYears(-1).toLocalISOString().split('.')[0],
             untilDateTime: toDateTimeLocalValue(),
         },
     });

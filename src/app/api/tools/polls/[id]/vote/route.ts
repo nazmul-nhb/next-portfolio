@@ -97,14 +97,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 .set({ option_id: optionId })
                 .where(eq(pollVotes.id, existingVote.id));
 
-            // Get updated data for response
-            const [updatedOption] = await db
-                .select()
-                .from(pollOptions)
-                .where(eq(pollOptions.id, optionId));
-
-            const [updatedPoll] = await db.select().from(polls).where(eq(polls.id, pollId));
-
             return sendResponse(
                 'Vote',
                 'PATCH',
@@ -112,27 +104,25 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                     poll_id: pollId,
                     option_id: optionId,
                     previous_option_id: existingVote.option_id,
-                    votes: updatedOption?.votes ?? 0,
-                    total_votes: updatedPoll?.total_votes ?? 0,
                     changed: true,
                 },
                 'Vote changed successfully'
             );
         }
 
-        // 4. New vote: update option vote count
+        // New vote: update option vote count
         await db
             .update(pollOptions)
             .set({ votes: sql`${pollOptions.votes} + 1` })
             .where(eq(pollOptions.id, optionId));
 
-        // 5. Update poll total_votes
+        // Update poll total_votes
         await db
             .update(polls)
             .set({ total_votes: sql`${polls.total_votes} + 1` })
             .where(eq(polls.id, pollId));
 
-        // 6. Record the vote
+        // Record the vote
         const [insertedVote] = await db
             .insert(pollVotes)
             .values({
@@ -145,27 +135,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         if (!insertedVote) throw new Error('Failed to record vote');
 
-        // 7. Get updated option and poll for response
-        const [updatedOption] = await db
-            .select()
-            .from(pollOptions)
-            .where(eq(pollOptions.id, optionId));
-
-        const [updatedPoll] = await db.select().from(polls).where(eq(polls.id, pollId));
-
-        if (!updatedPoll || !updatedOption) {
-            throw new Error('Failed to retrieve updated data');
-        }
-
-        const response = {
+        return sendResponse('Vote', 'POST', {
             poll_id: pollId,
             option_id: optionId,
-            votes: updatedOption.votes,
-            total_votes: updatedPoll.total_votes,
-            percentage: Math.round((updatedOption.votes / updatedPoll.total_votes) * 100),
-        };
-
-        return sendResponse('Vote', 'POST', response);
+        });
     } catch (error) {
         return sendErrorResponse(error);
     }
@@ -226,19 +199,17 @@ export async function DELETE(
             return sendErrorResponse('No vote found to remove, or device mismatch', 400);
         }
 
-        // 3. Decrement option votes
+        // Remove vote
         await db
             .update(pollOptions)
             .set({ votes: sql`GREATEST(${pollOptions.votes} - 1, 0)` })
             .where(eq(pollOptions.id, existingVote.option_id));
 
-        // 4. Decrement poll total_votes
         await db
             .update(polls)
             .set({ total_votes: sql`GREATEST(${polls.total_votes} - 1, 0)` })
             .where(eq(polls.id, pollId));
 
-        // 5. Delete vote record
         await db.delete(pollVotes).where(eq(pollVotes.id, existingVote.id));
 
         return sendResponse('Vote', 'DELETE', null, 'Vote removed successfully');

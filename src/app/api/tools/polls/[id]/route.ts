@@ -44,6 +44,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             .from(pollOptions)
             .where(eq(pollOptions.poll_id, pollId));
 
+        // Count actual votes per option from pollVotes (source of truth)
+        const voteCounts = await db
+            .select({
+                option_id: pollVotes.option_id,
+                count: sql<number>`count(*)::int`,
+            })
+            .from(pollVotes)
+            .where(eq(pollVotes.poll_id, pollId))
+            .groupBy(pollVotes.option_id);
+
+        const voteCountMap = new Map(voteCounts.map((v) => [v.option_id, v.count]));
+
         // Check if current user/visitor has voted
         const [existingVote] = await db
             .select({ option_id: pollVotes.option_id })
@@ -108,16 +120,24 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             .from(pollVotes)
             .where(eq(pollVotes.poll_id, pollId));
 
+        // Compute totals from pollVotes records (source of truth)
+        const actualTotalVotes = voteCounts.reduce((sum, v) => sum + v.count, 0);
+
         const response: PollDetail & {
             anonymous_votes: number;
             logged_in_votes: number;
         } = {
             ...poll,
-            options: options.map((opt) => ({
-                ...opt,
-                percentage:
-                    poll.total_votes > 0 ? Math.round((opt.votes / poll.total_votes) * 100) : 0,
-            })),
+            total_votes: actualTotalVotes,
+            options: options.map((opt) => {
+                const votes = voteCountMap.get(opt.id) ?? 0;
+                return {
+                    ...opt,
+                    votes,
+                    percentage:
+                        actualTotalVotes > 0 ? Math.round((votes / actualTotalVotes) * 100) : 0,
+                };
+            }),
             status: calculatedStatus,
             voted_option_id: existingVote?.option_id ?? null,
             creator_name: creatorName,
@@ -164,6 +184,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
 
         const body = (await req.json()) as z.infer<typeof UpdatePollSchema>;
+
         const validation = await validateRequest(UpdatePollSchema, body);
         if (!validation.success) return validation.response;
 
@@ -171,7 +192,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         if (validation.data.question !== undefined)
             updateData.question = validation.data.question;
         if (validation.data.end_date !== undefined)
-            updateData.end_date = validation.data.end_date;
+            updateData.end_date = new Date(validation.data.end_date);
         if (validation.data.is_anonymous !== undefined)
             updateData.is_anonymous = validation.data.is_anonymous;
 

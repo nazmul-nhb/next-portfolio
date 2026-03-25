@@ -9,6 +9,7 @@ import {
     isObjectWithKeys,
     isString,
 } from 'nhb-toolbox';
+import type { $UTCOffset, TimeDuration } from 'nhb-toolbox/date/types';
 import type { Percent } from 'nhb-toolbox/number/types';
 import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
@@ -193,6 +194,12 @@ export function eliminateEmptyStrings(arr: Uncertain<string>[]): string[] {
     return [...arr].filter(isNonEmptyString);
 }
 
+const _padAndFormat = (value: number, unit: string, pad = 2) => {
+    const padded = String(value).padStart(pad, '0');
+
+    return padded.concat(' ', unit);
+};
+
 /**
  * Converts milliseconds to a human readable duration string.
  *
@@ -206,35 +213,54 @@ export function parseMsToDuration(ms: number): string {
     const MINUTE = 60 * 1000;
     const SECOND = 1000;
 
-    const padAndFormat = (value: number, unit: string, pad = 2) => {
-        const padded = String(value).padStart(pad, '0');
-
-        return padded.concat(' ', unit);
-    };
-
     const parts: string[] = [];
 
     const weeks = Math.floor(ms / WEEK);
-    if (weeks) parts.push(padAndFormat(weeks, 'week'));
+    if (weeks) parts.push(_padAndFormat(weeks, 'week'));
     ms %= WEEK;
 
     const days = Math.floor(ms / DAY);
-    if (days) parts.push(padAndFormat(days, 'day'));
+    if (days) parts.push(_padAndFormat(days, 'day'));
     ms %= DAY;
 
     const hours = Math.floor(ms / HOUR);
-    if (hours) parts.push(padAndFormat(hours, 'hr'));
+    if (hours) parts.push(_padAndFormat(hours, 'hr'));
     ms %= HOUR;
 
     const minutes = Math.floor(ms / MINUTE);
-    parts.push(padAndFormat(minutes, 'min'));
+    parts.push(_padAndFormat(minutes, 'min'));
     ms %= MINUTE;
 
     const seconds = Math.floor(ms / SECOND);
-    parts.push(padAndFormat(seconds, 'sec'));
+    parts.push(_padAndFormat(seconds, 'sec'));
     ms %= SECOND;
 
-    parts.push(String(ms).padStart(3, '0').concat(' ms'));
+    parts.push(_padAndFormat(ms, 'ms', 3));
+
+    return parts.join(' : ');
+}
+
+/**
+ * Formats a {@link TimeDuration} object into a human-readable string, omitting zero values.
+ * @param duration An object containing time units (years, months, days, hours, minutes, seconds and milliseconds).
+ * @returns A formatted string like "01 year : 03 months : 05 days : 12 hr : 30 min : 45 sec".
+ */
+export function parseToDurationString(duration: TimeDuration): string {
+    const { days, hours, minutes, months, seconds, years } = duration;
+
+    const parts: string[] = [];
+
+    if (years) parts.push(_padAndFormat(years, 'year'));
+
+    if (months) parts.push(_padAndFormat(months, 'month'));
+
+    if (days) parts.push(_padAndFormat(days, 'day'));
+
+    if (hours) parts.push(_padAndFormat(hours, 'hr'));
+
+    parts.push(_padAndFormat(minutes, 'min'));
+
+    parts.push(_padAndFormat(seconds, 'sec'));
 
     return parts.join(' : ');
 }
@@ -247,11 +273,23 @@ export function opacityToHex(opacity: Percent): string {
     return value.toString(16).padStart(2, '0').toUpperCase();
 }
 
-/** Format a Date object into a string suitable for datetime-local input value (e.g., "2024-06-30T14:30"). */
-export function toDateTimeLocalValue(date = new Date()) {
+/** Format a Date object into a string suitable for datetime-local input value (e.g., `"2024-06-30T14:30"`). */
+export function toDateTimeLocalValue(date: string | Date = new Date()) {
     const chr = new Chronos(date);
 
     return chr.toLocalISOString().split('.')[0];
+}
+
+/**
+ * Build a datetime-local string with a specific UTC offset (e.g., `"2024-06-30T14:30:00.000+02:00"`).
+ * @param dateTime The date and time to format (string or Date).
+ * @param offset The UTC offset in the format "+hh:mm" or "-hh:mm".
+ * @returns A formatted datetime string with the specified UTC offset.
+ */
+export function buildLocalISOString(dateTime: Uncertain<string | Date>, offset: $UTCOffset) {
+    if (!dateTime) return undefined;
+
+    return `${dateTime}.000${offset}`;
 }
 
 /** Parses a datetime-local input value into a Date object, or returns null if invalid. */
