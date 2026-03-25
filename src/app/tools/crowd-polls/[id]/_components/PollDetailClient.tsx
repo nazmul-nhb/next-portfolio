@@ -36,7 +36,7 @@ import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -210,12 +210,15 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
             <div className="space-y-8">
                 {/* Back Button & Share */}
                 <div className="flex items-center justify-between">
-                    <Link
-                        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                        href="/tools/crowd-polls"
-                    >
-                        <ArrowLeft className="size-4" />
-                        All Polls
+                    <Link href="/tools/crowd-polls">
+                        <Button
+                            className="gap-2 font-semibold text-muted-foreground"
+                            size="sm"
+                            variant="secondary"
+                        >
+                            <ArrowLeft className="size-4 mb-0.5" />
+                            All Polls
+                        </Button>
                     </Link>
                     <ShareButton
                         buttonLabel="Share this poll"
@@ -236,7 +239,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 <Separator />
 
                 {/* Voting Section */}
-                <Card>
+                <Card className="select-none">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>
@@ -331,9 +334,11 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                 );
                             })}
                         </AnimatePresence>
+                    </CardContent>
 
+                    <CardFooter className="py-3 space-y-2">
                         {hasVoted && canVote && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <RotateCcw className="size-4" />
                                 Click another option to change your vote
                             </div>
@@ -341,12 +346,12 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
 
                         {/* Status Messages */}
                         {poll.status === 'expired' && (
-                            <div className="p-3 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-100 rounded-lg text-sm">
+                            <div className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-100 rounded-lg text-sm">
                                 This poll has ended. No more votes can be cast.
                             </div>
                         )}
                         {poll.status === 'upcoming' && (
-                            <div className="p-3 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 rounded-lg text-sm">
+                            <div className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 rounded-lg text-sm">
                                 This poll hasn't started yet. Voting will begin on{' '}
                                 {formatDate({
                                     date: poll.start_date,
@@ -355,7 +360,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                 .
                             </div>
                         )}
-                    </CardContent>
+                    </CardFooter>
                 </Card>
 
                 {/* Analytics Section */}
