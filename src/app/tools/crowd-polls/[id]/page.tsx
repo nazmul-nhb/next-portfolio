@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { Metadata, Route } from 'next';
 import { notFound } from 'next/navigation';
+import { formatWithPlural } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { polls } from '@/lib/drizzle/schema/polls';
@@ -21,14 +22,14 @@ export async function generateMetadata({ params }: PollPageProps): Promise<Metad
 
         if (!poll) return { title: 'Poll Not Found' };
 
-        const description = `${poll.question} — ${poll.total_votes} votes so far. Vote now on this crowd poll!`;
+        const description = `${poll.question} — ${formatWithPlural(poll.total_votes, 'vote')} so far. Vote now on this crowd poll!`;
 
         return {
-            title: poll.question,
+            title: `${poll.question} » Crowd Poll`,
             description,
             alternates: { canonical: buildCanonicalUrl(`/tools/crowd-polls/${id}` as Route) },
             openGraph: {
-                title: `${poll.question} — Crowd Poll`,
+                title: `${poll.question} » Crowd Poll`,
                 description,
                 url: buildCanonicalUrl(`/tools/crowd-polls/${id}` as Route),
                 siteName: siteConfig.name,

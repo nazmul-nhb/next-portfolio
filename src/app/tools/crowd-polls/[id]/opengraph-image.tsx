@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { Route } from 'next';
 import { ImageResponse } from 'next/og';
+import { formatWithPlural } from 'nhb-toolbox';
 import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { polls } from '@/lib/drizzle/schema/polls';
@@ -37,10 +38,10 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
     return new ImageResponse(
         <OgImageLayout
-            description={`${question} — ${totalVotes} votes — Vote now and see real-time results!`}
+            description={`${question} — ${formatWithPlural(totalVotes, 'vote')} so far. Vote now and see real-time results!`}
             siteTitle={`Crowd Polls » ${siteConfig.name}`}
             tag="Crowd Poll"
-            title={question}
+            title={`Poll: ${question}`}
             url={buildCanonicalUrl(`/tools/crowd-polls/${id}` as Route)}
         />
     );
