@@ -15,9 +15,22 @@ export interface PollOption extends SelectPollOption {
     percentage?: number;
 }
 
+export interface PollVoterDetail {
+    user_id: number | null;
+    user_name?: string;
+    user_image?: string | null;
+    option_id: number;
+    option_text: string;
+    voted_at: Date;
+    is_anonymous: boolean;
+}
+
 export interface PollDetail extends SelectPoll {
     options: PollOption[];
     status: PollStatus;
+    voted_option_id?: number | null;
+    creator_name?: string;
+    voters?: PollVoterDetail[];
 }
 
 export interface PaginatedPolls {

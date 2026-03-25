@@ -13,8 +13,8 @@ import { getPollStatus } from '../../route';
 
 /**
  * POST /api/tools/polls/:id/vote - vote on a poll option.
+ * Supports changing votes: if the user already voted, their vote is moved to the new option.
  * Prevents duplicate votes using voterHash (IP+UserAgent) or userId.
- * Note: No transaction support in Neon serverless, so we're careful with operation order.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -63,22 +63,64 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             return sendErrorResponse('Option not found', 404);
         }
 
-        // 3. Prevent duplicate votes
-        // For authenticated users, check by userId. For anonymous, check by voterHash.
+        // 3. Check for existing vote
         const voteCheckCondition = userId
             ? eq(pollVotes.user_id, userId)
             : sql`${pollVotes.voter_hash} = ${voterHash} AND ${pollVotes.user_id} IS NULL`;
 
-        const existingVote = await db
+        const [existingVote] = await db
             .select()
             .from(pollVotes)
             .where(and(eq(pollVotes.poll_id, pollId), voteCheckCondition));
 
-        if (existingVote.length > 0) {
-            return sendErrorResponse('You have already voted on this poll', 400);
+        if (existingVote) {
+            // Change vote: move from old option to new option
+            if (existingVote.option_id === optionId) {
+                return sendErrorResponse('You have already voted for this option', 400);
+            }
+
+            // Decrement old option votes
+            await db
+                .update(pollOptions)
+                .set({ votes: sql`GREATEST(${pollOptions.votes} - 1, 0)` })
+                .where(eq(pollOptions.id, existingVote.option_id));
+
+            // Increment new option votes
+            await db
+                .update(pollOptions)
+                .set({ votes: sql`${pollOptions.votes} + 1` })
+                .where(eq(pollOptions.id, optionId));
+
+            // Update vote record
+            await db
+                .update(pollVotes)
+                .set({ option_id: optionId })
+                .where(eq(pollVotes.id, existingVote.id));
+
+            // Get updated data for response
+            const [updatedOption] = await db
+                .select()
+                .from(pollOptions)
+                .where(eq(pollOptions.id, optionId));
+
+            const [updatedPoll] = await db.select().from(polls).where(eq(polls.id, pollId));
+
+            return sendResponse(
+                'Vote',
+                'PATCH',
+                {
+                    poll_id: pollId,
+                    option_id: optionId,
+                    previous_option_id: existingVote.option_id,
+                    votes: updatedOption?.votes ?? 0,
+                    total_votes: updatedPoll?.total_votes ?? 0,
+                    changed: true,
+                },
+                'Vote changed successfully'
+            );
         }
 
-        // 4. Update option vote count
+        // 4. New vote: update option vote count
         await db
             .update(pollOptions)
             .set({ votes: sql`${pollOptions.votes} + 1` })
@@ -95,6 +137,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             .insert(pollVotes)
             .values({
                 poll_id: pollId,
+                option_id: optionId,
                 user_id: userId,
                 voter_hash: voterHash,
             })
@@ -123,6 +166,82 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         };
 
         return sendResponse('Vote', 'POST', response);
+    } catch (error) {
+        return sendErrorResponse(error);
+    }
+}
+
+/**
+ * DELETE /api/tools/polls/:id/vote - unvote (remove vote) from a poll.
+ * Only allowed for logged-in users whose IP+UserAgent match.
+ */
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const pollId = Number(id);
+
+        if (!pollId || Number.isNaN(pollId)) {
+            return sendErrorResponse('Invalid poll ID', 400);
+        }
+
+        const session = await auth();
+        const userId = session?.user?.id ? +session.user.id : null;
+
+        if (!userId) {
+            return sendErrorResponse('Must be logged in to unvote', 401);
+        }
+
+        const clientIp = req.headers.get('x-forwarded-for') || '0.0.0.0';
+        const userAgent = req.headers.get('user-agent') || 'unknown';
+        const voterHash = generateVoterHash(clientIp, userAgent);
+
+        // 1. Check poll exists and is active
+        const [poll] = await db.select().from(polls).where(eq(polls.id, pollId));
+        if (!poll) {
+            return sendErrorResponse('Poll not found', 404);
+        }
+
+        const now = new Date();
+        const pollStatus = getPollStatus(poll.start_date, poll.end_date, now);
+        if (pollStatus !== 'active') {
+            return sendErrorResponse(`Cannot unvote on a ${pollStatus} poll`, 400);
+        }
+
+        // 2. Find existing vote (must match user_id AND voter_hash for security)
+        const [existingVote] = await db
+            .select()
+            .from(pollVotes)
+            .where(
+                and(
+                    eq(pollVotes.poll_id, pollId),
+                    eq(pollVotes.user_id, userId),
+                    eq(pollVotes.voter_hash, voterHash)
+                )
+            );
+
+        if (!existingVote) {
+            return sendErrorResponse('No vote found to remove, or device mismatch', 400);
+        }
+
+        // 3. Decrement option votes
+        await db
+            .update(pollOptions)
+            .set({ votes: sql`GREATEST(${pollOptions.votes} - 1, 0)` })
+            .where(eq(pollOptions.id, existingVote.option_id));
+
+        // 4. Decrement poll total_votes
+        await db
+            .update(polls)
+            .set({ total_votes: sql`GREATEST(${polls.total_votes} - 1, 0)` })
+            .where(eq(polls.id, pollId));
+
+        // 5. Delete vote record
+        await db.delete(pollVotes).where(eq(pollVotes.id, existingVote.id));
+
+        return sendResponse('Vote', 'DELETE', null, 'Vote removed successfully');
     } catch (error) {
         return sendErrorResponse(error);
     }

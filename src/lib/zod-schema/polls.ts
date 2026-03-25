@@ -35,6 +35,19 @@ export const CreatePollSchema = z
         }
     );
 
+export const UpdatePollSchema = z
+    .object({
+        question: z
+            .string()
+            .min(1, 'Question is required')
+            .max(500, 'Question must be at most 500 characters')
+            .trim()
+            .optional(),
+        end_date: z.coerce.date().nullable().optional(),
+        is_anonymous: z.boolean().optional(),
+    })
+    .strict();
+
 export const VoteSchema = z
     .object({
         poll_id: z

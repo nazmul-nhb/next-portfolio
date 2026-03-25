@@ -45,6 +45,9 @@ export const pollVotes = pgTable('poll_votes', {
     poll_id: integer()
         .notNull()
         .references(() => polls.id, { onDelete: 'cascade' }),
+    option_id: integer()
+        .notNull()
+        .references(() => pollOptions.id, { onDelete: 'cascade' }),
     user_id: integer().references(() => users.id, { onDelete: 'cascade' }),
     voter_hash: varchar({ length: 256 }).notNull(),
     created_at: timestamp().defaultNow().notNull(),

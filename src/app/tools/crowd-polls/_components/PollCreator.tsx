@@ -192,6 +192,41 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                             )}
                         />
 
+                        <FormField
+                            control={form.control}
+                            name="end_date"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Expiry Date{' '}
+                                        <span className="text-muted-foreground font-normal">
+                                            (optional)
+                                        </span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    e.target.value
+                                                        ? new Date(e.target.value)
+                                                        : undefined
+                                                )
+                                            }
+                                            type="datetime-local"
+                                            value={
+                                                field.value
+                                                    ? new Date(field.value)
+                                                          .toISOString()
+                                                          .slice(0, 16)
+                                                    : ''
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         <DialogFooter>
                             <Button
                                 disabled={isPending}

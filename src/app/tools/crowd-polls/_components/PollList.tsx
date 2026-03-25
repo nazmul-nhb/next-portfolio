@@ -14,10 +14,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import type { PaginatedPolls, PollDetail } from '@/types/polls';
+import { useApiQuery } from '@/lib/hooks/use-api';
+import type { PaginatedPolls } from '@/types/polls';
 import { PollCard } from './PollCard';
-import { PollDetailModal } from './PollDetailModal';
 
 interface PollListProps {
     onCreateClick: () => void;
@@ -28,10 +27,6 @@ export function PollList({ onCreateClick }: PollListProps) {
     const [status, setStatus] = useState<'all' | 'active' | 'upcoming' | 'expired'>('all');
     const [sort, setSort] = useState<'latest' | 'mostVotes'>('latest');
     const [page, setPage] = useState(1);
-    const [selectedPoll, setSelectedPoll] = useState<PollDetail | null>(null);
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [votedPollIds, setVotedPollIds] = useState<Set<number>>(new Set());
-    const [votingPollId, setVotingPollId] = useState<number | null>(null);
 
     const pollsParams = useMemo(() => {
         return generateQueryParams({
@@ -50,36 +45,8 @@ export function PollList({ onCreateClick }: PollListProps) {
         }
     );
 
-    const { mutate: vote, isPending: isVoting } = useApiMutation<
-        unknown,
-        { poll_id: number; option_id: number }
-    >(`/api/tools/polls/${selectedPoll?.id}/vote`, 'POST', {
-        successMessage: 'Vote recorded!',
-        prioritizeCustomMessages: true,
-        invalidateKeys: ['polls-list', pollsParams],
-        onSuccess: () => {
-            if (selectedPoll) {
-                setVotedPollIds(new Set(votedPollIds).add(selectedPoll.id));
-            }
-        },
-    });
-
     const polls = pollsData?.polls || [];
     const totalPages = pollsData?.totalPages || 1;
-
-    const handleVote = (optionId: number) => {
-        if (!selectedPoll) return;
-        setVotingPollId(selectedPoll.id);
-        vote({ poll_id: selectedPoll.id, option_id: optionId });
-    };
-
-    const handlePollSelect = (poll: PollDetail) => {
-        setSelectedPoll(poll);
-        setIsDetailOpen(true);
-    };
-
-    const isDetailModalVoting = votingPollId === selectedPoll?.id && isVoting;
-    const hasVoted = selectedPoll ? votedPollIds.has(selectedPoll.id) : false;
 
     return (
         <div className="space-y-6">
@@ -154,12 +121,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                             <Fragment>
                                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                     {polls.map((poll) => (
-                                        <PollCard
-                                            hasVoted={votedPollIds.has(poll.id)}
-                                            key={poll.id}
-                                            onViewDetails={handlePollSelect}
-                                            poll={poll}
-                                        />
+                                        <PollCard key={poll.id} poll={poll} />
                                     ))}
                                 </div>
 
@@ -204,20 +166,6 @@ export function PollList({ onCreateClick }: PollListProps) {
                     </TabsContent>
                 ))}
             </Tabs>
-
-            {/* Detail Modal */}
-            <PollDetailModal
-                hasVoted={hasVoted}
-                isOpen={isDetailOpen}
-                isVoting={isDetailModalVoting}
-                onClose={() => {
-                    setIsDetailOpen(false);
-                    setSelectedPoll(null);
-                }}
-                onVote={handleVote}
-                poll={selectedPoll}
-                // votedOptionId={isDetailModalVoting ? undefined : selectedPoll?.options[0]?.id}
-            />
         </div>
     );
 }

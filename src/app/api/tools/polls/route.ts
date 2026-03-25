@@ -8,12 +8,13 @@ import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
-import { pollOptions, polls } from '@/lib/drizzle/schema/polls';
+import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema/polls';
 import { CreatePollSchema } from '@/lib/zod-schema/polls';
 import type { PaginatedPolls, PollDetail } from '@/types/polls';
 
 /**
  * GET /api/tools/polls - paginated polls with filtering by status and search.
+ * Also returns `voted_option_id` per poll for the current user/visitor.
  */
 export async function GET(req: NextRequest) {
     try {
@@ -25,6 +26,12 @@ export async function GET(req: NextRequest) {
         const search = searchParams.get('search')?.trim();
         const status = searchParams.get('status') as 'active' | 'upcoming' | 'expired' | null;
         const sort = (searchParams.get('sort') || 'latest') as 'latest' | 'mostVotes';
+
+        const session = await auth();
+        const userId = session?.user?.id ? +session.user.id : null;
+        const clientIp = req.headers.get('x-forwarded-for') || '0.0.0.0';
+        const userAgent = req.headers.get('user-agent') || 'unknown';
+        const voterHash = generateVoterHash(clientIp, userAgent);
 
         const now = new Date();
         const whereConditions: Array<ReturnType<typeof eq>> = [];
@@ -74,6 +81,30 @@ export async function GET(req: NextRequest) {
                       .where(sql`${pollOptions.poll_id} IN (${sql.raw(pollIds.join(','))})`)
                 : [];
 
+        // Fetch current user's votes for these polls
+        const userVotes =
+            pollIds.length > 0
+                ? await db
+                      .select({
+                          poll_id: pollVotes.poll_id,
+                          option_id: pollVotes.option_id,
+                      })
+                      .from(pollVotes)
+                      .where(
+                          and(
+                              sql`${pollVotes.poll_id} IN (${sql.raw(pollIds.join(','))})`,
+                              userId
+                                  ? sql`${pollVotes.user_id} = ${userId}`
+                                  : sql`${pollVotes.voter_hash} = ${voterHash} AND ${pollVotes.user_id} IS NULL`
+                          )
+                      )
+                : [];
+
+        const userVoteMap = new Map<number, number>();
+        for (const v of userVotes) {
+            userVoteMap.set(v.poll_id, v.option_id);
+        }
+
         // Map options to polls
         const optionMap = new Map<number, typeof optionRows>();
         for (const option of optionRows) {
@@ -96,6 +127,7 @@ export async function GET(req: NextRequest) {
                             : 0,
                 })),
                 status: calculatedStatus,
+                voted_option_id: userVoteMap.get(poll.id) ?? null,
             };
         });
 
