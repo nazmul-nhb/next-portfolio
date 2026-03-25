@@ -37,7 +37,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
     return new ImageResponse(
         <OgImageLayout
-            description={`${totalVotes} votes — Vote now and see real-time results!`}
+            description={`${question} — ${totalVotes} votes — Vote now and see real-time results!`}
             siteTitle={`Crowd Polls » ${siteConfig.name}`}
             tag="Crowd Poll"
             title={question}

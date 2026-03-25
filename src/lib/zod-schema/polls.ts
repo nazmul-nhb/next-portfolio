@@ -1,4 +1,5 @@
 import z from 'zod';
+import { parseDateTimeLocal } from '@/lib/utils';
 
 export const CreatePollSchema = z
     .object({
@@ -17,23 +18,39 @@ export const CreatePollSchema = z
             )
             .min(2, 'At least 2 options are required')
             .max(10, 'Maximum 10 options allowed'),
-        start_date: z.coerce.date().optional(),
-        end_date: z.coerce.date().optional(),
+        start_date: z.string().optional(),
+        end_date: z.string().optional(),
         is_anonymous: z.boolean().default(false),
     })
     .strict()
-    .refine(
-        (data) => {
-            if (data.start_date && data.end_date) {
-                return data.start_date < data.end_date;
-            }
-            return true;
-        },
-        {
-            message: 'End date must be after start date',
-            path: ['end_date'],
+    .superRefine(({ start_date, end_date }, ctx) => {
+        const startDate = parseDateTimeLocal(start_date);
+        const endDate = parseDateTimeLocal(end_date);
+
+        if (!startDate) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Enter a valid start date and time.',
+                path: ['start_date'],
+            });
         }
-    );
+
+        if (!endDate) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Enter a valid comparison date and time.',
+                path: ['end_date'],
+            });
+        }
+
+        if (startDate && endDate && startDate > endDate) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'The end date must be after the start date.',
+                path: ['end_date'],
+            });
+        }
+    });
 
 export const UpdatePollSchema = z
     .object({
@@ -43,7 +60,7 @@ export const UpdatePollSchema = z
             .max(500, 'Question must be at most 500 characters')
             .trim()
             .optional(),
-        end_date: z.coerce.date().nullable().optional(),
+        end_date: CreatePollSchema.shape.end_date.optional(),
         is_anonymous: z.boolean().optional(),
     })
     .strict();

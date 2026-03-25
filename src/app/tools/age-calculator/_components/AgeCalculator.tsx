@@ -28,22 +28,8 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { cn, parseDateTimeLocal, toDateTimeLocalValue } from '@/lib/utils';
 import type { Uncertain } from '@/types';
-
-function toDateTimeLocalValue(date = new Date()) {
-    const chr = new Chronos(date);
-
-    return chr.toLocalISOString().split('.')[0];
-}
-
-function parseDateTimeLocal(value: string) {
-    if (!value) return null;
-
-    const parsedDate = new Date(value);
-
-    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
-}
 
 const AgeCalculatorFormSchema = z
     .object({

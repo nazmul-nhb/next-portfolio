@@ -26,10 +26,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useApiMutation } from '@/lib/hooks/use-api';
-import { eliminateEmptyStrings } from '@/lib/utils';
+import { eliminateEmptyStrings, toDateTimeLocalValue } from '@/lib/utils';
 import { CreatePollSchema } from '@/lib/zod-schema/polls';
 import type { PollCreationResponse } from '@/types/polls';
 import type { CreatePollFormData } from './types';
+import { Chronos } from 'nhb-toolbox';
 
 interface PollCreatorProps {
     isOpen: boolean;
@@ -44,6 +45,8 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
         defaultValues: {
             question: '',
             options: ['', ''],
+            end_date: new Chronos().addDays(2).toLocalISOString().split('.')[0],
+            start_date: toDateTimeLocalValue(),
             is_anonymous: false,
         },
     });
@@ -88,6 +91,7 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
             toast.error('Please provide at least 2 options');
             return;
         }
+
         createPoll({
             question: data.question,
             options: filteredOptions,
@@ -205,21 +209,8 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value
-                                                        ? new Date(e.target.value)
-                                                        : undefined
-                                                )
-                                            }
                                             type="datetime-local"
-                                            value={
-                                                field.value
-                                                    ? new Date(field.value)
-                                                          .toISOString()
-                                                          .slice(0, 16)
-                                                    : ''
-                                            }
+                                            value={field.value || ''}
                                         />
                                     </FormControl>
                                     <FormMessage />

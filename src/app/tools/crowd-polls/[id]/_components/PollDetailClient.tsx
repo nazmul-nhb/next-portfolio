@@ -26,7 +26,6 @@ import {
     Bar,
     BarChart,
     CartesianGrid,
-    Cell,
     Legend,
     Pie,
     PieChart,
@@ -35,6 +34,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
+import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -145,19 +145,23 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
 
     if (!poll) {
         return (
-            <div className="text-center py-16 space-y-4">
-                <AlertCircle className="size-12 mx-auto text-muted-foreground" />
-                <h2 className="text-xl font-semibold">Poll Not Found</h2>
-                <p className="text-muted-foreground">
-                    This poll may have been deleted or does not exist.
-                </p>
-                <Link href="/tools/crowd-polls">
-                    <Button variant="outline">
-                        <ArrowLeft className="size-4 mr-2" />
-                        Back to Polls
-                    </Button>
-                </Link>
-            </div>
+            <EmptyData
+                description={
+                    <div className="space-y-4">
+                        <p className="text-muted-foreground">
+                            This poll may have been deleted or does not exist.
+                        </p>
+                        <Link href="/tools/crowd-polls">
+                            <Button variant="outline">
+                                <ArrowLeft className="size-4 mr-2" />
+                                Back to Polls
+                            </Button>
+                        </Link>
+                    </div>
+                }
+                Icon={AlertCircle}
+                title="Poll Not Found"
+            />
         );
     }
 
@@ -471,11 +475,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                                 labelLine={false}
                                                 outerRadius={100}
                                                 paddingAngle={2}
-                                            >
-                                                {pieData.map((entry) => (
-                                                    <Cell fill={entry.fill} key={entry.name} />
-                                                ))}
-                                            </Pie>
+                                            />
                                             <Tooltip />
                                             <Legend />
                                         </PieChart>
@@ -492,29 +492,17 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                 </CardHeader>
                                 <CardContent>
                                     <ResponsiveContainer height={300} width="100%">
-                                        <BarChart data={barData} layout="vertical">
-                                            <CartesianGrid
-                                                horizontal={false}
-                                                strokeDasharray="3 3"
-                                            />
-                                            <XAxis type="number" />
-                                            <YAxis
-                                                dataKey="name"
-                                                tick={{ fontSize: 12 }}
-                                                type="category"
-                                                width={100}
-                                            />
+                                        <BarChart data={barData}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                            <YAxis />
                                             <Tooltip
                                                 formatter={(value) => [
                                                     `${value} votes`,
                                                     'Votes',
                                                 ]}
                                             />
-                                            <Bar dataKey="votes" radius={[0, 4, 4, 0]}>
-                                                {barData.map((entry) => (
-                                                    <Cell fill={entry.fill} key={entry.name} />
-                                                ))}
-                                            </Bar>
+                                            <Bar dataKey="votes" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </CardContent>
@@ -537,11 +525,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                                                 label={({ name, value }) => `${name}: ${value}`}
                                                 outerRadius={80}
                                                 paddingAngle={4}
-                                            >
-                                                {voteTypeData.map((entry) => (
-                                                    <Cell fill={entry.fill} key={entry.name} />
-                                                ))}
-                                            </Pie>
+                                            />
                                             <Tooltip />
                                             <Legend />
                                         </PieChart>

@@ -246,3 +246,19 @@ export function opacityToHex(opacity: Percent): string {
     const value = Math.round((Math.min(Math.max(opacity, 0), 100) / 100) * 255);
     return value.toString(16).padStart(2, '0').toUpperCase();
 }
+
+/** Format a Date object into a string suitable for datetime-local input value (e.g., "2024-06-30T14:30"). */
+export function toDateTimeLocalValue(date = new Date()) {
+    const chr = new Chronos(date);
+
+    return chr.toLocalISOString().split('.')[0];
+}
+
+/** Parses a datetime-local input value into a Date object, or returns null if invalid. */
+export function parseDateTimeLocal(value: Uncertain<string>) {
+    if (!value) return null;
+
+    const parsedDate = new Date(value);
+
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
