@@ -18,7 +18,6 @@ import {
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { formatDate, formatWithPlural } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
 import { Fragment, useState } from 'react';
@@ -51,6 +50,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
+import { useUserStore } from '@/lib/store/user-store';
 import type { PollDetail, PollVoterDetail } from '@/types/polls';
 
 const CHART_COLORS = [
@@ -72,14 +72,16 @@ interface PollDetailResponse extends PollDetail {
 }
 
 export function PollDetailClient({ pollId }: { pollId: number }) {
-    const { data: session } = useSession();
     const router = useRouter();
+
+    const { profile } = useUserStore();
+
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [editEndDate, setEditEndDate] = useState('');
 
-    const userId = session?.user?.id ? +session.user.id : null;
-    const isAdmin = session?.user?.role === 'admin';
+    const userId = profile?.id;
+    const isAdmin = profile?.role === 'admin';
 
     const {
         data: poll,

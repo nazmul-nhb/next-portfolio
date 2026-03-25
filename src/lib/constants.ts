@@ -1,3 +1,5 @@
+import type { PackageDetails } from '@/types/npm';
+
 export const UUID_VERSIONS = ['v1', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8'] as const;
 export const BULK_UUID_LIMIT = 9999;
 
@@ -89,6 +91,6 @@ export const PKG_FIELDS = [
     'license',
     'maintainers',
     'repository',
-] as const;
+] as const satisfies ReadonlyArray<keyof PackageDetails>;
 
 export const NPM_START = '2010-01-01';
