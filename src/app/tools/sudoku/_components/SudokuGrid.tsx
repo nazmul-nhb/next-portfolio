@@ -108,7 +108,7 @@ export default function SudokuGrid({
     return (
         <div className="flex flex-col items-center gap-4">
             <div
-                className="inline-block h-fit w-fit relative border-2 border-gray-900 dark:border-gray-100"
+                className="inline-block size-fit relative border-2 border-gray-900 dark:border-gray-100"
                 onKeyDown={handleKeyDown}
                 ref={gridRef}
                 role="grid"

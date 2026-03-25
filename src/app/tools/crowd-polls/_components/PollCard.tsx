@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
-import { formatWithPlural } from 'nhb-toolbox';
+import { formatDate, formatWithPlural } from 'nhb-toolbox';
 import { toTitleCase } from 'nhb-toolbox/change-case';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import type { PollDetail } from '@/types/polls';
 
@@ -32,13 +33,13 @@ export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
     return (
         <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 border rounded-lg bg-card hover:shadow-md transition-shadow h-full flex flex-col"
+            className="transition-shadow h-full flex flex-col"
             initial={{ opacity: 0, y: 20 }}
         >
-            <div className="flex flex-col gap-4 flex-1">
+            <Card className="flex flex-col gap-4 flex-1">
                 {/* Header */}
-                <div className="space-y-2">
-                    <div className="flex items-start justify-between gap-2">
+                <CardHeader className="space-y-0 gap-0">
+                    <CardTitle className="flex items-start justify-between gap-2">
                         <h3 className="font-semibold text-base leading-tight flex-1">
                             {poll.question}
                         </h3>
@@ -48,20 +49,17 @@ export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
                             {statusIcons[poll.status]}
                             {toTitleCase(poll.status)}
                         </span>
-                    </div>
+                    </CardTitle>
                     <p className="text-xs text-muted-foreground">
-                        {new Date(poll.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
+                        {formatDate({
+                            date: poll.created_at,
+                            format: 'mmm DD, YYYY hh:mm:ss a',
                         })}
                     </p>
-                </div>
+                </CardHeader>
 
                 {/* Options Preview */}
-                <div className="space-y-2 flex-1">
+                <CardContent className="space-y-2 flex-1">
                     {poll.options.slice(0, 3).map((option) => (
                         <div className="space-y-1" key={option.id}>
                             <div className="flex items-center justify-between text-sm">
@@ -79,10 +77,10 @@ export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
                             {poll.options.length - 3 === 1 ? 'option' : 'options'}
                         </p>
                     )}
-                </div>
+                </CardContent>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-2 border-t">
+                <CardFooter className="flex items-center justify-between py-3">
                     <div className="text-xs text-muted-foreground">
                         {formatWithPlural(poll.total_votes, 'vote')} • Total options:{' '}
                         {poll.options.length}
@@ -95,8 +93,8 @@ export function PollCard({ poll, onViewDetails, hasVoted }: PollCardProps) {
                     >
                         {hasVoted ? '✓ Voted' : 'Vote'}
                     </Button>
-                </div>
-            </div>
+                </CardFooter>
+            </Card>
         </motion.div>
     );
 }

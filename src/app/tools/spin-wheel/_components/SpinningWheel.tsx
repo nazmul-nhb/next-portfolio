@@ -516,7 +516,7 @@ export default function SpinningWheel() {
 
                         {/* SVG Wheel */}
                         <svg
-                            className="w-full h-full max-h-fit"
+                            className="size-full max-h-fit"
                             preserveAspectRatio="xMidYMid meet"
                             style={{ aspectRatio: '1 / 1', minHeight: '300px' }}
                             viewBox="0 0 400 400"
@@ -664,7 +664,7 @@ export default function SpinningWheel() {
                                         x="184"
                                         y="184"
                                     >
-                                        <div className="flex items-center justify-center w-full h-full">
+                                        <div className="flex items-center justify-center size-full">
                                             <ShipWheel className="size-8" />
                                         </div>
                                     </foreignObject>

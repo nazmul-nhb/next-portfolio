@@ -2,7 +2,7 @@
 
 import { InboxIcon, Search } from 'lucide-react';
 import { generateQueryParams } from 'nhb-toolbox';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import EmptyData from '@/components/misc/empty-data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,31 +38,28 @@ export function PollList({ onCreateClick }: PollListProps) {
             search: query.trim() ? query.trim() : '',
             status: status !== 'all' ? status : '',
             sort,
-            page: String(page),
-            limit: '12',
+            page: page,
+            limit: 12,
         });
     }, [query, status, sort, page]);
 
-    const {
-        data: pollsData,
-        isLoading: pollsLoading,
-        refetch: refetchPolls,
-    } = useApiQuery<PaginatedPolls>(`/api/tools/polls${pollsParams}`, {
-        queryKey: ['polls-list', pollsParams],
-    });
+    const { data: pollsData, isLoading: pollsLoading } = useApiQuery<PaginatedPolls>(
+        `/api/tools/polls${pollsParams}`,
+        {
+            queryKey: ['polls-list', pollsParams],
+        }
+    );
 
     const { mutate: vote, isPending: isVoting } = useApiMutation<
         unknown,
         { poll_id: number; option_id: number }
     >(`/api/tools/polls/${selectedPoll?.id}/vote`, 'POST', {
         successMessage: 'Vote recorded!',
+        prioritizeCustomMessages: true,
+        invalidateKeys: ['polls-list', pollsParams],
         onSuccess: () => {
             if (selectedPoll) {
                 setVotedPollIds(new Set(votedPollIds).add(selectedPoll.id));
-                // Refetch polls to get updated vote counts
-                setTimeout(() => {
-                    refetchPolls();
-                }, 500);
             }
         },
     });
@@ -91,7 +88,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1">
                         <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
                             <Input
                                 className="pl-10"
                                 onChange={(e) => {
@@ -103,7 +100,9 @@ export function PollList({ onCreateClick }: PollListProps) {
                             />
                         </div>
                     </div>
-                    <Button onClick={onCreateClick}>Create Poll</Button>
+                    <Button onClick={onCreateClick} size={'lg'}>
+                        Create Poll
+                    </Button>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
@@ -152,7 +151,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                                 ))}
                             </div>
                         ) : polls.length > 0 ? (
-                            <>
+                            <Fragment>
                                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                     {polls.map((poll) => (
                                         <PollCard
@@ -190,7 +189,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                                         </Button>
                                     </div>
                                 )}
-                            </>
+                            </Fragment>
                         ) : (
                             <EmptyData
                                 description={
@@ -213,7 +212,7 @@ export function PollList({ onCreateClick }: PollListProps) {
                 isVoting={isDetailModalVoting}
                 onClose={() => {
                     setIsDetailOpen(false);
-                    setTimeout(() => setSelectedPoll(null), 200);
+                    setSelectedPoll(null);
                 }}
                 onVote={handleVote}
                 poll={selectedPoll}

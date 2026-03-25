@@ -122,7 +122,7 @@ export function PollDetailModal({
                                                     value={option.percentage || 0}
                                                 />
                                                 {votedOptionId === option.id && (
-                                                    <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                                                    <CheckCircle2 className="size-4 text-green-600 shrink-0" />
                                                 )}
                                             </div>
                                         </div>
@@ -137,7 +137,7 @@ export function PollDetailModal({
                         <span>{poll.total_votes} total votes</span>
                         {hasVoted && (
                             <span className="text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                                <CheckCircle2 className="h-4 w-4" />
+                                <CheckCircle2 className="size-4" />
                                 You voted
                             </span>
                         )}
