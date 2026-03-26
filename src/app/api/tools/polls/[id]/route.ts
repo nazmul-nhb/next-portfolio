@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 import type z from 'zod';
@@ -42,7 +42,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const options = await db
             .select()
             .from(pollOptions)
-            .where(eq(pollOptions.poll_id, pollId));
+            .where(eq(pollOptions.poll_id, pollId))
+            .orderBy(asc(pollOptions.id));
 
         // Count actual votes per option from pollVotes (source of truth)
         const voteCounts = await db
