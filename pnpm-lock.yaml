@@ -56,6 +56,9 @@ importers:
       '@tiptap/extension-placeholder':
         specifier: 3.20.5
         version: 3.20.5(@tiptap/extensions@3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))(@tiptap/pm@3.20.5))
+      '@tiptap/extension-text-align':
+        specifier: ^3.20.5
+        version: 3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))
       '@tiptap/extension-text-style':
         specifier: ^3.20.5
         version: 3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))
@@ -123,7 +126,7 @@ importers:
         specifier: ^4.28.80
         version: 4.28.80
       nodemailer:
-        specifier: ^8.0.4
+        specifier: ^8.0.0
         version: 8.0.4
       qrcode.react:
         specifier: ^4.2.0
@@ -2156,6 +2159,11 @@ packages:
 
   '@tiptap/extension-strike@3.20.5':
     resolution: {integrity: sha512-uwhvmfS4ciGYJRLUg0AHbWsprMCwyWVWd2RXOLRm0ZQeWkvzonPXZhJvzIhIgsFkPLj/dsN5t0+LdiK4UQMnyA==}
+    peerDependencies:
+      '@tiptap/core': ^3.20.5
+
+  '@tiptap/extension-text-align@3.20.5':
+    resolution: {integrity: sha512-r7xIt6AE1Zf6epMg2GLAD55YIqJewunQnLUeApLkcWdTNuCJqZUrmVIXUvTtj2Ivw0VIaPoCtnB+VBvXEuC3Kg==}
     peerDependencies:
       '@tiptap/core': ^3.20.5
 
@@ -5768,6 +5776,10 @@ snapshots:
       '@tiptap/extensions': 3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))(@tiptap/pm@3.20.5)
 
   '@tiptap/extension-strike@3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))':
+    dependencies:
+      '@tiptap/core': 3.20.5(@tiptap/pm@3.20.5)
+
+  '@tiptap/extension-text-align@3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))':
     dependencies:
       '@tiptap/core': 3.20.5(@tiptap/pm@3.20.5)
 

@@ -3,6 +3,7 @@
 import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import { TextAlign } from '@tiptap/extension-text-align';
 import {
     BackgroundColor,
     Color,
@@ -23,6 +24,10 @@ import StarterKit from '@tiptap/starter-kit';
 import type { LucideIcon } from 'lucide-react';
 import {
     ALargeSmall,
+    AlignCenter,
+    AlignJustify,
+    AlignLeft,
+    AlignRight,
     Baseline,
     Bold,
     Code,
@@ -251,6 +256,11 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             Color,
             BackgroundColor,
             LineHeight,
+            TextAlign.configure({
+                defaultAlignment: 'left',
+                alignments: ['left', 'center', 'right', 'justify'],
+                types: ['paragraph', 'heading'],
+            }),
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
@@ -283,8 +293,11 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
         editor,
         selector: (ctx) => {
             const e = ctx.editor;
-            if (!e) return { fontFamily: '', fontSize: '', lineHeight: '' };
+
+            if (!e) return { fontFamily: '', fontSize: '', lineHeight: '', textAlign: '' };
+
             const attrs = e.getAttributes('textStyle');
+
             return {
                 fontFamily:
                     FONT_FAMILIES_WORD_CLOUD.find((f) =>
@@ -292,6 +305,10 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     )?.value ?? '',
                 fontSize: (attrs.fontSize as string) ?? '',
                 lineHeight: (attrs.lineHeight as string) ?? '',
+                textAlign:
+                    (e.getAttributes('paragraph').textAlign as string) ||
+                    (e.getAttributes('heading').textAlign as string) ||
+                    '',
             };
         },
     });
@@ -519,6 +536,42 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     label="Highlight Color"
                     unsetCommand="unsetBackgroundColor"
                 />
+
+                <div className="mx-1 w-px bg-border" />
+
+                {/* Text Align */}
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('left').run()}
+                    size="sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'left' ? 'default' : 'ghost'}
+                >
+                    <AlignLeft className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                    size="sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'center' ? 'default' : 'ghost'}
+                >
+                    <AlignCenter className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('right').run()}
+                    size="sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'right' ? 'default' : 'ghost'}
+                >
+                    <AlignRight className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+                    size="sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'justify' ? 'default' : 'ghost'}
+                >
+                    <AlignJustify className="size-4" />
+                </Button>
 
                 <div className="mx-1 w-px bg-border" />
 
