@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
+import SmartAlert from '@/components/misc/smart-alert';
 import {
     Card,
     CardContent,
@@ -72,11 +73,7 @@ export default function ToolsPage() {
                 ))}
             </div>
 
-            {siteConfig.toolsMenus.length < 3 && (
-                <p className="text-xs text-muted-foreground">
-                    More tools will appear here as they are added.
-                </p>
-            )}
+            <SmartAlert description="More tools will appear here as they are added." />
         </div>
     );
 }

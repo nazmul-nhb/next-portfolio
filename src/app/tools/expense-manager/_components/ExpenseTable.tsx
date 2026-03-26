@@ -1,13 +1,12 @@
 'use client';
 
-import type { Column, ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Trash2 } from 'lucide-react';
+import type { ColumnDef } from '@tanstack/react-table';
+import { Trash2 } from 'lucide-react';
 import { Chronos, formatDate } from 'nhb-toolbox';
 import { Fragment } from 'react/jsx-runtime';
-import { DataTable } from '@/components/misc/data-table';
+import { DataTable, SortableColumn } from '@/components/misc/data-table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import type { ExpenseItem } from '@/types/expenses';
 import { ReceiptGallery } from './ReceiptGallery';
 
@@ -18,24 +17,6 @@ type ExpenseTableProps = {
     money: (value: number) => string;
     handleDeleteEntry: (id: number) => void;
 };
-
-type SortableProps = {
-    header: string;
-    column: Column<ExpenseItem, unknown>;
-    className?: string;
-};
-
-function SortableColumn({ column, header, className }: SortableProps) {
-    return (
-        <div
-            className={cn('flex items-center cursor-pointer gap-2', className)}
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-            {header}
-            <ArrowUpDown className="size-4" />
-        </div>
-    );
-}
 
 export default function ExpenseTable({
     deletingEntry,

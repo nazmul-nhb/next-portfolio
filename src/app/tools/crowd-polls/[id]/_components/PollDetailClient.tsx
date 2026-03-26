@@ -1,36 +1,13 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    AlertCircle,
-    ArrowLeft,
-    ChartColumnBig,
-    ChartLine,
-    ChartNoAxesCombined,
-    ChartPie,
-    CheckCircle2,
-    RotateCcw,
-    Shield,
-    Users,
-    X,
-} from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, RotateCcw, X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Chronos, formatDate, formatWithPlural } from 'nhb-toolbox';
 import { Fragment, useState } from 'react';
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Legend,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+import PollAnalytics from '@/app/tools/crowd-polls/[id]/_components/PollAnalytics';
 import PollHeader from '@/app/tools/crowd-polls/[id]/_components/PollHeader';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
@@ -51,20 +28,7 @@ import { Separator } from '@/components/ui/separator';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildLocalISOString, toDateTimeLocalValue } from '@/lib/utils';
-import type { PollDetailResponse, PollVoterDetail } from '@/types/polls';
-
-const CHART_COLORS = [
-    '#3b82f6',
-    '#10b981',
-    '#f59e0b',
-    '#ef4444',
-    '#8b5cf6',
-    '#ec4899',
-    '#06b6d4',
-    '#f97316',
-    '#84cc16',
-    '#6366f1',
-];
+import type { PollDetailResponse } from '@/types/polls';
 
 export function PollDetailClient({ pollId }: { pollId: number }) {
     const router = useRouter();
@@ -185,25 +149,6 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
     const handleDelete = () => {
         deletePoll({}, { onSuccess: () => router.push('/tools/crowd-polls') });
     };
-
-    // Chart data
-    const pieData = poll.options.map((opt, i) => ({
-        name: opt.text,
-        value: opt.votes,
-        fill: CHART_COLORS[i % CHART_COLORS.length],
-    }));
-
-    const barData = poll.options.map((opt, i) => ({
-        name: opt.text.length > 20 ? `${opt.text.slice(0, 17)}...` : opt.text,
-        votes: opt.votes,
-        percentage: opt.percentage || 0,
-        fill: CHART_COLORS[i % CHART_COLORS.length],
-    }));
-
-    const voteTypeData = [
-        { name: 'Logged-in Users', value: poll.logged_in_votes, fill: '#3b82f6' },
-        { name: 'Anonymous', value: poll.anonymous_votes, fill: '#94a3b8' },
-    ];
 
     return (
         <Fragment>
@@ -364,201 +309,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 </Card>
 
                 {/* Analytics Section */}
-                {poll.total_votes > 0 && (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-semibold flex items-center gap-2">
-                            <ChartNoAxesCombined /> Poll Analytics
-                        </h2>
-
-                        <div className="grid gap-6 md:grid-cols-2">
-                            {/* Pie Chart - Vote Distribution */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <ChartPie /> Vote Distribution
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer height={300} width="100%">
-                                        <PieChart>
-                                            <Pie
-                                                cx="50%"
-                                                cy="50%"
-                                                data={pieData}
-                                                dataKey="value"
-                                                innerRadius={60}
-                                                label={({ name, percent }) =>
-                                                    `${(name ?? '').length > 12 ? `${(name ?? '').slice(0, 10)}..` : name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                                                }
-                                                labelLine={true}
-                                                outerRadius={100}
-                                                paddingAngle={2}
-                                            />
-                                            <Tooltip />
-                                            <Legend />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-
-                            {/* Bar Chart - Votes per Option */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <ChartColumnBig /> Votes per Option
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer height={300} width="100%">
-                                        <BarChart data={barData}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                                            <YAxis />
-                                            <Tooltip
-                                                formatter={(value) => [
-                                                    `${value} votes`,
-                                                    'Votes',
-                                                ]}
-                                            />
-                                            <Bar dataKey="votes" radius={[4, 4, 0, 0]} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-
-                            {/* Voter Type Breakdown */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <Users /> Voter Breakdown
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer height={250} width="100%">
-                                        <PieChart>
-                                            <Pie
-                                                cx="50%"
-                                                cy="50%"
-                                                data={voteTypeData}
-                                                dataKey="value"
-                                                innerRadius={50}
-                                                label={({ name, value }) => `${name}: ${value}`}
-                                                outerRadius={80}
-                                                paddingAngle={4}
-                                            />
-                                            <Tooltip />
-                                            <Legend />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                    <div className="grid grid-cols-2 gap-4 pt-4">
-                                        <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-2xl font-bold text-blue-500">
-                                                {poll.logged_in_votes}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Logged-in votes
-                                            </p>
-                                        </div>
-                                        <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-2xl font-bold text-slate-400">
-                                                {poll.anonymous_votes}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Anonymous votes
-                                            </p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Summary Stats */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <ChartLine /> Stats
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-2xl font-bold">
-                                                {poll.total_votes}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Total Votes
-                                            </p>
-                                        </div>
-                                        <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-2xl font-bold">
-                                                {poll.options.length}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Options
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Leading option */}
-                                    {poll.options.length > 0 && (
-                                        <div className="p-3 bg-muted rounded-lg space-y-1">
-                                            <p className="text-xs text-muted-foreground font-medium">
-                                                Leading Option
-                                            </p>
-                                            <p className="font-semibold">
-                                                {
-                                                    poll.options.reduce((a, b) =>
-                                                        a.votes > b.votes ? a : b
-                                                    ).text
-                                                }
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {
-                                                    poll.options.reduce((a, b) =>
-                                                        a.votes > b.votes ? a : b
-                                                    ).percentage
-                                                }
-                                                % of total votes
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {/* Participation rate for logged in users */}
-                                    {poll.total_votes > 0 && (
-                                        <div className="p-3 bg-muted rounded-lg space-y-1">
-                                            <p className="text-xs text-muted-foreground font-medium">
-                                                Authenticated Participation
-                                            </p>
-                                            <p className="text-lg font-semibold">
-                                                {Math.round(
-                                                    (poll.logged_in_votes / poll.total_votes) *
-                                                        100
-                                                )}
-                                                %
-                                            </p>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Admin: Voter Details Table */}
-                        {isAdmin && poll.voters && poll.voters.length > 0 && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <Shield className="size-4" />
-                                        Voter Details (Admin Only)
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="overflow-x-auto">
-                                        <VoterTable voters={poll.voters} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
-                )}
+                {poll.total_votes > 0 && <PollAnalytics isAdmin={isAdmin} poll={poll} />}
             </div>
 
             {/* Edit Expiry Dialog */}
@@ -635,39 +386,5 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 </DialogContent>
             </Dialog>
         </Fragment>
-    );
-}
-
-function VoterTable({ voters }: { voters: PollVoterDetail[] }) {
-    return (
-        <table className="w-full text-sm">
-            <thead>
-                <tr className="border-b">
-                    <th className="text-left p-2 font-medium">Voter</th>
-                    <th className="text-left p-2 font-medium">Option</th>
-                    <th className="text-left p-2 font-medium">Voted At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {voters.map((voter, i) => (
-                    <tr className="border-b last:border-0" key={i}>
-                        <td className="p-2">
-                            {voter.is_anonymous ? (
-                                <span className="text-muted-foreground italic">Anonymous</span>
-                            ) : (
-                                <span className="font-medium">{voter.user_name}</span>
-                            )}
-                        </td>
-                        <td className="p-2">{voter.option_text}</td>
-                        <td className="p-2 text-muted-foreground">
-                            {formatDate({
-                                date: voter.voted_at,
-                                format: 'mmm DD, YYYY hh:mm a',
-                            })}
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
     );
 }

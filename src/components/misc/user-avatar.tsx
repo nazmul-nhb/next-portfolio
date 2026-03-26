@@ -6,21 +6,22 @@ import { getColorForInitial } from 'nhb-toolbox';
 import { buildCloudinaryUrl, cn } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 
+const sizes = {
+    xs: 'size-6',
+    sm: 'size-8',
+    md: 'size-11',
+    lg: 'size-14',
+} as const;
+
 type AvatarProps = {
     image: Uncertain<string>;
     name: Uncertain<string>;
-    size?: 'sm' | 'md' | 'lg';
+    size?: keyof typeof sizes;
     className?: string;
 };
 
 /** Reusable avatar component. */
 export default function UserAvatar({ image, name, size = 'md', className }: AvatarProps) {
-    const sizes = {
-        sm: 'size-8',
-        md: 'size-11',
-        lg: 'size-14',
-    };
-
     const imgClasses = cn(sizes[size], 'shrink-0 rounded-full object-cover', className);
 
     return image ? (
@@ -47,7 +48,7 @@ export default function UserAvatar({ image, name, size = 'md', className }: Avat
         <div
             className={cn(
                 sizes[size],
-                'flex items-center justify-center rounded-full text-sm font-bold text-white',
+                'flex items-center justify-center select-none rounded-full text-sm font-bold text-white',
                 className
             )}
             style={{

@@ -1,14 +1,16 @@
 'use client';
 
 import {
+    type Column,
     type ColumnDef,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
+    type RowData,
     type SortingState,
     useReactTable,
 } from '@tanstack/react-table';
-import { TableIcon } from 'lucide-react';
+import { ArrowUpDown, TableIcon } from 'lucide-react';
 import { useState } from 'react';
 import EmptyData from '@/components/misc/empty-data';
 import {
@@ -19,6 +21,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 interface DataTableProps<Data, Value> {
     columns: ColumnDef<Data, Value>[];
@@ -88,6 +91,28 @@ export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, V
                     )}
                 </TableBody>
             </Table>
+        </div>
+    );
+}
+
+type SortableProps<Data extends RowData, Value> = {
+    header: string;
+    column: Column<Data, Value>;
+    className?: string;
+};
+
+export function SortableColumn<Data extends RowData, Value>({
+    column,
+    header,
+    className,
+}: SortableProps<Data, Value>) {
+    return (
+        <div
+            className={cn('flex items-center cursor-pointer gap-2', className)}
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+            {header}
+            <ArrowUpDown className="size-4" />
         </div>
     );
 }
