@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { Diff } from 'lucide-react';
+import { getCharacterDifferences } from 'nhb-toolbox';
+import type { DiffResult } from 'nhb-toolbox/string/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import type { DiffResult } from '../../../../lib/tools/text-diff';
-import { getCharacterDifferences } from '../../../../lib/tools/text-diff';
 
 interface DiffViewerProps {
     diffResult: DiffResult;

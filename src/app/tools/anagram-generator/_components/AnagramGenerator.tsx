@@ -93,7 +93,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                 const content = event.target?.result as string;
                 const parsed = parseJSON<{ words: string[] }>(content, false);
 
-                if (!parsed || !parsed.words || !Array.isArray(parsed.words)) {
+                if (!parsed?.words || !Array.isArray(parsed.words)) {
                     setError('Invalid JSON format. Expected: { "words": string[] }');
                     return;
                 }

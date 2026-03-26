@@ -3,8 +3,9 @@
 import { motion, type Variants } from 'framer-motion';
 import { ArrowLeftRight, ChartSpline, Diff, Trash2 } from 'lucide-react';
 import { useDebouncedValue, useMount } from 'nhb-hooks';
-import { formatWithPlural } from 'nhb-toolbox';
+import { computeTextDiff, formatWithPlural } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
+import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CopyButton from '@/components/misc/copy-button';
 import EmptyData from '@/components/misc/empty-data';
@@ -18,7 +19,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { computeTextDiff } from '../../../../lib/tools/text-diff';
 import DiffViewer from './DiffViewer';
 
 const itemVariants: Variants = {
@@ -148,6 +148,11 @@ export default function TextDiffChecker() {
                             </div>
                         </CardContent>
                     </Card>
+
+                    <PoweredBy
+                        description="This tool uses string diff utilities for line-level and character-level diffs."
+                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/string/string-diff"
+                    />
                 </div>
                 {/* Diff Viewer Section */}
                 {originalText || modifiedText ? (
