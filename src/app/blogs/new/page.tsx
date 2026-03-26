@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTitle } from 'nhb-hooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
@@ -14,6 +15,7 @@ import { TagCategorySelector } from '@/components/misc/tag-category-selector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { siteConfig } from '@/configs/site';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildCloudinaryUrl } from '@/lib/utils';
@@ -35,6 +37,8 @@ export default function NewBlogPage() {
     const [isPublished, setIsPublished] = useState(false);
     const [tagIds, setTagIds] = useState<number[]>([]);
     const [categoryIds, setCategoryIds] = useState<number[]>([]);
+
+    useTitle(`Write New Blog » ${siteConfig.name}`);
 
     const { mutate: createBlog, isPending } = useApiMutation<
         { slug: string },

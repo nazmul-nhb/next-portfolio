@@ -3,16 +3,27 @@
 import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { FontSize, TextStyle } from '@tiptap/extension-text-style';
-import type { NodeViewProps } from '@tiptap/react';
+import {
+    BackgroundColor,
+    Color,
+    FontFamily,
+    FontSize,
+    LineHeight,
+    TextStyle,
+} from '@tiptap/extension-text-style';
+import type { NodeViewProps, Editor as TiptapEditor } from '@tiptap/react';
 import {
     EditorContent,
     NodeViewWrapper,
     ReactNodeViewRenderer,
     useEditor,
+    useEditorState,
 } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import type { LucideIcon } from 'lucide-react';
 import {
+    ALargeSmall,
+    Baseline,
     Bold,
     Code,
     Code2,
@@ -21,6 +32,7 @@ import {
     Heading3,
     Heading4,
     Heading5,
+    Highlighter,
     ImageIcon,
     Italic,
     LinkIcon,
@@ -28,21 +40,200 @@ import {
     ListOrdered,
     Quote,
     Redo,
+    Space,
     Strikethrough,
+    Type,
     Underline,
     Undo,
 } from 'lucide-react';
+import type { CSSColor } from 'nhb-toolbox/colors/types';
+import { CSS_COLORS } from 'nhb-toolbox/constants';
+import type { Maybe } from 'nhb-toolbox/types';
 import { useEffect, useRef } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
+import { FONT_FAMILIES_WORD_CLOUD } from '@/lib/tools/word-cloud';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface BlogEditorProps {
     content: string;
     onChange: (content: string) => void;
     placeholder?: string;
+}
+
+const FONT_SIZES = [
+    '7px',
+    '8px',
+    '9px',
+    '10px',
+    '11px',
+    '12px',
+    '13px',
+    '14px',
+    '16px',
+    '18px',
+    '20px',
+    '24px',
+    '28px',
+    '32px',
+    '36px',
+    '48px',
+    '64px',
+    '72px',
+    '80px',
+] as const;
+
+const LINE_HEIGHTS = [
+    { value: '1', label: '1.0' },
+    { value: '1.25', label: '1.25' },
+    { value: '1.5', label: '1.5' },
+    { value: '1.75', label: '1.75' },
+    { value: '2', label: '2.0' },
+    { value: '2.5', label: '2.5' },
+    { value: '3', label: '3.0' },
+] as const;
+
+/** Curated subset of CSS_COLORS for the color picker grid */
+const COLOR_SWATCHES = [
+    'black',
+    'dimgray',
+    'gray',
+    'darkgray',
+    'silver',
+    'lightgray',
+    'white',
+    'maroon',
+    'brown',
+    'red',
+    'orangered',
+    'tomato',
+    'salmon',
+    'lightsalmon',
+    'darkgreen',
+    'green',
+    'forestgreen',
+    'limegreen',
+    'lime',
+    'lightgreen',
+    'palegreen',
+    'navy',
+    'darkblue',
+    'blue',
+    'royalblue',
+    'dodgerblue',
+    'skyblue',
+    'lightblue',
+    'indigo',
+    'purple',
+    'darkviolet',
+    'mediumorchid',
+    'violet',
+    'plum',
+    'lavender',
+    'darkorange',
+    'orange',
+    'gold',
+    'yellow',
+    'khaki',
+    'lightyellow',
+    'ivory',
+    'teal',
+    'darkcyan',
+    'cyan',
+    'mediumturquoise',
+    'turquoise',
+    'aquamarine',
+    'paleturquoise',
+    'darkmagenta',
+    'deeppink',
+    'hotpink',
+    'mediumvioletred',
+    'pink',
+    'lightpink',
+    'mistyrose',
+] as const satisfies CSSColor[];
+
+type ColorPickerProps = {
+    editor: TiptapEditor;
+    command: 'setColor' | 'setBackgroundColor';
+    unsetCommand: 'unsetColor' | 'unsetBackgroundColor';
+    attribute: 'color' | 'backgroundColor';
+    icon: LucideIcon;
+    label: string;
+};
+
+function ColorPickerPopover({
+    editor,
+    command,
+    unsetCommand,
+    attribute,
+    icon: Icon,
+    label,
+}: ColorPickerProps) {
+    const currentColor = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('textStyle')[attribute] as Maybe<string>,
+    });
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button className="relative" size="sm" type="button" variant="ghost">
+                    <Icon className="size-4" />
+                    {currentColor && (
+                        <span
+                            className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-3.5 rounded-full"
+                            style={{ backgroundColor: currentColor }}
+                        />
+                    )}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-auto p-3">
+                <p className="mb-2 text-xs font-medium text-muted-foreground">{label}</p>
+                <div className="grid grid-cols-7 gap-1">
+                    {COLOR_SWATCHES.map((name) => {
+                        const hex = CSS_COLORS[name];
+
+                        return (
+                            <button
+                                className={cn(
+                                    'size-6 rounded-sm border border-border transition-transform hover:scale-110',
+                                    currentColor === hex && 'ring-2 ring-primary ring-offset-1'
+                                )}
+                                key={name}
+                                onClick={() => editor.chain().focus()[command](hex).run()}
+                                style={{ backgroundColor: hex }}
+                                title={name}
+                                type="button"
+                            />
+                        );
+                    })}
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                    <input
+                        className="size-7 cursor-pointer rounded border-none bg-transparent p-0"
+                        onChange={(e) => editor.chain().focus()[command](e.target.value).run()}
+                        title="Custom color"
+                        type="color"
+                        value={currentColor || '#000000'}
+                    />
+                    <Button
+                        className="ml-auto"
+                        onClick={() => editor.chain().focus()[unsetCommand]().run()}
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                    >
+                        Clear
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
 }
 
 export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) {
@@ -56,6 +247,10 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             }),
             TextStyle,
             FontSize,
+            FontFamily,
+            Color,
+            BackgroundColor,
+            LineHeight,
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
@@ -83,6 +278,23 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             editor.commands.setContent(content);
         }
     }, [content, editor]);
+
+    const textStyleState = useEditorState({
+        editor,
+        selector: (ctx) => {
+            const e = ctx.editor;
+            if (!e) return { fontFamily: '', fontSize: '', lineHeight: '' };
+            const attrs = e.getAttributes('textStyle');
+            return {
+                fontFamily:
+                    FONT_FAMILIES_WORD_CLOUD.find((f) =>
+                        e.isActive('textStyle', { fontFamily: f.fontFamily })
+                    )?.value ?? '',
+                fontSize: (attrs.fontSize as string) ?? '',
+                lineHeight: (attrs.lineHeight as string) ?? '',
+            };
+        },
+    });
 
     if (!editor) {
         return null;
@@ -201,6 +413,112 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 >
                     <Strikethrough className="size-4" />
                 </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
+                {/* Font Family */}
+                <Select
+                    onValueChange={(value) => {
+                        if (value === '__unset') {
+                            editor.chain().focus().unsetFontFamily().run();
+                        } else {
+                            const font = FONT_FAMILIES_WORD_CLOUD.find(
+                                (f) => f.value === value
+                            );
+                            if (font) {
+                                editor.chain().focus().setFontFamily(font.fontFamily).run();
+                            }
+                        }
+                    }}
+                    value={textStyleState?.fontFamily ?? ''}
+                >
+                    <SelectTrigger className="h-8 w-fit text-xs" size="sm">
+                        <Type className="mr-1 size-3.5 shrink-0" />
+                        <SelectValue placeholder="Font" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="__unset">Default</SelectItem>
+                        {FONT_FAMILIES_WORD_CLOUD.map((font) => (
+                            <SelectItem key={font.value} value={font.value}>
+                                <span style={{ fontFamily: font.fontFamily }}>
+                                    {font.label}
+                                </span>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                {/* Font Size */}
+                <Select
+                    onValueChange={(value) => {
+                        if (value === '__unset') {
+                            editor.chain().focus().unsetFontSize().run();
+                        } else {
+                            editor.chain().focus().setFontSize(value).run();
+                        }
+                    }}
+                    value={textStyleState?.fontSize ?? ''}
+                >
+                    <SelectTrigger className="h-8 w-fit text-xs" size="sm">
+                        <ALargeSmall className="mr-1 size-3.5 shrink-0" />
+                        <SelectValue placeholder="Size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="__unset">Default</SelectItem>
+                        {FONT_SIZES.map((size) => (
+                            <SelectItem key={size} value={size}>
+                                {size}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                {/* Line Height */}
+                <Select
+                    onValueChange={(value) => {
+                        if (value === '__unset') {
+                            editor.chain().focus().unsetLineHeight().run();
+                        } else {
+                            editor.chain().focus().setLineHeight(value).run();
+                        }
+                    }}
+                    value={textStyleState?.lineHeight ?? ''}
+                >
+                    <SelectTrigger className="h-8 w-fit text-xs" size="sm">
+                        <Space className="mr-1 size-3.5 shrink-0" />
+                        <SelectValue placeholder="Line" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="__unset">Default</SelectItem>
+                        {LINE_HEIGHTS.map((lh) => (
+                            <SelectItem key={lh.value} value={lh.value}>
+                                {lh.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <div className="mx-1 w-px bg-border" />
+
+                {/* Text Color */}
+                <ColorPickerPopover
+                    attribute="color"
+                    command="setColor"
+                    editor={editor}
+                    icon={Baseline}
+                    label="Text Color"
+                    unsetCommand="unsetColor"
+                />
+
+                {/* Background Color */}
+                <ColorPickerPopover
+                    attribute="backgroundColor"
+                    command="setBackgroundColor"
+                    editor={editor}
+                    icon={Highlighter}
+                    label="Highlight Color"
+                    unsetCommand="unsetBackgroundColor"
+                />
 
                 <div className="mx-1 w-px bg-border" />
 

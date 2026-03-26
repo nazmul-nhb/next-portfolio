@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTitle } from 'nhb-hooks';
 import { formatDate, truncateString } from 'nhb-toolbox';
 import { useEffect } from 'react';
 import {
@@ -35,6 +36,8 @@ interface MyBlog {
 export default function MyBlogsPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
+
+    useTitle(`My Blogs » ${siteConfig.name}`);
 
     const { data: blogs, isLoading } = useApiQuery<MyBlog[]>('/api/blogs/my', {
         enabled: status === 'authenticated',
