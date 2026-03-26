@@ -51,25 +51,26 @@ A modern, full-stack portfolio and blogging platform built with **Next.js 16**, 
 
 ## Tech Stack
 
-| Layer                    | Technology                                                                                                        |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Framework                | [Next.js 16](https://nextjs.org/) (App Router with React Compiler, Turbopack)                                     |
-| Language                 | [TypeScript 5.9](https://www.typescriptlang.org/)                                                                 |
-| UI                       | [React 19](https://react.dev/), [Tailwind CSS 4](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/) |
-| State                    | [Zustand](https://zustand.docs.pmnd.rs/), [TanStack Query](https://tanstack.com/query)                            |
-| Database                 | [Neon](https://neon.tech/) (Serverless PostgreSQL)                                                                |
-| ORM                      | [Drizzle ORM](https://orm.drizzle.team/)                                                                          |
-| Auth                     | [NextAuth v5](https://authjs.dev/) (Credentials + Google)                                                         |
-| Editor                   | [Tiptap](https://tiptap.dev/)                                                                                     |
-| Forms                    | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)                                         |
-| Email                    | [Nodemailer](https://nodemailer.com/)                                                                             |
-| Media                    | [Cloudinary](https://cloudinary.com/)                                                                             |
-| PDF                      | [@react-pdf/renderer](https://react-pdf.org/)                                                                     |
-| Utilities & Guards       | [nhb-toolbox](https://tools.nazmul.dev/)                                                                          |
-| Hooks                    | [nhb-hooks](https://github.com/nazmul-nhb/nhb-hooks)                                                              |
-| Commit Message Formatter | `nhb-commit` from [nhb-scripts](https://github.com/nazmul-nhb/nhb-scripts)                                        |
-| Format/Linting           | [Biome](https://biomejs.dev/)                                                                                     |
-| Package Manager          | [pnpm](https://pnpm.io/)                                                                                          |
+| Layer                    | Technology                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------- |
+| Framework                | [Next.js 16](https://nextjs.org/) (App Router with React Compiler, Turbopack)                     |
+| Language                 | [TypeScript 6](https://www.typescriptlang.org/)                                                   |
+| UI                       | [React 19](https://react.dev/), [Tailwind CSS 4](https://tailwindcss.com/)                        |
+| Component Library        | [Radix UI Primitives](https://www.radix-ui.com/), [shadcn](https://ui.shadcn.com/docs/components) |
+| State                    | [Zustand](https://zustand.docs.pmnd.rs/), [TanStack Query](https://tanstack.com/query)            |
+| Database                 | [Neon](https://neon.tech/) (Serverless PostgreSQL)                                                |
+| ORM                      | [Drizzle ORM](https://orm.drizzle.team/)                                                          |
+| Auth                     | [NextAuth v5](https://authjs.dev/) (Credentials + Google)                                         |
+| Editor                   | [Tiptap](https://tiptap.dev/)                                                                     |
+| Forms                    | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)                         |
+| Email                    | [Nodemailer](https://nodemailer.com/)                                                             |
+| Media                    | [Cloudinary](https://cloudinary.com/)                                                             |
+| PDF                      | [@react-pdf/renderer](https://react-pdf.org/)                                                     |
+| Utilities & Guards       | [nhb-toolbox](https://tools.nazmul.dev/)                                                          |
+| Hooks                    | [nhb-hooks](https://github.com/nazmul-nhb/nhb-hooks)                                              |
+| Commit Message Formatter | `nhb-commit` from [nhb-scripts](https://github.com/nazmul-nhb/nhb-scripts)                        |
+| Format/Linting           | [Biome](https://biomejs.dev/)                                                                     |
+| Package Manager          | [pnpm](https://pnpm.io/)                                                                          |
 
 ---
 

@@ -3,6 +3,7 @@
 import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import { FontSize, TextStyle } from '@tiptap/extension-text-style';
 import type { NodeViewProps } from '@tiptap/react';
 import {
     EditorContent,
@@ -53,6 +54,8 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                     levels: [1, 2, 3, 4, 5],
                 },
             }),
+            TextStyle,
+            FontSize,
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
