@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, CheckCircle2, RotateCcw, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, RotateCcw, Vote, X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,10 @@ import { useUserStore } from '@/lib/store/user-store';
 import { buildLocalISOString, toDateTimeLocalValue } from '@/lib/utils';
 import type { PollDetailResponse } from '@/types/polls';
 
-export function PollDetailClient({ pollId }: { pollId: number }) {
+type VoteCast = { poll_id: number; option_id: number };
+type UpdatePoll = { end_date?: string | null; question?: string };
+
+export function PollDetails({ pollId }: { pollId: number }) {
     const router = useRouter();
 
     const { profile } = useUserStore();
@@ -42,54 +45,51 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
     const userId = profile?.id;
     const isAdmin = profile?.role === 'admin';
 
-    const {
-        data: poll,
-        isLoading,
-        refetch,
-    } = useApiQuery<PollDetailResponse>(`/api/tools/polls/${pollId}`, {
-        queryKey: ['poll-detail', pollId],
-    });
+    const { data: poll, isLoading } = useApiQuery<PollDetailResponse>(
+        `/api/tools/polls/${pollId}`,
+        {
+            queryKey: ['poll-detail', pollId],
+        }
+    );
 
-    const { mutate: vote, isPending: isVoting } = useApiMutation<
-        unknown,
-        { poll_id: number; option_id: number }
-    >(`/api/tools/polls/${pollId}/vote`, 'POST', {
-        successMessage: 'Vote recorded!',
-        prioritizeCustomMessages: true,
-        invalidateKeys: ['poll-detail', 'polls-list'],
-        onSuccess: () => refetch(),
-    });
+    const { mutate: vote, isPending: isVoting } = useApiMutation<unknown, VoteCast>(
+        `/api/tools/polls/${pollId}/vote`,
+        'POST',
+        {
+            successMessage: 'Vote recorded!',
+            prioritizeCustomMessages: true,
+            invalidateKeys: ['poll-detail', 'polls-list'],
+        }
+    );
 
-    const { mutate: unvote, isPending: isUnvoting } = useApiMutation<
-        unknown,
-        Record<string, never>
-    >(`/api/tools/polls/${pollId}/vote`, 'DELETE', {
-        successMessage: 'Vote removed!',
-        prioritizeCustomMessages: true,
-        invalidateKeys: ['poll-detail', 'polls-list'],
-        onSuccess: () => refetch(),
-    });
+    const { mutate: unvote, isPending: isUnvoting } = useApiMutation<unknown, null>(
+        `/api/tools/polls/${pollId}/vote`,
+        'DELETE',
+        {
+            successMessage: 'Vote removed!',
+            prioritizeCustomMessages: true,
+            invalidateKeys: ['poll-detail', 'polls-list'],
+        }
+    );
 
-    const { mutate: updatePoll, isPending: isUpdating } = useApiMutation<
-        unknown,
-        { end_date?: string | null; question?: string }
-    >(`/api/tools/polls/${pollId}`, 'PATCH', {
-        successMessage: 'Poll updated!',
-        invalidateKeys: ['poll-detail', 'polls-list'],
-        onSuccess: () => {
-            setShowEditDialog(false);
-            refetch();
-        },
-    });
+    const { mutate: updatePoll, isPending: isUpdating } = useApiMutation<unknown, UpdatePoll>(
+        `/api/tools/polls/${pollId}`,
+        'PATCH',
+        {
+            invalidateKeys: ['poll-detail', 'polls-list'],
+            onSuccess: () => {
+                setShowEditDialog(false);
+            },
+        }
+    );
 
-    const { mutate: deletePoll, isPending: isDeleting } = useApiMutation<
-        unknown,
-        Record<string, never>
-    >(`/api/tools/polls/${pollId}`, 'DELETE', {
-        successMessage: 'Poll deleted!',
-        invalidateKeys: ['polls-list'],
-        onSuccess: () => router.push('/tools/crowd-polls'),
-    });
+    const { mutate: deletePoll, isPending: isDeleting } = useApiMutation<unknown, null>(
+        `/api/tools/polls/${pollId}`,
+        'DELETE',
+        {
+            invalidateKeys: ['polls-list'],
+        }
+    );
 
     if (isLoading) {
         return (
@@ -137,7 +137,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
 
     const handleUnvote = () => {
         if (!hasVoted || isUnvoting) return;
-        unvote({});
+        unvote(null);
     };
 
     const handleUpdateExpiry = () => {
@@ -147,7 +147,7 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
     };
 
     const handleDelete = () => {
-        deletePoll({}, { onSuccess: () => router.push('/tools/crowd-polls') });
+        deletePoll(null, { onSuccess: () => router.push('/tools/crowd-polls') });
     };
 
     return (
@@ -187,7 +187,8 @@ export function PollDetailClient({ pollId }: { pollId: number }) {
                 <Card className="select-none">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-                            <span>
+                            <span className="flex items-center gap-2">
+                                <Vote />
                                 {hasVoted
                                     ? 'Your Vote'
                                     : canVote

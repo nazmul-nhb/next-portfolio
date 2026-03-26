@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
-interface DataTableProps<Data, Value> {
+interface DataTableProps<Data, Value = unknown> {
     columns: ColumnDef<Data, Value>[];
     data: Data[];
 }
@@ -95,7 +95,7 @@ export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, V
     );
 }
 
-type SortableProps<Data extends RowData, Value> = {
+export type SortableProps<Data extends RowData, Value = unknown> = {
     header: string;
     column: Column<Data, Value>;
     className?: string;

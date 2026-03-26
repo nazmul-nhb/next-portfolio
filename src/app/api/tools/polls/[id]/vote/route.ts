@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, or, sql } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -183,15 +183,14 @@ export async function DELETE(
             return sendErrorResponse(`Cannot unvote on a ${pollStatus} poll`, 400);
         }
 
-        // 2. Find existing vote (must match user_id AND voter_hash for security)
+        // 2. Find existing vote (must match user_id OR voter_hash for security)
         const [existingVote] = await db
             .select()
             .from(pollVotes)
             .where(
                 and(
                     eq(pollVotes.poll_id, pollId),
-                    eq(pollVotes.user_id, userId),
-                    eq(pollVotes.voter_hash, voterHash)
+                    or(eq(pollVotes.user_id, userId), eq(pollVotes.voter_hash, voterHash))
                 )
             );
 

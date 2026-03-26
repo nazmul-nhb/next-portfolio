@@ -6,7 +6,7 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { polls } from '@/lib/drizzle/schema/polls';
 import { buildCanonicalUrl } from '@/lib/utils';
-import { PollDetailClient } from './_components/PollDetailClient';
+import { PollDetails } from './_components/PollDetails';
 
 type PollPageProps = { params: Promise<{ id: string }> };
 
@@ -46,5 +46,5 @@ export default async function PollDetailPage({ params }: PollPageProps) {
 
     if (!pollId || Number.isNaN(pollId)) notFound();
 
-    return <PollDetailClient pollId={pollId} />;
+    return <PollDetails pollId={pollId} />;
 }

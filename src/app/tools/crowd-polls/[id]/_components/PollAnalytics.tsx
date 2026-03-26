@@ -244,7 +244,7 @@ function VoterTable({ voters }: { voters: PollVoterDetail[] }) {
         <DataTable
             columns={[
                 {
-                    accessorKey: 'user_name',
+                    accessorKey: 'user_id',
                     header: ({ column }) => <SortableColumn column={column} header="Voter" />,
                     cell: ({ row: { original: voter } }) => {
                         return (
@@ -289,7 +289,7 @@ function VoterTable({ voters }: { voters: PollVoterDetail[] }) {
                             <div>
                                 {formatDate({
                                     date: voter.voted_at,
-                                    format: 'mmm DD, YYYY hh:mm a',
+                                    format: 'mmm DD, YYYY hh:mm:ss a',
                                 })}
                             </div>
                         );
