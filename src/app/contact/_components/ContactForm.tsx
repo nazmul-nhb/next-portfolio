@@ -33,6 +33,7 @@ export function ContactForm() {
     });
 
     const { mutate: sendMessage, isPending } = useApiMutation('/api/contact', 'POST', {
+        invalidateKeys: ['contact-messages', 'unread-messages'],
         onSuccess: () => setSubmitted(true),
         onError: (err) => {
             console.error('Error sending message:', err);
@@ -113,7 +114,7 @@ export function ContactForm() {
             <div>
                 <Label htmlFor="message">Message *</Label>
                 <Textarea
-                    className="mt-1.5 min-h-37.5 resize-y"
+                    className="mt-1.5 min-h-32 max-h-48 overflow-y-auto custom-scroll"
                     id="message"
                     placeholder="Tell me about your project, idea, or just say hi..."
                     {...register('message')}

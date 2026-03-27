@@ -10,9 +10,8 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema/messages';
 import { sendEmail } from '@/lib/email';
-// import { getContactAutoResponseTemplate, getContactEmailTemplate } from '@/lib/email/templates';
-import { ContactFormSchema } from '@/lib/zod-schema/messages';
 import { contactAutoReplyTemplate, contactEmailTemplate } from '@/lib/email/templates';
+import { ContactFormSchema } from '@/lib/zod-schema/messages';
 
 /**
  * POST /api/contact - Submit a contact form message.
@@ -67,7 +66,7 @@ export async function POST(req: NextRequest) {
 /**
  * GET /api/contact - Get all contact messages (admin only).
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         const session = await auth();
 
@@ -75,9 +74,15 @@ export async function GET() {
             return sendErrorResponse('Forbidden', 403);
         }
 
+        const filter =
+            req.nextUrl.searchParams.get('unread') === 'true'
+                ? eq(contactMessages.is_read, false)
+                : undefined;
+
         const messages = await db
             .select()
             .from(contactMessages)
+            .where(filter)
             .orderBy(desc(contactMessages.created_at));
 
         return sendResponse('Message', 'GET', messages);
@@ -96,7 +101,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Forbidden', 403);
         }
 
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = req.nextUrl;
         const idParam = searchParams.get('id');
 
         if (!idParam) {

@@ -105,7 +105,7 @@ export default function TextLayerEditor({
                 <Label htmlFor={`text-layer-text-${layer.id}`}>Text</Label>
                 <Textarea
                     aria-label="Text layer content"
-                    className="min-h-24 resize-y"
+                    className="min-h-24 max-h-48 overflow-y-auto custom-scroll"
                     id={`text-layer-text-${layer.id}`}
                     onChange={(event) => onChange({ text: event.target.value })}
                     placeholder="Add your headline, caption, or call to action."

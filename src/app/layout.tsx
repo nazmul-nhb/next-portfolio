@@ -33,6 +33,7 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
 import type { ChildrenProp } from '@/types';
+import UnreadMessage from '@/components/misc/unread-message';
 
 export const metadata: Metadata = {
     title: {
@@ -104,6 +105,7 @@ export default function RootLayout({ children }: ChildrenProp) {
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                                 <Footer />
                                 <ChatBubble />
+                                <UnreadMessage />
                                 <DateTimeCalendar />
                                 {/* <ThemeToggler /> */}
                                 <Toaster />

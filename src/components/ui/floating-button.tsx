@@ -1,19 +1,15 @@
-import type { LucideProps } from 'lucide-react';
 import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
-type IconType = React.ForwardRefExoticComponent<
-    Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
->;
 
 /**
  * Describes the props for FloatingButton component.
  */
 export type FloatingButtonProps = {
     /** The icon to render. */
-    icon?: IconType;
+    icon?: ComponentType<{className?: string}>;
     /** Optional label to show next to the icon. If omitted, the button will render icon-only. */
     label?: ReactNode;
     /** Shape of the button. */
@@ -35,11 +31,11 @@ export type FloatingButtonProps = {
 function sizeClasses(size: FloatingButtonProps['size']) {
     switch (size) {
         case 'sm':
-            return 'h-9 px-2 text-sm';
+            return 'size-9 px-2 text-sm';
         case 'lg':
-            return 'h-14 px-4 text-lg';
+            return 'size-14 px-4 text-lg';
         default:
-            return 'h-11 px-3 text-base';
+            return 'size-11 px-3 text-base';
     }
 }
 
@@ -101,6 +97,7 @@ export default function FloatingButton({
                     btnSize,
                     btnShape
                 )}
+                size={isIconOnly ? 'icon': 'default'}
                 onClick={onClick}
                 variant={variant}
             >

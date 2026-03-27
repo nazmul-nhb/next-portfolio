@@ -199,7 +199,7 @@ export default function EncryptMessage() {
                                             <FormItem className="flex-1 w-full">
                                                 <FormLabel>Passphrase</FormLabel>
                                                 <Input
-                                                    className="resize-y font-cascadia"
+                                                    className="min-h-32 max-h-48 overflow-y-auto custom-scroll font-cascadia"
                                                     placeholder={`Enter your passphrase to ${mode}`}
                                                     type="password"
                                                     {...field}
@@ -224,7 +224,7 @@ export default function EncryptMessage() {
                                             <FormLabel>Input</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    className="resize-y font-cascadia"
+                                                    className="min-h-32 max-h-48 overflow-y-auto custom-scroll font-cascadia"
                                                     placeholder={`${toTitleCase(mode)} your ${mode === 'decrypt' ? 'encrypted' : 'text'} message with provided passphrase`}
                                                     {...field}
                                                 />

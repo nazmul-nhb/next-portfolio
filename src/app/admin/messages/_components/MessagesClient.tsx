@@ -28,7 +28,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
     const { mutate: toggleRead } = useApiMutation<ContactMessage, { is_read: boolean }>(
         `/api/contact/${processingId}`,
         'PATCH',
-        { invalidateKeys: ['contact-messages'], silentSuccessMessage: true }
+        { invalidateKeys: ['contact-messages', 'unread-messages'], silentSuccessMessage: true }
     );
 
     const { mutate: deleteMsg } = useApiMutation<ContactMessage>(

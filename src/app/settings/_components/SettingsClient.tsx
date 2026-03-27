@@ -320,7 +320,7 @@ export function SettingsClient() {
                         <div>
                             <Label htmlFor="bio">Bio</Label>
                             <Textarea
-                                className="mt-1.5 min-h-25 resize-y"
+                                className="mt-1.5 min-h-32 max-h-48 overflow-y-auto custom-scroll"
                                 id="bio"
                                 onChange={(e) => setBio(e.target.value)}
                                 placeholder="Tell others a little about yourself..."

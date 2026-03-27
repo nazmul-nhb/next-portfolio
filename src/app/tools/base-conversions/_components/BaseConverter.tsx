@@ -419,7 +419,7 @@ export default function BaseConverter() {
                                             <FormLabel>Input</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    className="resize-y font-cascadia"
+                                                    className="min-h-32 max-h-48 overflow-y-auto custom-scroll font-cascadia"
                                                     placeholder={sourceOption.placeholder}
                                                     {...field}
                                                 />
