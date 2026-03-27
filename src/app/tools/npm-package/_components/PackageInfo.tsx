@@ -6,8 +6,8 @@ import LivePreviewButton from '@/components/misc/live-preview';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatRelativeTime } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
+import { formatDateRelative } from 'nhb-toolbox';
 
 interface PackageInfoProps {
     data: PackageResponse;
@@ -40,13 +40,13 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                             {data.time.created && (
                                 <Badge variant="secondary">
                                     <PackagePlus className="size-3 mr-1" />
-                                    Created: {formatRelativeTime(data.time.created)}
+                                    Created: {formatDateRelative(data.time.created)}
                                 </Badge>
                             )}
                             {data.time.modified && (
                                 <Badge variant="secondary">
                                     <PackageCheck className="size-3 mr-1" />
-                                    Modified: {formatRelativeTime(data.time.modified)}
+                                    Modified: {formatDateRelative(data.time.modified)}
                                 </Badge>
                             )}
                         </div>

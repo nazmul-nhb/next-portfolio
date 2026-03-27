@@ -12,7 +12,13 @@ import type { Variants } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { FileText, ImageDown, ScanEye, Settings2, Text } from 'lucide-react';
 import { useMount } from 'nhb-hooks';
-import { clampNumber, countWords, formatWithPlural, getRandomNumber } from 'nhb-toolbox';
+import {
+    applyOpacityToHex,
+    clampNumber,
+    countWords,
+    formatWithPlural,
+    getRandomNumber,
+} from 'nhb-toolbox';
 import { useCallback, useRef, useState } from 'react';
 import { PoweredBy } from '@/app/tools/_components/PoweredBy';
 import EmptyData from '@/components/misc/empty-data';
@@ -44,7 +50,6 @@ import {
     processText,
     WORD_CLOUD_DEFAULTS,
 } from '@/lib/tools/word-cloud';
-import { opacityToHex } from '@/lib/utils';
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -164,7 +169,7 @@ export default function WordCloudGenerator() {
                 borderRadius: '8px',
                 flexDirection: 'column',
                 minWidth: '96px',
-                background: `${data.word?.fill}${opacityToHex(90)}`,
+                background: applyOpacityToHex(data.word?.fill, 90),
             }}
             data={data}
             placement="bottom"

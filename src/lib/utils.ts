@@ -10,8 +10,6 @@ import {
     isString,
 } from 'nhb-toolbox';
 import type { $UTCOffset, TimeDuration } from 'nhb-toolbox/date/types';
-import type { Percent } from 'nhb-toolbox/number/types';
-import type { ValidArray } from 'nhb-toolbox/types';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
@@ -128,24 +126,6 @@ export function getDateLabel(dateStr: string): string {
     return date.format('mmm DD, YYYY');
 }
 
-/** Format a date as a relative time string */
-export function formatRelativeTime(date: Date | string) {
-    const now = Date.now();
-    const then = new Date(date).getTime();
-    const diff = now - then;
-
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-
-    return formatDate({ date, format: 'mmm D, yyyy hh:mm a' });
-}
-
 /** Type guard to check if an error object has a message property. */
 export function hasErrorMessage(error: unknown): error is { message: string } {
     return isObjectWithKeys(error, ['message']) && isString(error.message);
@@ -157,11 +137,11 @@ export function getCurrentYear() {
 }
 
 /** Utility function to build Open Graph image objects for metadata. */
-export function buildOpenGraphImages(...urls: ValidArray<Uncertain<string>>) {
+export function buildOpenGraphImages(...urls: Array<Uncertain<string>>) {
     if (isArrayOfType(urls, isString)) {
         return urls.map((url) => {
             return {
-                url: url as string,
+                url,
                 alt: siteConfig.name,
                 width: 1200,
                 height: 630,
@@ -263,14 +243,6 @@ export function parseToDurationString(duration: TimeDuration): string {
     parts.push(_padAndFormat(seconds, 'sec'));
 
     return parts.join(' : ');
-}
-
-/**
- * Convert opacity (0–100) to hex alpha
- */
-export function opacityToHex(opacity: Percent): string {
-    const value = Math.round((Math.min(Math.max(opacity, 0), 100) / 100) * 255);
-    return value.toString(16).padStart(2, '0').toUpperCase();
 }
 
 /** Format a Date object into a string suitable for datetime-local input value (e.g., `"2024-06-30T14:30"`). */

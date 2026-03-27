@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Mail, MailOpen, Trash2, User } from 'lucide-react';
+import { formatDateRelative } from 'nhb-toolbox';
 import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
@@ -10,7 +11,7 @@ import SmartTooltip from '@/components/misc/smart-tooltip';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
-import { cn, formatRelativeTime } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import type { ContactMessage } from '@/types/messages';
 
 interface MessagesClientProps {
@@ -183,7 +184,7 @@ export function MessagesClient({ initialMessages }: MessagesClientProps) {
                         {/* Time & actions */}
                         <div className="flex shrink-0 items-center gap-1">
                             <span className="mr-2 hidden text-xs text-muted-foreground sm:inline">
-                                {formatRelativeTime(message.created_at)}
+                                {formatDateRelative(message.created_at)}
                             </span>
                             <Button
                                 disabled={processingId === message.id}

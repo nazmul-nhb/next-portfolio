@@ -2,12 +2,13 @@
 
 import { Search, X } from 'lucide-react';
 import { useDebouncedValue } from 'nhb-hooks';
+import { formatDateRelative } from 'nhb-toolbox';
 import { useState } from 'react';
 import { ConversationItemSkeleton } from '@/components/misc/skeletons';
 import UserAvatar from '@/components/misc/user-avatar';
 import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
-import { cn, formatRelativeTime } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import type { Conversation, UserResult } from '@/types/messages';
 
 type Props = {
@@ -171,7 +172,7 @@ export default function ConversationList({
                                                 : 'text-muted-foreground'
                                         )}
                                     >
-                                        {formatRelativeTime(conv.last_message_at)}
+                                        {formatDateRelative(conv.last_message_at)}
                                     </span>
                                 </div>
                                 <p
