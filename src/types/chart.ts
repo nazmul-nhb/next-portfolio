@@ -1,13 +1,6 @@
-export type ChartType =
-    | 'bar'
-    | 'line'
-    | 'area'
-    | 'pie'
-    | 'scatter'
-    | 'radar'
-    | 'composed'
-    | 'treemap'
-    | 'funnel';
+import type { AVAILABLE_CHART_TYPES } from '@/lib/constants';
+
+export type ChartType = (typeof AVAILABLE_CHART_TYPES)[number];
 
 export interface ChartDataPoint {
     [key: string]: string | number;

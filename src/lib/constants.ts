@@ -94,3 +94,15 @@ export const PKG_FIELDS = [
 ] as const satisfies ReadonlyArray<keyof PackageDetails>;
 
 export const NPM_START = '2010-01-01';
+
+export const AVAILABLE_CHART_TYPES = [
+    'bar',
+    'line',
+    'area',
+    'pie',
+    'scatter',
+    'radar',
+    'composed',
+    'treemap',
+    'funnel',
+] as const;

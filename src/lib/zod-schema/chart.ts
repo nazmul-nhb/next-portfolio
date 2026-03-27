@@ -1,20 +1,10 @@
 import { z } from 'zod';
+import { AVAILABLE_CHART_TYPES } from '@/lib/constants';
 
 export const chartDataPointSchema = z.record(z.string(), z.union([z.string(), z.number()]));
 
 export const chartConfigSchema = z.object({
-    type: z.enum([
-        'bar',
-        'line',
-        'area',
-        'pie',
-        'scatter',
-        'bubble',
-        'radar',
-        'composed',
-        'treemap',
-        'funnel',
-    ]),
+    type: z.enum(AVAILABLE_CHART_TYPES),
     title: z.string().optional(),
     xAxisLabel: z.string().optional(),
     yAxisLabel: z.string().optional(),
