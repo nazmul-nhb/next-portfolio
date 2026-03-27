@@ -3,6 +3,7 @@ import { MessageCircle } from 'lucide-react';
 import type { Metadata } from 'next';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema';
+import type { ContactMessage } from '@/types/messages';
 import { MessagesClient } from './_components/MessagesClient';
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminMessagesPage() {
-    let messages: (typeof contactMessages.$inferSelect)[] = [];
+    let messages: ContactMessage[] = [];
 
     try {
         messages = await db

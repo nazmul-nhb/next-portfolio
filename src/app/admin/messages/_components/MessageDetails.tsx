@@ -10,6 +10,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import type { ContactMessage } from '@/types/messages';
 
 type Props = {
@@ -32,8 +34,8 @@ export default function MessageDetails({
             }}
             open={!!selectedMessage}
         >
-            <DialogContent className="max-h-[85vh] overflow-y-auto max-w-80 sm:max-w-lg">
-                <DialogHeader className={selectedMessage ? '' : 'sr-only'}>
+            <DialogContent className="max-w-80 lg:max-w-2xl">
+                <DialogHeader className={cn({ 'sr-only': !selectedMessage })}>
                     <DialogTitle className="flex items-center gap-2">
                         {selectedMessage ? (
                             <Fragment>
@@ -50,6 +52,8 @@ export default function MessageDetails({
                                 <a
                                     className="text-primary hover:underline"
                                     href={`mailto:${selectedMessage.email}`}
+                                    rel="noopener noreferrer"
+                                    target="_blank"
                                 >
                                     {selectedMessage.email}
                                 </a>
@@ -80,11 +84,11 @@ export default function MessageDetails({
                             </div>
                         )}
 
-                        <div className="rounded-lg border border-border/50 bg-muted/30 p-4">
+                        <ScrollArea className="h-[min(320px,44vh)] rounded-lg border border-border/50 bg-muted/30 p-4">
                             <p className="whitespace-pre-wrap text-sm leading-relaxed">
                                 {selectedMessage.message}
                             </p>
-                        </div>
+                        </ScrollArea>
 
                         <div className="flex items-center justify-between pt-2">
                             <Button
@@ -112,7 +116,11 @@ export default function MessageDetails({
                                 )}
                             </Button>
                             <Button asChild size="sm" variant="outline">
-                                <a href={`mailto:${selectedMessage.email}`}>
+                                <a
+                                    href={`mailto:${selectedMessage.email}`}
+                                    rel="noopener noreferrer"
+                                    target="_blank"
+                                >
                                     <Mail className="mr-1.5 size-3.5" />
                                     Reply
                                 </a>

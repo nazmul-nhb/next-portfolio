@@ -1,13 +1,6 @@
-export interface ContactMessage {
-    id: number;
-    name: string;
-    email: string;
-    subject: string | null;
-    message: string;
-    is_read: boolean;
-    is_replied: boolean;
-    created_at: Date;
-}
+import type { contactMessages } from '@/lib/drizzle/schema';
+
+export type ContactMessage = typeof contactMessages.$inferSelect;
 
 export interface Conversation {
     id: number;
