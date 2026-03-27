@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 import { isString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -22,6 +22,8 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
+        const userId = +session.user.id;
+
         const { id } = await params;
         const conversationId = +id;
 
@@ -41,8 +43,8 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
         }
 
         if (
-            conversation.participant_one !== +session.user.id &&
-            conversation.participant_two !== +session.user.id
+            conversation.participant_one !== userId &&
+            conversation.participant_two !== userId
         ) {
             return sendErrorResponse('Forbidden', 403);
         }
@@ -62,12 +64,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
                 and(
                     eq(directMessages.conversation_id, conversationId),
                     eq(directMessages.is_read, false),
-                    eq(
-                        directMessages.sender_id,
-                        conversation.participant_one === +session.user.id
-                            ? conversation.participant_two
-                            : conversation.participant_one
-                    )
+                    ne(directMessages.sender_id, userId)
                 )
             );
 

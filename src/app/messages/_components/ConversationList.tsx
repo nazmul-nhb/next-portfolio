@@ -153,17 +153,41 @@ export default function ConversationList({
                             />
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-baseline justify-between gap-2">
-                                    <p className="truncate text-sm font-medium">
+                                    <p
+                                        className={cn(
+                                            'truncate text-sm',
+                                            conv.has_unread
+                                                ? 'font-semibold text-foreground'
+                                                : 'font-medium'
+                                        )}
+                                    >
                                         {conv.otherUser.name}
                                     </p>
-                                    <span className="shrink-0 text-[11px] text-muted-foreground">
+                                    <span
+                                        className={cn(
+                                            'shrink-0 text-[11px]',
+                                            conv.has_unread
+                                                ? 'text-foreground font-medium'
+                                                : 'text-muted-foreground'
+                                        )}
+                                    >
                                         {formatRelativeTime(conv.last_message_at)}
                                     </span>
                                 </div>
-                                <p className="truncate text-xs text-muted-foreground">
+                                <p
+                                    className={cn(
+                                        'truncate text-xs',
+                                        conv.has_unread
+                                            ? 'text-foreground/80 font-medium'
+                                            : 'text-muted-foreground'
+                                    )}
+                                >
                                     {conv.otherUser.email}
                                 </p>
                             </div>
+                            {conv.has_unread && (
+                                <span className="size-2.5 shrink-0 rounded-full bg-primary" />
+                            )}
                         </button>
                     ))
                 )}

@@ -8,6 +8,7 @@ export interface Conversation {
     participant_two: number;
     last_message_at: string;
     created_at: string;
+    has_unread: boolean;
     otherUser: {
         id: number;
         name: string;

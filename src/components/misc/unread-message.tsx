@@ -15,6 +15,8 @@ export function AdminUnreadMessage() {
     const { data: messages, isLoading } = useApiQuery<ContactMessage[]>(
         '/api/contact?unread=true',
         {
+            enabled: user?.role === 'admin',
+            refetchInterval: 5000,
             queryKey: ['unread-messages'],
         }
     );

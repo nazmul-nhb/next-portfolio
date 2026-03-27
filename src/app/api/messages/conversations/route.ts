@@ -1,10 +1,10 @@
-import { and, desc, eq, or } from 'drizzle-orm';
+import { and, count, desc, eq, or } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
-import { conversations, users } from '@/lib/drizzle/schema';
+import { conversations, directMessages, users } from '@/lib/drizzle/schema';
 
 /**
  * GET /api/messages/conversations - Get all conversations for the current user
@@ -56,9 +56,21 @@ export async function GET() {
                     .where(eq(users.id, otherUserId))
                     .limit(1);
 
+                const [unread] = await db
+                    .select({ count: count() })
+                    .from(directMessages)
+                    .where(
+                        and(
+                            eq(directMessages.conversation_id, conv.id),
+                            eq(directMessages.is_read, false),
+                            eq(directMessages.sender_id, otherUserId)
+                        )
+                    );
+
                 return {
                     ...conv,
                     otherUser,
+                    has_unread: unread.count > 0,
                 };
             })
         );
