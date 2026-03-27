@@ -10,6 +10,7 @@ import Footer from '@/components/footer/footer';
 import { AuthSync } from '@/components/misc/auth-sync';
 import ChatBubble from '@/components/misc/chat-bubble';
 import DateTimeCalendar from '@/components/misc/datetime-calendar';
+import { AdminUnreadMessage } from '@/components/misc/unread-message';
 import Navbar from '@/components/nav/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -33,7 +34,6 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { ReactQueryProvider } from '@/providers/query-provider';
 import { NextThemesProvider } from '@/providers/theme-provider';
 import type { ChildrenProp } from '@/types';
-import UnreadMessage from '@/components/misc/unread-message';
 
 export const metadata: Metadata = {
     title: {
@@ -105,7 +105,7 @@ export default function RootLayout({ children }: ChildrenProp) {
                                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                                 <Footer />
                                 <ChatBubble />
-                                <UnreadMessage />
+                                <AdminUnreadMessage />
                                 <DateTimeCalendar />
                                 {/* <ThemeToggler /> */}
                                 <Toaster />

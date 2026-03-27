@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 import { isString } from 'nhb-toolbox';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -58,7 +58,18 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
         await db
             .update(directMessages)
             .set({ is_read: true })
-            .where(eq(directMessages.conversation_id, conversationId));
+            .where(
+                and(
+                    eq(directMessages.conversation_id, conversationId),
+                    eq(directMessages.is_read, false),
+                    eq(
+                        directMessages.sender_id,
+                        conversation.participant_one === +session.user.id
+                            ? conversation.participant_two
+                            : conversation.participant_one
+                    )
+                )
+            );
 
         return sendResponse('Message', 'GET', messages);
     } catch (error) {

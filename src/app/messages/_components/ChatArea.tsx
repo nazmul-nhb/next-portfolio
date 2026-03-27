@@ -67,7 +67,7 @@ export default function ChatArea({
         `/api/messages/conversations/${activeConversationId ?? 0}`,
         'POST',
         {
-            invalidateKeys: ['messages', 'conversations'],
+            invalidateKeys: ['messages', 'conversations', 'unread-conversations'],
             onSuccess: () => setNewMessage(''),
             onError: (error) => console.error('Failed to send message:', error),
             silentSuccessMessage: true,
@@ -93,7 +93,9 @@ export default function ChatArea({
         onSuccess: (conv) => {
             onConversationCreated(conv.id);
             setNewMessage('');
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({
+                queryKey: ['conversations', 'unread-conversations'],
+            });
             queryClient.invalidateQueries({ queryKey: ['messages', conv.id] });
         },
         onError: (error) => console.error('Failed to create conversation:', error),

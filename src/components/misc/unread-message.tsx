@@ -1,13 +1,13 @@
 'use client';
 
-import { MessageCircleQuestionMark } from 'lucide-react';
+import { MessageCircleQuestionMark, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import FloatingButton from '@/components/ui/floating-button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { useUserProfile } from '@/lib/hooks/use-user';
 import type { ContactMessage } from '@/types/messages';
 
-export default function UnreadMessage() {
+export function AdminUnreadMessage() {
     const router = useRouter();
 
     const { data: user } = useUserProfile();
@@ -39,4 +39,32 @@ export default function UnreadMessage() {
             variant="destructive"
         />
     ) : null;
+}
+
+type UnreadCount = {
+    unread_count: number;
+};
+
+export function UnreadMessage() {
+    const { data: user } = useUserProfile();
+
+    const { data: conversations = { unread_count: 0 }, isLoading } = useApiQuery<UnreadCount>(
+        '/api/messages/conversations/unread',
+        {
+            enabled: user != null,
+            refetchInterval: 5000,
+            queryKey: ['unread-conversations'],
+        }
+    );
+
+    return (
+        <div className="relative">
+            <MessageSquare className="size-4" />
+            {user && conversations.unread_count > 0 && (
+                <span className="absolute -top-3 -right-2 text-xs font-source-sans font-semibold p-0.5 size-4.5 flex items-center justify-center rounded-full bg-red-600 text-white">
+                    {isLoading ? 0 : conversations?.unread_count}
+                </span>
+            )}
+        </div>
+    );
 }

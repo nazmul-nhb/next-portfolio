@@ -21,7 +21,6 @@ import {
     LayoutDashboard,
     Lightbulb,
     MessageCircle,
-    MessageSquare,
     MessageSquareLock,
     MessageSquareQuote,
     Newspaper,
@@ -40,6 +39,7 @@ import type { ComponentType } from 'react';
 import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
 import { ImNpm } from 'react-icons/im';
+import { UnreadMessage } from '@/components/misc/unread-message';
 import type { TabItem } from '@/types';
 import type { ChartType } from '@/types/chart';
 
@@ -88,7 +88,7 @@ export const siteConfig = {
         { title: 'About', path: '/about', icon: Info },
         { title: 'Contact', path: '/contact', icon: Contact },
         { type: 'separator' },
-        { title: 'Messages', path: '/messages', icon: MessageSquare },
+        { title: 'Messages', path: '/messages', icon: UnreadMessage },
         { title: 'Tools', path: '/tools', icon: FaTools },
         { title: 'Resume', path: '/resume', icon: FileText },
     ] satisfies TabItem[],
@@ -238,7 +238,12 @@ export const siteConfig = {
             description:
                 'Search for npm package(s) and view comprehensive details including downloads and maintainers.',
         },
-    ] satisfies Array<{ href: Route; label: string; icon: ComponentType; description: string }>,
+    ] satisfies Array<{
+        href: Route;
+        label: string;
+        icon: ComponentType<{ className?: string }>;
+        description: string;
+    }>,
     adminMenus: [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
@@ -250,7 +255,11 @@ export const siteConfig = {
         { href: '/admin/users', label: 'Users', icon: Users },
         { href: '/admin/blogs', label: 'Blogs', icon: Newspaper },
         { href: '/admin/categories', label: 'Categories', icon: Tag },
-    ] satisfies Array<{ href: Route; label: string; icon: ComponentType }>,
+    ] satisfies Array<{
+        href: Route;
+        label: string;
+        icon: ComponentType<{ className?: string }>;
+    }>,
     links: {
         GitHub: 'https://github.com/nazmul-nhb',
         LinkedIn: 'https://linkedin.com/in/nazmul-nhb',
