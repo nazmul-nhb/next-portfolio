@@ -9,6 +9,7 @@ import { Chronos, formatDate, formatWithPlural } from 'nhb-toolbox';
 import { Fragment, useState } from 'react';
 import PollAnalytics from '@/app/tools/crowd-polls/[id]/_components/PollAnalytics';
 import PollHeader from '@/app/tools/crowd-polls/[id]/_components/PollHeader';
+import { confirmToast } from '@/components/misc/confirm';
 import EmptyData from '@/components/misc/empty-data';
 import ShareButton from '@/components/misc/share-button';
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +40,6 @@ export function PollDetails({ pollId }: { pollId: number }) {
     const { profile } = useUserStore();
 
     const [showEditDialog, setShowEditDialog] = useState(false);
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [editEndDate, setEditEndDate] = useState('');
 
     const userId = profile?.id;
@@ -147,7 +147,14 @@ export function PollDetails({ pollId }: { pollId: number }) {
     };
 
     const handleDelete = () => {
-        deletePoll(null, { onSuccess: () => router.push('/tools/crowd-polls') });
+        confirmToast({
+            title: 'Delete this poll?',
+            isLoading: isDeleting,
+            description: 'This action cannot be undone and will remove all votes.',
+            confirmText: 'Delete Poll',
+            onConfirm: () =>
+                deletePoll(null, { onSuccess: () => router.push('/tools/crowd-polls') }),
+        });
     };
 
     return (
@@ -175,9 +182,10 @@ export function PollDetails({ pollId }: { pollId: number }) {
                 {/* Poll Header */}
                 <PollHeader
                     canManage={canManage}
+                    isDeleting={isDeleting}
+                    ondelete={handleDelete}
                     poll={poll}
                     setEditEndDate={setEditEndDate}
-                    setShowDeleteDialog={setShowDeleteDialog}
                     setShowEditDialog={setShowEditDialog}
                 />
 
@@ -292,12 +300,12 @@ export function PollDetails({ pollId }: { pollId: number }) {
 
                         {/* Status Messages */}
                         {poll.status === 'expired' && (
-                            <div className="bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-100 rounded-lg text-sm">
+                            <div className="p-3 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-100 rounded-lg text-sm">
                                 This poll has ended. No more votes can be cast.
                             </div>
                         )}
                         {poll.status === 'upcoming' && (
-                            <div className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 rounded-lg text-sm">
+                            <div className="p-3 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-100 rounded-lg text-sm">
                                 This poll hasn't started yet. Voting will begin on{' '}
                                 {formatDate({
                                     date: poll.start_date,
@@ -352,36 +360,6 @@ export function PollDetails({ pollId }: { pollId: number }) {
                             onClick={handleUpdateExpiry}
                         >
                             Save Changes
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Delete Poll</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to delete this poll? This action cannot be
-                            undone and will remove all votes.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button
-                            onClick={() => setShowDeleteDialog(false)}
-                            type="button"
-                            variant="outline"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={isDeleting}
-                            loading={isDeleting}
-                            onClick={handleDelete}
-                            variant="destructive"
-                        >
-                            Delete Poll
                         </Button>
                     </DialogFooter>
                 </DialogContent>

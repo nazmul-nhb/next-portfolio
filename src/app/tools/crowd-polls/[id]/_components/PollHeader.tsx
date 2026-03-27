@@ -6,6 +6,7 @@ import {
     CheckCircle2,
     Clock,
     Edit,
+    Loader2,
     Shield,
     Trash2,
     UserIcon,
@@ -39,14 +40,16 @@ type Props = {
     canManage: boolean;
     setShowEditDialog: (show: boolean) => void;
     setEditEndDate: (date: string) => void;
-    setShowDeleteDialog: (show: boolean) => void;
+    ondelete: () => void;
+    isDeleting: boolean;
 };
 
 export default function PollHeader({
     poll,
     canManage,
     setEditEndDate,
-    setShowDeleteDialog,
+    ondelete,
+    isDeleting,
     setShowEditDialog,
 }: Props) {
     return (
@@ -112,12 +115,12 @@ export default function PollHeader({
                         <Edit className="size-4 mb-0.5" />
                         Edit Expiry
                     </Button>
-                    <Button
-                        onClick={() => setShowDeleteDialog(true)}
-                        size="sm"
-                        variant="destructive"
-                    >
-                        <Trash2 className="size-4 mb-1" />
+                    <Button onClick={ondelete} size="sm" variant="destructive">
+                        {isDeleting ? (
+                            <Loader2 className="size-4 mb-0.5 animate-spin" />
+                        ) : (
+                            <Trash2 className="size-4" />
+                        )}
                         Delete
                     </Button>
                 </div>
