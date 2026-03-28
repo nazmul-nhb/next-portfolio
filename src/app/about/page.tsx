@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: `About ${siteConfig.name}`,
         description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
-        url: `${siteConfig.baseUrl}/about`,
+        url: buildCanonicalUrl('/about'),
         siteName: siteConfig.name,
     },
 };

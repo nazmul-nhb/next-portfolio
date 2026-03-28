@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: `${siteConfig.name}'s Projects`,
         description: `Explore ${siteConfig.name}'s projects.`,
-        url: `${siteConfig.baseUrl}/projects`,
+        url: buildCanonicalUrl('/projects'),
         siteName: siteConfig.name,
     },
 };

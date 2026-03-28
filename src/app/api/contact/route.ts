@@ -101,8 +101,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Forbidden', 403);
         }
 
-        const { searchParams } = req.nextUrl;
-        const idParam = searchParams.get('id');
+        const idParam = req.nextUrl.searchParams.get('id');
 
         if (!idParam) {
             return sendErrorResponse('Message ID is required', 400);

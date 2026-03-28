@@ -11,6 +11,7 @@ import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema/polls';
 import { users } from '@/lib/drizzle/schema/users';
 import { isAdminUser } from '@/lib/utils';
 import { UpdatePollSchema } from '@/lib/zod-schema/polls';
+import type { Params } from '@/types';
 import type { PollDetail, PollVoterDetail } from '@/types/polls';
 import { generateVoterHash, getPollStatus } from '../route';
 
@@ -18,7 +19,7 @@ import { generateVoterHash, getPollStatus } from '../route';
  * GET /api/tools/polls/:id - get poll details with options, vote counts, and hasVoted.
  * Admin users also get voter details for logged-in users.
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: Params) {
     try {
         const { id } = await params;
         const pollId = Number(id);
@@ -157,7 +158,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
  * PATCH /api/tools/polls/:id - update poll (admin or creator only).
  * Can update question, end_date (expiry), is_anonymous.
  */
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(req: NextRequest, { params }: Params) {
     try {
         const { id } = await params;
         const pollId = Number(id);
@@ -219,10 +220,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 /**
  * DELETE /api/tools/polls/:id - delete poll (admin or creator only).
  */
-export async function DELETE(
-    _req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_req: NextRequest, { params }: Params) {
     try {
         const { id } = await params;
         const pollId = Number(id);

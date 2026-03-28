@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: `Contact ${siteConfig.name}`,
         description: `Get in touch with ${siteConfig.name}. I would love to hear from you!`,
-        url: `${siteConfig.baseUrl}/contact`,
+        url: buildCanonicalUrl('/contact'),
         siteName: siteConfig.name,
     },
 };

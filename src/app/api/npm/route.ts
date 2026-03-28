@@ -8,9 +8,10 @@ import type { PackageDetails, PackageDlData } from '@/types/npm';
 
 export async function GET(req: NextRequest) {
     try {
-        const pkg = req.nextUrl.searchParams.get('package') || 'nhb-toolbox';
-        const start = req.nextUrl.searchParams.get('start') || NPM_START;
-        const end = req.nextUrl.searchParams.get('end') || getTimestamp().split('T')[0];
+        const { searchParams } = req.nextUrl;
+        const pkg = searchParams.get('package') || 'nhb-toolbox';
+        const start = searchParams.get('start') || NPM_START;
+        const end = searchParams.get('end') || getTimestamp().split('T')[0];
 
         const [downRes, pkgRes] = await Promise.all([
             axios.get<PackageDlData>(

@@ -3,17 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useBreakPoint, useMount } from 'nhb-hooks';
+import type { Maybe } from 'nhb-toolbox/types';
 import { useCallback, useEffect, useState } from 'react';
 import ChatArea from '@/app/messages/_components/ChatArea';
 import ConversationList from '@/app/messages/_components/ConversationList';
 import { MessagesPageSkeleton } from '@/components/misc/skeletons';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
-import type { Uncertain } from '@/types';
 import type { Conversation, UserResult } from '@/types/messages';
 
 type Props = {
-    chatId: Uncertain<string>;
+    chatId: Maybe<string>;
 };
 
 /** Messages page — Telegram-style split layout with URL-driven conversation selection. */

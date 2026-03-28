@@ -21,14 +21,13 @@ import {
     buildOpenGraphImages,
     eliminateEmptyStrings,
 } from '@/lib/utils';
+import type { Params } from '@/types';
 import type { SelectProject } from '@/types/projects';
 
 export const revalidate = 60;
 
 /** Generate metadata for project detail page. */
-export async function generateMetadata({
-    params,
-}: PageProps<'/projects/[id]'>): Promise<Metadata> {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { id } = await params;
 
     try {
@@ -70,7 +69,7 @@ export async function generateMetadata({
 }
 
 /** Project detail page. */
-export default async function ProjectDetailPage({ params }: PageProps<'/projects/[id]'>) {
+export default async function ProjectDetailPage({ params }: Params) {
     const { id } = await params;
 
     let project: SelectProject | undefined;

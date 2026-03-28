@@ -17,6 +17,7 @@ import { db } from '@/lib/drizzle';
 import { blogCategories, blogs, blogTags, categories, tags } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
 import { buildCanonicalUrl, buildCloudinaryUrl, stripHtml } from '@/lib/utils';
+import type { SearchParams } from '@/types';
 import type { RecentBlog } from '@/types/blogs';
 
 export const revalidate = 60; // ISR: revalidate every minute
@@ -35,9 +36,7 @@ export const metadata: Metadata = {
     },
 };
 
-interface ParamProps {
-    searchParams: Promise<{ tag?: string; category?: string; search?: string }>;
-}
+type ParamProps = SearchParams<'tag' | 'category' | 'search'>;
 
 export default async function BlogsPage({ searchParams }: ParamProps) {
     const params = await searchParams;

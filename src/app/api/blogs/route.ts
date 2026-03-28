@@ -17,7 +17,7 @@ import { CreateBlogSchema } from '@/lib/zod-schema/blogs';
  */
 export async function GET(req: NextRequest) {
     try {
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = req.nextUrl;
         const page = +(searchParams.get('page') || '1');
         const limit = +(searchParams.get('limit') || '12');
         const tag = searchParams.get('tag');

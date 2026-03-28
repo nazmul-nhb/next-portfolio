@@ -9,12 +9,11 @@ import {
     buildOpenGraphImages,
     stripHtml,
 } from '@/lib/utils';
+import type { Params } from '@/types';
 import type { SingleBlogRes } from '@/types/blogs';
 import SingleBlogPage from './_components/SingleBlogPage';
 
-export async function generateMetadata({
-    params,
-}: PageProps<'/blogs/[slug]'>): Promise<Metadata> {
+export async function generateMetadata({ params }: Params<'slug'>): Promise<Metadata> {
     const { slug } = await params;
 
     try {
@@ -69,7 +68,7 @@ export async function generateMetadata({
     }
 }
 
-export default async function BlogPostPage({ params }: PageProps<'/blogs/[slug]'>) {
+export default async function BlogPostPage({ params }: Params<'slug'>) {
     try {
         const { slug } = await params;
 

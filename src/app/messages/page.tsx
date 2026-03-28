@@ -1,13 +1,13 @@
+import type { Metadata } from 'next';
 import ConvMessage from '@/app/messages/_components/ConvMessage';
-import type { Uncertain } from '@/types';
+import type { SearchParams } from '@/types';
 
-type SearchParams = {
-    searchParams: Promise<{
-        chat: Uncertain<string>;
-    }>;
+export const metadata: Metadata = {
+    title: 'Messages',
+    description: 'View and manage your messages.',
 };
 
-export default async function MessagePage({ searchParams }: SearchParams) {
+export default async function MessagePage({ searchParams }: SearchParams<'chat'>) {
     const { chat } = await searchParams;
 
     return <ConvMessage chatId={chat} />;

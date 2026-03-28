@@ -17,8 +17,7 @@ export async function GET(req: NextRequest) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const { searchParams } = new URL(req.url);
-        const query = searchParams.get('q');
+        const query = req.nextUrl.searchParams.get('q');
 
         if (!query || query.trim().length < 2) {
             return sendResponse('User', 'GET', []);

@@ -113,8 +113,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Unauthorized', 401);
         }
 
-        const { searchParams } = new URL(req.url);
-        const id = searchParams.get('id');
+        const id = req.nextUrl.searchParams.get('id');
 
         if (!id) {
             return sendErrorResponse('User ID is required', 400);

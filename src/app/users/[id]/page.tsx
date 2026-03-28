@@ -19,12 +19,10 @@ import {
     buildOpenGraphImages,
     isAdminUser,
 } from '@/lib/utils';
-import type { UserRole } from '@/types';
+import type { Params, UserRole } from '@/types';
 
 /** Generate metadata for user profile page. */
-export async function generateMetadata({
-    params,
-}: PageProps<'/users/[id]'>): Promise<Metadata> {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { id } = await params;
 
     try {
@@ -81,7 +79,7 @@ type UserBlog = {
 };
 
 /** Public user profile page. */
-export default async function UserProfilePage({ params }: PageProps<'/users/[id]'>) {
+export default async function UserProfilePage({ params }: Params) {
     const { id } = await params;
 
     let user: UserProfile | undefined;

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/drizzle/schema';
+import type { Params } from '@/types';
 import { EditProjectClient } from './_components/EditProjectClient';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     title: 'Edit Project',
 };
 
-export default async function EditProjectPage({ params }: PageProps<'/admin/projects/[id]'>) {
+export default async function EditProjectPage({ params }: Params) {
     const resolvedParams = await params;
     const id = +resolvedParams.id;
 

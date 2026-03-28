@@ -9,6 +9,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema/polls';
 import { VoteSchema } from '@/lib/zod-schema/polls';
+import type { Params } from '@/types';
 import { getPollStatus } from '../../route';
 
 /**
@@ -16,7 +17,7 @@ import { getPollStatus } from '../../route';
  * Supports changing votes: if the user already voted, their vote is moved to the new option.
  * Prevents duplicate votes using voterHash (IP+UserAgent) or userId.
  */
-export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: NextRequest, { params }: Params) {
     try {
         const { id } = await params;
         const pollId = Number(id);
@@ -148,10 +149,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
  * DELETE /api/tools/polls/:id/vote - unvote (remove vote) from a poll.
  * Only allowed for logged-in users whose IP+UserAgent match.
  */
-export async function DELETE(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: Params) {
     try {
         const { id } = await params;
         const pollId = Number(id);

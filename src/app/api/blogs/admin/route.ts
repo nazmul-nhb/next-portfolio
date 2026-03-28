@@ -98,8 +98,7 @@ export async function DELETE(req: NextRequest) {
             return sendErrorResponse('Forbidden', 403);
         }
 
-        const { searchParams } = new URL(req.url);
-        const blogId = +(searchParams.get('id') || '0');
+        const blogId = +(req.nextUrl.searchParams.get('id') || '0');
 
         if (!blogId) {
             return sendErrorResponse('Blog ID is required', 400);

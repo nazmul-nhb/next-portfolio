@@ -6,6 +6,7 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { polls } from '@/lib/drizzle/schema/polls';
 import { buildCanonicalUrl } from '@/lib/utils';
+import type { Params } from '@/types';
 import { OgImageLayout } from '../../../_og/OgImageLayout';
 
 export const size = {
@@ -15,7 +16,7 @@ export const size = {
 
 export const contentType = 'image/png';
 
-export default async function Image({ params }: { params: Promise<{ id: string }> }) {
+export default async function Image({ params }: Params) {
     const { id } = await params;
 
     let question = 'Crowd Poll';

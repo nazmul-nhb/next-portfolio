@@ -157,7 +157,7 @@ export function contactAutoReplyTemplate(name: string): string {
     </p>
 
     <div style="text-align:center;">
-        <a href="${siteConfig.baseUrl}" style="${s.btn}">
+        <a href="${siteConfig.baseUrl}" rel="noopener noreferrer" style="${s.btn}" target="_blank">
             Visit My Website
         </a>
     </div>`;
@@ -185,7 +185,7 @@ export function welcomeEmailTemplate(name: string): string {
     </p>
 
     <div style="text-align:center;">
-        <a href="${siteConfig.baseUrl}/blogs/new" style="${s.btn}">
+        <a href="${siteConfig.baseUrl}/blogs/new" rel="noopener noreferrer" style="${s.btn}" target="_blank">
             Start Writing
         </a>
     </div>`;

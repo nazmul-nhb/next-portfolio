@@ -1,6 +1,7 @@
 import type { Route } from 'next';
 import type { HttpStatusCode } from 'nhb-toolbox/http-status/types';
 import type { GenericObject } from 'nhb-toolbox/object/types';
+import type { Maybe } from 'nhb-toolbox/types';
 import type React from 'react';
 import type { ReactNode, SVGProps } from 'react';
 import type { SiteConfig } from '@/configs/site';
@@ -95,3 +96,9 @@ export type ReplaceDate<T extends GenericObject> = {
 };
 
 export type FontId = (typeof FONT_OPTIONS)[number]['value'];
+
+export type Params<Key extends string = 'id'> = { params: Promise<{ [K in Key]: string }> };
+
+export type SearchParams<Key extends string> = {
+    searchParams: Promise<{ [K in Key]: Maybe<string> }>;
+};

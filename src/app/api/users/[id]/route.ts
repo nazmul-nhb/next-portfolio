@@ -3,8 +3,7 @@ import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { db } from '@/lib/drizzle';
 import { users } from '@/lib/drizzle/schema/users';
-
-type Params = { params: Promise<{ id: string }> };
+import type { Params } from '@/types';
 
 /**
  * GET /api/users/[id] - Get a user's public profile by ID.

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/drizzle';
 import { skills } from '@/lib/drizzle/schema';
+import type { Params } from '@/types';
 import { EditSkillClient } from './_components/EditSkillClient';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     title: 'Edit Skill',
 };
 
-export default async function EditSkillPage({ params }: PageProps<'/admin/skills/[id]'>) {
+export default async function EditSkillPage({ params }: Params) {
     const resolvedParams = await params;
     const id = +resolvedParams.id;
 

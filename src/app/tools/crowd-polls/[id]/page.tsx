@@ -6,11 +6,10 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { polls } from '@/lib/drizzle/schema/polls';
 import { buildCanonicalUrl } from '@/lib/utils';
+import type { Params } from '@/types';
 import { PollDetails } from './_components/PollDetails';
 
-type PollPageProps = { params: Promise<{ id: string }> };
-
-export async function generateMetadata({ params }: PollPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { id } = await params;
 
     try {
@@ -40,7 +39,7 @@ export async function generateMetadata({ params }: PollPageProps): Promise<Metad
     }
 }
 
-export default async function PollDetailPage({ params }: PollPageProps) {
+export default async function PollDetailPage({ params }: Params) {
     const { id } = await params;
     const pollId = Number(id);
 

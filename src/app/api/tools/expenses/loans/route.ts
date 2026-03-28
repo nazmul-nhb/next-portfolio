@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         }
 
         const userId = +session.user.id;
-        const { searchParams } = new URL(req.url);
+        const { searchParams } = req.nextUrl;
         const type = searchParams.get('type');
         const status = searchParams.get('status');
 
