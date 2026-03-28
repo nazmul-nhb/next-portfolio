@@ -120,9 +120,10 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                     View Projects <ArrowRight className="size-4" />
                                 </Link>
                             </Button>
-                            <Button size="lg" variant="outline">
-                                <FaTools className="size-4" />
-                                <Link href="/tools">Explore Tools</Link>
+                            <Button asChild size="lg" variant="outline">
+                                <Link href="/tools">
+                                    <FaTools className="size-4" /> Explore Tools
+                                </Link>
                             </Button>
                             <Button asChild size="lg">
                                 <Link href="/contact#send-message">
