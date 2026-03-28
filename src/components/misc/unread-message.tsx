@@ -2,10 +2,18 @@
 
 import { MessageCircleQuestionMark, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { isNumber } from 'nhb-toolbox';
 import FloatingButton from '@/components/ui/floating-button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { useUserProfile } from '@/lib/hooks/use-user';
+import type { Uncertain } from '@/types';
 import type { ContactMessage } from '@/types/messages';
+
+/** Utility function to truncate unread message counts for display. */
+const truncateCount = (count: Uncertain<number>, max = 99) => {
+    if (!isNumber(count)) return 0;
+    return count > max ? `${max}+` : count;
+};
 
 export function AdminUnreadMessage() {
     const router = useRouter();
@@ -25,7 +33,7 @@ export function AdminUnreadMessage() {
         <div className="relative">
             <MessageCircleQuestionMark className="animate-bounce size-5" />
             <span className="absolute -top-3.5 -right-2.5 text-xs font-cascadia p-0.5">
-                {isLoading ? 0 : messages?.length}
+                {isLoading ? 0 : truncateCount(messages?.length)}
             </span>
         </div>
     );
@@ -64,7 +72,7 @@ export function UnreadMessage() {
             <MessageSquare className="size-4" />
             {user && conversations.unread_count > 0 && (
                 <span className="absolute -top-3 -right-2 text-xs font-source-sans font-semibold p-0.5 size-4.5 flex items-center justify-center rounded-full bg-red-600 text-white">
-                    {isLoading ? 0 : conversations?.unread_count}
+                    {isLoading ? 0 : truncateCount(conversations?.unread_count)}
                 </span>
             )}
         </div>
