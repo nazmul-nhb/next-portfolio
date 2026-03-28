@@ -6,6 +6,7 @@ import UserCard from '@/app/admin/users/_components/UserCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useApiQuery } from '@/lib/hooks/use-api';
+import { isAdminUser } from '@/lib/utils';
 import type { RawUser } from '@/types/users';
 
 export function UsersClient({ initialData }: { initialData: RawUser[] }) {
@@ -24,7 +25,7 @@ export function UsersClient({ initialData }: { initialData: RawUser[] }) {
         });
     }, [search, users]);
 
-    const adminCount = users.filter((u) => u.role === 'admin').length;
+    const adminCount = users.filter((u) => isAdminUser(u.role)).length;
     const activeCount = users.filter((u) => u.is_active).length;
 
     return (

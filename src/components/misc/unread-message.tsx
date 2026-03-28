@@ -6,6 +6,7 @@ import { isNumber } from 'nhb-toolbox';
 import FloatingButton from '@/components/ui/floating-button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { useUserProfile } from '@/lib/hooks/use-user';
+import { isAdminUser } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 import type { ContactMessage } from '@/types/messages';
 
@@ -23,7 +24,7 @@ export function AdminUnreadMessage() {
     const { data: messages, isLoading } = useApiQuery<ContactMessage[]>(
         '/api/contact?unread=true',
         {
-            enabled: user?.role === 'admin',
+            enabled: isAdminUser(user?.role),
             refetchInterval: 5000,
             queryKey: ['unread-messages'],
         }
@@ -38,7 +39,7 @@ export function AdminUnreadMessage() {
         </div>
     );
 
-    return user?.role === 'admin' && messages?.length ? (
+    return isAdminUser(user?.role) && messages?.length ? (
         <FloatingButton
             className="bottom-20 right-4"
             icon={MessageCount}
@@ -62,7 +63,7 @@ export function UnreadMessage() {
         '/api/messages/conversations/unread',
         {
             enabled: user != null,
-            refetchInterval: 5000,
+            refetchInterval: 15000,
             queryKey: ['unread-conversations'],
         }
     );

@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { deleteFromCloudinary } from '@/lib/actions/cloudinary';
 import { useApiMutation } from '@/lib/hooks/use-api';
-import { cn } from '@/lib/utils';
+import { cn, isAdminUser } from '@/lib/utils';
 import type { UserRole } from '@/types';
 import type { RawUser } from '@/types/users';
 
@@ -52,13 +52,15 @@ export default function UserCard({ userData }: Props) {
     );
 
     const handleToggleRole = (user: RawUser) => {
-        const newRole = user.role === 'admin' ? 'user' : 'admin';
+        const newRole = isAdminUser(user.role) ? 'user' : 'admin';
+
+        const isAdmin = isAdminUser(newRole);
 
         confirmToast({
-            title: `${newRole === 'admin' ? 'Promote' : 'Demote'} "${user.name}"?`,
-            description: `This will ${newRole === 'admin' ? 'grant admin privileges to' : 'remove admin privileges from'} this user.`,
-            confirmText: newRole === 'admin' ? 'Promote' : 'Demote',
-            confirmButtonVariant: newRole === 'admin' ? 'default' : 'destructive',
+            title: `${isAdmin ? 'Promote' : 'Demote'} "${user.name}"?`,
+            description: `This will ${isAdmin ? 'grant admin privileges to' : 'remove admin privileges from'} this user.`,
+            confirmText: isAdmin ? 'Promote' : 'Demote',
+            confirmButtonVariant: isAdmin ? 'default' : 'destructive',
             onConfirm: () => {
                 updateUser({ user_id: user.id, role: newRole });
             },
@@ -103,6 +105,8 @@ export default function UserCard({ userData }: Props) {
         });
     };
 
+    const isAdmin = isAdminUser(userData.role);
+
     return (
         <Card
             className={cn(
@@ -115,7 +119,7 @@ export default function UserCard({ userData }: Props) {
             <div
                 className={cn(
                     'absolute inset-x-0 top-0 h-1',
-                    userData.role === 'admin' ? 'bg-amber-500' : 'bg-primary/30'
+                    isAdmin ? 'bg-amber-500' : 'bg-primary/30'
                 )}
             />
 
@@ -144,7 +148,7 @@ export default function UserCard({ userData }: Props) {
                     {/* Actions */}
                     <div className="flex shrink-0 gap-0.5">
                         <SmartTooltip
-                            content={userData.role === 'admin' ? 'Remove admin' : 'Make admin'}
+                            content={isAdmin ? 'Remove admin' : 'Make admin'}
                             trigger={
                                 <Button
                                     disabled={isUpdating}
@@ -152,7 +156,7 @@ export default function UserCard({ userData }: Props) {
                                     size="icon-sm"
                                     variant="ghost"
                                 >
-                                    {userData.role === 'admin' ? (
+                                    {isAdmin ? (
                                         <ShieldOff className="size-4" />
                                     ) : (
                                         <Shield className="size-4" />
@@ -198,7 +202,7 @@ export default function UserCard({ userData }: Props) {
 
                 {/* Badges */}
                 <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                    {userData.role === 'admin' && (
+                    {isAdmin && (
                         <Badge
                             className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
                             variant="outline"

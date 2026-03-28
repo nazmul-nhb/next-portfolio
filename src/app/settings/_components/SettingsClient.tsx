@@ -21,7 +21,7 @@ import {
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { useUpdateProfile, useUserProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, hasErrorMessage } from '@/lib/utils';
+import { buildCloudinaryUrl, hasErrorMessage, isAdminUser } from '@/lib/utils';
 
 /**
  * Settings page client component with profile editing and email verification.
@@ -278,7 +278,7 @@ export function SettingsClient() {
                         <span className="text-sm text-green-700 dark:text-green-300">
                             Email verified
                         </span>
-                        {profile.role === 'admin' && (
+                        {isAdminUser(profile.role) && (
                             <span className="ml-auto flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary">
                                 <Shield className="size-3.5" />
                                 Admin

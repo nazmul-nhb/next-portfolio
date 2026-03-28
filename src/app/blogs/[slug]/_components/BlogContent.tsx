@@ -16,7 +16,7 @@ import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl } from '@/lib/utils';
+import { buildCloudinaryUrl, isAdminUser } from '@/lib/utils';
 import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
 
 interface BlogContentProps {
@@ -72,16 +72,17 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                     </h1>
 
                     {/* Edit button - visible to author and admin */}
-                    {profile && (blog.author.id === profile.id || profile.role === 'admin') && (
-                        <div className="mb-4">
-                            <Button asChild size="sm" variant="outline">
-                                <Link href={`/blogs/${blog.slug}/edit`}>
-                                    <Edit className="mr-2 h-3.5 w-3.5" />
-                                    Edit Post
-                                </Link>
-                            </Button>
-                        </div>
-                    )}
+                    {profile &&
+                        (blog.author.id === profile.id || isAdminUser(profile.role)) && (
+                            <div className="mb-4">
+                                <Button asChild size="sm" variant="outline">
+                                    <Link href={`/blogs/${blog.slug}/edit`}>
+                                        <Edit className="mr-2 h-3.5 w-3.5" />
+                                        Edit Post
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
 
                     {/* Author & meta */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">

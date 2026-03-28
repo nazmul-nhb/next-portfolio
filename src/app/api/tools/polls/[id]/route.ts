@@ -9,6 +9,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema/polls';
 import { users } from '@/lib/drizzle/schema/users';
+import { isAdminUser } from '@/lib/utils';
 import { UpdatePollSchema } from '@/lib/zod-schema/polls';
 import type { PollDetail, PollVoterDetail } from '@/types/polls';
 import { generateVoterHash, getPollStatus } from '../route';
@@ -28,7 +29,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         const session = await auth();
         const userId = session?.user?.id ? +session.user.id : null;
-        const isAdmin = session?.user?.role === 'admin';
         const clientIp = req.headers.get('x-forwarded-for') || '0.0.0.0';
         const userAgent = req.headers.get('user-agent') || 'unknown';
         const voterHash = generateVoterHash(clientIp, userAgent);
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         // Admin can see voter details (only logged-in user votes)
         let voters: PollVoterDetail[] | undefined;
-        if (isAdmin) {
+        if (isAdminUser(session?.user.role)) {
             const voterRows = await db
                 .select({
                     user_id: pollVotes.user_id,
@@ -172,7 +172,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
 
         const userId = +session.user.id;
-        const isAdmin = session.user.role === 'admin';
 
         const [poll] = await db.select().from(polls).where(eq(polls.id, pollId));
         if (!poll) {
@@ -180,7 +179,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
 
         // Only admin or poll creator can update
-        if (!isAdmin && poll.user_id !== userId) {
+        if (!isAdminUser(session.user.role) && poll.user_id !== userId) {
             return sendErrorResponse('Not authorized to update this poll', 403);
         }
 
@@ -238,7 +237,6 @@ export async function DELETE(
         }
 
         const userId = +session.user.id;
-        const isAdmin = session.user.role === 'admin';
 
         const [poll] = await db.select().from(polls).where(eq(polls.id, pollId));
         if (!poll) {
@@ -246,7 +244,7 @@ export async function DELETE(
         }
 
         // Only admin or poll creator can delete
-        if (!isAdmin && poll.user_id !== userId) {
+        if (!isAdminUser(session.user.role) && poll.user_id !== userId) {
             return sendErrorResponse('Not authorized to delete this poll', 403);
         }
 

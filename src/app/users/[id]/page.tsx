@@ -13,7 +13,12 @@ import { siteConfig } from '@/configs/site';
 import { db } from '@/lib/drizzle';
 import { blogs, comments } from '@/lib/drizzle/schema/blogs';
 import { users } from '@/lib/drizzle/schema/users';
-import { buildCanonicalUrl, buildCloudinaryUrl, buildOpenGraphImages } from '@/lib/utils';
+import {
+    buildCanonicalUrl,
+    buildCloudinaryUrl,
+    buildOpenGraphImages,
+    isAdminUser,
+} from '@/lib/utils';
 import type { UserRole } from '@/types';
 
 /** Generate metadata for user profile page. */
@@ -150,7 +155,7 @@ export default async function UserProfilePage({ params }: PageProps<'/users/[id]
                         <div className="flex-1">
                             <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
                                 <h1 className="text-2xl md:text-3xl font-bold">{user.name}</h1>
-                                {user.role === 'admin' && (
+                                {isAdminUser(user.role) && (
                                     <Badge
                                         className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
                                         variant="outline"

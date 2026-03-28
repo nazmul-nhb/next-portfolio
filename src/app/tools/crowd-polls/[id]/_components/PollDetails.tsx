@@ -28,7 +28,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildLocalISOString, toDateTimeLocalValue } from '@/lib/utils';
+import { buildLocalISOString, isAdminUser, toDateTimeLocalValue } from '@/lib/utils';
 import type { PollDetailResponse } from '@/types/polls';
 
 type VoteCast = { poll_id: number; option_id: number };
@@ -43,7 +43,7 @@ export function PollDetails({ pollId }: { pollId: number }) {
     const [editEndDate, setEditEndDate] = useState('');
 
     const userId = profile?.id;
-    const isAdmin = profile?.role === 'admin';
+    const isAdmin = isAdminUser(profile?.role);
 
     const { data: poll, isLoading } = useApiQuery<PollDetailResponse>(
         `/api/tools/polls/${pollId}`,

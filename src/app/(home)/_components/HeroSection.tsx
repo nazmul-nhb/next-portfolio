@@ -17,7 +17,7 @@ import {
 } from '@/lib/actions/cloudinary';
 import { useUpdateProfile } from '@/lib/hooks/use-user';
 import { useUserStore } from '@/lib/store/user-store';
-import { buildCloudinaryUrl, cn } from '@/lib/utils';
+import { buildCloudinaryUrl, cn, isAdminUser } from '@/lib/utils';
 import type { Uncertain } from '@/types';
 
 interface HeroSectionProps {
@@ -32,7 +32,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
     const { profile } = useUserStore();
     const { mutate: updateProfile, isPending } = useUpdateProfile();
 
-    const isAdmin = profile?.role === 'admin' && profile?.email === ENV.adminEmail;
+    const isAdmin = isAdminUser(profile?.role) && profile?.email === ENV.adminEmail;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [heroImage, setHeroImage] = useState(adminImage || null);

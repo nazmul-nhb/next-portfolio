@@ -16,6 +16,7 @@ import NavbarDocked from '@/components/nav/nav-docked';
 import NavMobileDrawer from '@/components/nav/nav-mobile';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/configs/site';
+import { isAdminUser } from '@/lib/utils';
 import type { Tab } from '@/types';
 
 /** Main navigation bar with animated tabs, search, and responsive drawer. */
@@ -23,7 +24,7 @@ export default function Navbar() {
     const { data: session, status } = useSession();
     const pathname = usePathname();
     const router = useRouter();
-    const isAdmin = session?.user?.role === 'admin';
+    const isAdmin = isAdminUser(session?.user?.role);
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);

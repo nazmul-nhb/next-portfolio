@@ -10,6 +10,7 @@ import {
     isString,
 } from 'nhb-toolbox';
 import type { $UTCOffset, TimeDuration } from 'nhb-toolbox/date/types';
+import type { LooseLiteral } from 'nhb-toolbox/utils/types';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
@@ -28,6 +29,15 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function isAdminPath(pathname: string) {
     return pathname.startsWith('/admin');
+}
+
+/**
+ * * Type guard to check if a user role is `'admin'`.
+ * @param role The user role to check, which can be uncertain and of type `string` or `UserRole`.
+ * @returns `true` if the role is `'admin'`, otherwise `false`. This narrows the type to `'admin'` if true.
+ */
+export function isAdminUser(role: Uncertain<LooseLiteral<UserRole>>): role is 'admin' {
+    return isNonEmptyString(role) && role === 'admin';
 }
 
 export function isValidRole(role: Uncertain<string>): role is UserRole {
