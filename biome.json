@@ -3,13 +3,12 @@
     "vcs": {
         "enabled": true,
         "clientKind": "git",
-        "useIgnoreFile": true
+        "useIgnoreFile": false
     },
     "files": {
         "ignoreUnknown": true,
         "includes": [
             "**",
-            "__test.ts",
             "!node_modules",
             "!.next",
             "!dist",
@@ -76,5 +75,16 @@
             "trailingCommas": "es5",
             "jsxQuoteStyle": "double"
         }
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["__ideas__/**/*.ts", "__*.ts"],
+            "linter": {
+                "rules": {
+                    "correctness": { "noUnusedVariables": "off" },
+                    "suspicious": { "noConsole": "off" }
+                }
+            }
+        }
+    ]
 }
