@@ -37,6 +37,7 @@ import type { ChildrenProp } from '@/types';
 
 export const metadata: Metadata = {
     title: {
+        absolute: `${siteConfig.name} - Programmer & Full-Stack Web Developer`,
         default: siteConfig.name,
         template: `%s » ${siteConfig.name}`,
     },
@@ -51,6 +52,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: {
+            absolute: `${siteConfig.name} - Programmer & Full-Stack Web Developer`,
             default: siteConfig.name,
             template: `%s » ${siteConfig.name}`,
         },
