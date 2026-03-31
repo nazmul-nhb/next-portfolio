@@ -8,9 +8,8 @@ import { formatDate } from 'nhb-toolbox';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import ReactionsShare from '@/app/blogs/[slug]/_components/ReactionsShare';
 import { FadeIn, FadeInUp } from '@/components/misc/animations';
 import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,15 @@ import { siteConfig } from '@/configs/site';
 import { useUserStore } from '@/lib/store/user-store';
 import { buildCloudinaryUrl, isAdminUser } from '@/lib/utils';
 import type { BlogCategory, BlogDetails, BlogTag } from '@/types/blogs';
+import ReactionsShare from '../_components/ReactionsShare';
+
+const customSchema = {
+    ...defaultSchema, // Start with the secure GitHub default schema.
+    attributes: {
+        ...defaultSchema.attributes, // Retain all existing attribute rules.
+        '*': [...(defaultSchema.attributes?.['*'] || []), 'style'], // Add 'style' to all elements.
+    },
+};
 
 interface BlogContentProps {
     blog: BlogDetails;
@@ -133,10 +141,14 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
             </FadeInUp>
 
             {/* Blog content - Markdown rendered */}
-            <FadeInUp delay={0.2}>
+            <FadeInUp>
                 <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-pre:bg-muted prose-pre:border prose-pre:border-border">
                     <Markdown
-                        rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+                        rehypePlugins={[
+                            rehypeRaw,
+                            [rehypeSanitize, customSchema],
+                            rehypeHighlight,
+                        ]}
                         remarkPlugins={[remarkGfm]}
                     >
                         {blog.content}
