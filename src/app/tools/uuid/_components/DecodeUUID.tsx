@@ -50,12 +50,8 @@ export default function DecodeUUID() {
     const store = useStorage<string>({
         key: 'nhb-uuid',
         type: 'session',
-        deserialize: (value) => {
-            return value;
-        },
-        serialize: (value) => {
-            return value;
-        },
+        serialize: (value) => value,
+        deserialize: (value) => value,
     });
 
     const decodeForm = useForm<DecodeUUIDFormValues>({

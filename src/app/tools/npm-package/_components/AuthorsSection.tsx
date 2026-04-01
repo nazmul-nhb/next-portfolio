@@ -30,17 +30,17 @@ export function AuthorsSection({ data, variants }: AuthorsSectionProps) {
                     <CardContent className="space-y-2">
                         {data.author.name && (
                             <div>
-                                <p className="text-xs font-medium text-muted-foreground">
+                                <h3 className="text-xs font-medium text-muted-foreground">
                                     Name
-                                </p>
+                                </h3>
                                 <p className="text-sm font-medium">{data.author.name}</p>
                             </div>
                         )}
                         {(data.author.email || data.author.url) && (
                             <Fragment>
-                                <p className="text-xs font-medium text-muted-foreground">
+                                <h3 className="text-xs font-medium text-muted-foreground">
                                     Contact
-                                </p>
+                                </h3>
                                 <div className="flex flex-wrap items-center gap-3 mt-2">
                                     {data.author.email && (
                                         <a

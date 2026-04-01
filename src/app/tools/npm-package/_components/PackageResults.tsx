@@ -1,9 +1,11 @@
 import { motion, type Variants } from 'framer-motion';
-import { AlertCircle, Package } from 'lucide-react';
+import { AlertCircle, Package, PackageCheck, PackagePlus, UserRoundKey } from 'lucide-react';
+import InstallPackage from '@/app/tools/npm-package/_components/InstallPackage';
 import EmptyData from '@/components/misc/empty-data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { hasErrorMessage } from '@/lib/utils';
 import type { PackageResponse } from '@/types/npm';
 import { AuthorsSection } from './AuthorsSection';
@@ -126,8 +128,28 @@ export function PackageResults({
             variants={containerVariants}
         >
             <PackageStats data={data} variants={itemVariants} />
-            <PackageInfo data={data} variants={itemVariants} />
-            <AuthorsSection data={data} variants={itemVariants} />
+            <Tabs defaultValue="info">
+                <TabsList className="w-full" variant={'default'}>
+                    <TabsTrigger value="info">
+                        <PackageCheck className="size-3.5" /> Info
+                    </TabsTrigger>
+                    <TabsTrigger value="authors">
+                        <UserRoundKey className="size-3.5" /> Author(s)
+                    </TabsTrigger>
+                    <TabsTrigger value="install">
+                        <PackagePlus className="size-3.5" /> Install
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value="info">
+                    <PackageInfo data={data} variants={itemVariants} />
+                </TabsContent>
+                <TabsContent value="authors">
+                    <AuthorsSection data={data} variants={itemVariants} />
+                </TabsContent>
+                <TabsContent value="install">
+                    <InstallPackage packageName={data.package} variants={itemVariants} />
+                </TabsContent>
+            </Tabs>
         </motion.div>
     );
 }
