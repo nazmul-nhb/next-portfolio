@@ -1,5 +1,6 @@
 import { motion, type Variants } from 'framer-motion';
 import { CalendarClock, Download, Package } from 'lucide-react';
+import type { Keyof } from 'nhb-toolbox/utils/types';
 import CodeBlock from '@/components/misc/code-block';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -9,23 +10,23 @@ function formatNumber(num: number): string {
     return new Intl.NumberFormat('en-US').format(num);
 }
 
+const colorClasses = {
+    blue: 'text-blue-600 dark:text-blue-400',
+    emerald: 'text-emerald-600 dark:text-emerald-400',
+    purple: 'text-purple-600 dark:text-purple-400',
+    amber: 'text-amber-600 dark:text-amber-400',
+    pink: 'text-pink-600 dark:text-pink-400',
+} as const;
+
 interface StatCardProps {
     label: string;
     value: string | number;
     icon: React.ReactNode;
-    color: 'blue' | 'emerald' | 'purple' | 'amber' | 'pink';
+    color: Keyof<typeof colorClasses>;
     className?: string;
 }
 
 function StatCard({ label, value, icon, color, className }: StatCardProps) {
-    const colorClasses = {
-        blue: 'text-blue-600 dark:text-blue-400',
-        emerald: 'text-emerald-600 dark:text-emerald-400',
-        purple: 'text-purple-600 dark:text-purple-400',
-        amber: 'text-amber-600 dark:text-amber-400',
-        pink: 'text-pink-600 dark:text-pink-400',
-    };
-
     return (
         <motion.div
             animate={{ opacity: 1, scale: 1 }}

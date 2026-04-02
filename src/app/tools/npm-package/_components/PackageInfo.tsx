@@ -1,6 +1,6 @@
 import { motion, type Variants } from 'framer-motion';
 import { Code, Copyright, FileText, PackageCheck, PackagePlus } from 'lucide-react';
-import { formatDateRelative } from 'nhb-toolbox';
+import { formatDateRelative, isValidObject } from 'nhb-toolbox';
 import { FaGitAlt } from 'react-icons/fa';
 import { RiNpmjsLine } from 'react-icons/ri';
 import CodeBlock from '@/components/misc/code-block';
@@ -16,21 +16,20 @@ interface PackageInfoProps {
 }
 
 export function PackageInfo({ data, variants }: PackageInfoProps) {
-    if (!data.description && !data['dist-tags'] && !data.license && !data.homepage) {
-        return null;
-    }
+    const distTags = data['dist-tags'];
 
     return (
         <motion.div variants={variants}>
             <Card>
-                <CardHeader className="flex justify-between items-center gap-2 flex-wrap">
+                <CardHeader className="flex justify-between items-center gap-2 flex-wrap select-none">
                     <CardTitle className="flex items-center gap-2">
                         <FileText className="size-5" />
                         Package Info
+                        {distTags?.latest && <Badge>Latest: {distTags.latest} </Badge>}
                     </CardTitle>
 
                     {data.license && (
-                        <Badge className="items-center gap-1 select-none">
+                        <Badge className="items-center gap-1" variant={'destructive'}>
                             <Copyright className="size-3.5" /> {data.license}
                         </Badge>
                     )}
@@ -106,18 +105,20 @@ export function PackageInfo({ data, variants }: PackageInfoProps) {
                         )}
                     </div>
 
-                    {data['dist-tags'] && Object.keys(data['dist-tags']).length > 0 && (
+                    {isValidObject(distTags) && (
                         <div>
                             <h3 className="text-xs font-medium text-muted-foreground mb-2">
                                 Version Tags
                             </h3>
                             <CodeBlock className="flex flex-wrap gap-2 rounded-none overflow-y-auto custom-scroll max-h-40 border py-2 px-1">
-                                {Object.entries(data['dist-tags']).map(([tag, version]) => (
-                                    <Badge key={tag} variant="secondary">
-                                        <Code className="size-3 mr-1" />
-                                        {tag}: {version}
-                                    </Badge>
-                                ))}
+                                {Object.entries(distTags)
+                                    .reverse()
+                                    .map(([tag, version]) => (
+                                        <Badge key={tag} variant="secondary">
+                                            <Code className="size-3 mr-1" />
+                                            {tag}: {version}
+                                        </Badge>
+                                    ))}
                             </CodeBlock>
                         </div>
                     )}

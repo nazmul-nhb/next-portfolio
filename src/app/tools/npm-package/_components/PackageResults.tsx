@@ -2,7 +2,6 @@ import { motion, type Variants } from 'framer-motion';
 import { AlertCircle, Package, PackageCheck, PackagePlus, UserRoundKey } from 'lucide-react';
 import InstallPackage from '@/app/tools/npm-package/_components/InstallPackage';
 import EmptyData from '@/components/misc/empty-data';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +12,7 @@ import { PackageInfo } from './PackageInfo';
 import { PackageStats } from './PackageStats';
 
 interface PackageResultsProps {
-    data: PackageResponse | null;
+    data: PackageResponse | undefined;
     error: Error | null;
     hasSearched: boolean;
     isLoading: boolean;
@@ -79,16 +78,19 @@ export function PackageResults({
     itemVariants,
 }: PackageResultsProps) {
     const errorMessage = hasErrorMessage(error)
-        ? error.message
+        ? error.message.includes('404')
+            ? 'Package not found. Please check the name and try again.'
+            : error.message
         : 'Failed to fetch package details';
 
     if (error) {
         return (
-            <Alert className="w-full border-2 h-full min-h-96" variant="destructive">
-                <AlertCircle className="size-5" />
-                <AlertTitle>Error Loading Package</AlertTitle>
-                <AlertDescription className="mt-2 text-sm">{errorMessage}</AlertDescription>
-            </Alert>
+            <EmptyData
+                className="text-red-600"
+                description={errorMessage}
+                Icon={AlertCircle}
+                title="Error Loading Package"
+            />
         );
     }
 

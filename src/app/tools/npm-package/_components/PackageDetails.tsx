@@ -3,7 +3,6 @@
 import type { Variants } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMount } from 'nhb-hooks';
 import { generateQueryParams, getTimestamp } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
@@ -13,6 +12,7 @@ import { useApiQuery } from '@/lib/hooks/use-api';
 import type { PackageResponse, PackageSearch } from '@/types/npm';
 import { PackageResults } from './PackageResults';
 import { PackageSearchForm } from './PackageSearchForm';
+import { useMount } from 'nhb-hooks';
 
 export default function NpmPackageDetails() {
     const router = useRouter();
@@ -31,7 +31,7 @@ export default function NpmPackageDetails() {
     );
 
     const apiEndpoint = useMemo(() => {
-        if (!initialPackage.trim()) return '/api/npm';
+        if (!initialPackage.trim()) return '/api/tools/npm';
 
         const params = generateQueryParams({
             package: initialPackage.trim(),
@@ -39,7 +39,7 @@ export default function NpmPackageDetails() {
             end: initialEnd,
         });
 
-        return `/api/npm${params}` as const;
+        return `/api/tools/npm${params}` as const;
     }, [initialPackage, initialStart, initialEnd]);
 
     const { data, isLoading, error } = useApiQuery<PackageResponse>(apiEndpoint, {
@@ -89,7 +89,7 @@ export default function NpmPackageDetails() {
         },
     };
 
-    const content = (
+    return useMount(
         <div className="space-y-8">
             <TitleWithShare
                 description="Search for any npm package and view comprehensive details including downloads, maintainers, repository, license, and more."
@@ -120,8 +120,8 @@ export default function NpmPackageDetails() {
 
                 <PackageResults
                     containerVariants={containerVariants}
-                    data={data || null}
-                    error={error as Error | null}
+                    data={data}
+                    error={error}
                     hasSearched={hasSearched}
                     isLoading={isLoading}
                     itemVariants={itemVariants}
@@ -129,6 +129,4 @@ export default function NpmPackageDetails() {
             </div>
         </div>
     );
-
-    return useMount(content);
 }

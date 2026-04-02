@@ -49,7 +49,10 @@ interface Repository {
 }
 
 interface DistTags {
+    alpha: string;
+    beta: string;
     next: string;
+    rc: string;
     latest: string;
     [tag: string]: string;
 }

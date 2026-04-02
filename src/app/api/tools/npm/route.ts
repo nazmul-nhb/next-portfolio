@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         ]);
 
         if (!pkgRes?.data || !downRes.data) {
-            return sendErrorResponse(`Cannot find package: ${pkg} on npm`);
+            return sendErrorResponse(`Cannot find package: ${pkg} on npm`, 404);
         }
 
         const data = pickFields(pkgRes.data, [...PKG_FIELDS]);
