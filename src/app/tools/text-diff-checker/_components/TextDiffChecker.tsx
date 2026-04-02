@@ -150,7 +150,7 @@ export default function TextDiffChecker() {
                     </Card>
 
                     <PoweredBy
-                        description="This tool uses string diff utilities for line-level and character-level diffs."
+                        description="This tool uses string `diff utilities` for line-level and character-level diffs."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/string/string-diff"
                     />
                 </div>

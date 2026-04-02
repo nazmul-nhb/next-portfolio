@@ -1001,7 +1001,7 @@ export default function ChartGenerator() {
 
                                 <PoweredBy
                                     className="mt-4"
-                                    description="This tool uses recharts for chart generation and rendering."
+                                    description="This tool uses `recharts` for chart generation and rendering."
                                     name="recharts"
                                     url="https://github.com/recharts/recharts"
                                 />

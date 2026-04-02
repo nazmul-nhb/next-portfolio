@@ -364,7 +364,7 @@ export default function TimezoneConverter() {
 
                             <PoweredBy
                                 className="mt-6"
-                                description="This tool uses Chronos.timeZone() for timezone conversions."
+                                description="This tool uses `Chronos.timeZone()` for timezone conversions."
                                 url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/conversion#timezone"
                             />
                         </CardContent>
@@ -396,7 +396,7 @@ export default function TimezoneConverter() {
                             </div>
                             <PoweredBy
                                 className="mt-6"
-                                description="This time updates in real-time using the useClock hook."
+                                description="This time updates in real-time using the `useClock` hook."
                                 name="nhb-hooks"
                                 url="https://github.com/nazmul-nhb/nhb-hooks/blob/main/README.md#useclock"
                             />

@@ -398,7 +398,7 @@ export default function ZodiacFinder() {
                 </Card>
             </div>
             <PoweredBy
-                description="This tool uses Chronos class from my open-source package to find zodiac match."
+                description="This tool uses `Chronos` class from my open-source package to find zodiac match."
                 url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/names#getzodiacsign"
             />
         </div>

@@ -43,7 +43,7 @@ export default function ManagePhotoCards() {
             />
 
             <PoweredBy
-                description="This tool uses Locality class from my open-source package to handle IndexedDB operations efficiently."
+                description="This tool uses `Locality` class from my open-source package to handle `IndexedDB` operations efficiently."
                 name="locality-idb"
                 url="https://github.com/nazmul-nhb/locality-idb?tab=readme-ov-file"
             />

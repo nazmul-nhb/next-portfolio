@@ -257,7 +257,7 @@ export default function QRCodeGenerator() {
                     </Card>
 
                     <PoweredBy
-                        description="This tool uses qrcode.react for fast, client-side QR code generation and rendering."
+                        description="This tool uses `qrcode.react` for fast, client-side QR code generation and rendering."
                         name="qrcode.react"
                         url="https://github.com/zpao/qrcode.react"
                     />

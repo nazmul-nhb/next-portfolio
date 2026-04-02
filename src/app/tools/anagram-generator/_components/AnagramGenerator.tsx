@@ -305,7 +305,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                         </CardContent>
                     </Card>
                     <PoweredBy
-                        description="This tool uses generateAnagrams(...) for unique anagram generation."
+                        description="This tool uses `generateAnagrams` for unique anagram generation."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/string/generateAnagrams"
                     />
                 </div>

@@ -310,7 +310,7 @@ export default function DifferenceCalculator() {
 
                         <PoweredBy
                             className="mt-6"
-                            description="This tool uses Chronos class from my open-source package to calculate date differences."
+                            description="This tool uses `Chronos` class from my open-source package to calculate date differences."
                             url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#diff"
                         />
                     </CardContent>

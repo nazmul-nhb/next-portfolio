@@ -518,7 +518,7 @@ export default function BaseConverter() {
                 </Card>
             </div>
             <PoweredBy
-                description="This tool uses TextCodec class from my open-source package to encode/decode among formats."
+                description="This tool uses `TextCodec` class from my open-source package to encode/decode among formats."
                 url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/TextCodec"
             />
         </div>

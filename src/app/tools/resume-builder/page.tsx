@@ -82,7 +82,7 @@ export default function ResumeBuilderPage() {
             />
 
             <PoweredBy
-                description="This tool uses Locality class from locality-idb package to handle IndexedDB operations efficiently."
+                description="This tool uses `Locality` class from `locality-idb` to handle `IndexedDB` operations efficiently."
                 name="locality-idb"
                 url="https://github.com/nazmul-nhb/locality-idb?tab=readme-ov-file"
             />

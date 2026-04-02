@@ -358,7 +358,7 @@ export default function WordCloudGenerator() {
                     </motion.div>
 
                     <PoweredBy
-                        description="Visual word cloud is generated using @isoterik/react-word-cloud."
+                        description="Visual word cloud is generated using `@isoterik/react-word-cloud`."
                         name="@isoterik/react-word-cloud"
                         url="https://github.com/isoteriksoftware/react-word-cloud.git"
                     />

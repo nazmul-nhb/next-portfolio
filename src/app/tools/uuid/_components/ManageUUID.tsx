@@ -100,7 +100,7 @@ export default function ManageUUID() {
 
                     <PoweredBy
                         className="mt-4"
-                        description="This tool uses uuid from my open-source package for pure JS UUID generation in both single and bulk modes."
+                        description="This tool uses `uuid` from my open-source package for pure JS UUID generation."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
                     />
                 </TabsContent>
@@ -109,7 +109,7 @@ export default function ManageUUID() {
 
                     <PoweredBy
                         className="mt-4"
-                        description="This tool uses uuid from my open-source package for pure JS UUID generation in both single and bulk modes."
+                        description="This tool uses `uuid` from my open-source package for pure JS UUID generation."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
                     />
                 </TabsContent>
@@ -119,7 +119,7 @@ export default function ManageUUID() {
 
                     <PoweredBy
                         className="mt-4"
-                        description="This tool uses decodeUUID from my open-source package to decode a UUID into its internal components."
+                        description="This tool uses `decodeUUID` from my open-source package to decode a UUID into its internal components."
                         url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/decodeUUID"
                     />
                 </TabsContent>

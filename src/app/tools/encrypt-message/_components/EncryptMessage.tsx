@@ -309,7 +309,7 @@ export default function EncryptMessage() {
                 </Card>
             </div>
             <PoweredBy
-                description="This tool uses Cipher class from my open-source package to encrypt/decrypt texts."
+                description="This tool uses `Cipher` class from my open-source package to encrypt/decrypt texts."
                 url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/Cipher"
             />
         </div>
