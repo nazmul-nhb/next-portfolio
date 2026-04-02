@@ -37,7 +37,7 @@ export async function CareerHighlightsSection() {
                     Experience & Education
                 </SectionHeading>
 
-                <StaggerContainer className="grid gap-6 lg:grid-cols-2">
+                <StaggerContainer className="grid gap-6 lg:grid-cols-2 select-none">
                     {recentExperiences.length > 0 && (
                         <MotionCard>
                             <div className="h-full rounded-xl border border-border/50 bg-card py-5 px-3 transition-all hover:shadow-md">

@@ -16,7 +16,7 @@ export default function ToolsSection() {
         <section className="py-8 sm:py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-4">
                 <div className="mb-12 flex items-start justify-between">
-                    <SectionHeading subtitle="Quick utilities for developers and everyday productivity">
+                    <SectionHeading subtitle="Quick utility tools for fun and everyday productivity">
                         Productivity Tools
                     </SectionHeading>
 
