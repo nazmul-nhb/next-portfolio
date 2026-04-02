@@ -3,6 +3,7 @@
 import type { Variants } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useMount } from 'nhb-hooks';
 import { generateQueryParams, getTimestamp } from 'nhb-toolbox';
 import { useCallback, useMemo, useState } from 'react';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
@@ -12,7 +13,6 @@ import { useApiQuery } from '@/lib/hooks/use-api';
 import type { PackageResponse, PackageSearch } from '@/types/npm';
 import { PackageResults } from './PackageResults';
 import { PackageSearchForm } from './PackageSearchForm';
-import { useMount } from 'nhb-hooks';
 
 export default function NpmPackageDetails() {
     const router = useRouter();

@@ -13,6 +13,7 @@ type PoweredByProps = {
     url: string;
     /** Short description explaining usage */
     description: string;
+    /** Additional CSS classes for styling */
     className?: string;
 };
 

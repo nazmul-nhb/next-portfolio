@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Package } from 'lucide-react';
+import { Package, Search } from 'lucide-react';
 import { getTimestamp } from 'nhb-toolbox';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
@@ -168,8 +168,12 @@ export function PackageSearchForm({
                         </div>
 
                         <div className="flex gap-3">
-                            <Button disabled={isLoading || !packageName.trim()} type="submit">
-                                {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+                            <Button
+                                disabled={isLoading || !packageName.trim()}
+                                loading={isLoading}
+                                type="submit"
+                            >
+                                {!isLoading && <Search className="size-4" />}
                                 {isLoading ? 'Searching...' : 'Search Package'}
                             </Button>
                             {hasSearched && (

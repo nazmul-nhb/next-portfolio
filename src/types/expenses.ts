@@ -1,13 +1,13 @@
+import type { CurrencyCode } from 'nhb-toolbox/number/types';
 import type {
+    expenses as expenseEntries,
     expenseTypeEnum,
     loanPayments,
-    loans,
     loanStatusEnum,
+    loans,
     loanTypeEnum,
     receipts,
-    expenses as expenseEntries,
 } from '@/lib/drizzle/schema/expenses';
-import type { CurrencyCode } from 'nhb-toolbox/number/types';
 
 export type ExpenseType = (typeof expenseTypeEnum.enumValues)[number];
 export type LoanType = (typeof loanTypeEnum.enumValues)[number];

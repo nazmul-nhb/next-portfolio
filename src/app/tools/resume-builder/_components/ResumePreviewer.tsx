@@ -2,6 +2,7 @@
 
 import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
+import { isString } from 'nhb-toolbox';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { Card } from '@/components/ui/card';
 import { DEFAULT_SECTION_LABELS } from '@/lib/resume-builder/defaults';
@@ -12,7 +13,6 @@ import {
     normalizeResumeHref,
     sortResumeSections,
 } from '@/lib/resume-builder/utils';
-import { isString } from 'nhb-toolbox';
 
 interface ResumePreviewerProps {
     config: ResumeConfig;

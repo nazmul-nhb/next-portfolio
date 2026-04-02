@@ -1,4 +1,5 @@
 import { Document, Image, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { isString } from 'nhb-toolbox';
 import { DEFAULT_SECTION_LABELS } from '@/lib/resume-builder/defaults';
 import type { CustomSection, ResumeConfig } from '@/lib/resume-builder/types';
 import {
@@ -8,7 +9,6 @@ import {
     normalizeResumeHref,
     sortResumeSections,
 } from '@/lib/resume-builder/utils';
-import { isString } from 'nhb-toolbox';
 
 const styles = StyleSheet.create({
     page: {

@@ -6,8 +6,8 @@ import { validateRequest } from '@/lib/actions/validateRequest';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { categories } from '@/lib/drizzle/schema/blogs';
-import { CreateCategorySchema } from '@/lib/zod-schema/blogs';
 import { slugify } from '@/lib/slugify';
+import { CreateCategorySchema } from '@/lib/zod-schema/blogs';
 
 interface RouteParams {
     params: Promise<{ id: string }>;

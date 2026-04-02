@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import type z from 'zod';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
 import { sendResponse } from '@/lib/actions/sendResponse';
 import { validateRequest } from '@/lib/actions/validateRequest';
@@ -7,7 +8,6 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { comments } from '@/lib/drizzle/schema/blogs';
 import { CreateCommentSchema } from '@/lib/zod-schema/blogs';
-import type z from 'zod';
 
 /**
  * POST /api/comments - Create a new comment on a blog post.
