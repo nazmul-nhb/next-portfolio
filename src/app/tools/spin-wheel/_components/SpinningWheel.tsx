@@ -22,6 +22,7 @@ import {
     truncateString,
 } from 'nhb-toolbox';
 import type { HSL } from 'nhb-toolbox/colors/types';
+import { Cipher } from 'nhb-toolbox/hash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
@@ -38,6 +39,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 
@@ -102,6 +104,8 @@ function describeArc(
     ].join(' ');
 }
 
+const cipher = new Cipher(ENV.cipherSecret);
+
 export default function SpinningWheel() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -138,24 +142,32 @@ export default function SpinningWheel() {
         const itemsParam = searchParams.get('items');
 
         if (isNonEmptyString(itemsParam)) {
-            const urlOptions = trimString(itemsParam.split(','));
+            try {
+                const decoded = cipher.decrypt(itemsParam);
 
-            if (urlOptions.length >= 2) {
-                if (urlOptions.length > 36) {
-                    toast.error('Maximum 36 options allowed, removing rest of the options!');
-                    setOptions(urlOptions.slice(0, 36));
+                const urlOptions = trimString(decoded.split(','));
+
+                if (urlOptions.length >= 2) {
+                    if (urlOptions.length > 36) {
+                        toast.error('Maximum 36 options allowed, removing extra options!');
+                        setOptions(urlOptions.slice(0, 36));
+                        return;
+                    }
+
+                    setOptions(urlOptions);
+
                     return;
                 }
-
-                setOptions(urlOptions);
-
+            } catch {
+                toast.error('Invalid wheel configuration in URL, loading defaults!');
+                setOptions(DEFAULT_OPTIONS);
                 return;
             }
         }
 
         if (optionsStore.value && optionsStore.value.length > 1) {
             if (optionsStore.value.length > 36) {
-                toast.error('Maximum 36 options allowed, removing rest of the options!');
+                toast.error('Maximum 36 options allowed, removing extra options!');
                 setOptions(optionsStore.value.slice(0, 36));
                 return;
             }
@@ -270,7 +282,9 @@ export default function SpinningWheel() {
     const sharableLink = useMemo(() => {
         if (options.length < 2) return '/tools/spin-wheel';
 
-        const query = generateQueryParams({ items: options.join(',') });
+        const encrypted = cipher.encrypt(options.join(','));
+
+        const query = generateQueryParams({ items: encrypted });
 
         return `/tools/spin-wheel${query}` as const;
     }, [options]);
