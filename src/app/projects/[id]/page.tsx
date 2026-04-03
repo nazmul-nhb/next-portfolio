@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { formatDate } from 'nhb-toolbox';
+import type { Maybe } from 'nhb-toolbox/types';
 import { FaGitAlt } from 'react-icons/fa';
 import ScreenshotGallery from '@/app/projects/[id]/_components/ScreenshotGallery';
 import { FadeInUp, SlideInLeft, SlideInRight } from '@/components/misc/animations';
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ProjectDetailPage({ params }: Params) {
     const { id } = await params;
 
-    let project: SelectProject | undefined;
+    let project: Maybe<SelectProject>;
 
     try {
         [project] = await db.select().from(projects).where(eq(projects.id, +id)).limit(1);
@@ -222,7 +223,7 @@ export default async function ProjectDetailPage({ params }: Params) {
                                 <div className="space-y-2">
                                     {repositories.map((repoLink, idx) => (
                                         <a
-                                            className="flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                                            className="w-fit flex items-center gap-2 text-sm font-medium text-foreground transition-all hover:text-primary border-b border-transparent hover:border-primary"
                                             href={repoLink}
                                             key={`${repoLink}-${idx}`}
                                             rel="noopener noreferrer"

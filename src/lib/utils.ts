@@ -180,8 +180,8 @@ export function stripHtml(input: unknown) {
 }
 
 /** Utility function to eliminate empty strings from an array. */
-export function eliminateEmptyStrings(arr: Uncertain<string>[]): string[] {
-    return [...arr].filter(isNonEmptyString);
+export function eliminateEmptyStrings<T extends string>(arr: Uncertain<T>[]): T[] {
+    return [...arr].filter(isNonEmptyString) as T[];
 }
 
 const _padAndFormat = (value: number, unit: string, pad = 2) => {
