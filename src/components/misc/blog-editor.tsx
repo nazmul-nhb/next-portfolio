@@ -3,6 +3,8 @@
 import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
 import { TextAlign } from '@tiptap/extension-text-align';
 import {
     BackgroundColor,
@@ -21,7 +23,6 @@ import {
     useEditorState,
 } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import type { LucideIcon } from 'lucide-react';
 import {
     ALargeSmall,
     AlignCenter,
@@ -43,10 +44,13 @@ import {
     LinkIcon,
     List,
     ListOrdered,
+    type LucideIcon,
     Quote,
     Redo,
     Space,
     Strikethrough,
+    SubscriptIcon,
+    SuperscriptIcon,
     Type,
     Underline,
     Undo,
@@ -187,7 +191,7 @@ function ColorPickerPopover({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button className="relative" size="sm" type="button" variant="ghost">
+                <Button className="relative" size="icon-sm" type="button" variant="ghost">
                     <Icon className="size-4" />
                     {currentColor && (
                         <span
@@ -212,7 +216,6 @@ function ColorPickerPopover({
                                 key={name}
                                 onClick={() => editor.chain().focus()[command](hex).run()}
                                 style={{ backgroundColor: hex }}
-                                title={name}
                                 type="button"
                             />
                         );
@@ -256,6 +259,8 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             Color,
             BackgroundColor,
             LineHeight,
+            Subscript,
+            Superscript,
             TextAlign.configure({
                 defaultAlignment: 'left',
                 alignments: ['left', 'center', 'right', 'justify'],
@@ -400,7 +405,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
             <div className="shrink-0 flex flex-wrap gap-1 border-b border-border bg-muted/50 p-2">
                 <Button
                     onClick={() => editor.chain().focus().toggleBold().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant={editor.isActive('bold') ? 'default' : 'ghost'}
                 >
@@ -408,7 +413,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleItalic().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant={editor.isActive('italic') ? 'default' : 'ghost'}
                 >
@@ -416,19 +421,190 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 </Button>
                 <Button
                     onClick={() => editor.chain().focus().toggleUnderline().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant={editor.isActive('underline') ? 'default' : 'ghost'}
                 >
                     <Underline className="size-4" />
                 </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
                 <Button
                     onClick={() => editor.chain().focus().toggleStrike().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant={editor.isActive('strike') ? 'default' : 'ghost'}
                 >
                     <Strikethrough className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleSuperscript().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('superscript') ? 'default' : 'ghost'}
+                >
+                    <SuperscriptIcon className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleSubscript().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('subscript') ? 'default' : 'ghost'}
+                >
+                    <SubscriptIcon className="size-4" />
+                </Button>
+
+                {/* Text Color */}
+                <ColorPickerPopover
+                    attribute="color"
+                    command="setColor"
+                    editor={editor}
+                    icon={Baseline}
+                    label="Text Color"
+                    unsetCommand="unsetColor"
+                />
+
+                {/* Background Color */}
+                <ColorPickerPopover
+                    attribute="backgroundColor"
+                    command="setBackgroundColor"
+                    editor={editor}
+                    icon={Highlighter}
+                    label="Highlight Color"
+                    unsetCommand="unsetBackgroundColor"
+                />
+
+                <div className="mx-1 w-px bg-border" />
+
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 1 }) ? 'default' : 'ghost'}
+                >
+                    <Heading1 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 2 }) ? 'default' : 'ghost'}
+                >
+                    <Heading2 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 3 }) ? 'default' : 'ghost'}
+                >
+                    <Heading3 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 4 }) ? 'default' : 'ghost'}
+                >
+                    <Heading4 className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('heading', { level: 5 }) ? 'default' : 'ghost'}
+                >
+                    <Heading5 className="size-4" />
+                </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
+                {/* Text Align */}
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('left').run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'left' ? 'default' : 'ghost'}
+                >
+                    <AlignLeft className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'center' ? 'default' : 'ghost'}
+                >
+                    <AlignCenter className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('right').run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'right' ? 'default' : 'ghost'}
+                >
+                    <AlignRight className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={textStyleState?.textAlign === 'justify' ? 'default' : 'ghost'}
+                >
+                    <AlignJustify className="size-4" />
+                </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
+                <Button
+                    onClick={() => editor.chain().focus().toggleBulletList().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
+                >
+                    <List className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('orderedList') ? 'default' : 'ghost'}
+                >
+                    <ListOrdered className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('blockquote') ? 'default' : 'ghost'}
+                >
+                    <Quote className="size-4" />
+                </Button>
+
+                <div className="mx-1 w-px bg-border" />
+
+                <Button
+                    onClick={() => editor.chain().focus().toggleCode().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('code') ? 'default' : 'ghost'}
+                >
+                    <Code className="size-4" />
+                </Button>
+                <Button
+                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                    size="icon-sm"
+                    type="button"
+                    variant={editor.isActive('codeBlock') ? 'default' : 'ghost'}
+                >
+                    <Code2 className="size-4" />
+                </Button>
+
+                <Button onClick={addLink} size="icon-sm" type="button" variant="ghost">
+                    <LinkIcon className="size-4" />
+                </Button>
+                <Button onClick={addImage} size="icon-sm" type="button" variant="ghost">
+                    <ImageIcon className="size-4" />
                 </Button>
 
                 <div className="mx-1 w-px bg-border" />
@@ -517,166 +693,10 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
 
                 <div className="mx-1 w-px bg-border" />
 
-                {/* Text Color */}
-                <ColorPickerPopover
-                    attribute="color"
-                    command="setColor"
-                    editor={editor}
-                    icon={Baseline}
-                    label="Text Color"
-                    unsetCommand="unsetColor"
-                />
-
-                {/* Background Color */}
-                <ColorPickerPopover
-                    attribute="backgroundColor"
-                    command="setBackgroundColor"
-                    editor={editor}
-                    icon={Highlighter}
-                    label="Highlight Color"
-                    unsetCommand="unsetBackgroundColor"
-                />
-
-                <div className="mx-1 w-px bg-border" />
-
-                {/* Text Align */}
-                <Button
-                    onClick={() => editor.chain().focus().setTextAlign('left').run()}
-                    size="sm"
-                    type="button"
-                    variant={textStyleState?.textAlign === 'left' ? 'default' : 'ghost'}
-                >
-                    <AlignLeft className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().setTextAlign('center').run()}
-                    size="sm"
-                    type="button"
-                    variant={textStyleState?.textAlign === 'center' ? 'default' : 'ghost'}
-                >
-                    <AlignCenter className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().setTextAlign('right').run()}
-                    size="sm"
-                    type="button"
-                    variant={textStyleState?.textAlign === 'right' ? 'default' : 'ghost'}
-                >
-                    <AlignRight className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-                    size="sm"
-                    type="button"
-                    variant={textStyleState?.textAlign === 'justify' ? 'default' : 'ghost'}
-                >
-                    <AlignJustify className="size-4" />
-                </Button>
-
-                <div className="mx-1 w-px bg-border" />
-
-                <Button
-                    onClick={() => editor.chain().focus().toggleCode().run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('code') ? 'default' : 'ghost'}
-                >
-                    <Code className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('codeBlock') ? 'default' : 'ghost'}
-                >
-                    <Code2 className="size-4" />
-                </Button>
-
-                <div className="mx-1 w-px bg-border" />
-
-                <Button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('heading', { level: 1 }) ? 'default' : 'ghost'}
-                >
-                    <Heading1 className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('heading', { level: 2 }) ? 'default' : 'ghost'}
-                >
-                    <Heading2 className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('heading', { level: 3 }) ? 'default' : 'ghost'}
-                >
-                    <Heading3 className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('heading', { level: 4 }) ? 'default' : 'ghost'}
-                >
-                    <Heading4 className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('heading', { level: 5 }) ? 'default' : 'ghost'}
-                >
-                    <Heading5 className="size-4" />
-                </Button>
-
-                <div className="mx-1 w-px bg-border" />
-
-                <Button
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('bulletList') ? 'default' : 'ghost'}
-                >
-                    <List className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('orderedList') ? 'default' : 'ghost'}
-                >
-                    <ListOrdered className="size-4" />
-                </Button>
-                <Button
-                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                    size="sm"
-                    type="button"
-                    variant={editor.isActive('blockquote') ? 'default' : 'ghost'}
-                >
-                    <Quote className="size-4" />
-                </Button>
-
-                <div className="mx-1 w-px bg-border" />
-
-                <Button onClick={addLink} size="sm" type="button" variant="ghost">
-                    <LinkIcon className="size-4" />
-                </Button>
-                <Button onClick={addImage} size="sm" type="button" variant="ghost">
-                    <ImageIcon className="size-4" />
-                </Button>
-
-                <div className="mx-1 w-px bg-border" />
-
                 <Button
                     // disabled={!editor.can().undo()}
                     onClick={() => editor.chain().focus().undo().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant="ghost"
                 >
@@ -685,7 +705,7 @@ export function BlogEditor({ content, onChange, placeholder }: BlogEditorProps) 
                 <Button
                     // disabled={!editor.can().redo()}
                     onClick={() => editor.chain().focus().redo().run()}
-                    size="sm"
+                    size="icon-sm"
                     type="button"
                     variant="ghost"
                 >
