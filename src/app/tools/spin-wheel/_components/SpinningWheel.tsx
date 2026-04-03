@@ -1,15 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    BrushCleaning,
-    Plus,
-    RefreshCw,
-    ShipWheel,
-    Shuffle,
-    SquareMenu,
-    Trash2,
-} from 'lucide-react';
+import { BrushCleaning, Plus, ShipWheel, Shuffle, SquareMenu, Trash2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMount, useStorage } from 'nhb-hooks';
 import {
@@ -18,12 +10,14 @@ import {
     getRandomNumber,
     isNonEmptyString,
     shuffleArray,
+    throttleAction,
     trimString,
     truncateString,
 } from 'nhb-toolbox';
 import type { HSL } from 'nhb-toolbox/colors/types';
 import { Cipher } from 'nhb-toolbox/hash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 import { toast } from 'sonner';
 import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import CodeBlock from '@/components/misc/code-block';
@@ -43,7 +37,37 @@ import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 
-const DEFAULT_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const DEFAULT_OPTIONS = [
+    ['Elysium', 'Tartarus', 'Olympus', 'Aether', 'Styx', 'Arcadia', 'Lethe', 'Nyx'],
+    ['Obelisk', 'Sphinx', 'Pyramid', 'Cartouche', 'Papyrus', 'Scarab', 'Ankh', 'Canopic'],
+    ['Oracle', 'Labyrinth', 'Chimera', 'Pegasus', 'Gorgon', 'Titan', 'Cyclops', 'Hydra'],
+    ['Legion', 'Imperium', 'Colosseum', 'Centurion', 'Senate', 'Tribune', 'Aquila', 'Gladius'],
+    ['Requiem', 'Ascension', 'Eclipse', 'Sanctum', 'Relic', 'Mythos', 'Dominion', 'Omen'],
+    ['Catacomb', 'Pantheon', 'Vortex', 'Abyss', 'Ember', 'Sigil', 'Runic', 'Totem'],
+    ['Harbinger', 'Vanguard', 'Sentinel', 'Warden', 'Phantom', 'Specter', 'Eidolon', 'Shade'],
+    ['Monolith', 'Keystone', 'Pillar', 'Vault', 'Citadel', 'Spire', 'Bastion', 'Sanctorum'],
+    ['Inferno', 'Tempest', 'Zephyr', 'Torrent', 'Quasar', 'Nova', 'Eon', 'Flux'],
+    ['Chronos', 'Kairos', 'Aion', 'Epoch', 'Era', 'Continuum', 'Paradox', 'Moment'],
+    ['Glyph', 'Rune', 'Cipher', 'Scroll', 'Codex', 'Tablet', 'Insignia', 'Talisman'],
+    ['Nemesis', 'Fate', 'Kismet', 'Destiny', 'Fortune', 'Providence', 'Doom', 'Judgment'],
+    ['Aurelian', 'Valerian', 'Octavian', 'Severan', 'Flavian', 'Hadrian', 'Trajan', 'Lucian'],
+    ['Helios', 'Selene', 'Erebus', 'Hemera', 'Thanatos', 'Hypnos', 'Kratos', 'Nike'],
+    ['Sarcophagus', 'Necropolis', 'Mausoleum', 'Sepulcher', 'Crypt', 'Tomb', 'Grave', 'Barrow'],
+    ['Aurora', 'Dusk', 'Nocturne', 'Solstice', 'Equinox', 'Zenith', 'Nadir', 'Horizon'],
+    ['Asmodeus', 'Beelzebub', 'Mammon', 'Belial', 'Abaddon', 'Azazel', 'Astaroth', 'Lilith'],
+    ['Ifrit', 'Marid', 'Ghoul', 'Qareen', 'Nasnas', 'Sihr', 'Jinn', 'Shaytan'],
+    ['Rakshasa', 'Asura', 'Vetala', 'Pishacha', 'Daitya', 'Danava', 'Naraka', 'Kali'],
+    ['Oni', 'Tengu', 'Kappa', 'Yokai', 'Jorogumo', 'Nue', 'Gashadokuro', 'Akaname'],
+    ['Typhon', 'Echidna', 'Empusa', 'Lamia', 'Mormo', 'Keres', 'Erinyes', 'Gorgons'],
+    ['Apep', 'Ammit', 'Ammut', 'Set', 'Babi', 'Sekhmet', 'Serpopard', 'Nehebkau'],
+    ['Cerberus', 'Orthrus', 'Scylla', 'Charybdis', 'Harpies', 'Furies', 'Eidolons', 'Phantoms'],
+    ['Tartarus', 'Stygian', 'Acheron', 'Cocytus', 'Styx', 'Erebus', 'Tenebris', 'Infernum'],
+];
+
+const randomizeOptions = () => {
+    const randomIndex = getRandomNumber({ max: DEFAULT_OPTIONS.length - 1 });
+    return shuffleArray(DEFAULT_OPTIONS)[randomIndex];
+};
 
 /**
  * Helper function to generate color using HSL
@@ -119,7 +143,7 @@ export default function SpinningWheel() {
     // Load options from storage or URL params
     const optionsStore = useStorage<string[]>({ key: 'nhb-spin-wheel' });
 
-    const [options, setOptions] = useState<string[]>(DEFAULT_OPTIONS);
+    const [options, setOptions] = useState<string[]>(randomizeOptions());
 
     const syncOptionsResult = useCallback(
         (values: string[]) => {
@@ -160,7 +184,7 @@ export default function SpinningWheel() {
                 }
             } catch {
                 toast.error('Invalid wheel configuration in URL, loading defaults!');
-                setOptions(DEFAULT_OPTIONS);
+                setOptions(randomizeOptions());
                 return;
             }
         }
@@ -220,8 +244,8 @@ export default function SpinningWheel() {
     };
 
     const handleReset = () => {
-        syncOptionsResult(DEFAULT_OPTIONS);
-        toast.success('Wheel reset to default');
+        syncOptionsResult(randomizeOptions());
+        toast.success('Wheel options are reset to random defaults');
     };
 
     const clearOptions = () => {
@@ -419,12 +443,12 @@ export default function SpinningWheel() {
                         <Button
                             className="px-3 shrink-0"
                             disabled={spinning}
-                            onClick={handleReset}
+                            onClick={throttleAction(handleReset, 1000)}
                             size="lg"
-                            variant="destructive"
+                            variant="secondary"
                         >
-                            <RefreshCw className="size-4 mb-0.5" />
-                            Reset Spinner
+                            <GiPerspectiveDiceSixFacesRandom className="size-4 mb-0.5" />
+                            Random Options
                         </Button>
                         <Button
                             className="px-3 shrink-0"
