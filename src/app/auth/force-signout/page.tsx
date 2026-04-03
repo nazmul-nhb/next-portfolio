@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { useEffect } from 'react';
 import { FadeInUp } from '@/components/misc/animations';
@@ -10,9 +11,13 @@ import { FadeInUp } from '@/components/misc/animations';
  * Calls signOut() immediately so the stale JWT is cleared.
  */
 export default function ForceSignOutPage() {
+    const pathname = usePathname();
+
     useEffect(() => {
-        signOut({ redirectTo: '/auth/login?reason=account-deactivated' });
-    }, []);
+        signOut({
+            redirectTo: `/auth/login?redirectTo=${pathname}&reason=account-deactivated`,
+        });
+    }, [pathname]);
 
     return (
         <div className="flex min-h-[70vh] items-center justify-center px-4 overflow-x-hidden">
