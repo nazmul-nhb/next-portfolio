@@ -290,7 +290,9 @@ export default function ChatArea({
                                                 )}
                                             >
                                                 <p className="whitespace-pre-wrap wrap-break-word">
-                                                    {cipher.decrypt(msg.content)}
+                                                    {cipher.isValid(msg.content)
+                                                        ? cipher.decrypt(msg.content)
+                                                        : msg.content}
                                                 </p>
                                                 {isSameMin || (
                                                     <p

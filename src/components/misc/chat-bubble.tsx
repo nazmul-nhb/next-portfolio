@@ -404,7 +404,9 @@ function BubbleChatPanel({ conversationId, onClose, onMinimize }: BubblePanelPro
                                                 )}
                                             >
                                                 <p className="whitespace-pre-wrap wrap-break-word">
-                                                    {cipher.decrypt(msg.content)}
+                                                    {cipher.isValid(msg.content)
+                                                        ? cipher.decrypt(msg.content)
+                                                        : msg.content}
                                                 </p>
                                                 {isSameMin || (
                                                     <p
