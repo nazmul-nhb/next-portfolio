@@ -123,7 +123,7 @@ export default function ConvMessage({ chatId }: Props) {
                     )}
                 >
                     <ChatArea
-                        activeConversationId={activeConversationId}
+                        activeConvId={activeConversationId}
                         conversations={conversations}
                         onBack={handleBack}
                         onConversationCreated={handleConversationCreated}

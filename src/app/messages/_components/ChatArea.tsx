@@ -12,14 +12,14 @@ import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { httpRequest } from '@/lib/actions/baseRequest';
-import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
+import { useMessages } from '@/lib/hooks/use-msg';
 import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
 import { cipher, cn, groupMessagesByDate } from '@/lib/utils';
-import type { Conversation, Message, UserResult } from '@/types/messages';
+import type { Conversation, UserResult } from '@/types/messages';
 
 type Props = {
-    activeConversationId: number | null;
+    activeConvId: number | null;
     conversations: Conversation[];
     selectedRecipient: UserResult | null;
     onBack: () => void;
@@ -27,7 +27,7 @@ type Props = {
 };
 
 export default function ChatArea({
-    activeConversationId,
+    activeConvId,
     conversations,
     selectedRecipient,
     onBack,
@@ -51,27 +51,11 @@ export default function ChatArea({
     }, []);
 
     // Find the other user from the active conversation
-    const activeConv = conversations.find((c) => c.id === activeConversationId);
+    const activeConv = conversations.find((c) => c.id === activeConvId);
     const chatPartner = activeConv?.otherUser ?? selectedRecipient;
 
-    const { data: messages = [], isLoading: messagesLoading } = useApiQuery<Message[]>(
-        `/api/messages/conversations/${activeConversationId}`,
-        {
-            enabled: !!activeConversationId,
-            refetchInterval: 10000,
-            queryKey: ['messages', activeConversationId],
-        }
-    );
-
-    const { mutate: sendMsg, isPending: sending } = useApiMutation<null, { content: string }>(
-        `/api/messages/conversations/${activeConversationId ?? 0}`,
-        'POST',
-        {
-            invalidateKeys: ['messages', 'conversations', 'unread-conversations'],
-            onSuccess: () => setNewMessage(''),
-            onError: (error) => console.error('Failed to send message:', error),
-            silentSuccessMessage: true,
-        }
+    const { messages, isMsgsLoading, sendMsg, isMsgSending } = useMessages(activeConvId, () =>
+        setNewMessage('')
     );
 
     /** Combined create-conversation + send-first-message mutation. */
@@ -106,7 +90,7 @@ export default function ChatArea({
 
         const encryptedMsg = cipher.encrypt(newMessage);
 
-        if (activeConversationId) {
+        if (activeConvId) {
             sendMsg({ content: encryptedMsg });
         } else if (selectedRecipient) {
             createAndSend({ email: selectedRecipient.email, message: encryptedMsg });
@@ -117,9 +101,9 @@ export default function ChatArea({
 
     // Scroll to bottom: instantly on conversation switch, smoothly on new messages
     useEffect(() => {
-        if (!activeConversationId) return;
+        if (!activeConvId) return;
 
-        const isNewConversation = prevConvRef.current !== activeConversationId;
+        const isNewConversation = prevConvRef.current !== activeConvId;
         const hasNewMessages = messages.length > prevMsgCountRef.current;
 
         if (isNewConversation) {
@@ -130,16 +114,16 @@ export default function ChatArea({
             scrollToBottom(false);
         }
 
-        prevConvRef.current = activeConversationId;
+        prevConvRef.current = activeConvId;
         prevMsgCountRef.current = messages.length;
         inputRef?.current?.focus();
-    }, [activeConversationId, messages.length, scrollToBottom]);
+    }, [activeConvId, messages.length, scrollToBottom]);
 
     // Group messages by date
     const groupedMessages = groupMessagesByDate(messages);
 
     // No conversation or recipient selected
-    if (!activeConversationId && !selectedRecipient) {
+    if (!activeConvId && !selectedRecipient) {
         return (
             <div className="flex h-full flex-col items-center justify-center bg-card/50">
                 <MessageSquare className="mb-4 size-16 text-muted-foreground/30" />
@@ -155,11 +139,11 @@ export default function ChatArea({
     }
 
     // Show skeleton while messages are loading for the first time
-    if (activeConversationId && messagesLoading && messages.length === 0) {
+    if (activeConvId && isMsgsLoading && messages.length === 0) {
         return <ChatAreaSkeleton />;
     }
 
-    const isBusy = sending || creatingConversation;
+    const isBusy = isMsgSending || creatingConversation;
 
     return (
         <div className="flex h-full flex-col bg-card/50">
@@ -193,10 +177,10 @@ export default function ChatArea({
                     </Fragment>
                 )}
                 {/* Pop out to bubble */}
-                {activeConversationId && (
+                {activeConvId && (
                     <button
                         className="ml-auto shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                        onClick={() => popOutToBubble(activeConversationId)}
+                        onClick={() => popOutToBubble(activeConvId)}
                         type="button"
                     >
                         <SmartTooltip
@@ -209,13 +193,13 @@ export default function ChatArea({
 
             {/* Messages area */}
             <div className="flex-1 overflow-y-auto custom-scroll px-4 py-3" ref={scrollRef}>
-                {activeConversationId && messages.length === 0 ? (
+                {activeConvId && messages.length === 0 ? (
                     <div className="flex h-full items-center justify-center">
                         <p className="text-sm text-muted-foreground">
                             No messages yet. Say hello!
                         </p>
                     </div>
-                ) : !activeConversationId && selectedRecipient ? (
+                ) : !activeConvId && selectedRecipient ? (
                     <div className="flex h-full flex-col items-center justify-center">
                         <UserAvatar
                             className="mb-3 size-20"
@@ -306,7 +290,7 @@ export default function ChatArea({
                                                 )}
                                             >
                                                 <p className="whitespace-pre-wrap wrap-break-word">
-                                                    {msg.content}
+                                                    {cipher.decrypt(msg.content)}
                                                 </p>
                                                 {isSameMin || (
                                                     <p

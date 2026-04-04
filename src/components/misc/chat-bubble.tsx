@@ -12,12 +12,13 @@ import SmartTooltip from '@/components/misc/smart-tooltip';
 import UserAvatar from '@/components/misc/user-avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
+import { useApiQuery } from '@/lib/hooks/use-api';
+import { useMessages } from '@/lib/hooks/use-msg';
 import type { BubbleEdge } from '@/lib/store/chat-bubble-store';
 import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
-import { cn, groupMessagesByDate } from '@/lib/utils';
-import type { Conversation, Message } from '@/types/messages';
+import { cipher, cn, groupMessagesByDate } from '@/lib/utils';
+import type { Conversation } from '@/types/messages';
 
 /** Edge position CSS map. Avoids bottom-right (clock + theme toggler). */
 const EDGE_POSITIONS: Record<BubbleEdge, string> = {
@@ -244,16 +245,14 @@ export default function ChatBubble() {
     );
 }
 
-/** The mini chat panel rendered inside the bubble. */
-function BubbleChatPanel({
-    conversationId,
-    onClose,
-    onMinimize,
-}: {
+type BubblePanelProps = {
     conversationId: number;
     onClose: () => void;
     onMinimize: () => void;
-}) {
+};
+
+/** The mini chat panel rendered inside the bubble. */
+function BubbleChatPanel({ conversationId, onClose, onMinimize }: BubblePanelProps) {
     const [newMessage, setNewMessage] = useState('');
     const { profile } = useUserStore();
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -270,28 +269,13 @@ function BubbleChatPanel({
 
     const activeConv = conversations.find((c) => c.id === conversationId);
 
-    const { data: messages = [], isLoading: msgsLoading } = useApiQuery<Message[]>(
-        `/api/messages/conversations/${conversationId}`,
-        {
-            enabled: !!conversationId,
-            refetchInterval: 10000,
-            queryKey: ['messages', conversationId],
-        }
-    );
-
-    const { mutate: sendMsg, isPending: sending } = useApiMutation<null, { content: string }>(
-        `/api/messages/conversations/${conversationId}`,
-        'POST',
-        {
-            invalidateKeys: ['messages', 'conversations'],
-            onSuccess: () => setNewMessage(''),
-            silentSuccessMessage: true,
-        }
+    const { messages, isMsgsLoading, sendMsg, isMsgSending } = useMessages(conversationId, () =>
+        setNewMessage('')
     );
 
     const handleSend = () => {
-        if (!newMessage.trim() || sending) return;
-        sendMsg({ content: newMessage });
+        if (!newMessage.trim() || isMsgSending) return;
+        sendMsg({ content: cipher.encrypt(newMessage) });
         inputRef?.current?.focus();
     };
 
@@ -313,7 +297,7 @@ function BubbleChatPanel({
 
     const grouped = groupMessagesByDate(messages);
 
-    if (isConvLoading || (msgsLoading && messages.length === 0)) {
+    if (isConvLoading || (isMsgsLoading && messages.length === 0)) {
         return <BubbleChatPanelSkeleton />;
     }
 
@@ -420,7 +404,7 @@ function BubbleChatPanel({
                                                 )}
                                             >
                                                 <p className="whitespace-pre-wrap wrap-break-word">
-                                                    {msg.content}
+                                                    {cipher.decrypt(msg.content)}
                                                 </p>
                                                 {isSameMin || (
                                                     <p
@@ -451,7 +435,7 @@ function BubbleChatPanel({
             <div className="flex shrink-0 items-center gap-1.5 border-t border-border/50 px-2 py-1.5">
                 <Input
                     className="h-8 flex-1 text-xs"
-                    disabled={sending}
+                    disabled={isMsgSending}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
@@ -465,7 +449,7 @@ function BubbleChatPanel({
                 />
                 <Button
                     className="size-8 shrink-0"
-                    disabled={!newMessage.trim() || sending}
+                    disabled={!newMessage.trim() || isMsgSending}
                     onClick={handleSend}
                     size="icon"
                 >
