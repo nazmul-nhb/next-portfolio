@@ -4,10 +4,9 @@ import {
     removeFromLocalStorage,
     saveToLocalStorage,
 } from 'nhb-toolbox';
-import { Cipher } from 'nhb-toolbox/hash';
 import { create } from 'zustand';
 import { persist, type StorageValue } from 'zustand/middleware';
-import { ENV } from '@/configs/env';
+import { cipher } from '@/lib/utils';
 import type { AuthProviders, UserRole } from '@/types';
 
 export interface UserProfile {
@@ -33,8 +32,6 @@ interface UserState {
 }
 
 type StoredValue = StorageValue<{ profile: UserProfile | null }>;
-
-const cipher = new Cipher(ENV.cipherSecret);
 
 /**
  * Global user state store using Zustand

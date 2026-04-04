@@ -19,6 +19,7 @@ import { type UserProfile, useUserStore } from '@/lib/store/user-store';
 export function AuthSync() {
     const { status } = useSession();
     const { setProfile, clearProfile } = useUserStore();
+
     const pathname = usePathname();
 
     const isAuthenticated = status === 'authenticated';

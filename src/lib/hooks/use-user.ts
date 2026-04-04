@@ -12,8 +12,11 @@ export interface UpdateProfile {
  * Fetch current user profile
  */
 export function useUserProfile() {
+    const { status } = useSession();
+
     return useApiQuery<UserProfile>('/api/users/me', {
         queryKey: ['user-profile'],
+        enabled: status === 'authenticated',
     });
 }
 

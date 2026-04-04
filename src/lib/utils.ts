@@ -16,11 +16,17 @@ import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import type { Uncertain, UserRole } from '@/types';
 import type { Message } from '@/types/messages';
+import { Cipher } from 'nhb-toolbox/hash';
 
 /** Utility function to combine and merge Tailwind CSS class names. */
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+/**
+ * Global cipher instance for encrypting/decrypting sensitive data, initialized with a secret key from environment variables.
+ */
+export const cipher = new Cipher(ENV.cipherSecret);
 
 /**
  * Utility function to check if the current pathname is an admin path.

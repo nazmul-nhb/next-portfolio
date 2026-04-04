@@ -15,7 +15,6 @@ import {
     truncateString,
 } from 'nhb-toolbox';
 import type { HSL } from 'nhb-toolbox/colors/types';
-import { Cipher } from 'nhb-toolbox/hash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
 import { toast } from 'sonner';
@@ -33,9 +32,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
-import { cn } from '@/lib/utils';
+import { cipher, cn } from '@/lib/utils';
 
 const DEFAULT_OPTIONS = [
     ['Elysium', 'Tartarus', 'Olympus', 'Aether', 'Styx', 'Arcadia', 'Lethe', 'Nyx'],
@@ -127,8 +125,6 @@ function describeArc(
         'Z',
     ].join(' ');
 }
-
-const cipher = new Cipher(ENV.cipherSecret);
 
 export default function SpinningWheel() {
     const searchParams = useSearchParams();
@@ -613,6 +609,7 @@ export default function SpinningWheel() {
                                                             opacity: 0.85,
                                                         }
                                             }
+                                            initial={{ opacity: 0 }}
                                             key={`${option}-slice`}
                                             transition={{
                                                 type: 'spring',
