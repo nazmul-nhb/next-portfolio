@@ -152,7 +152,7 @@ export default function SpinningWheel() {
             setResult(null);
             setRotation(0);
 
-            if (searchParams.get('items')) {
+            if (searchParams.has('items')) {
                 router.push('/tools/spin-wheel');
                 setOptions(values);
                 optionsStore.set(values);
