@@ -10,13 +10,13 @@ import {
     isString,
 } from 'nhb-toolbox';
 import type { $UTCOffset, TimeDuration } from 'nhb-toolbox/date/types';
+import { Cipher } from 'nhb-toolbox/hash';
 import type { LooseLiteral } from 'nhb-toolbox/utils/types';
 import { twMerge } from 'tailwind-merge';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import type { Uncertain, UserRole } from '@/types';
 import type { Message } from '@/types/messages';
-import { Cipher } from 'nhb-toolbox/hash';
 
 /** Utility function to combine and merge Tailwind CSS class names. */
 export function cn(...inputs: ClassValue[]) {
@@ -24,7 +24,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Global cipher instance for encrypting/decrypting sensitive data, initialized with a secret key from environment variables.
+ * Global {@link Cipher} instance for encrypting/decrypting sensitive data.
  */
 export const cipher = new Cipher(ENV.cipherSecret);
 

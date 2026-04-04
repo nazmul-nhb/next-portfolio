@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle as drizzleHttp } from 'drizzle-orm/neon-http';
+// import { drizzle as drizzleServerless } from 'drizzle-orm/neon-serverless';
 import { ENV } from '@/configs/env';
 import { pollOptions, polls, pollVotes } from '@/lib/drizzle/schema';
 import {
@@ -23,32 +24,38 @@ import { skills } from '@/lib/drizzle/schema/skills';
 import { testimonials } from '@/lib/drizzle/schema/testimonials';
 import { users } from '@/lib/drizzle/schema/users';
 
-const sql = neon(ENV.dbUrl);
+const neonSql = neon(ENV.dbUrl);
+// const neonPool = new Pool({ connectionString: ENV.dbUrl });
 
-export const db = drizzle(sql, {
-    schema: {
-        users,
-        projects,
-        skills,
-        experiences,
-        education,
-        testimonials,
-        blogs,
-        tags,
-        categories,
-        blogTags,
-        blogCategories,
-        comments,
-        expenses,
-        loans,
-        loanPayments,
-        receipts,
-        contactMessages,
-        conversations,
-        directMessages,
-        otpCodes,
-        polls,
-        pollVotes,
-        pollOptions,
-    },
-});
+const schema = {
+    users,
+    projects,
+    skills,
+    experiences,
+    education,
+    testimonials,
+    blogs,
+    tags,
+    categories,
+    blogTags,
+    blogCategories,
+    comments,
+    expenses,
+    loans,
+    loanPayments,
+    receipts,
+    contactMessages,
+    conversations,
+    directMessages,
+    otpCodes,
+    polls,
+    pollVotes,
+    pollOptions,
+};
+
+export const db = drizzleHttp(neonSql, { schema });
+
+// export const db =
+//     ENV.nodeEnv === 'development'
+//         ? drizzleServerless(neonPool, { schema })
+//         : drizzleHttp(neonQueryFn, { schema });

@@ -15,7 +15,7 @@ import { httpRequest } from '@/lib/actions/baseRequest';
 import { useApiMutation, useApiQuery } from '@/lib/hooks/use-api';
 import { useChatBubbleStore } from '@/lib/store/chat-bubble-store';
 import { useUserStore } from '@/lib/store/user-store';
-import { cn, groupMessagesByDate } from '@/lib/utils';
+import { cipher, cn, groupMessagesByDate } from '@/lib/utils';
 import type { Conversation, Message, UserResult } from '@/types/messages';
 
 type Props = {
@@ -103,10 +103,13 @@ export default function ChatArea({
 
     const handleSend = () => {
         if (!newMessage.trim()) return;
+
+        const encryptedMsg = cipher.encrypt(newMessage);
+
         if (activeConversationId) {
-            sendMsg({ content: newMessage });
+            sendMsg({ content: encryptedMsg });
         } else if (selectedRecipient) {
-            createAndSend({ email: selectedRecipient.email, message: newMessage });
+            createAndSend({ email: selectedRecipient.email, message: encryptedMsg });
         }
 
         inputRef?.current?.focus();

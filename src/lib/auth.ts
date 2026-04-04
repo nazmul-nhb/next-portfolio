@@ -73,28 +73,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (!email || !password) return null;
 
-                const [user] = await db
-                    .select()
-                    .from(users)
-                    .where(eq(users.email, email))
-                    .limit(1);
+                try {
+                    const [user] = await db
+                        .select()
+                        .from(users)
+                        .where(eq(users.email, email))
+                        .limit(1);
 
-                if (!user || !user.password) return null;
-                if (!user.is_active) return null; // blocked/deactivated account
+                    if (!user?.password) return null;
+                    if (!user.is_active) return null; // blocked/deactivated account
 
-                const isValid = await compare(password, user.password);
+                    const isValid = await compare(password, user.password);
 
-                if (!isValid) return null;
+                    if (!isValid) return null;
 
-                return {
-                    id: String(user.id),
-                    name: user.name,
-                    email: user.email,
-                    image: user.profile_image,
-                    role: user.role,
-                    email_verified: user.email_verified,
-                    provider: user.provider,
-                };
+                    return {
+                        id: String(user.id),
+                        name: user.name,
+                        email: user.email,
+                        image: user.profile_image,
+                        role: user.role,
+                        email_verified: user.email_verified,
+                        provider: user.provider,
+                    };
+                } catch {
+                    return null;
+                }
             },
         }),
     ],
@@ -191,7 +195,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         .where(eq(users.id, +token.id))
                         .limit(1);
 
-                    if (!dbUser || !dbUser.is_active) {
+                    if (!dbUser?.is_active) {
                         // Account deleted or suspended — poison the token.
                         // proxy.ts and AuthSync will force an immediate sign-out.
                         token.active = false;
