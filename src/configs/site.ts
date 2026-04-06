@@ -8,7 +8,6 @@ import {
     CloudFog,
     Contact,
     FerrisWheel,
-    FileText,
     FileUser,
     FolderKanban,
     Globe,
@@ -38,6 +37,7 @@ import type { Route } from 'next';
 import type { ComponentType } from 'react';
 import { FaDiscord, FaTools, FaWhatsapp } from 'react-icons/fa';
 import { FiGithub, FiLinkedin } from 'react-icons/fi';
+import { GrDocumentUser } from 'react-icons/gr';
 import { ImNpm } from 'react-icons/im';
 import { UnreadMessage } from '@/components/misc/unread-message';
 import type { TabItem } from '@/types';
@@ -90,7 +90,7 @@ export const siteConfig = {
         { type: 'separator' },
         { title: 'Messages', path: '/messages', icon: UnreadMessage },
         { title: 'Tools', path: '/tools', icon: FaTools },
-        { title: 'Resume', path: '/resume', icon: FileText },
+        { title: 'Resume', path: '/resume', icon: GrDocumentUser },
     ] satisfies TabItem[],
     toolsMenus: [
         {

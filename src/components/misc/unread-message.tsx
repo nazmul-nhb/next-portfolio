@@ -1,8 +1,9 @@
 'use client';
 
-import { MessageCircleQuestionMark, MessageSquare } from 'lucide-react';
+import { MessageCircleQuestionMark, MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { isNumber } from 'nhb-toolbox';
+import SmartTooltip from '@/components/misc/smart-tooltip';
 import FloatingButton from '@/components/ui/floating-button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { useUserProfile } from '@/lib/hooks/use-user';
@@ -70,7 +71,10 @@ export function UnreadMessage() {
 
     return (
         <div className="relative">
-            <MessageSquare className="size-4" />
+            <SmartTooltip
+                content="Messages"
+                trigger={<MessagesSquare className="size-4.5" />}
+            />
             {user && conversations.unread_count > 0 && (
                 <span className="absolute -top-3 -right-2 text-xs font-source-sans font-semibold p-0.5 size-4.5 flex items-center justify-center rounded-full bg-red-600 text-white">
                     {isLoading ? 0 : truncateCount(conversations?.unread_count)}

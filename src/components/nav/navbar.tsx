@@ -138,10 +138,10 @@ export default function Navbar() {
                     </div>
 
                     {/* Right: Search + Profile + Actions */}
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1">
                         {/* Search Button */}
                         <Button
-                            className="size-9 rounded-full"
+                            className="size-9 rounded-full border"
                             onClick={() => setSearchOpen(true)}
                             size="icon"
                             variant="ghost"
@@ -164,10 +164,14 @@ export default function Navbar() {
                                         href={tab.path}
                                         key={tab.path}
                                     >
-                                        <SmartTooltip
-                                            content={tab.title}
-                                            trigger={<Icon className="size-4" />}
-                                        />
+                                        {tab.path === '/messages' ? (
+                                            <Icon />
+                                        ) : (
+                                            <SmartTooltip
+                                                content={tab.title}
+                                                trigger={<Icon className="size-4" />}
+                                            />
+                                        )}
                                     </Link>
                                 );
                             })}

@@ -25,7 +25,7 @@ export default async function AdminLayout({ children }: ChildrenProp) {
 
             {/* Main Content */}
             <main className="flex-1 overflow-x-hidden">
-                <div className="mx-auto max-w-7xl p-4 md:p-8">{children}</div>
+                <div className="max-w-7xl p-4 md:p-8">{children}</div>
             </main>
         </div>
     );

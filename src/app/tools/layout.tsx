@@ -34,7 +34,7 @@ export default function ToolsLayout({ children }: ChildrenProp) {
         <div className="flex min-h-[calc(100vh-4rem)]">
             <ToolsSidebar />
             <main className="flex-1 overflow-x-hidden">
-                <div className="mx-auto max-w-7xl p-4 md:p-8">{children}</div>
+                <div className="max-w-7xl p-4 md:p-8">{children}</div>
             </main>
         </div>
     );
