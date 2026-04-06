@@ -43,7 +43,7 @@ export default function ToolsPage() {
                 description={description}
                 route="/tools"
                 shareLabel="Share this page"
-                title={`All Tools (${siteConfig.toolsMenus.length})`}
+                title={`Available Tools`}
             />
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

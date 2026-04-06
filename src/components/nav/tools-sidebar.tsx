@@ -28,7 +28,7 @@ export function ToolsSidebar() {
         <Fragment>
             <div className="border-b border-border p-5">
                 <h2 className="text-lg font-bold tracking-tight">Tools</h2>
-                <p className="text-xs text-muted-foreground">Personal productivity utilities</p>
+                <p className="text-xs text-muted-foreground">Productivity utilities</p>
             </div>
 
             <nav>

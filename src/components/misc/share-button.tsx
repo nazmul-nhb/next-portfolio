@@ -13,19 +13,19 @@ import { siteConfig } from '@/configs/site';
 import { cn } from '@/lib/utils';
 
 type Props = {
-    /* The route to share, used to construct the sharable URL. Should be the path part of the URL (e.g., '/blogs/my-post'). */
+    /** The route to share, used to construct the sharable URL. Should be the path part of the URL (e.g., '/blogs/my-post'). */
     route: Route;
-    /* Optional text to include when sharing to WhatsApp. */
+    /** Optional text to include when sharing to WhatsApp. */
     shareText?: string;
-    /* Optional label for the share button, used for accessibility. Defaults to 'Share this post'. */
+    /** Optional label for the share button, used for accessibility. Defaults to 'Share this post'. */
     shareLabel?: string;
-    /* Optional additional CSS classes for the share button icon. */
+    /** Optional additional CSS classes for the share button icon. */
     className?: string;
-    /* Whether to show the share icon on the button. Defaults to true. */
+    /** Whether to show the share icon on the button. Defaults to true. */
     showIcon?: boolean;
-    /* Optional props to pass to the underlying Button component. */
+    /** Optional props to pass to the underlying Button component. */
     buttonProps?: ButtonProps;
-    /* Optional label to display next to the share icon on the button. */
+    /** Optional label to display next to the share icon on the button. */
     buttonLabel?: React.ReactNode;
 };
 
