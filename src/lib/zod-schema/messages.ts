@@ -5,10 +5,10 @@ export const ContactFormSchema = z
     .object({
         name: z
             .string()
-            .min(2, 'Name must be at least 2 characters')
-            .max(128, 'Name must not exceed 128 characters')
+            .min(2, 'Must be at least 2 characters')
+            .max(128, 'Must not exceed 128 characters')
             .trim(),
-        email: z.email('Please enter a valid email address'),
+        email: z.email('Enter a valid email address'),
         subject: z
             .string()
             .max(256, 'Subject must not exceed 256 characters')
@@ -17,7 +17,7 @@ export const ContactFormSchema = z
         message: z
             .string()
             .min(2, 'Message must be at least 2 characters')
-            .max(5000, 'Message must not exceed 5000 characters')
+            .max(5120, 'Message must not exceed 5120 characters')
             .trim(),
     })
     .strict();

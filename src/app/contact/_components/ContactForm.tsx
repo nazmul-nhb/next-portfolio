@@ -49,17 +49,17 @@ export function ContactForm() {
     if (submitted) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-                <CheckCircle className="mb-4 size-12 text-green-500" />
-                <h3 className="mb-2 text-xl font-semibold">Message Sent!</h3>
-                <p className="text-muted-foreground">
-                    Thanks for reaching out. I&apos;ll get back to you within 24-48 hours.
+                <CheckCircle className="mb-8 size-12 text-green-500" />
+                <h3 className="mb-8 text-xl font-semibold">Message Sent!</h3>
+                <p className="text-muted-foreground mb-12">
+                    Thanks for reaching out. I&apos;ll get back to you within 48 hours.
                 </p>
                 <Button
-                    className="mt-6"
                     onClick={() => {
                         setSubmitted(false);
                         reset();
                     }}
+                    size={'lg'}
                     variant="outline"
                 >
                     Send Another Message
@@ -70,8 +70,8 @@ export function ContactForm() {
 
     return (
         <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid gap-5 sm:grid-cols-2">
-                <div>
+            <div className="flex gap-5 flex-wrap sm:flex-row flex-col">
+                <div className="flex-1">
                     <Label htmlFor="name">Name *</Label>
                     <Input
                         className="mt-1.5"
@@ -83,7 +83,7 @@ export function ContactForm() {
                         <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
                     )}
                 </div>
-                <div>
+                <div className="flex-1">
                     <Label htmlFor="email">Email *</Label>
                     <Input
                         className="mt-1.5"
@@ -127,7 +127,7 @@ export function ContactForm() {
             {apiError && <p className="text-sm text-destructive">{apiError}</p>}
 
             <Button className="w-full" disabled={isPending} loading={isPending} type="submit">
-                <Send className="mr-2 size-4" />
+                {!isPending && <Send className="mr-2 size-4" />}
                 Send Message
             </Button>
         </form>
