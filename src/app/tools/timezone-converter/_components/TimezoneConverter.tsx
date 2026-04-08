@@ -207,7 +207,7 @@ export default function TimezoneConverter() {
                                     <CodeBlock className="text-5xl font-bold font-digital pt-0 tracking-wider">
                                         {time.format('HH:mm:ss:mss')}
                                     </CodeBlock>
-                                    <CodeBlock className="text-base text-muted-foreground">
+                                    <CodeBlock className="text-sm text-muted-foreground">
                                         {time.format('dd, mmmm DD, YYYY')}
                                         {' » '}
                                         {time.$getNativeTimeZoneId()} ({time.utcOffset})
@@ -270,9 +270,11 @@ export default function TimezoneConverter() {
                                                         </SelectContent>
                                                     </Select>
                                                     <FormDescription>
-                                                        Select timezone selector type, e.g.,
-                                                        IANA identifier, abbreviation, or UTC
-                                                        offset.
+                                                        <CodeBlock className="font-source-sans text-sm tracking-wider">
+                                                            Select timezone selector type, e.g.,
+                                                            IANA timezone identifier, timezone
+                                                            name or abbreviation, or UTC offset.
+                                                        </CodeBlock>
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -317,14 +319,15 @@ export default function TimezoneConverter() {
                                                             </ComboboxList>
                                                         </ComboboxContent>
                                                     </Combobox>
-                                                    <FormDescription className="space-y-1.5">
-                                                        <CodeBlock className="font-digital pt-1 text-xl font-bold tracking-wider">
+                                                    <FormDescription className="space-y-2">
+                                                        <CodeBlock className="font-digital pt-0 pb-1 text-lg font-bold tracking-wider">
                                                             {tzPreview.format('HH:mm:ss:mss')}
                                                         </CodeBlock>
-                                                        <CodeBlock className="tracking-wider">
+                                                        <CodeBlock className="tracking-wider font-source-sans pt-2.5">
                                                             {tzPreview.format(
-                                                                'ddd, mmmm DD, YYYY'
-                                                            )}
+                                                                'dd, mmm DD, YYYY'
+                                                            )}{' '}
+                                                            ({tzPreview.utcOffset})
                                                         </CodeBlock>
                                                     </FormDescription>
                                                     <FormMessage />
@@ -464,7 +467,7 @@ function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
                             <CodeBlock className="text-3xl font-bold font-digital pt-0 tracking-wider">
                                 {chronos.format('HH:mm:ss')}
                             </CodeBlock>
-                            <div className="text-sm bg-background px-1 py-0.5 rounded text-muted-foreground">
+                            <div className="text-sm bg-background px-1 py-0.5 rounded text-muted-foreground tracking-wider">
                                 {chronos.format('ddd, mmmm DD, YYYY')}
                             </div>
                             <div className="text-sm font-cascadia font-medium bg-background px-1 py-0.5 rounded text-muted-foreground">
