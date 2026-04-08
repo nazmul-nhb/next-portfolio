@@ -179,6 +179,8 @@ export default function TimezoneConverter() {
         });
     }, [tzType, form.setValue, timeZoneOptions[0]]);
 
+    const tzPreview = time.timeZone(timezone as ValidTimeZone);
+
     return useMount(
         <div className="space-y-8">
             <TitleWithShare
@@ -202,13 +204,12 @@ export default function TimezoneConverter() {
                         <CardContent>
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <CodeBlock className="text-5xl font-bold">
-                                        {time.format('HH:mm:ss')}
+                                    <CodeBlock className="text-5xl font-bold font-digital pt-0 tracking-wider">
+                                        {time.format('HH:mm:ss:mss')}
                                     </CodeBlock>
-                                    <CodeBlock className="text-lg text-muted-foreground">
-                                        {time.format('ddd, mmmm DD, YYYY')}
-                                    </CodeBlock>
-                                    <CodeBlock className="text-sm font-medium text-muted-foreground">
+                                    <CodeBlock className="text-base text-muted-foreground">
+                                        {time.format('dd, mmmm DD, YYYY')}
+                                        {' » '}
                                         {time.$getNativeTimeZoneId()} ({time.utcOffset})
                                     </CodeBlock>
                                 </div>
@@ -316,9 +317,15 @@ export default function TimezoneConverter() {
                                                             </ComboboxList>
                                                         </ComboboxContent>
                                                     </Combobox>
-                                                    <FormDescription>
-                                                        Select timezone by IANA identifier,
-                                                        abbreviation, or UTC offset.
+                                                    <FormDescription className="space-y-1.5">
+                                                        <CodeBlock className="font-digital pt-1 text-xl font-bold tracking-wider">
+                                                            {tzPreview.format('HH:mm:ss:mss')}
+                                                        </CodeBlock>
+                                                        <CodeBlock className="tracking-wider">
+                                                            {tzPreview.format(
+                                                                'ddd, mmmm DD, YYYY'
+                                                            )}
+                                                        </CodeBlock>
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -421,9 +428,9 @@ interface TimeZoneCardProps {
 }
 
 function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
-    const deleteZone = (id: $UUID) => {
+    const deleteZone = () => {
         confirmToast({
-            onConfirm: () => onRemove(id),
+            onConfirm: () => onRemove(entry.id),
             title: 'Delete the saved timezone',
             description: 'This will delete the timezone info from your storage.',
             confirmText: 'Delete',
@@ -441,8 +448,7 @@ function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
                                     {entry.label}
                                 </p>
                                 <Button
-                                    className=""
-                                    onClick={() => deleteZone(entry.id)}
+                                    onClick={deleteZone}
                                     size="icon-xs"
                                     variant="destructive"
                                 >
@@ -455,7 +461,7 @@ function TimeZoneCard({ entry, chronos, onRemove }: TimeZoneCardProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <CodeBlock className="text-3xl font-bold">
+                            <CodeBlock className="text-3xl font-bold font-digital pt-0 tracking-wider">
                                 {chronos.format('HH:mm:ss')}
                             </CodeBlock>
                             <div className="text-sm bg-background px-1 py-0.5 rounded text-muted-foreground">
