@@ -163,23 +163,27 @@ export default function WordCloudGenerator() {
         [backgroundColor]
     );
 
-    const animatedWordRenderer: WordCloudProps['renderTooltip'] = (data) => (
-        <DefaultTooltipRenderer
-            containerStyle={{
-                borderRadius: '8px',
-                flexDirection: 'column',
-                minWidth: '96px',
-                background: applyOpacityToHex(data.word?.fill, 90),
-            }}
-            data={data}
-            placement="bottom"
-            textStyle={{
-                fontFamily: 'ui-monospace',
-                fontSize: '16px',
-            }}
-            transform={false}
-        />
-    );
+    const animatedWordRenderer: WordCloudProps['renderTooltip'] = (data) => {
+        return (
+            <DefaultTooltipRenderer
+                containerStyle={{
+                    borderRadius: '8px',
+                    flexDirection: 'column',
+                    minWidth: '96px',
+                    background: data.word?.fill
+                        ? applyOpacityToHex(data.word?.fill, 90)
+                        : undefined,
+                }}
+                data={data}
+                placement="bottom"
+                textStyle={{
+                    fontFamily: 'Cascadia Code, monospace',
+                    fontSize: '16px',
+                }}
+                transform={false}
+            />
+        );
+    };
 
     const wordEntries: Word[] = getWords().map((entry) => ({
         text: entry.word,
