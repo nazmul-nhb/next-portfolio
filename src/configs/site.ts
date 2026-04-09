@@ -46,7 +46,7 @@ import type { ChartType } from '@/types/chart';
 export const siteConfig = {
     name: 'Nazmul Hassan',
     description:
-        'Programmer, Full-Stack Web Developer passionate about building modern, performant, and accessible web applications.',
+        'Programmer & Full-Stack Web Developer, passionate about building modern, performant, and accessible web applications.',
     keywords: [
         'web developer',
         'portfolio',

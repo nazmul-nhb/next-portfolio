@@ -25,6 +25,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useApiMutation } from '@/lib/hooks/use-api';
 import { buildLocalISOString, eliminateEmptyStrings, toDateTimeLocalValue } from '@/lib/utils';
 import { CreatePollSchema } from '@/lib/zod-schema/polls';
@@ -105,135 +106,137 @@ export function PollCreator({ isOpen, onOpenChange }: PollCreatorProps) {
     return (
         <Dialog onOpenChange={onOpenChange} open={isOpen}>
             <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Create a New Poll</DialogTitle>
-                    <DialogDescription>
-                        Ask a question and provide options for others to vote on
-                    </DialogDescription>
-                </DialogHeader>
+                <ScrollArea className="max-h-[80vh]">
+                    <DialogHeader>
+                        <DialogTitle>Create a New Poll</DialogTitle>
+                        <DialogDescription>
+                            Ask a question and provide options for others to vote on
+                        </DialogDescription>
+                    </DialogHeader>
 
-                <Form {...form}>
-                    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-                        <FormField
-                            control={form.control}
-                            name="question"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Question</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="What would you like to ask?"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Form {...form}>
+                        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+                            <FormField
+                                control={form.control}
+                                name="question"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Question</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="What would you like to ask?"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="space-y-3">
-                            <FormLabel>Options</FormLabel>
-                            {form.getValues('options').map((_, index) => (
-                                <FormField
-                                    control={form.control}
-                                    key={index}
-                                    name={`options.${index}`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        placeholder={`Option ${index + 1}`}
-                                                        {...field}
-                                                    />
-                                                    {optionCount > 2 && (
-                                                        <Button
-                                                            onClick={() =>
-                                                                handleRemoveOption(index)
-                                                            }
-                                                            size="icon-lg"
-                                                            type="button"
-                                                            variant="destructive"
-                                                        >
-                                                            <Trash2 className="size-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            ))}
-                            {optionCount < 10 && (
+                            <div className="space-y-3">
+                                <FormLabel>Options</FormLabel>
+                                {form.getValues('options').map((_, index) => (
+                                    <FormField
+                                        control={form.control}
+                                        key={index}
+                                        name={`options.${index}`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            placeholder={`Option ${index + 1}`}
+                                                            {...field}
+                                                        />
+                                                        {optionCount > 2 && (
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleRemoveOption(index)
+                                                                }
+                                                                size="icon-lg"
+                                                                type="button"
+                                                                variant="destructive"
+                                                            >
+                                                                <Trash2 className="size-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                                {optionCount < 10 && (
+                                    <Button
+                                        className="w-full"
+                                        onClick={handleAddOption}
+                                        size="lg"
+                                        type="button"
+                                        variant="outline"
+                                    >
+                                        <Plus className="size-4 mb-0.5" />
+                                        Add Option
+                                    </Button>
+                                )}
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="is_anonymous"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center space-y-0">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="font-normal cursor-pointer mt-0.5">
+                                            Keep this poll anonymous
+                                        </FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="end_date"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Expiry Date{' '}
+                                            <span className="text-muted-foreground font-normal">
+                                                (optional)
+                                            </span>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                defaultValue={field.value || ''}
+                                                type="datetime-local"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <DialogFooter className="gap-2">
                                 <Button
-                                    className="w-full"
-                                    onClick={handleAddOption}
-                                    size="lg"
+                                    disabled={isPending}
+                                    onClick={() => onOpenChange(false)}
                                     type="button"
-                                    variant="outline"
+                                    variant="destructive"
                                 >
-                                    <Plus className="size-4 mb-0.5" />
-                                    Add Option
+                                    Cancel
                                 </Button>
-                            )}
-                        </div>
-
-                        <FormField
-                            control={form.control}
-                            name="is_anonymous"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-y-0">
-                                    <FormControl>
-                                        <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer mt-0.5">
-                                        Keep this poll anonymous
-                                    </FormLabel>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="end_date"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Expiry Date{' '}
-                                        <span className="text-muted-foreground font-normal">
-                                            (optional)
-                                        </span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            defaultValue={field.value || ''}
-                                            type="datetime-local"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <DialogFooter>
-                            <Button
-                                disabled={isPending}
-                                onClick={() => onOpenChange(false)}
-                                type="button"
-                                variant="destructive"
-                            >
-                                Cancel
-                            </Button>
-                            <Button disabled={isPending} loading={isPending} type="submit">
-                                Create Poll
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
+                                <Button disabled={isPending} loading={isPending} type="submit">
+                                    Create Poll
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
     );
