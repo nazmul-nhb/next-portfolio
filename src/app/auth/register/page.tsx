@@ -16,7 +16,7 @@ export default async function RegisterPage() {
     if (session) redirect('/');
 
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="Register Page">
             <RegisterForm />
         </Suspense>
     );

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function PhotoCardPage() {
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="Photo Card Page">
             <ManagePhotoCards />
         </Suspense>
     );

@@ -19,7 +19,7 @@ export default async function LoginPage() {
     if (session) redirect('/');
 
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="Login Page">
             <LoginForm />
         </Suspense>
     );

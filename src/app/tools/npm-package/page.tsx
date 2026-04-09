@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function NpmPackagePage() {
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="NPM Package Details Page">
             <NpmPackageDetails />
         </Suspense>
     );

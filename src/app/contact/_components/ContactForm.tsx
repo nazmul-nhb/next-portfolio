@@ -2,7 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,14 @@ export function ContactForm() {
     const [submitted, setSubmitted] = useState(false);
     const [apiError, setApiError] = useState('');
 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const {
         register,
         handleSubmit,
         reset,
+        setFocus,
         formState: { errors },
     } = useForm<ContactFormValues>({
         resolver: zodResolver(ContactFormSchema),
@@ -45,6 +50,23 @@ export function ContactForm() {
         setApiError('');
         sendMessage(data);
     };
+
+    useEffect(() => {
+        const subject = searchParams.get('subject');
+
+        if (searchParams.has('subject') && subject) {
+            setFocus('name');
+
+            reset({
+                subject,
+                message: `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`,
+            });
+
+            queueMicrotask(() => {
+                router.replace('/contact');
+            });
+        }
+    }, [searchParams, reset, setFocus, router]);
 
     if (submitted) {
         return (

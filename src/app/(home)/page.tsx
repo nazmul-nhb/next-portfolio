@@ -8,6 +8,7 @@ import { CareerHighlightsSection } from './_components/CareerHighlights';
 import { HeroSection } from './_components/HeroSection';
 import { RecentBlogsSection } from './_components/RecentBlogs';
 import { RecentProjectsSection } from './_components/RecentProjects';
+import { ServiceSection } from './_components/ServiceSection';
 import { SkillsSection } from './_components/SkillsSection';
 import { TestimonialsSection } from './_components/Testimonials';
 import ToolsSection from './_components/ToolsSection';
@@ -36,6 +37,7 @@ export default async function HomePage() {
     return (
         <div className="flex flex-col overflow-x-hidden">
             <HeroSection adminImage={adminImage} />
+            <ServiceSection />
             <SkillsSection skills={allSkills} />
             <RecentProjectsSection />
             <CareerHighlightsSection />

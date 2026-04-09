@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function SpinningWheelPage() {
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="Spinning Wheel Page">
             <SpinningWheel />
         </Suspense>
     );

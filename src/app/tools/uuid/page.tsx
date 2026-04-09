@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function UUIDPage() {
     return (
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />} name="UUID Page">
             <ManageUUID />
         </Suspense>
     );

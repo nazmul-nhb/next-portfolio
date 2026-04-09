@@ -4,7 +4,7 @@ import z from 'zod';
 export const ContactFormSchema = z
     .object({
         name: z
-            .string()
+            .string('Your name is required')
             .min(2, 'Must be at least 2 characters')
             .max(128, 'Must not exceed 128 characters')
             .trim(),
