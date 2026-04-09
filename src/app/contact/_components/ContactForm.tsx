@@ -42,7 +42,9 @@ export function ContactForm({ subject }: ContactProps) {
             email: '',
             subject: subject || '',
             message: subject
-                ? `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`
+                ? subject.startsWith('Feedback')
+                    ? ''
+                    : `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`
                 : '',
         },
     });

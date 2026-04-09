@@ -126,7 +126,12 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                 </Link>
                             </Button>
                             <Button asChild size="lg">
-                                <Link href="/contact#send-message">
+                                <Link
+                                    href={{
+                                        pathname: '/contact',
+                                        hash: 'send-message',
+                                    }}
+                                >
                                     <LucideMailQuestionMark className="size-4" /> Send a Message
                                 </Link>
                             </Button>

@@ -105,8 +105,13 @@ export function ExpensesClient() {
                     <br />
                     If you notice any issues or have suggestions, please{' '}
                     <Link
-                        className="border-b border-b-yellow-800 hover:text-primary dark:border-b-yellow-50 hover:dark:border-b-primary hover:dark:text-primary"
-                        href="/contact#send-message"
+                        className="border-b border-b-muted-foreground hover:border-b-primary hover:text-primary"
+                        href={{
+                            pathname: '/contact',
+                            query: {
+                                subject: 'Feedback on Expense Manager Tool',
+                            },
+                        }}
                     >
                         send your feedback
                     </Link>
