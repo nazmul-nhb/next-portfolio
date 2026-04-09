@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, Send } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
@@ -16,14 +16,18 @@ import { ContactFormSchema } from '@/lib/zod-schema/messages';
 
 type ContactFormValues = z.infer<typeof ContactFormSchema>;
 
+type ContactProps = {
+    subject?: string;
+};
+
 /**
  * Contact form with validation and submission.
  */
-export function ContactForm() {
+export function ContactForm({ subject }: ContactProps) {
     const [submitted, setSubmitted] = useState(false);
     const [apiError, setApiError] = useState('');
 
-    const searchParams = useSearchParams();
+    const router = useRouter();
 
     const {
         register,
@@ -33,7 +37,14 @@ export function ContactForm() {
         formState: { errors },
     } = useForm<ContactFormValues>({
         resolver: zodResolver(ContactFormSchema),
-        defaultValues: { name: '', email: '', subject: '', message: '' },
+        defaultValues: {
+            name: '',
+            email: '',
+            subject: subject || '',
+            message: subject
+                ? `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`
+                : '',
+        },
     });
 
     const { mutate: sendMessage, isPending } = useApiMutation('/api/contact', 'POST', {
@@ -51,17 +62,12 @@ export function ContactForm() {
     };
 
     useEffect(() => {
-        const subject = searchParams.get('subject');
-
-        if (searchParams.has('subject') && subject) {
+        if (subject) {
             setFocus('name');
 
-            reset({
-                subject,
-                message: `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`,
-            });
+            queueMicrotask(() => router.replace('/contact', { scroll: false }));
         }
-    }, [searchParams, reset, setFocus]);
+    }, [subject, setFocus, router.replace]);
 
     if (submitted) {
         return (

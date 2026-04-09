@@ -8,6 +8,7 @@ import Loading from '@/components/misc/loading';
 import { ENV } from '@/configs/env';
 import { siteConfig } from '@/configs/site';
 import { buildCanonicalUrl } from '@/lib/utils';
+import type { SearchParams } from '@/types';
 import { ContactForm } from './_components/ContactForm';
 
 export const metadata: Metadata = {
@@ -23,7 +24,9 @@ export const metadata: Metadata = {
     },
 };
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: SearchParams<'subject'>) {
+    const { subject } = await searchParams;
+
     return (
         <Suspense fallback={<Loading />} name="Contact Page">
             <div className="relative mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
@@ -140,7 +143,7 @@ export default function ContactPage() {
                             id="send-message"
                         >
                             <h2 className="mb-6 text-xl font-bold">Send a Message</h2>
-                            <ContactForm />
+                            <ContactForm subject={subject} />
                         </div>
                     </SlideInRight>
                 </div>

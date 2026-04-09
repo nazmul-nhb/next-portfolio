@@ -161,7 +161,7 @@ function ServiceCard({ icon, title, points, accentColor }: ServiceCardProps) {
 
                 <CardFooter className="py-1">
                     <Button asChild variant="link">
-                        <Link href={`/contact?subject=${encodeURIComponent(title)}`}>
+                        <Link href={`/contact?subject=${title}`}>
                             <Handshake /> Book a Consultation
                         </Link>
                     </Button>

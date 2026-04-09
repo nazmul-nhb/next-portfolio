@@ -101,8 +101,7 @@ export function ExpensesClient() {
                 <AlertTriangle />
                 <AlertTitle>Experimental Feature (Under Development)</AlertTitle>
                 <AlertDescription className="inline">
-                    This feature is experimental and still under active development. You may
-                    encounter bugs or incomplete functionality.
+                    This feature is experimental and still under active development.
                     <br />
                     If you notice any issues or have suggestions, please{' '}
                     <Link
