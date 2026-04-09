@@ -10,7 +10,7 @@ import TitleWithShare from '@/app/tools/_components/TitleWithShare';
 import type { CurrencyResponse } from '@/app/tools/expense-manager/_components/types';
 import EmptyData from '@/components/misc/empty-data';
 import { ExpensePageSkeleton } from '@/components/misc/skeletons';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import SmartAlert from '@/components/misc/smart-alert';
 import { Button } from '@/components/ui/button';
 import { useApiQuery } from '@/lib/hooks/use-api';
 import { formatMoney } from '@/lib/tools/expenses';
@@ -42,8 +42,8 @@ export function ExpensesClient() {
 
     const entriesEndpoint = useMemo(() => {
         const params = generateQueryParams({
-            page: String(page),
-            limit: timeframe === 'all' ? '8' : '50',
+            page: page,
+            limit: timeframe === 'all' ? 8 : 50,
             type: filter !== 'all' ? filter : '',
             search: query.trim() ? query.trim() : '',
             from: dateRange?.from && range ? range.from : '',
@@ -97,27 +97,30 @@ export function ExpensesClient() {
 
     return (
         <div className="space-y-8">
-            <Alert className="mb-8 border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900 dark:text-yellow-50 select-none">
-                <AlertTriangle />
-                <AlertTitle>Experimental Feature (Under Development)</AlertTitle>
-                <AlertDescription className="inline">
-                    This feature is experimental and still under active development.
-                    <br />
-                    If you notice any issues or have suggestions, please{' '}
-                    <Link
-                        className="border-b border-b-muted-foreground hover:border-b-primary hover:text-primary"
-                        href={{
-                            pathname: '/contact',
-                            query: {
-                                subject: 'Feedback on Expense Manager Tool',
-                            },
-                        }}
-                    >
-                        send your feedback
-                    </Link>
-                    .
-                </AlertDescription>
-            </Alert>
+            <SmartAlert
+                className="border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900 dark:text-yellow-50"
+                description={
+                    <span>
+                        This feature is still under active development.
+                        <br />
+                        If you notice any issues or have suggestions, please{' '}
+                        <Link
+                            className="border-b border-b-muted-foreground hover:border-b-primary hover:text-primary"
+                            href={{
+                                pathname: '/contact',
+                                query: {
+                                    subject: 'Feedback on Expense Manager Tool',
+                                },
+                            }}
+                        >
+                            send your feedback
+                        </Link>
+                        .
+                    </span>
+                }
+                Icon={AlertTriangle}
+                title="Experimental Feature (Under Development)"
+            />
             <TitleWithShare
                 description="Track income, expenses, borrowed loans, lent loans, and cash in hand."
                 route="/tools/expense-manager"
