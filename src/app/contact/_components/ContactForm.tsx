@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, Send } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
@@ -23,7 +23,6 @@ export function ContactForm() {
     const [submitted, setSubmitted] = useState(false);
     const [apiError, setApiError] = useState('');
 
-    const router = useRouter();
     const searchParams = useSearchParams();
 
     const {
@@ -61,12 +60,8 @@ export function ContactForm() {
                 subject,
                 message: `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`,
             });
-
-            queueMicrotask(() => {
-                router.replace('/contact');
-            });
         }
-    }, [searchParams, reset, setFocus, router]);
+    }, [searchParams, reset, setFocus]);
 
     if (submitted) {
         return (
