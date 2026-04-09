@@ -97,7 +97,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         <div className="flex items-center gap-2">
                             <span className="inline-block h-1 w-12 rounded-full bg-primary" />
                             <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                                Full-Stack Developer
+                                Programmer & Web Developer
                             </span>
                         </div>
 
@@ -136,7 +136,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                             {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                                 <motion.a
                                     aria-label={label}
-                                    className="flex size-10 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+                                    className="flex size-12 items-center justify-center rounded-full border border-border/50 text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
                                     href={href}
                                     key={label}
                                     rel="noopener noreferrer"
@@ -144,7 +144,7 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                                     whileHover={{ scale: 1.1, y: -2 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <Icon className="size-4" />
+                                    <Icon className="size-6" />
                                 </motion.a>
                             ))}
                         </div>
@@ -157,7 +157,18 @@ export function HeroSection({ adminImage }: HeroSectionProps) {
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
                         <div className="relative mx-auto size-80">
-                            <div className="absolute inset-0 rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 blur-2xl" />
+                            <motion.div
+                                animate={{
+                                    opacity: [0.4, 0.8, 0.4],
+                                    scale: [1.1, 1.2, 1.1],
+                                }}
+                                className="absolute inset-0 rounded-full bg-linear-to-br from-blue-500/20 to-violet-500/20 blur-2xl"
+                                transition={{
+                                    duration: 6,
+                                    ease: 'easeInOut',
+                                    repeat: Infinity,
+                                }}
+                            />
                             <button
                                 className={cn(
                                     'relative flex size-full items-center justify-center overflow-hidden rounded-full border border-border/50 bg-card/50 backdrop-blur-sm',
