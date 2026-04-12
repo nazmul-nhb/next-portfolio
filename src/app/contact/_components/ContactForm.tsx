@@ -43,8 +43,8 @@ export function ContactForm({ subject }: ContactProps) {
             subject: subject || '',
             message: subject
                 ? subject.startsWith('Feedback')
-                    ? ''
-                    : `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject}. Please let me know when you are available.\nThanks!`
+                    ? `Hi Nazmul,\nI just wanted to share some feedback regarding ${subject.replace('Feedback on', '').trim()}.\n[Your feedback here]\nThanks!`
+                    : `Hi Nazmul,\nI found your personal website and I am interested in your services.\nI would like to discuss about ${subject.replace('Inquiry about', '').trim()}. Please let me know when you are available.\nThanks!`
                 : '',
         },
     });
