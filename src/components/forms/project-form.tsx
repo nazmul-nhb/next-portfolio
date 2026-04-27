@@ -388,6 +388,7 @@ export function ProjectForm({ onSubmit, defaultValues, isLoading = false }: Prop
                                 </div>
                                 <Button
                                     onClick={() => addTechStack()}
+                                    size={'icon-lg'}
                                     type="button"
                                     variant="outline"
                                 >

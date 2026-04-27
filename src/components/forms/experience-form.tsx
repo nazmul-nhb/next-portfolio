@@ -291,6 +291,7 @@ export function ExperienceForm({
                             />
                             <Button
                                 onClick={handleAddTechnology}
+                                size={'icon-lg'}
                                 type="button"
                                 variant="outline"
                             >
