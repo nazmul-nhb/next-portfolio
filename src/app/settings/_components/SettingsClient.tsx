@@ -1,12 +1,22 @@
 'use client';
 
-import { AlertCircle, CheckCircle, LogOut, Mail, Save, Shield, Upload } from 'lucide-react';
+import {
+    AlertCircle,
+    CheckCircle,
+    LogOut,
+    Mail,
+    Save,
+    Shield,
+    Upload,
+    User,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { FadeInUp } from '@/components/misc/animations';
+import EmptyData from '@/components/misc/empty-data';
 import { SettingsSkeleton } from '@/components/misc/skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -180,15 +190,18 @@ export function SettingsClient() {
         verifyOTP({ email: profile.email, code: otp });
     };
 
-    // ✅ Loading state from TanStack Query
     if (status === 'loading' || isLoading) return <SettingsSkeleton />;
 
-    // ✅ No profile check - TanStack Query handles this
     if (!profile) {
         return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <p className="text-muted-foreground">Failed to load profile</p>
-            </div>
+            <FadeInUp>
+                <EmptyData
+                    className="h-[88vh] mx-auto max-w-3xl px-4 mt-4 py-12 overflow-x-hidden"
+                    description="Profile is currently unavailable! Please try again after sometime..."
+                    Icon={User}
+                    title="Failed to Load Profile!"
+                />
+            </FadeInUp>
         );
     }
 
@@ -240,7 +253,7 @@ export function SettingsClient() {
                                             required
                                             value={otp}
                                         >
-                                            <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-10 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
+                                            <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-9.25 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
                                                 <InputOTPSlot index={0} />
                                                 <InputOTPSlot index={1} />
                                                 <InputOTPSlot index={2} />

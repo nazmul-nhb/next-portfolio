@@ -141,7 +141,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
             </FadeInUp>
 
             {/* Blog content - Markdown rendered */}
-            <FadeInUp>
+            <FadeIn>
                 <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-pre:bg-muted prose-pre:border prose-pre:border-border">
                     <Markdown
                         rehypePlugins={[
@@ -154,7 +154,7 @@ export function BlogContent({ blog, tags, categories }: BlogContentProps) {
                         {blog.content}
                     </Markdown>
                 </div>
-            </FadeInUp>
+            </FadeIn>
 
             {/* Reactions */}
             <ReactionsShare blog={blog} />
