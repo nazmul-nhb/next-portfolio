@@ -1,7 +1,7 @@
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
-import { isNonEmptyString } from 'nhb-toolbox';
+import { isNonEmptyString, truncateString } from 'nhb-toolbox';
 import type z from 'zod';
 import { ENV } from '@/configs/env';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
             .map(([key, value]) => (key === 'intro' ? value : `${key.toUpperCase()}: ${value}`))
             .join('\n\n');
 
-        await sendSMS(`8801623732187`, sms);
+        await sendSMS(`8801623732187`, truncateString(sms, 555));
 
         return sendResponse('Message', 'POST', {
             id: stored.id,
