@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
+import { isNonEmptyString } from 'nhb-toolbox';
 import type z from 'zod';
 import { ENV } from '@/configs/env';
 import { sendErrorResponse } from '@/lib/actions/errorResponse';
@@ -10,6 +11,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema/messages';
 import { sendEmail } from '@/lib/email';
+import { sendSMS } from '@/lib/email/sms';
 import { contactAutoReplyTemplate, contactEmailTemplate } from '@/lib/email/templates';
 import { ContactFormSchema } from '@/lib/zod-schema/messages';
 
@@ -53,6 +55,21 @@ export async function POST(req: NextRequest) {
 
         // Revalidate admin messages page
         revalidatePath('/admin/messages');
+
+        const smsLine = {
+            intro: 'You got a new message from portfolio website!',
+            name,
+            email,
+            subject,
+            message,
+        };
+
+        const sms = Object.entries(smsLine)
+            .filter(([_, value]) => isNonEmptyString(value))
+            .map(([key, value]) => (key === 'intro' ? value : `${key.toUpperCase()}: ${value}`))
+            .join('\n\n');
+
+        await sendSMS(`8801623732187`, sms);
 
         return sendResponse('Message', 'POST', {
             id: stored.id,

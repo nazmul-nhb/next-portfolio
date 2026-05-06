@@ -15,6 +15,12 @@ export const ENV = {
         address: process.env.EMAIL_ADDRESS as string,
         password: process.env.EMAIL_PASSWORD as string,
     },
+    sms: {
+        /** API key for bulk SMS. */
+        bulkSmsApiKey: process.env.BULK_SMS_API_KEY as string,
+        /** Sender ID for bulk SMS. */
+        bulkSmsSenderId: process.env.BULK_SMS_SENDER_ID as string,
+    },
     adminEmail: process.env.NEXT_PUBLIC_ADMIN_EMAIL as string,
     cloudinary: {
         config: {
