@@ -1,3 +1,4 @@
+import { BulkSmsClient } from 'bulk-sms-bd';
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
@@ -11,7 +12,6 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { contactMessages } from '@/lib/drizzle/schema/messages';
 import { sendEmail } from '@/lib/email';
-import { sendSMS } from '@/lib/email/sms';
 import { contactAutoReplyTemplate, contactEmailTemplate } from '@/lib/email/templates';
 import { ContactFormSchema } from '@/lib/zod-schema/messages';
 
@@ -56,20 +56,28 @@ export async function POST(req: NextRequest) {
         // Revalidate admin messages page
         revalidatePath('/admin/messages');
 
-        const smsLine = {
-            intro: 'You got a new message from portfolio website!',
-            name,
-            email,
-            subject,
-            message,
-        };
+        try {
+            const smsLine = {
+                intro: 'You got a new message from portfolio website!',
+                name,
+                email,
+                subject,
+                message,
+            };
 
-        const sms = Object.entries(smsLine)
-            .filter(([_, value]) => isNonEmptyString(value))
-            .map(([key, value]) => (key === 'intro' ? value : `${key.toUpperCase()}: ${value}`))
-            .join('\n\n');
+            const sms = Object.entries(smsLine)
+                .filter(([_, value]) => isNonEmptyString(value))
+                .map(([key, value]) =>
+                    key === 'intro' ? value : `${key.toUpperCase()}: ${value}`
+                )
+                .join('\n\n');
 
-        await sendSMS(`8801623732187`, truncateString(sms, 555));
+            const smsClient = new BulkSmsClient(ENV.sms);
+
+            await smsClient.sendSMS(`8801623732187`, truncateString(sms, 555));
+        } catch (err) {
+            console.error(err);
+        }
 
         return sendResponse('Message', 'POST', {
             id: stored.id,
@@ -114,7 +122,7 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     try {
         const session = await auth();
-        if (!session?.user || session.user.role !== 'admin') {
+        if (session?.user?.role !== 'admin') {
             return sendErrorResponse('Forbidden', 403);
         }
 

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     try {
         const session = await auth();
 
-        if (!session?.user || session.user.role !== 'admin') {
+        if (session?.user.role !== 'admin') {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
                 { status: 401 }
@@ -67,7 +67,7 @@ export async function PATCH(req: NextRequest) {
     try {
         const session = await auth();
 
-        if (!session?.user || session.user.role !== 'admin') {
+        if (session?.user.role !== 'admin') {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
                 { status: 401 }
@@ -111,7 +111,7 @@ export async function DELETE(req: NextRequest) {
     try {
         const session = await auth();
 
-        if (!session?.user || session.user.role !== 'admin') {
+        if (session?.user.role !== 'admin') {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
                 { status: 401 }

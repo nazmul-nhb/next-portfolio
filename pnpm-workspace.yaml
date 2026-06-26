@@ -1,0 +1,19 @@
+packages:
+  - "."
+
+minimumReleaseAgeExclude:
+  - bulk-sms-bd
+  - nhb-toolbox
+
+minimumReleaseAge: 360
+
+allowBuilds:
+  esbuild: true
+  sharp: false
+
+overrides:
+  "nodemailer": "^8.0.0"
+
+peerDependencyRules:
+  allowedVersions:
+    "nodemailer": "^8.0.0"
