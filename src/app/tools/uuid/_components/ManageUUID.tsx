@@ -101,7 +101,7 @@ export default function ManageUUID() {
                     <PoweredBy
                         className="mt-4"
                         description="This tool uses `uuid` from my open-source package for pure JS UUID generation."
-                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
+                        url="https://nhb-toolbox.vercel.app/docs/utilities/hash/uuid"
                     />
                 </TabsContent>
                 <TabsContent value={TABS[1]}>
@@ -110,7 +110,7 @@ export default function ManageUUID() {
                     <PoweredBy
                         className="mt-4"
                         description="This tool uses `uuid` from my open-source package for pure JS UUID generation."
-                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/uuid"
+                        url="https://nhb-toolbox.vercel.app/docs/utilities/hash/uuid"
                     />
                 </TabsContent>
                 {/* Decoder Section */}
@@ -120,7 +120,7 @@ export default function ManageUUID() {
                     <PoweredBy
                         className="mt-4"
                         description="This tool uses `decodeUUID` from my open-source package to decode a UUID into its internal components."
-                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/decodeUUID"
+                        url="https://nhb-toolbox.vercel.app/docs/utilities/hash/decodeUUID"
                     />
                 </TabsContent>
             </Tabs>

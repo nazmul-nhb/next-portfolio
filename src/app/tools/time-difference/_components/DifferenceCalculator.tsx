@@ -311,7 +311,7 @@ export default function DifferenceCalculator() {
                         <PoweredBy
                             className="mt-6"
                             description="This tool uses `Chronos` class from my open-source package to calculate date differences."
-                            url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#diff"
+                            url="https://nhb-toolbox.vercel.app/docs/classes/Chronos/calculation#diff"
                         />
                     </CardContent>
                 </Card>

@@ -310,7 +310,7 @@ export default function EncryptMessage() {
             </div>
             <PoweredBy
                 description="This tool uses `Cipher` class from my open-source package to encrypt/decrypt texts."
-                url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/Cipher"
+                url="https://nhb-toolbox.vercel.app/docs/utilities/hash/Cipher"
             />
         </div>
     );

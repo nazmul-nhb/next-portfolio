@@ -4,8 +4,9 @@ packages:
 minimumReleaseAgeExclude:
   - bulk-sms-bd
   - nhb-toolbox
+  - nhb-hooks
 
-minimumReleaseAge: 360
+minimumReleaseAge: 120
 
 allowBuilds:
   esbuild: true

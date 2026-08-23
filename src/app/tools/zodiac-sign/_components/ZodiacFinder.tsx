@@ -399,7 +399,7 @@ export default function ZodiacFinder() {
             </div>
             <PoweredBy
                 description="This tool uses `Chronos` class from my open-source package to find zodiac match."
-                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/names#getzodiacsign"
+                url="https://nhb-toolbox.vercel.app/docs/classes/Chronos/names#getzodiacsign"
             />
         </div>
     );

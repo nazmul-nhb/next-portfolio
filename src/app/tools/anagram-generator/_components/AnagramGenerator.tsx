@@ -306,7 +306,7 @@ export default function AnagramGenerator({ dictionary }: AnagramProps) {
                     </Card>
                     <PoweredBy
                         description="This tool uses `generateAnagrams` for unique anagram generation."
-                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/string/generateAnagrams"
+                        url="https://nhb-toolbox.vercel.app/docs/utilities/string/generateAnagrams"
                     />
                 </div>
 

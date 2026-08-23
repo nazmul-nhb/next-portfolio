@@ -519,7 +519,7 @@ export default function BaseConverter() {
             </div>
             <PoweredBy
                 description="This tool uses `TextCodec` class from my open-source package to encode/decode among formats."
-                url="https://toolbox.nazmul-nhb.dev/docs/utilities/hash/TextCodec"
+                url="https://nhb-toolbox.vercel.app/docs/utilities/hash/TextCodec"
             />
         </div>
     );

@@ -151,7 +151,7 @@ export default function TextDiffChecker() {
 
                     <PoweredBy
                         description="This tool uses string `diff utilities` for line-level and character-level diffs."
-                        url="https://toolbox.nazmul-nhb.dev/docs/utilities/string/string-diff"
+                        url="https://nhb-toolbox.vercel.app/docs/utilities/string/string-diff"
                     />
                 </div>
                 {/* Diff Viewer Section */}

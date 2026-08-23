@@ -268,7 +268,7 @@ export default function AgeCalculator() {
                         />
                         <PoweredBy
                             description="This tool uses `Chronos` class from my open-source package to calculate age."
-                            url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/calculation#durationstring"
+                            url="https://nhb-toolbox.vercel.app/docs/classes/Chronos/calculation#durationstring"
                         />
                     </CardContent>
                 </Card>

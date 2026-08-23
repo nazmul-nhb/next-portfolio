@@ -6,8 +6,7 @@ A modern, full-stack portfolio and blogging platform built with **Next.js 16**, 
 
 ## Live URLs
 
-- [nazmul-nhb.dev](https://nazmul-nhb.dev/)
-- [next.nazmul-nhb.dev](https://next.nazmul-nhb.dev/)
+- [nazmul-nhb.vercel.app](https://nazmul-nhb.vercel.app/)
 - [next-nhb.vercel.app](https://next-nhb.vercel.app/)
 
 ---

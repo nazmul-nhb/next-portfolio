@@ -375,7 +375,7 @@ export default function TimezoneConverter() {
                             <PoweredBy
                                 className="mt-6"
                                 description="This tool uses `Chronos.timeZone()` for timezone conversions."
-                                url="https://toolbox.nazmul-nhb.dev/docs/classes/Chronos/conversion#timezone"
+                                url="https://nhb-toolbox.vercel.app/docs/classes/Chronos/conversion#timezone"
                             />
                         </CardContent>
                     </Card>

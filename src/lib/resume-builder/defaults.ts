@@ -9,7 +9,7 @@ export const DEFAULT_RESUME_CONFIG = {
         email: 'your.email@example.com',
         phone: '+8801623732187',
         location: 'City, Country',
-        website: 'https://www.nazmul-nhb.dev',
+        website: 'https://nazmul-nhb.vercel.app',
         linkedin: '',
         github: '',
     },
