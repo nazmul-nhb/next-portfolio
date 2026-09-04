@@ -80,7 +80,7 @@ const itemVariants: Variants = {
 };
 
 export default function SudokuGame() {
-    const gameStore = useStorage<GameState | null>({ key: 'nhb-sudoku-game' });
+    const gameStore = useStorage<GameState>({ key: 'nhb-sudoku-game' });
 
     const stopwatch = useStopwatch({ interval: 10 });
 
