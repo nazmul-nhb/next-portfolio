@@ -19,6 +19,8 @@ import { buildCanonicalUrl, buildCloudinaryUrl, formatDuration } from '@/lib/uti
 import type { SelectEducation, SelectExperience } from '@/types/career';
 import type { SelectSkill } from '@/types/skills';
 
+export const revalidate = 60 * 5; // ISR: revalidate every 5 minutes
+
 export const metadata: Metadata = {
     title: 'About',
     description: `Learn more about ${siteConfig.name} - Full-Stack Web Developer.`,
